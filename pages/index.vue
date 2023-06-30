@@ -1,11 +1,14 @@
 <template>
-<div style="display:flex" class="full-screen-div">
-<div style=" height:inherit">
+<div class="full-screen-div row no-wrap">
+<div style="height:inherit">
     <CurlingRings/>
 </div>
-    <div style="flex-grow: 1">
+    <div class="col-grow column">
+        <div class="col-grow">Top</div>
+        <div class="col-grow">
     <TableSelect :modelValue="selection" @update:modelValue="updateValue" :loading="loading.value"/>
     <Table :columns="columns" :rows="tableData" v-if="tableData" :tableName="selection"/>
+    </div>
     </div>
     </div>
 </template>
@@ -28,7 +31,10 @@
 }
 </style>
 <script setup>
-import { ref } from 'vue'
+
+import { ref, computed } from 'vue'
+const device = useDevice();
+
     const selection = ref(null)
     const loading = ref(false)
     const tableData = ref([])

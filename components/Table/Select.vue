@@ -1,7 +1,6 @@
 <template>
     <q-btn-group push outline spread>
         <q-btn v-for="table,index in VISIBLE_TABLES" :key="index" :label="table" @click="setSelection(table)"  color="purple" :outline="!isSelected(table)" :disabled="loading"/>  
-        <!-- :text-color="textColor(table)" :color="buttonColor(table)"  -->
     </q-btn-group>
 </template>
 

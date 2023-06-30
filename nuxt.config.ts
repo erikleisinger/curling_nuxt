@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@nuxtjs/supabase',
-    'nuxt-quasar-ui'
+    'nuxt-quasar-ui',
   ],
   supabase: {
     url: process.env.SUPABASE_URL,
