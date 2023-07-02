@@ -4,10 +4,21 @@
     :rows="rows"
     row-key="id"
     :title="tableName"
-  />
+    virtual-scroll
+    class="data-table"
+  >
+  <template v-slot:top-right>
+    <q-btn icon="add" flat round @click="openEditor"/>
+  </template>
+  </q-table>
 </template>
-
+<style lang="scss">
+  .data-table {
+    max-height: 300px;
+  }
+</style>
 <script setup>
+import { useEditorStore } from '@/store/editor'
 import {computed} from "vue";
 const props = defineProps({
   columns: {
@@ -25,6 +36,8 @@ const props = defineProps({
   tableName: String,
 });
 
+const store = useEditorStore()
+
 const columnsComputed = computed(() => {
   if (!props?.columns?.length) return [];
   return props.columns.map((name) => {
@@ -37,4 +50,8 @@ const columnsComputed = computed(() => {
     };
   });
 });
+
+const openEditor = () => {
+  store.init(props.tableName, true)
+}
 </script>

@@ -1,0 +1,1 @@
+export const IGNORE_FIELDS = ['id', 'created_at']
