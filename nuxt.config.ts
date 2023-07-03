@@ -1,9 +1,23 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  quasar: {
+    extras: {
+      animations: [
+        'shakeX'
+      ]
+    },
+      plugins: [
+        'Dialog'
+      ],
+  
+  },
   modules: [
+    '@nuxt/devtools',
     '@nuxtjs/supabase',
-    'nuxt-quasar-ui'
+    '@pinia/nuxt',
+    'nuxt-quasar-ui',
+    '@vueuse/nuxt',
   ],
   supabase: {
     url: process.env.SUPABASE_URL,
