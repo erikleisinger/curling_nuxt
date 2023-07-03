@@ -2,9 +2,15 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   quasar: {
+    extras: {
+      animations: [
+        'shakeX'
+      ]
+    },
       plugins: [
         'Dialog'
-      ]
+      ],
+  
   },
   modules: [
     '@nuxt/devtools',
