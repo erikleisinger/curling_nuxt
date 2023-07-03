@@ -27,10 +27,7 @@ const emit = defineEmits(['save', 'cancel'])
     const store = useEditorStore();
 
     const schema = computed(() => store.schema)
-    console.log('SCHEMA: ', schema.value)
-
     const onSave = async (e) => {
-        console.log('saving: ', e)
         const formData = new FormData(e.target);
         const data = [...formData.entries()].reduce((all, [key, value]) => {
             return {...all, [key]: value}

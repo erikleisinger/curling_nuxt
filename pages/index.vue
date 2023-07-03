@@ -9,7 +9,7 @@
         </div> -->
         <div class="col-grow">
     <TableSelect :modelValue="selection" @update:modelValue="updateValue" :loading="loading"/>
-    <Table :columns="columns" :rows="tableData" v-if="tableData" :tableName="selection"/>
+    <Table v-if="selection" :tableName="selection" :setLoading="setLoading" :loading="loading"/>
     </div>
     </div>
     </div>
@@ -35,40 +35,17 @@
 <script setup>
 
 import { ref, computed, watch } from 'vue'
+
     const selection = ref(null)
     const loading = ref(false)
-    const tableData = ref([])
-    const columns = ref([])
-    const schema = ref([])
 
-    const client = useSupabaseClient();
-
-    const getSchema = async (tablename) => {
-            try {
-    const {data, error} = await client.rpc('get_table_info', {tablename})
-        schema.value = data
-    } catch(e) {
-        console.log('GET TABLE INFO ERROR: ', e)
-    }
-    }
-
-    const updateTable = async (table) => {
-         loading.value = true;
-        const data = await client.from(selection.value).select();
-        const [firstItem] = data.data;
-        columns.value = Object.keys(firstItem)
-        tableData.value = data.data
-        loading.value = false;
+    const setLoading = (bool) => {
+        loading.value = bool;
     }
 
     const updateValue = (table) => {   
     selection.value = table;
     }
 
-    watch(selection, (val) => {
-        updateTable(val);
-        getSchema(val)
-
-    })
     
 </script>

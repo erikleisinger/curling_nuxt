@@ -8,14 +8,6 @@
 
 <script setup>  
 import { useDialogPluginComponent } from 'quasar'
-    const props = defineProps({
-        schema: {
-            type: Array,
-            default() {
-                return []
-            }
-        }
-    })
     defineEmits([
   // REQUIRED; need to specify some events that your
   // component will emit through useDialogPluginComponent()

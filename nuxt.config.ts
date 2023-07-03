@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@pinia/nuxt',
     'nuxt-quasar-ui',
+    '@vueuse/nuxt',
   ],
   supabase: {
     url: process.env.SUPABASE_URL,
