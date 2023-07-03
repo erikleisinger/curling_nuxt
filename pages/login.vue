@@ -89,7 +89,6 @@ const onSubmit = async (e) => {
     if (!error) navigateTo("/");
   } else if (tab.value === "signup") {
     const {data, error} = await client.auth.signUp(formData);
-    console.log(data, error)
     if (error?.message) {
         setBanner(error.message)
     }

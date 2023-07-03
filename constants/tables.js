@@ -11,7 +11,6 @@ export const TABLE_NAMES = {
 };
 
 export const VISIBLE_TABLES = [
-
     TABLE_NAMES.GAMES,
     TABLE_NAMES.PLAYERS,
     TABLE_NAMES.TEAMS

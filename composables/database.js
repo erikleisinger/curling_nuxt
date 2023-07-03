@@ -8,5 +8,15 @@ export const useDatabase = () => {
      const getQuery = (tableName) => {
       return TABLE_QUERIES[tableName] ?? '*'
      };
-    return { getSchema, getQuery }
+
+     const getUser = () => {
+      const user = useSupabaseUser();
+      return user?.value;
+     }
+
+     const getClient = () => {
+      const client = useSupabaseAuthClient();
+      return client;
+     }
+    return { getClient, getSchema, getQuery, getUser }
 }

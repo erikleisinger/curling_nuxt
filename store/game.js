@@ -3,7 +3,13 @@ import { defineStore } from 'pinia';
 export const useGameStore = defineStore('game', {
     state: () => {
         return {
-            gameId: null,
+            game: null,
+
+        }
+    },
+    actions: {
+        setGame(game) {
+            this.game = game
         }
     }
 })
