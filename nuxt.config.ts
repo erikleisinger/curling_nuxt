@@ -5,7 +5,9 @@ export default defineNuxtConfig({
     cssAddon: true,
     extras: {
       animations: [
-        'shakeX'
+        'shakeX',
+        'slideInDown',
+        'slideInUp',
       ]
     },
       plugins: [
