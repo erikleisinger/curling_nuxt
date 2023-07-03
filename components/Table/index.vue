@@ -48,7 +48,6 @@ const getTable = async () => {
   props.setLoading(true);
   const user = useSupabaseUser();
   const {id = '0'} = user.value || {};
-  console.log('SUPABASE USER: ', user.value.id)
   const data = await client.from(props.tableName).select(query).eq('profile_id', id)
   rows.value = data.data;
   props.setLoading(false);
