@@ -7,6 +7,8 @@
     />
      <q-toolbar class="bg-primary text-white shadow-2">
       <q-toolbar-title>Select a game</q-toolbar-title>
+    <q-space/>
+      <q-btn flat round dense icon="add" @click="openEditor"></q-btn>
     </q-toolbar>
      <q-list bordered separator >
           <q-item clickable v-ripple v-for="game in games" :key="game.id" @click="selectGame(game)">
@@ -45,6 +47,7 @@
 <script setup>
 import {ref, onMounted} from "vue";
 import {useGameStore} from '@/store/game'
+import { useEditorStore } from '@/store/editor'
 import {TABLE_NAMES} from "@/constants/tables";
 
 const loading = ref(false);
@@ -69,8 +72,12 @@ onMounted(async () => {
 });
 
 const selectGame = (game) => {
-    console.log('SELECT NAME')
     store.setGame(game);
     navigateTo('/')
 }
+
+const openEditor = () => {
+    const editorStore = useEditorStore();
+    editorStore.init(TABLE_NAMES.GAMES, true)
+};
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div>
-       <q-input v-if="type === 'text'" :name="name" v-model="inputValue"/>
+       <q-input v-if="type === 'text'" :name="name" v-model="inputValue" :label="input.displayName"/>
        <EditorInputDate v-if="type ==='date'" :name="name" :item="input"/>
       <EditorInputSelect v-if="type === 'select'" :item="input" :name="name" requi/>
     </div>

@@ -66,22 +66,17 @@ const getArrayOfOptions = (options) => {
         return {value, label}
     })
 }
-
-
-
 export const TABLE_SCHEMA = {
     [TABLE_NAMES.GAMES]: getNewSchema({
-        
-        home: getUserSelect('Home', 'teams'),
-        away: getUserSelect('Away', 'teams'),
-        start_time: getNewDate('Start time'),
-        end_time: getNewDate('End time'),
         name: {
             visible: true,
             editable: true,
             type: 'text',
             displayName: 'Name',
-        }
+        },
+        start_time: getNewDate('Start time'),
+        home: getUserSelect('Home', 'teams'),
+        away: getUserSelect('Away', 'teams'),
     }),
     foreignKey: {
         tableName: 'ends',
