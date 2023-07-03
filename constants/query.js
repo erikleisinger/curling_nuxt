@@ -1,15 +1,16 @@
 import {TABLE_NAMES} from "./tables";
 export const TABLE_QUERIES = {
   [TABLE_NAMES.GAMES]: `
+    id,
     start_time,
-    end_time,
     home (
       name
     ),
     away (
       name
     ),
-    name
+    name,
+    ends(count)
     `,
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `

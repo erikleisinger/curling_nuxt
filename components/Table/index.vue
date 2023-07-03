@@ -36,7 +36,7 @@ const store = useEditorStore();
 const openEditor = () => {
   store.init(props.tableName, true);
 };
-const client = useSupabaseClient();
+const client = useSupabaseAuthClient();
 
 const getTable = async () => {
   rows.value = []
@@ -46,7 +46,10 @@ const getTable = async () => {
   if (!schema || !query) return;
   setColumns(schema);
   props.setLoading(true);
-  const data = await client.from(props.tableName).select(query);
+  const user = useSupabaseUser();
+  const {id = '0'} = user.value || {};
+  console.log('SUPABASE USER: ', user.value.id)
+  const data = await client.from(props.tableName).select(query).eq('profile_id', id)
   rows.value = data.data;
   props.setLoading(false);
 };

@@ -44,6 +44,10 @@
 
 import { ref, computed, watch } from 'vue'
 
+definePageMeta({
+    middleware: 'game'
+})
+
     const selection = ref(null)
     const loading = ref(false)
 
