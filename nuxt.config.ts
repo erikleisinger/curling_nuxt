@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   quasar: {
+    cssAddon: true,
     extras: {
       animations: [
         'shakeX'
@@ -10,6 +11,7 @@ export default defineNuxtConfig({
       plugins: [
         'Dialog'
       ],
+      sassVariables: true,
   
   },
   modules: [
