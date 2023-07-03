@@ -23,7 +23,6 @@ export const useEditorStore = defineStore('editor', {
         init(tableName, dialog = false) {
             const schema =TABLE_SCHEMA[tableName]
             if(!schema) return;
-            console.log(TABLE_SCHEMA[tableName])
             this.schema = schema
             this.table = tableName
             if (dialog) this.openDialog()

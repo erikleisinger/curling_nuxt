@@ -1,5 +1,12 @@
 <template>
-<div class="full-screen-div row no-wrap">
+<div class="full-screen-div ">
+    <q-toolbar class="bg-purple text-white">
+        <q-space/>
+         <q-btn flat round dense @click="logout"> 
+        <q-icon name="logout"></q-icon>
+      </q-btn>
+    </q-toolbar>
+<div class="row no-wrap">
 <div style="height:inherit">
     <CurlingRings/>
 </div>
@@ -10,6 +17,7 @@
         <div class="col-grow">
     <TableSelect :modelValue="selection" @update:modelValue="updateValue" :loading="loading"/>
     <Table v-if="selection" :tableName="selection" :setLoading="setLoading" :loading="loading"/>
+    </div>
     </div>
     </div>
     </div>
@@ -45,6 +53,12 @@ import { ref, computed, watch } from 'vue'
 
     const updateValue = (table) => {   
     selection.value = table;
+    }
+
+    const logout = async () => {
+        const client = useSupabaseAuthClient();
+        await client.auth.signOut();
+        return navigateTo('/login')
     }
 
     

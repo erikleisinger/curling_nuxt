@@ -2,14 +2,18 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   quasar: {
+    cssAddon: true,
     extras: {
       animations: [
-        'shakeX'
+        'shakeX',
+        'slideInDown',
+        'slideInUp',
       ]
     },
       plugins: [
         'Dialog'
       ],
+      sassVariables: true,
   
   },
   modules: [
