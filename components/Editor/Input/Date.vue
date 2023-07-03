@@ -22,5 +22,4 @@ import {ref} from 'vue'
 
     })
     const date = ref(null)
-    console.log('DATE COMPONENT: ', props.item, props.name)
 </script>
