@@ -18,6 +18,8 @@
        border: 1px solid black;
         height: inherit;
         position: relative;
+        height: 100%;
+        overflow:hidden;
         &:before {
             content: '';
             top: 22.22%;

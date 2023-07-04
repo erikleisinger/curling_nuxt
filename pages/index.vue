@@ -1,24 +1,15 @@
 <template>
-<div class="full-screen-div ">
+<div class="window-height window-width column">
     <q-toolbar class="bg-purple text-white">
         <q-space/>
          <q-btn flat round dense @click="logout"> 
         <q-icon name="logout"></q-icon>
       </q-btn>
     </q-toolbar>
-<div class="row no-wrap">
-<div style="height:inherit">
+<div class="row no-wrap col-grow" style="max-width:100vw">
+<div class="col-md-6 col-12 row" :class="{'justify-center' : $q.screen.lt.md}">
     <CurlingRings/>
 </div>
-    <div class="column" >
-        <!-- <div >
-            <Editor :schema="schema"/>
-        </div> -->
-        <div class="col-grow">
-    <TableSelect :modelValue="selection" @update:modelValue="updateValue" :loading="loading"/>
-    <Table v-if="selection" :tableName="selection" :setLoading="setLoading" :loading="loading"/>
-    </div>
-    </div>
     </div>
     </div>
 </template>
@@ -47,6 +38,8 @@ import { ref, computed, watch } from 'vue'
 definePageMeta({
     middleware: 'game'
 })
+
+    const $q = useQuasar();
 
     const selection = ref(null)
     const loading = ref(false)

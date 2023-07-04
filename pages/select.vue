@@ -50,7 +50,7 @@ import {useGameStore} from '@/store/game'
 import { useEditorStore } from '@/store/editor'
 import {TABLE_NAMES} from "@/constants/tables";
 
-const loading = ref(false);
+const loading = ref(true);
 const games = ref([]);
 
 const store = useGameStore();
