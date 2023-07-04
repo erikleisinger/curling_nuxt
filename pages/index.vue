@@ -6,10 +6,19 @@
         <q-icon name="logout"></q-icon>
       </q-btn>
     </q-toolbar>
-<div class="row no-wrap col-grow" style="max-width:100vw">
-<div class="col-md-6 col-12 row" :class="{'justify-center' : $q.screen.lt.md}">
-    <CurlingRings/>
+    <q-toolbar class="bg-purple text-white" v-if="$q.screen.lt.md">
+        <q-tabs>
+            <q-tab label="Rings"/>
+             <q-tab label="Score"/>
+        </q-tabs>
+    </q-toolbar>
+<div class="row  col-grow items-center" style="max-width:100vw">
+<div class="col-lg-6 col-12 row justify-center curling-rings__wrap" >
+    <CurlingRings />
 </div>
+<!-- <div class="col-md-6 col-12 row justify-center" >
+    OTHER COLUMN
+</div> -->
     </div>
     </div>
 </template>
@@ -22,13 +31,19 @@
 #__nuxt {
     height: inherit;
 }
-.full-screen-div {
-    width: 100vw;
-    height: 100%;
-    min-height: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: hidden;
+.curling-rings__wrap {
+    height: 100%!important;
+}
+
+@media all and (min-width: 1000px) {
+.curling-rings__wrap {
+    max-height: calc(100vh - 50px);
+}
+}
+@media all and (max-width: 1000px) {
+.curling-rings__wrap {
+    max-height: calc(100vh - 100px);
+}
 }
 </style>
 <script setup>
@@ -39,7 +54,7 @@ definePageMeta({
     middleware: 'game'
 })
 
-    const $q = useQuasar();
+    const $q = useQuasar()
 
     const selection = ref(null)
     const loading = ref(false)

@@ -17,7 +17,6 @@ export default defineNuxtConfig({
   
   },
   modules: [
-    '@nuxt/devtools',
     '@nuxtjs/supabase',
     '@pinia/nuxt',
     'nuxt-quasar-ui',
