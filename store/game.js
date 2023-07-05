@@ -18,9 +18,9 @@ export const useGameStore = defineStore("game", {
         const [end] = data;
         return end;
     },
-    async createShot(endId) {
+    async createShot(endId, current) {
         const client = useSupabaseAuthClient()
-        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert({'end_id': Number(endId), 'shot_no': Number(this.shot)}).select('*');
+        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert({'end_id': Number(endId), 'shot_no': Number(this.shot), 'rock_positions': current.rock_positions}).select('*');
         if (error) return null;
         const [shot] = data;
         return shot;
@@ -45,7 +45,7 @@ export const useGameStore = defineStore("game", {
         this.ends.push(end)
         return end;
     },
-    async getShot() {
+    async getShot(current) {
         const end = await this.getEnd()
         const {id: end_id} = end;
         const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === this.shot);
@@ -54,7 +54,7 @@ export const useGameStore = defineStore("game", {
         let shot;
         const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select('*')
         if (!data?.length) {
-            shot = await this.createShot(end_id);
+            shot = await this.createShot(end_id, current);
         } else {
             const [fetchedShot] = data;
             shot = fetchedShot

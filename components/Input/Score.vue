@@ -1,15 +1,15 @@
 <template>
   <section class="score-inputs__wrap">
     <section class="row q-px-lg" style="">
-      <q-select class="col-12 q-pt-lg" outlined rounded label="Player" :options="playerOptions"  v-model="shot.player_id" emit-value map-options :disable="saving">
+      <q-select class="col-12 q-pt-lg" outlined rounded label="Player" :options="playerOptions"  v-model="editedShot.player_id" emit-value map-options :disable="saving">
           <template v-slot:append>
           <q-btn flat round @click.stop="fetchPlayers" :loading="loadingPlayers">
             <q-icon name="refresh" />
           </q-btn>
           </template>
       </q-select>
-      <q-input class="col-6 q-pt-lg q-pr-sm" outlined rounded label="Score" v-model="shot.score" :disable="saving"/>
-      <q-select class="col-6 q-pt-lg q-pl-sm" outlined rounded label="Turn" :disable="saving" v-model="shot.turn" :options="turnOptions" emit-value
+      <q-input class="col-6 q-pt-lg q-pr-sm" outlined rounded label="Score" v-model="editedShot.score" :disable="saving"/>
+      <q-select class="col-6 q-pt-lg q-pl-sm" outlined rounded label="Turn" :disable="saving" v-model="editedShot.turn" :options="turnOptions" emit-value
         map-options />
       <q-select
         class="col-6 q-pt-lg q-pr-sm"
@@ -17,7 +17,7 @@
         rounded
         label="Line"
         :options="lineOptions"
-        v-model="shot.line"
+        v-model="editedShot.line"
         emit-value
         map-options
         :disable="saving"
@@ -28,7 +28,7 @@
         rounded
         label="Shot type"
         :options="shotTypeOptions"
-        v-model="shot.type_id"
+        v-model="editedShot.type_id"
         emit-value
         map-options
         :disable="saving"
@@ -46,7 +46,7 @@
         rounded
         label="Notes"
         :disable="saving"
-        v-model="shot.notes"
+        v-model="editedShot.notes"
       />
       <q-btn label="save" @click="save" :loading="saving"/>
     </section>
@@ -69,8 +69,8 @@ import { useGameStore } from '@/store/game'
 import { TABLE_NAMES} from '@/constants/tables'
 
 const saving = ref(false)
-const editedShot = inject('editedShot')
-const shot = ref({});
+const editedShot = inject('editedShot', 'save')
+// const shot = ref({});
 const store = useDataStore();
 const loadingPlayers = ref(false)
 const loadingShotTypes = ref(false)
@@ -98,18 +98,8 @@ const playerOptions = computed(() => {
 const shotTypeOptions = computed(() => {
   return store.shotTypes;
 })
-watch(editedShot, (val) => {
-  shot.value = {...val};
-}, {deep: true, immediate: true})
 
-const save = async () => {
-  saving.value = true;
-  const {saveShot} = useGameStore();
-  console.log('SHOT TO SAVE: ', shot.value)
-  await saveShot(shot.value)
-  saving.value = false;
 
-}
 
 onMounted(() => {
  fetchShotTypes();

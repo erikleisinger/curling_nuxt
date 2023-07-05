@@ -1,23 +1,55 @@
 <template>
   <CurlingRings>
-    <div style="height: 100%; width: 100%; position: absolute; overflow: hidden" id="curlingRockWrapper" v-if="rockPositions">
+    <div style="height: 100%; width: 100%; position: absolute; overflow: hidden"  id="curlingRockWrapper">
+
       <button @click="addRock">Add</button>
-      <CurlingRock v-for="(rock, index) in rocks" :key="`rock-${index}-home`" :rock="rock" />
+      <CurlingRock v-for="(rock, index) in rockPositions" :key="`rock-${index}-home`" :rock="rock" @update="onRockPositionUpdated($event, rock.shot_no)"  />
+
     </div>
   </CurlingRings>
 </template>
 
 <script setup>
     import { computed, inject, ref} from 'vue';
-    const props = defineProps({
-        shot: Object,
-    });
-    const rocks = ref([])
+
+  const editedShot = inject('editedShot');
+  const modifyEditedShot = inject('modifyEditedShot');
+
+
     const rockPositions = computed(() => {
-        return props?.shot?.rock_positions
+      try {
+        return JSON.parse(editedShot?.value?.rock_positions)?.rocks ?? [];
+      } catch {
+        return []
+      }
+      
     })
+
     const addRock = () => {
-        rocks.value.push({x: 40, y: 40, id: Math.random()})
+       if (rockPositions.value.length >= editedShot.value.shot_no) return;
+       const newRockPositions = [
+        ...rockPositions.value,
+        {x:0, y:0, shot_no: editedShot.value.shot_no}
+       ];
+       editedShot.value.rock_positions = JSON.stringify({
+        rocks: newRockPositions
+       });
+    }
+
+    const updateRock = (rock) => {
+      const {shot_no} = rock;
+       const index = [...rockPositions.value].findIndex((r) => r.shot_no === shot_no);
+        if (index !== -1) {
+        const newRockPositions = [...rockPositions.value];
+        newRockPositions.splice(index, 1, rock)
+        editedShot.value.rock_positions = JSON.stringify({
+        rocks: newRockPositions
+       });
+      }
+    }
+
+    const onRockPositionUpdated = (e, shot_no) => {
+      updateRock({...e, shot_no})
     }
 </script>
 

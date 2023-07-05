@@ -12,7 +12,7 @@
           key="rings"
           class="curling-rings__wrap"
         >
-          <CurlingRockController :shot="shot" />
+          <CurlingRockController />
         </section>
        
          <InputScore v-if="$q.screen.gt.sm || tab === 'score'"
@@ -58,26 +58,30 @@
 }
 </style>
 <script setup>
-import {computed, inject, provide, watchEffect} from "vue";
+import {computed, inject, provide, ref, watch} from "vue";
 import {useGameStore} from '@/store/game'
 const $q = useQuasar();
-const store = useGameStore();
+  const store = useGameStore();
 const tab = inject('tab')
-const gamePos = computed(() => {
-    const {end, shot} = store;
-    return {end, shot}
-})
-const shot = ref(null)
-const {getShot} = store;
-watch(gamePos, async (d) => {
-    shot.value = await getShot()
-}, {deep: true, immediate:true})
 
-provide('editedShot', shot)
+const editedShot = ref({});
+
+
+
 
 const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();
   return navigateTo("/login");
 };
+
+const shot = useShot();
+provide('editedShot', shot);
+
+watch(shot, () => {
+  editedShot.value = {...shot}
+}, {deep: true, immediate: true})
+
+
+
 </script>
