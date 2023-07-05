@@ -23,7 +23,7 @@
         <slot :tab="tab"/>
     </q-page-container>
     <q-footer elevated  v-if="$q.screen.lt.md">
-        <GameNavigation/>
+        <slot name="footer"/>
     </q-footer>
     </q-layout>
 </template>

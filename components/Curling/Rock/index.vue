@@ -6,6 +6,7 @@
       userSelect: 'none',
       top: `${positionY}%`,
       left: `${positionX}%`,
+      backgroundColor: isEven ? 'yellow' : 'red'
     }"
     ref="rockRef"
   />
@@ -13,19 +14,18 @@
 <style scoped>
 .rock {
   position: absolute;
-  background-color: black;
   height: 3.41%;
   aspect-ratio: 1/1;
   border-radius: 50%;
   top: 0;
   left: 0;
+  border: 1px solid rgb(70, 70, 70);
 }
 </style>
 <script setup>
 import {computed, reactive, ref, onMounted, onUnmounted} from "vue";
 import {useEventListener, useMouseInElement} from "@vueuse/core";
 
-// import {useClamp} from "@vueuse/math";
 const rockRef = ref(null);
 
 const props = defineProps({
@@ -37,20 +37,23 @@ const positionY = ref(0);
 const dragging = ref(false);
 const emit = defineEmits(['update'])
 
-const target = document.querySelector("#curlingRockWrapper");
+
+const isEven = computed(() => props.rock.shot_no % 2 === 0)
 
 onMounted(() => {
   positionY.value = props.rock.y;
   positionX.value = props.rock.x;
 });
 
-
+const target = document.querySelector("#curlingRockWrapper");
 const mouse = reactive(useMouseInElement(target));
 
 const getPercentWidth = (pos) => {
+  const target = document.querySelector("#curlingRockWrapper");
   return pos /target.offsetWidth * 100;
 }
 const getPercentHeight = (pos) => {
+  const target = document.querySelector("#curlingRockWrapper");
   return pos / target.offsetHeight * 100;
 }
 

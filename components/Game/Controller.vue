@@ -58,30 +58,15 @@
 }
 </style>
 <script setup>
-import {computed, inject, provide, ref, watch} from "vue";
-import {useGameStore} from '@/store/game'
+import {inject} from "vue";
+
+
 const $q = useQuasar();
-  const store = useGameStore();
 const tab = inject('tab')
-
-const editedShot = ref({});
-
-
-
-
 const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();
   return navigateTo("/login");
 };
-
-const shot = useShot();
-provide('editedShot', shot);
-
-watch(shot, () => {
-  editedShot.value = {...shot}
-}, {deep: true, immediate: true})
-
-
 
 </script>

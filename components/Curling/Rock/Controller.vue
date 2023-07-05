@@ -3,7 +3,7 @@
     <div style="height: 100%; width: 100%; position: absolute; overflow: hidden"  id="curlingRockWrapper">
 
       <button @click="addRock">Add</button>
-      <CurlingRock v-for="(rock, index) in rockPositions" :key="`rock-${index}-home`" :rock="rock" @update="onRockPositionUpdated($event, rock.shot_no)"  />
+      <CurlingRock v-for="(rock, index) in rockPositions" :key="`rock-${index}-${editedShot.id}`" :rock="rock" @update="onRockPositionUpdated($event, rock.shot_no)"  />
 
     </div>
   </CurlingRings>
@@ -13,8 +13,6 @@
     import { computed, inject, ref} from 'vue';
 
   const editedShot = inject('editedShot');
-  const modifyEditedShot = inject('modifyEditedShot');
-
 
     const rockPositions = computed(() => {
       try {
@@ -29,7 +27,7 @@
        if (rockPositions.value.length >= editedShot.value.shot_no) return;
        const newRockPositions = [
         ...rockPositions.value,
-        {x:0, y:0, shot_no: editedShot.value.shot_no}
+        {x:0, y:0, shot_no: rockPositions.value.length + 1}
        ];
        editedShot.value.rock_positions = JSON.stringify({
         rocks: newRockPositions

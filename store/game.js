@@ -10,6 +10,11 @@ export const useGameStore = defineStore("game", {
       shot: 1,
       shots: useStorage('shots', []),
   }),
+  getters: {
+    currentShot: (state) => {
+        return state.shots.find((s) => s.shot_no === state.shot)
+    }
+  },
   actions: {
     async createEnd(gameId) {
         const client = useSupabaseAuthClient()
@@ -18,9 +23,13 @@ export const useGameStore = defineStore("game", {
         const [end] = data;
         return end;
     },
-    async createShot(endId, current) {
+    async createShot(endId, currentShot) {
         const client = useSupabaseAuthClient()
-        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert({'end_id': Number(endId), 'shot_no': Number(this.shot), 'rock_positions': current.rock_positions}).select('*');
+        const insertData = {'end_id': Number(endId), 'shot_no': Number(this.shot)}
+        if (currentShot) {
+            insertData['rock_positions'] = currentShot.rock_positions
+        }
+        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert(insertData).select('*');
         if (error) return null;
         const [shot] = data;
         return shot;
@@ -45,7 +54,7 @@ export const useGameStore = defineStore("game", {
         this.ends.push(end)
         return end;
     },
-    async getShot(current) {
+    async getShot(currentShot) {
         const end = await this.getEnd()
         const {id: end_id} = end;
         const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === this.shot);
@@ -54,7 +63,7 @@ export const useGameStore = defineStore("game", {
         let shot;
         const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select('*')
         if (!data?.length) {
-            shot = await this.createShot(end_id, current);
+            shot = await this.createShot(end_id, currentShot);
         } else {
             const [fetchedShot] = data;
             shot = fetchedShot
@@ -70,22 +79,26 @@ export const useGameStore = defineStore("game", {
             this.shots.splice(index, 1, shot)
         }
     },
-    prevShot() {
+    async prevShot(currentShot) {
         if (this.shot === 1 && this.end === 1) return;
+     
         if (this.shot === 1) {
             this.end -= 1;
             this.shot = 16
         } else {
             this.shot -=1
         }
+        await this.getShot(currentShot)
     },
-    nextShot() {
+    async nextShot(currentShot) {
+
         if (this.shot === 16) {
             this.shot = 1;
             this.end += 1;
         } else {
             this.shot +=1;
         }
+        await this.getShot(currentShot)
     },
     async saveShot(shot) {
         const client = useSupabaseAuthClient();

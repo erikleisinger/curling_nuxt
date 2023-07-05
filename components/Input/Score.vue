@@ -48,7 +48,6 @@
         :disable="saving"
         v-model="editedShot.notes"
       />
-      <q-btn label="save" @click="save" :loading="saving"/>
     </section>
   </section>
 </template>
@@ -69,8 +68,7 @@ import { useGameStore } from '@/store/game'
 import { TABLE_NAMES} from '@/constants/tables'
 
 const saving = ref(false)
-const editedShot = inject('editedShot', 'save')
-// const shot = ref({});
+const editedShot = inject('editedShot')
 const store = useDataStore();
 const loadingPlayers = ref(false)
 const loadingShotTypes = ref(false)
