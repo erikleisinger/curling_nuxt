@@ -1,12 +1,12 @@
 <template>
   <div class="window-height window-width column">
-    <q-toolbar class="bg-purple text-white">
+    <q-toolbar class="bg-primary text-white">
       <q-space />
       <q-btn flat round dense @click="logout">
         <q-icon name="logout"></q-icon>
       </q-btn>
     </q-toolbar>
-    <q-toolbar class="bg-purple text-white" v-if="$q.screen.lt.md">
+    <q-toolbar class="bg-primary text-white" v-if="$q.screen.lt.md">
       <q-tabs v-model="tab">
         <q-tab label="Rings" name="rings" />
         <q-tab label="Score" name="score" />
@@ -24,18 +24,13 @@
           key="rings"
           class="curling-rings__wrap"
         >
-    
-            <CurlingRings />
-    
+          <CurlingRings />
         </section>
-        <section
-          class="bg-blue"
-          v-if="$q.screen.gt.sm || tab === 'score'"
+       
+         <InputScore v-if="$q.screen.gt.sm || tab === 'score'"
           id="scorecard"
-          key="scorecard"
-        >
-          COL 2
-        </section>
+          key="scorecard"/>
+    
       </transition-group>
     </main>
   </div>
