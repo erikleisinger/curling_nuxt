@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   quasar: {
     cssAddon: true,
     extras: {
@@ -24,6 +24,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@vueuse/nuxt',
   ],
+  ssr: false,
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,

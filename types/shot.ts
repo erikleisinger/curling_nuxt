@@ -2,7 +2,7 @@ import Json from "./json";
 import Line from './line'
 interface ShotSchema {
   end_id: number | null;
-  id: number | null;
+  id?: number | null;
   line: number | null;
   notes: string | null;
   player_id: number | null;
@@ -26,7 +26,7 @@ class Shot implements ShotSchema {
     public turn: number | null = null,
     public type_id: number | null = null
   ) {}
-  public formattedForCreate() {
+  public formattedForInsert() {
     const {
       end_id,
       id,
@@ -39,7 +39,7 @@ class Shot implements ShotSchema {
       turn,
       type_id,
     } = this;
-    return {
+    const obj = {
       end_id,
       id,
       line,
@@ -51,6 +51,8 @@ class Shot implements ShotSchema {
       turn,
       type_id,
     };
+    if (!id) delete obj.id
+    return obj;
   }
 }
 
