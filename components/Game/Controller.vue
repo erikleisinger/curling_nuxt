@@ -1,23 +1,26 @@
 <template>
+   <KeepAlive>
     <transition-group
         appear
         enter-active-class="animated slideInLeft"
         leave-active-class="animated slideInRight"
       >
+   
         <section
           v-if="$q.screen.gt.sm || tab === 'rings'"
           id="rings"
           key="rings"
           class="curling-rings__wrap"
         >
-          <CurlingRings />
+          <CurlingRockController />
         </section>
        
          <InputScore v-if="$q.screen.gt.sm || tab === 'score'"
           id="scorecard"
           key="scorecard"/>
-    
+
       </transition-group>
+            </KeepAlive>
 </template>
 <style lang="scss">
 .wrapper {
