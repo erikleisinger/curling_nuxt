@@ -5,5 +5,13 @@ export const useFormat = () => {
         return isNaN(timestamp) ? 'N/A' : useDateFormat(date, 'MMM D, YYYY').value
     }
 
-    return {formatDate}
+    const formatPlayerForSelection = (player) => {
+        const {id, name} = player;
+        return {
+          value: id,
+          label: name,
+        };
+      }
+
+    return {formatDate, formatPlayerForSelection}
 }
