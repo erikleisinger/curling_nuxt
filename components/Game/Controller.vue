@@ -12,7 +12,7 @@
           key="rings"
           class="curling-rings__wrap"
         >
-          <CurlingRockController />
+          <CurlingRockController :shot="shot" />
         </section>
        
          <InputScore v-if="$q.screen.gt.sm || tab === 'score'"
