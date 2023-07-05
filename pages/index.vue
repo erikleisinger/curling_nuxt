@@ -19,14 +19,14 @@
         leave-active-class="animated slideInRight"
       >
         <section
-          class="bg-red"
           v-if="$q.screen.gt.sm || tab === 'rings'"
           id="rings"
           key="rings"
+          class="curling-rings__wrap"
         >
-          <div class="curling-rings__wrap">
+    
             <CurlingRings />
-          </div>
+    
         </section>
         <section
           class="bg-blue"
@@ -53,7 +53,6 @@ html {
 .wrapper {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 1fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
@@ -70,7 +69,7 @@ html {
 
 @media all and (min-width: 1000px) {
   .wrapper {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 2fr;
     section:nth-child(2) {
       grid-area: 1 / 2 / 2 / 3;
     }

@@ -15,7 +15,7 @@
 <style lang="scss">
 .rink {
   background-color: white;
-  border: 1px solid black;
+//   border: 1px solid black;
   position: absolute;
   margin: auto;
   left: 0;
@@ -25,6 +25,7 @@
   max-width: 100%;
   max-height: 100%;
   aspect-ratio: 15/27;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   &:before {
     content: "";
     top: 22.22%;
