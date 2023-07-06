@@ -36,14 +36,11 @@ const emit = defineEmits(['save', 'cancel'])
         const client = useSupabaseClient();
         const {tableName} = storeToRefs(store)
         const res = await client.from(tableName.value).insert(data)
-        console.log('RES: ', res)
+
         emit('save')
     }
     const onCancel = () => {
         emit('cancel')
     }
 
-    const onValidateSuccess = () => {
-        console.log('VALIDATED!')
-    }
 </script>

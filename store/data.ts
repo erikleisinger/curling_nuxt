@@ -47,7 +47,6 @@ export const useDataStore = defineStore('data', {
                         label: name,
                     }
                 })
-                console.log('GOT SHOT TYPES: ', shotTypes);
                 this.shotTypes = shotTypes;
             }
         },

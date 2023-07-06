@@ -19,7 +19,7 @@
     </q-toolbar>
    
       </q-header>
-    <q-page-container class="col-grow wrapper" role="main">
+    <q-page-container class="col-grow wrapper" style="overflow:hidden" role="main">
         <slot :tab="tab"/>
     </q-page-container>
     <q-footer elevated  v-if="$q.screen.lt.md">

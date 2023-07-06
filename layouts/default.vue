@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot />
-    <div class="banner__wrap" v-if="bannerText">
+    <div class="banner__wrap" v-if="!!bannerText">
       <transition
         appear
         enter-active-class="animated slideInUp"

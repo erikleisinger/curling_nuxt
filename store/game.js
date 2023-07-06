@@ -110,6 +110,9 @@ export const useGameStore = defineStore("game", {
         localStorage.removeItem('game')
     },
     async saveShot(shot) {  
+        const {objTheSame} = useValidation();
+        const rockInStore = this.shots.find((s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id)
+        if (objTheSame(rockInStore, shot)) return;
         this.loading = true;
         const client = useSupabaseAuthClient();
         const {data}= await client.from(TABLE_NAMES.SHOTS).upsert(shot).select('*')
