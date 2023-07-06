@@ -2,8 +2,8 @@
    <KeepAlive>
     <transition-group
         appear
-        enter-active-class="animated slideInLeft"
-        leave-active-class="animated slideInRight"
+        :enter-active-class="`animated ${tab === 'rings' ? 'slideInLeft' : 'slideInRight'}`"
+        :leave-active-class="`animated ${tab === 'rings' ? 'slideOutRight' : 'slideOutLeft'}`"
       >
    
         <section
@@ -30,8 +30,8 @@
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   section {
-    grid-area: 1 / 1 / 2 / 2;
-  }
+      grid-area: 1 / 1 / 2 / 2;
+    }
   .curling-rings__wrap {
     position: relative;
     width: 100%;
