@@ -3,9 +3,9 @@
     <slot />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
-        <circle cx="50%" cy="50%" r="50%" style="fill: blue" />
+        <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
         <circle cx="50%" cy="50%" r="33%" style="fill: white" />
-        <circle cx="50%" cy="50%" r="16.67%" style="fill: red" />
+        <circle cx="50%" cy="50%" r="16.67%" class="ring__inner" />
         <circle cx="50%" cy="50%" r="5%" style="fill: white" />
       </svg>
     </div>
@@ -13,6 +13,7 @@
 </template>
 
 <style lang="scss">
+// background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,36,121,1) 35%, rgba(0,212,255,1) 100%);
 .rink {
   background-color: white;
 //   border: 1px solid black;
@@ -51,6 +52,12 @@
     height: 44.44%;
     width: 80%;
     margin: auto;
+    .ring__outer {
+      fill: var(--q-primary)
+    }
+    .ring__inner {
+      fill: $rings-red
+    }
   }
 }
 </style>
