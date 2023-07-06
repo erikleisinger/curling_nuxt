@@ -1,17 +1,18 @@
 <template>
-  <div
-    :id="`rock-${rock.shot_no}`"
-    class="rock row justify-center"
-    :style="{
+
+ <CurlingRockIcon :class="colorClass" :style="{
       userSelect: 'none',
       top: `${positionY}%`,
       left: `${positionX}%`,
-    }"
-    :class="colorClass"
-    ref="rockRef"
-  >
+    }"    class="rock row justify-center"     :id="`rock-${rock.shot_no}`"  ref="rockRef">
   {{rock.shot_no}}
-  </div>
+ </CurlingRockIcon>
+    <!-- <div style="position:absolute; z-index: 5000; background-color:red; top: 0">
+      <div v-for="property in Object.keys(mouseCom)" :key="property">
+        {{property}}: {{mouseCom[property]}}
+      </div>
+    </div> -->
+
 </template>
 <style lang="scss">
 .rock {
@@ -50,21 +51,26 @@ const emit = defineEmits(['update', 'remove', 'outsideBounds'])
 
 const isEven = computed(() => props.rock.shot_no % 2 === 0)
 const colorClass= computed(() => {
-  console.log('calc color class: ', props.rock.shot_no)
-  return isEven ? 'rock-yellow' : 'rock-red'
+  return isEven.value ? 'rock-yellow' : 'rock-red'
 })
+
+const target = document.querySelector("#curlingRockWrapper");
+const mouse = reactive(useMouseInElement(target));
 
 onMounted(() => {
   positionY.value = props.rock.y;
   positionX.value = props.rock.x;
 });
 
-const target = document.querySelector("#curlingRockWrapper");
-const mouse = reactive(useMouseInElement(target));
+
+
+const mouseCom = computed(() => {
+  const {elementX, elementY, x, y, elementPositionX, elementPositionY, elementHeight, elementWidth} = mouse
+  return {elementX, elementY, x, y, elementPositionX, elementPositionY, elementHeight, elementWidth}
+})
 
 const getPercentWidth = (pos) => {
   const target = document.querySelector("#curlingRockWrapper");
-  console.log(pos, target.offsetWidth)
   return pos / target.offsetWidth * 100;
 }
 const getPercentHeight = (pos) => {

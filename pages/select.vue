@@ -16,8 +16,8 @@
             <q-item-label overline>{{game.start_time}}</q-item-label>
          <q-item-label>{{game.name}}</q-item-label>
          <q-item-label caption>
-            <div class="row"><CurlingRockIcon class="q-mr-xs" color="red"/>{{game.away}}</div>
-             <div class="row"><CurlingRockIcon class="q-mr-xs" color="yellow"/>{{game.home}}</div>
+            <div class="row"> <q-icon name="remove_circle" class="rotate-45 rock__icon" color="red"/>{{game.away}}</div>
+             <div class="row"> <q-icon name="remove_circle" class="rotate-45 rock__icon" color="yellow"/>{{game.home}}</div>
          </q-item-label>
             </q-item-section>
             <q-space/>

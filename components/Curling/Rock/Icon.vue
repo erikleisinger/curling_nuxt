@@ -1,5 +1,7 @@
 <template>
-    <q-icon name="remove_circle" class="rotate-45 rock__icon" :color="color"/>
+   <div>
+    <slot/>
+   </div>
 </template>
 
 <script setup>
