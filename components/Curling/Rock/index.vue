@@ -1,17 +1,19 @@
 <template>
   <div
-    :id="`rock-${rock.id}`"
-    class="rock"
+    :id="`rock-${rock.shot_no}`"
+    class="rock row justify-center"
     :style="{
       userSelect: 'none',
       top: `${positionY}%`,
       left: `${positionX}%`,
-      backgroundColor: isEven ? 'yellow' : 'red'
     }"
+    :class="colorClass"
     ref="rockRef"
-  />
+  >
+  {{rock.shot_no}}
+  </div>
 </template>
-<style scoped>
+<style lang="scss">
 .rock {
   position: absolute;
   height: 3.41%;
@@ -20,6 +22,13 @@
   top: 0;
   left: 0;
   border: 1px solid rgb(70, 70, 70);
+  z-index: 1;
+  &.rock-red {
+    background-color: $rock-red;
+  }
+  &.rock-yellow {
+    background-color: $rock-yellow
+  }
 }
 </style>
 <script setup>
@@ -32,13 +41,18 @@ const props = defineProps({
   rock: Object,
 });
 
+
 const positionX = ref(0);
 const positionY = ref(0);
 const dragging = ref(false);
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'remove', 'outsideBounds'])
 
 
 const isEven = computed(() => props.rock.shot_no % 2 === 0)
+const colorClass= computed(() => {
+  console.log('calc color class: ', props.rock.shot_no)
+  return isEven ? 'rock-yellow' : 'rock-red'
+})
 
 onMounted(() => {
   positionY.value = props.rock.y;
@@ -50,7 +64,8 @@ const mouse = reactive(useMouseInElement(target));
 
 const getPercentWidth = (pos) => {
   const target = document.querySelector("#curlingRockWrapper");
-  return pos /target.offsetWidth * 100;
+  console.log(pos, target.offsetWidth)
+  return pos / target.offsetWidth * 100;
 }
 const getPercentHeight = (pos) => {
   const target = document.querySelector("#curlingRockWrapper");
@@ -58,11 +73,17 @@ const getPercentHeight = (pos) => {
 }
 
 const endDrag = () => {
-  
-  if (dragging.value) {
-dragging.value = false;
+  if (!dragging.value) return;
+  dragging.value = false;
+     const {isOutside} = mouse;
+  if (isOutside) {
+    emit('remove')
+  } else {
  emit('update', {x: positionX.value, y: positionY.value})
   }
+
+
+  
   
  
 };
@@ -72,16 +93,17 @@ const startDrag = () => {
 
 const onDrag = (e) => {
   if (!dragging.value) return;
-  const {isOutside} = mouse;
-  if (isOutside) return;
-  const {offsetWidth, offsetHeight} = rockRef.value;
+ 
+  // const {offsetWidth, offsetHeight} = rockRef.value;
 
-  const {elementY, elementX, elementWidth, elementHeight} = mouse;
-   
-  if (elementX + offsetWidth > elementWidth) return;
-  if (elementY + offsetHeight > elementHeight) return;
+  const {elementY, elementX, elementWidth, elementHeight, isOutside} = mouse;
+  // if (elementX + offsetWidth > elementWidth) return;
+  // if (elementY + offsetHeight > elementHeight) return;
   positionX.value = getPercentWidth(elementX)
   positionY.value = getPercentHeight(elementY)
+
+  emit('outsideBounds', isOutside)
+
 };
 
 useEventListener(rockRef, "mousedown", startDrag);

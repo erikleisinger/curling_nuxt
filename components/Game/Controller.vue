@@ -59,14 +59,6 @@
 </style>
 <script setup>
 import {inject} from "vue";
-
-
 const $q = useQuasar();
 const tab = inject('tab')
-const logout = async () => {
-  const client = useSupabaseAuthClient();
-  await client.auth.signOut();
-  return navigateTo("/login");
-};
-
 </script>

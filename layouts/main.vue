@@ -29,7 +29,8 @@
 </template>
 <script setup>
 import {ref, provide} from "vue";
-
+import {useGameStore}  from '@/store/game'
+const store = useGameStore();
 const $q = useQuasar();
 const tab = ref("rings");
 
@@ -38,6 +39,7 @@ provide('tab', tab)
 const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();
+  store.resetStore();
   return navigateTo("/login");
 };
 </script>

@@ -7,6 +7,7 @@ export const useGameStore = defineStore("game", {
       end: 1,
       ends: useStorage('ends', []),
       game: useStorage('game', {}),
+      loading: false,
       shot: 1,
       shots: useStorage('shots', []),
   }),
@@ -80,6 +81,7 @@ export const useGameStore = defineStore("game", {
         }
     },
     async prevShot(currentShot) {
+        this.loading = true;
         if (this.shot === 1 && this.end === 1) return;
      
         if (this.shot === 1) {
@@ -89,9 +91,10 @@ export const useGameStore = defineStore("game", {
             this.shot -=1
         }
         await this.getShot(currentShot)
+        this.loading = false;
     },
     async nextShot(currentShot) {
-
+        this.loading = true;
         if (this.shot === 16) {
             this.shot = 1;
             this.end += 1;
@@ -99,13 +102,21 @@ export const useGameStore = defineStore("game", {
             this.shot +=1;
         }
         await this.getShot(currentShot)
+        this.loading = false;
     },
-    async saveShot(shot) {
+    resetStore() {
+        localStorage.removeItem('ends')
+        localStorage.removeItem('shots')
+        localStorage.removeItem('game')
+    },
+    async saveShot(shot) {  
+        this.loading = true;
         const client = useSupabaseAuthClient();
         const {data}= await client.from(TABLE_NAMES.SHOTS).upsert(shot).select('*')
         const [savedShot] = data;
         if (!savedShot) return;
         this.insertShot(savedShot)
+        this.loading = false;
     },
     setGame(game) {
       this.game = game;

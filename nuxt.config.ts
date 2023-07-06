@@ -5,6 +5,8 @@ export default defineNuxtConfig({
     cssAddon: true,
     extras: {
       animations: [
+        'fadeIn',
+        'fadeOut',
         'shakeX',
         'slideInDown',
         'slideInUp',
@@ -31,5 +33,14 @@ export default defineNuxtConfig({
   },
   typescript: {
     typeCheck: true,
+  },
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@use '@/styles/variables.scss' as *;`
+        }
+      }
+    }
   }
 })

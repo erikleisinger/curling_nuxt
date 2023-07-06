@@ -1,6 +1,7 @@
 <template>
 <NuxtLayout name="main">
     <GameController/>
+    <q-inner-loading :showing="loading"/>
     <template v-slot:footer>
       <GameNavigation/>
     </template>
@@ -24,20 +25,28 @@ definePageMeta({
   middleware: "game",
 });
 
+// Global loading
 const store = useGameStore();
+const loading = computed(() => store.loading)
 
+
+/* Edited Shot */
+
+//  Edited shot provided to all children
+//  GameNavigation, InputScore, RockController
 
 const editedShot = ref({});
 provide('editedShot', editedShot);
 
-
 onMounted(() => {
   store.getShot();
 })
-
 const shot = computed(() => store.currentShot)
-
 watch(shot, (val) => {
   editedShot.value = {...val}
 }, {deep: true, immediate: true})
+
+/* End edited shot */
+
+
 </script>

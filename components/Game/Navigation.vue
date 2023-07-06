@@ -1,8 +1,8 @@
 <template>
     <q-toolbar class="bg-primary text-white row justify-between">
-        <q-btn round flat  @click="goPrev"><q-icon name="chevron_left"/></q-btn>
+        <q-btn round flat  @click="goPrev" :disabled="loading"><q-icon name="chevron_left"/></q-btn>
         <div>End {{end}} Shot {{shot}}</div>
-           <q-btn round flat @click="goNext"><q-icon name="chevron_right"/></q-btn>
+           <q-btn round flat @click="goNext" :disabled="loading"><q-icon name="chevron_right"/></q-btn>
       </q-toolbar>
 </template>
 <script setup>
@@ -15,6 +15,8 @@ import {computed, inject} from 'vue'
     const editedShot = inject('editedShot');
 
     const {prevShot, nextShot, saveShot} = store;
+
+    const loading = computed(() => store.loading)
 
     const goNext = async () => {
         await saveShot(editedShot.value)
