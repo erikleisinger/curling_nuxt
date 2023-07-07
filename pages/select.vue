@@ -1,5 +1,6 @@
 <template>
-  <q-scroll-area class="window-height window-width">
+<section class="row">
+  <q-scroll-area class="col-grow">
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
@@ -29,6 +30,7 @@
       </q-item>
      </q-list>
   </q-scroll-area>
+</section>
 </template>
 <style lang="scss">
     .rock__icon {
@@ -49,6 +51,10 @@ import {ref, onMounted} from "vue";
 import {useGameStore} from '@/store/game'
 import { useEditorStore } from '@/store/editor'
 import {TABLE_NAMES} from "@/constants/tables";
+
+definePageMeta({
+  layout: 'main',
+})
 
 const loading = ref(true);
 const games = ref([]);

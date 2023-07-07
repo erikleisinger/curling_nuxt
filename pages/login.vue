@@ -3,8 +3,8 @@
     <q-form class="login__form q-pa-lg" @submit="onSubmit" ref="loginForm">
       <q-card :flat="$q.screen.lt.sm" >
         <q-tabs v-model="tab" class="q-px-lg q-px-sm-none text-primary" >
-          <q-tab label="Sign in" name="signin" />
-          <q-tab label="Sign up" name="signup" />
+          <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
+          <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
         </q-tabs>
         <q-card-section class="q-px-lg">
           <q-input
@@ -46,17 +46,10 @@
 }
 @media all and (max-width: 600px) {
   .login__form {
-
     .q-card {
       height: inherit;
       display: flex;
       flex-direction: column;
-    //   .q-card__section {
-    //     flex-grow: 1;
-    //     display: flex;
-    //     flex-direction: column;
-    //     justify-content: center;
-    //   }
     }
   }
 }
@@ -65,13 +58,20 @@
 import {ref} from "vue";
 import {VALIDATION_RULES} from "@/constants/validation";
 
+const TAB_NAMES = ref({
+  SIGN_IN: 'signin',
+  SIGN_UP: 'signup'
+})
+
 const $q = useQuasar()
 
 const email = ref(null);
 const password = ref(null);
 const loading = ref(false);
-const tab = ref("signin");
+const tab = ref(TAB_NAMES.value.SIGN_IN);
 const loginForm = ref(null)
+
+
 
 const {setBanner} = useBanner();
 
@@ -84,10 +84,10 @@ const onSubmit = async (e) => {
     },
     {}
   );
-  if (tab.value === "signin") {
+  if (tab.value === TAB_NAMES.value.SIGN_IN) {
     const {data, error} = await client.auth.signInWithPassword(formData);
     if (!error) navigateTo("/");
-  } else if (tab.value === "signup") {
+  } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
     const {data, error} = await client.auth.signUp(formData);
     if (error?.message) {
         setBanner(error.message)

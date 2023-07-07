@@ -27,11 +27,13 @@
 import { routerKey } from 'vue-router';
 import {useMounted} from '@vueuse/core'
 
-  const editedShot = inject('editedShot');
-  const deleteOverlay = ref(false)
-
   const isMounted = useMounted()
 
+  const editedShot = inject('editedShot');
+
+  // Rock positions
+
+    // Raw value of rock_positions, converted from JSON --> Array
     const rockPositions = computed(() => {
       try {
         return JSON.parse(editedShot?.value?.rock_positions)?.rocks ?? [];
@@ -55,18 +57,22 @@ import {useMounted} from '@vueuse/core'
       const pending = []
       for (let x = 1; x <= shot_no; x++) {
         const rock = rockPositions.value.find((r) => r.shot_no === x)
-        console.log('rock: ', rock)
         if (!rock) pending.push(x)
       }
       return pending;
     })
 
-    const addRock = (rock) => {
-       if (rocksInPlay.value.length >= editedShot.value.shot_no) return;
-       const newRockPositions = [
+// MODIFY Rocks
+
+   
+    // Will replace or insert a rock in editedShot.rock_positions 
+    // Checks for existing rock based on rock.shot_no
+    const upsertRock = (rock) => {
+        const {shot_no} = rock;
+      const newRockPositions = [
         ...rockPositions.value,
        ];
-       const index = newRockPositions.findIndex((r) => r.shot_no === rock.shot_no)
+       const index = newRockPositions.findIndex((r) => r.shot_no === shot_no)
        if (index === -1) {
         newRockPositions.push(rock)
        } else {
@@ -75,6 +81,22 @@ import {useMounted} from '@vueuse/core'
        editedShot.value.rock_positions = JSON.stringify({
         rocks: newRockPositions
        });
+    }
+    const onRockPositionUpdated = (e, shot_no) => {
+      upsertRock({...e, shot_no})
+    }
+
+    const onRemoveRock = (rock) => {
+      deleteOverlay.value = false;
+      upsertRock({...rock, removed: true})
+      
+    }
+
+// ADD Rocks
+
+     const addRock = (rock) => {
+       if (rocksInPlay.value.length >= editedShot.value.shot_no) return;
+       upsertRock(rock)
     }
 
 
@@ -87,34 +109,9 @@ import {useMounted} from '@vueuse/core'
         addRock({...newRock, removed: false, x:0, y:0})
     }
 
-    const updateRock = (rock) => {
-      const {shot_no} = rock;
-       const index = [...rockPositions.value].findIndex((r) => r.shot_no === shot_no);
-        if (index !== -1) {
-        const newRockPositions = [...rockPositions.value];
-        newRockPositions.splice(index, 1, rock)
-        editedShot.value.rock_positions = JSON.stringify({
-        rocks: newRockPositions
-       });
-      }
-    }
+// Delete overlay
 
-    const onRockPositionUpdated = (e, shot_no) => {
-      updateRock({...e, shot_no})
-    }
-
-    const onRemoveRock = (rock) => {
-      deleteOverlay.value = false;
-      updateRock({...rock, removed: true})
-      // const index = [...rockPositions.value].findIndex((r) => r.shot_no === shot_no);
-      //   if (index === -1) return;
-      //   const newRockPositions = [...rockPositions.value];
-      //   newRockPositions.splice(index, 1)
-      //   editedShot.value.rock_positions = JSON.stringify({
-      //   rocks: newRockPositions
-      //  });
-      
-    }
+      const deleteOverlay = ref(false)
     const onOutsideBounds = (bool) => {
       deleteOverlay.value = bool;
     };

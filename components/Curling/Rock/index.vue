@@ -1,18 +1,17 @@
 <template>
-
- <CurlingRockIcon :class="colorClass" :style="{
+  <CurlingRockIcon
+    :class="colorClass"
+    :style="{
       userSelect: 'none',
       top: `${positionY}%`,
       left: `${positionX}%`,
-    }"    class="rock row justify-center"     :id="`rock-${rock.shot_no}`"  ref="rockRef">
-  {{rock.shot_no}}
- </CurlingRockIcon>
-    <!-- <div style="position:absolute; z-index: 5000; background-color:red; top: 0">
-      <div v-for="property in Object.keys(mouseCom)" :key="property">
-        {{property}}: {{mouseCom[property]}}
-      </div>
-    </div> -->
-
+    }"
+    class="rock row justify-center"
+    :id="`rock-${rock.shot_no}`"
+    ref="rockRef"
+  >
+    {{ rock.shot_no }}
+  </CurlingRockIcon>
 </template>
 <style lang="scss">
 .rock {
@@ -28,7 +27,7 @@
     background-color: $rock-red;
   }
   &.rock-yellow {
-    background-color: $rock-yellow
+    background-color: $rock-yellow;
   }
 }
 </style>
@@ -36,82 +35,66 @@
 import {computed, reactive, ref, onMounted, onUnmounted} from "vue";
 import {useEventListener, useMouseInElement} from "@vueuse/core";
 
-const rockRef = ref(null);
-
 const props = defineProps({
   rock: Object,
 });
 
+const emit = defineEmits(["update", "remove", "outsideBounds"]);
+
+// Determine rock colors
+const isEven = computed(() => props.rock.shot_no % 2 === 0);
+const colorClass = computed(() => {
+  return isEven.value ? "rock-yellow" : "rock-red";
+});
+
+// Utility functions
+
+const getPercentWidth = (pos, element) => {
+  return (pos / element.offsetWidth) * 100;
+};
+const getPercentHeight = (pos, element) => {
+  return (pos / element.offsetHeight) * 100;
+};
+
+// Define x,y and set initial values
 
 const positionX = ref(0);
 const positionY = ref(0);
-const dragging = ref(false);
-const emit = defineEmits(['update', 'remove', 'outsideBounds'])
-
-
-const isEven = computed(() => props.rock.shot_no % 2 === 0)
-const colorClass= computed(() => {
-  return isEven.value ? 'rock-yellow' : 'rock-red'
-})
-
-const target = document.querySelector("#curlingRockWrapper");
-const mouse = reactive(useMouseInElement(target));
-
 onMounted(() => {
   positionY.value = props.rock.y;
   positionX.value = props.rock.x;
 });
 
+// Drag events
 
+const target = document.querySelector("#curlingRockWrapper");
+const mouse = reactive(useMouseInElement(target));
 
-const mouseCom = computed(() => {
-  const {elementX, elementY, x, y, elementPositionX, elementPositionY, elementHeight, elementWidth} = mouse
-  return {elementX, elementY, x, y, elementPositionX, elementPositionY, elementHeight, elementWidth}
-})
-
-const getPercentWidth = (pos) => {
-  const target = document.querySelector("#curlingRockWrapper");
-  return pos / target.offsetWidth * 100;
-}
-const getPercentHeight = (pos) => {
-  const target = document.querySelector("#curlingRockWrapper");
-  return pos / target.offsetHeight * 100;
-}
-
-const endDrag = () => {
-  if (!dragging.value) return;
-  dragging.value = false;
-     const {isOutside} = mouse;
-  if (isOutside) {
-    emit('remove')
-  } else {
- emit('update', {x: positionX.value, y: positionY.value})
-  }
-
-
-  
-  
- 
-};
+const dragging = ref(false);
 const startDrag = () => {
   dragging.value = true;
 };
 
 const onDrag = (e) => {
   if (!dragging.value) return;
- 
-  // const {offsetWidth, offsetHeight} = rockRef.value;
-
-  const {elementY, elementX, elementWidth, elementHeight, isOutside} = mouse;
-  // if (elementX + offsetWidth > elementWidth) return;
-  // if (elementY + offsetHeight > elementHeight) return;
-  positionX.value = getPercentWidth(elementX)
-  positionY.value = getPercentHeight(elementY)
-
-  emit('outsideBounds', isOutside)
-
+  const {elementY, elementX, isOutside} = mouse;
+  positionX.value = getPercentWidth(elementX, target);
+  positionY.value = getPercentHeight(elementY, targer);
+  emit("outsideBounds", isOutside);
 };
 
+const endDrag = () => {
+  if (!dragging.value) return;
+  dragging.value = false;
+  const {isOutside} = mouse;
+  if (isOutside) {
+    emit("remove");
+  } else {
+    emit("update", {x: positionX.value, y: positionY.value});
+  }
+};
+
+const rockRef = ref(null);
 useEventListener(rockRef, "mousedown", startDrag);
 useEventListener(rockRef, "touchstart", startDrag);
 useEventListener(document, "mousemove", onDrag);

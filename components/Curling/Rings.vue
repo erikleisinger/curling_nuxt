@@ -13,10 +13,8 @@
 </template>
 
 <style lang="scss">
-// background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,36,121,1) 35%, rgba(0,212,255,1) 100%);
 .rink {
   background-color: white;
-//   border: 1px solid black;
   position: absolute;
   margin: auto;
   left: 0;
