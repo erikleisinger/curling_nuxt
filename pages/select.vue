@@ -71,7 +71,6 @@ onMounted(async () => {
     .from(TABLE_NAMES.GAMES)
     .select(getQuery(TABLE_NAMES.GAMES))
     .eq("profile_id", id);
-    console.log('GOT GAMES: ', data)
   if (error) return;
   const gamesRaw = data ?? [];
   const {gameModel} = useModel();
