@@ -16,7 +16,6 @@
           <ScoreBoard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md"/>
 
         <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
-          <!-- height:calc(100% - ${scoreBoardHeight}px) -->
           <CurlingRockController >
             <template v-slot:buttons>
    <button @click="showScoreBoard = !showScoreBoard" v-if="$q.screen.lt.md">SB</button>
