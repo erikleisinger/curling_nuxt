@@ -10,14 +10,26 @@
           v-if="$q.screen.gt.sm || tab === 'rings'"
           id="rings"
           key="rings"
-          class="curling-rings__wrap"
+          class="column justify-cente no-wrap"
         >
-          <CurlingRockController />
+     
+          <ScoreBoard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md"/>
+
+        <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
+          <!-- height:calc(100% - ${scoreBoardHeight}px) -->
+          <CurlingRockController >
+            <template v-slot:buttons>
+   <button @click="showScoreBoard = !showScoreBoard" v-if="$q.screen.lt.md">SB</button>
+            </template>
+          </CurlingRockController>  
+          </div>
         </section>
-       
-         <InputScore v-if="$q.screen.gt.sm || tab === 'score'"
+        <section v-if="$q.screen.gt.sm || tab === 'score'"
           id="scorecard"
-          key="scorecard"/>
+          key="scorecard" class="column">
+        <ScoreBoard v-if="$q.screen.gt.sm"/>
+         <InputScore />
+         </section>
 
       </transition-group>
             </KeepAlive>
@@ -35,10 +47,36 @@
   .curling-rings__wrap {
     position: relative;
     width: 100%;
-    height: 100%;
+    // height: 100%;
     background-color: white;
   }
 }
+.show {
+  height: 81px;
+  animation: show 0.5s;
+}
+.hide {
+  height: 0px;
+  animation: hide 0.5s;
+}
+
+@keyframes show {
+  0% {
+    height: 0px
+  }
+  100% {
+    height: 81px
+  }
+}
+@keyframes hide {
+  0% {
+    height: 81px
+  }
+  100% {
+    height: 0px
+  }
+}
+
 
 @media all and (min-width: 1000px) {
   .wrapper {
@@ -58,7 +96,19 @@
 }
 </style>
 <script setup>
-import {inject} from "vue";
+import {inject, ref} from "vue";
+import {useElementSize, useResizeObserver} from '@vueuse/core'
 const $q = useQuasar();
 const tab = inject('tab')
+
+const scoreBoard = ref(null)
+const scoreBoardHeight = ref(useElementSize(scoreBoard).height)
+const showScoreBoard = ref(false)
+
+useResizeObserver(scoreBoard, (entries) => {
+      const [entry] = entries;
+      const {height} = entry.contentRect;
+      scoreBoardHeight.value = height;
+      
+    })
 </script>

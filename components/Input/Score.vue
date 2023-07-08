@@ -1,5 +1,5 @@
 <template>
-  <section class="score-inputs__wrap">
+  <section class="score-inputs__wrap col-grow">
     <section class="row q-px-lg" style="">
       <q-select
         class="col-12 q-pt-lg"

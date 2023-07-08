@@ -4,13 +4,17 @@ export const TABLE_QUERIES = {
     id,
     start_time,
     home (
+      id,
       name
     ),
     away (
+      id,
       name
     ),
     name,
     ends(count)
+    home_color
+    away_color
     `,
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `
@@ -35,7 +39,9 @@ export const TABLE_QUERIES = {
     game_id (
         name,
         start_time
-    )
+    ),
+    scoring_team_id,
+    points_scored
     `,
     [TABLE_NAMES.TEAMS]: `
     name,

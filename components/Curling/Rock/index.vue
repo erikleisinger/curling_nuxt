@@ -79,7 +79,7 @@ const onDrag = (e) => {
   if (!dragging.value) return;
   const {elementY, elementX, isOutside} = mouse;
   positionX.value = getPercentWidth(elementX, target);
-  positionY.value = getPercentHeight(elementY, targer);
+  positionY.value = getPercentHeight(elementY, target);
   emit("outsideBounds", isOutside);
 };
 

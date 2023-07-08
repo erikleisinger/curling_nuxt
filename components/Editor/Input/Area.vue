@@ -2,7 +2,7 @@
  <q-form
     @submit="onSave"
     >
-<q-card class="q-dialog-plugin">
+<q-card >
         <q-card-section   class="row wrap flex-break" >
     
     <div v-for="item in Object.keys(schema)" :key="schema[item].column_name" class="q-pa-sm col-6">

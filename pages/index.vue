@@ -1,13 +1,13 @@
 <template>
 <NuxtLayout name="main">
   <template v-slot:header>
-       <q-toolbar class="bg-primary text-white q-px-none" v-if="$q.screen.lt.md">
+       <q-toolbar class="bg-primary text-white q-px-none" v-if="$q.screen.lt.md" role="navigation">
       <q-tabs v-model="tab" inline-label
         outside-arrows
         mobile-arrows
         class="col-grow">
-        <q-tab label="Rings" name="rings" />
-        <q-tab label="Score" name="score" />
+        <q-tab label="Rings" name="rings" aria-controls="rings" tabindex="0" />
+        <q-tab label="Score" name="score" aria-controls="score" tabindex="0" />
       </q-tabs>
      
     </q-toolbar>
@@ -67,7 +67,7 @@ provide('editedShot', editedShot);
 
 const store = useGameStore();
 onMounted(() => {
-  store.getShot();
+  store.initGame();
 })
 const shot = computed(() => store.currentShot)
 watch(shot, (val) => {

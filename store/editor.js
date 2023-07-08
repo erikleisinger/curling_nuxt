@@ -3,9 +3,11 @@ import {Dialog} from "quasar";
 import {TABLE_SCHEMA} from "@/constants/tables";
 
 import EditorDialog from "@/components/Editor/Dialog.vue";
+import GameEditorDialog from "@/components/Editor/Dialog.vue";
 
 const defaultState = () => {
   return {
+    game: false,
     schema: {},
     table: "",
   };
@@ -33,6 +35,11 @@ export const useEditorStore = defineStore("editor", {
         componentProps: {
           schema: this.schema,
         },
+      });
+    },
+    toggleGameDialog() {
+      Dialog.create({
+        component: GameEditorDialog,
       });
     },
   },

@@ -8,12 +8,13 @@ export default defineNuxtConfig({
         'fadeIn',
         'fadeOut',
         'shakeX',
-        'slideInDown',
         'slideInUp',
         'slideInRight',
         'slideInLeft',
         'slideOutLeft',
         'slideOutRight',
+        'slideOutUp',
+        'slideOutDown',
       ]
     },
       plugins: [

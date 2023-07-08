@@ -1,6 +1,6 @@
 <template>
   <CurlingRings>
-    <div style="height: 100%; width: 100%; position: absolute; overflow: hidden"  id="curlingRockWrapper" >
+    <div style="height: 100%; width: 100%; position: absolute; overflow: hidden;transition: all 0.5s;"  id="curlingRockWrapper" >
        <transition
         appear
         enter-active-class="animated fadeIn"
@@ -12,6 +12,7 @@
        </transition>
       <button @click="addNewRock">Add</button>
       <button @click="addOop">Add OOP</button>
+      <slot name="buttons"/>
       <div>OOP: {{outOfPlayRocks.length}}</div>
       <div>P: {{pendingRocks.length}}</div>
       <div>TOTAL: {{rockPositions.length}}</div>

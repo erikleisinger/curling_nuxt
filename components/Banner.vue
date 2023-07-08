@@ -3,9 +3,9 @@
       <transition
         appear
         enter-active-class="animated slideInUp"
-        leave-active-class="animated slideInDown"
+        leave-active-class="animated slideOutDown"
       >
-        <q-banner class="bg-primary text-white">
+        <q-banner class="text-white" :class="`bg-${bannerColor}`">
           {{ bannerText }}
           <template v-slot:action>
             <q-btn flat color="white" label="Dismiss" @click="clear"></q-btn>
@@ -20,7 +20,7 @@
   position: fixed;
   bottom: 0;
   width: 100vw;
-  z-index: 1;
+  z-index: 10000;
 }
 </style>
 <script setup lang="ts">
@@ -30,4 +30,5 @@ import {useBannerStore} from "@/store/banner";
 const store = useBannerStore();
 const {clear} = store;
 const bannerText = computed(() => store.text);
+const bannerColor = computed(() => store.color)
 </script>
