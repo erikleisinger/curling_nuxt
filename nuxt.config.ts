@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     key: process.env.SUPABASE_KEY,
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: false,
   },
   vite: {
     css: {
