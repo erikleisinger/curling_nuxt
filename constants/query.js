@@ -12,8 +12,8 @@ export const TABLE_QUERIES = {
       name
     ),
     name,
-    ends(count)
-    home_color
+    ends(count),
+    home_color,
     away_color
     `,
     [TABLE_NAMES.PLAYERS]: '*',

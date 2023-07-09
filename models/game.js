@@ -1,6 +1,6 @@
 const {formatDate} = useFormat();
 export const gameModel = (game = {}) => {
-    const {away ={}, home = {}, name, start_time, ends, id} = game;
+    const {away ={}, home = {}, name, start_time, ends, id, home_color, away_color} = game;
     const [data] = ends ?? [];
     return {
         start_time: formatDate(start_time),
@@ -15,6 +15,8 @@ export const gameModel = (game = {}) => {
         name: name ?? `${homeTeam} vs ${awayTeam}`,
         ends: data?.count || 0,
         id,
+        home_color,
+        away_color,
     }
     
 };

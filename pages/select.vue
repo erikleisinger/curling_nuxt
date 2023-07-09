@@ -1,6 +1,6 @@
 <template>
-<section class="row">
-  <EditorGame/>
+<section class="column">
+  <GameEditorDialog/>
   <q-scroll-area class="col-grow">
     <q-inner-loading
       :showing="loading"
@@ -13,13 +13,14 @@
       <q-btn flat round dense icon="add" @click="openEditor"></q-btn>
     </q-toolbar>
      <q-list bordered separator >
-          <q-item clickable v-ripple v-for="game in games" :key="game.id" @click="selectGame(game)">
+          <q-item  clickable v-ripple v-for="game in games" :key="game.id" @click="selectGame(game)">
             <q-item-section>
             <q-item-label overline>{{game.start_time}}</q-item-label>
          <q-item-label>{{game.name}}</q-item-label>
          <q-item-label caption>
-            <div class="row"> <q-icon name="remove_circle" class="rotate-45 rock__icon" color="red"/>{{game.away.name}}</div>
-             <div class="row"> <q-icon name="remove_circle" class="rotate-45 rock__icon" color="yellow"/>{{game.home.name}}</div>
+                 <div class="row"> <RockIcon :color="game.home_color"/>{{game.home.name}}</div>
+            <div class="row"> <RockIcon :color="game.away_color"/>{{game.away.name}}</div>
+      
          </q-item-label>
             </q-item-section>
             <q-space/>
@@ -28,6 +29,12 @@
                     {{game.ends}} ends
                 </q-item-label>
             </q-item-section>
+            <q-item-section side>
+          <div class="text-grey-8 ">
+            <q-btn  size="12px" flat dense round icon="edit" @click.stop="edit(game)"></q-btn>
+          </div>
+        </q-item-section>
+            
       </q-item>
      </q-list>
   </q-scroll-area>
@@ -51,6 +58,7 @@
 import {ref, onMounted} from "vue";
 import {useGameStore} from '@/store/game'
 import { useEditorStore } from '@/store/editor'
+import {useDataStore} from '@/store/data'
 import {TABLE_NAMES} from "@/constants/tables";
 
 definePageMeta({
@@ -58,28 +66,22 @@ definePageMeta({
 })
 
 const loading = ref(true);
-const games = ref([]);
+
 
 const store = useGameStore();
+  const dataStore = useDataStore()
+
+  const games = computed(() => dataStore.games)
 
 onMounted(async () => {
-    loading.value = true;
-  const {getClient, getQuery, getUser} = useDatabase();
-  const {id} = getUser() ?? {};
-  const client = getClient();
-  const {data, error} = await client
-    .from(TABLE_NAMES.GAMES)
-    .select(getQuery(TABLE_NAMES.GAMES))
-    .eq("profile_id", id);
-  if (error) return;
-  const gamesRaw = data ?? [];
-  const {gameModel} = useModel();
-  games.value = gamesRaw.map((g) => gameModel(g))
-  loading.value = false;
+
+loading.value = true;
+await dataStore.getGames();
+loading.value = false;
 });
 
 const selectGame = (game) => {
-    store.setGame(game);
+  store.setGame(game);
     navigateTo('/')
 }
 
@@ -87,4 +89,15 @@ const openEditor = () => {
     const editorStore = useEditorStore();
     editorStore.toggleGameDialog()
 };
+const edit = (game) => {
+  console.log('GAME: ', game)
+  const {formatDate} = useFormat();
+ const editorStore = useEditorStore();
+    editorStore.toggleGameDialog({
+        ...game,
+        home: game.home.id,
+        away: game.away.id,
+        start_time: formatDate(game.start_time, 'YYYY/MM/DD', null),
+      })
+}
 </script>

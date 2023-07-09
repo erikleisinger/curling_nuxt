@@ -1,5 +1,5 @@
 <template>
-    <q-input filled v-model="date" mask="date" :rules="['date']" :name="name" :label="name">
+    <q-input rounded outlined v-model="date" mask="date" :rules="['date']" :name="name" :label="name">
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -17,9 +17,17 @@
 <script setup>
 import {ref} from 'vue'
     const props = defineProps({
-        item: Object,
+        modelValue: String,
         name: String,
 
     })
-    const date = ref(null)
+    const emit = defineEmits(['update:modelValue'])
+    const date = computed({
+      get() {
+        return props.modelValue
+      },
+      set(val) {
+        emit('update:modelValue', val)
+      }
+    })
 </script>
