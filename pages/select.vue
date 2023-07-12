@@ -47,7 +47,7 @@
         <TableGame />
       </section>
       <section class="column" v-else-if="tab === 'teams'" key="teams">
-             <TableGame />
+             <TableTeams />
       </section>
       <section class="column" v-else-if="tab === 'players'" key="players">
 

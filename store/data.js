@@ -62,11 +62,11 @@ export const useDataStore = defineStore("data", {
     async getTeams(force = false) {
       if (this.teams.length && !force) return;
       const client = useSupabaseAuthClient();
-      const {getUser} = useDatabase();
+      const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};
       const {data} = await client
         .from(TABLE_NAMES.TEAMS)
-        .select("*")
+        .select(getQuery(TABLE_NAMES.TEAMS))
         .eq("profile_id", id);
       this.teams = data;
     },
@@ -118,6 +118,31 @@ export const useDataStore = defineStore("data", {
             this.players.push(player);
           } else {
             this.players.splice(index, 1, player);
+          }
+        }
+    },
+    async insertTeam(team) {
+      const client = useSupabaseAuthClient();
+      const {getUser, getQuery} = useDatabase();
+      const {id} = getUser() ?? {};
+      const {data, error} = await client
+        .from(TABLE_NAMES.TEAMS)
+        .upsert({
+          ...team,
+          profile_id: id,
+        })
+        .select(getQuery(TABLE_NAMES.TEAMS));
+        if (error) {
+          const {code} = error || {};
+        const bannerStore = useBannerStore();
+        bannerStore.setText(`Error creating team (code ${code})`, "negative");
+        } else {
+          const [team] = data;
+          const index = this.teams.findIndex((g) => g.id === team.id);
+          if (index === -1) {
+            this.teams.push(team);
+          } else {
+            this.teams.splice(index, 1, team);
           }
         }
     }

@@ -5,6 +5,7 @@ import {TABLE_SCHEMA} from "@/constants/tables";
 import EditorDialog from "@/components/Editor/Dialog.vue";
 import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
 import DialogPlayerEditor from "@/components/Dialog/PlayerEditor.vue";
+import DialogTeamEditor from "@/components/Dialog/TeamEditor.vue";
 
 const defaultState = () => {
   return {
@@ -49,6 +50,14 @@ export const useEditorStore = defineStore("editor", {
     togglePlayerDialog(edited) {
       Dialog.create({
         component: DialogPlayerEditor,
+        componentProps: {
+          edited,
+        }
+      });
+    },
+    toggleTeamDialog(edited) {
+      Dialog.create({
+        component: DialogTeamEditor,
         componentProps: {
           edited,
         }

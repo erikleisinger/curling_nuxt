@@ -1,28 +1,7 @@
 <template>
   <section class="score-inputs__wrap col-grow">
     <section class="row q-px-lg" style="">
-      <q-select
-        class="col-12 q-pt-lg"
-        outlined
-        rounded
-        label="Player"
-        :options="playerOptions"
-        v-model="editedShot.player_id"
-        emit-value
-        map-options
-        :disable="globalLoading"
-      >
-        <template v-slot:append>
-          <q-btn
-            flat
-            round
-            @click.stop="getPlayers(true)"
-            :loading="loadingPlayers"
-          >
-            <q-icon name="refresh" />
-          </q-btn>
-        </template>
-      </q-select>
+       <SelectPlayer v-model="editedShot.player_id"/>
       <q-input
         class="col-6 q-pt-lg q-pr-sm"
         outlined
@@ -114,23 +93,8 @@ const {enumToSelectionOptions} = useDatabase();
 const lineOptions = enumToSelectionOptions(Line);
 const turnOptions = enumToSelectionOptions(Turn);
 
-// Players
-
-const loadingPlayers = ref(false);
-const {fetchPlayers, getShotTypes} = store;
-
-const getPlayers = async (force: boolean | undefined) => {
-  loadingPlayers.value = true;
-  await fetchPlayers(force);
-  loadingPlayers.value = false;
-};
-const playerOptions = computed(() => {
-  const {formatPlayerForSelection} = useFormat();
-  return [...store.players].map((d) => formatPlayerForSelection(d));
-});
-
 // Shot types
-
+const { getShotTypes} = store;
 const loadingShotTypes = ref(false);
 const fetchShotTypes = async () => {
   loadingShotTypes.value = true;
@@ -143,7 +107,6 @@ const shotTypeOptions = computed(() => {
 
 onMounted(() => {
   fetchShotTypes();
-  getPlayers(false);
 });
 
 // Disabled/loading state

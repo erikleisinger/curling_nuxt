@@ -44,22 +44,36 @@ export const TABLE_QUERIES = {
     points_scored
     `,
     [TABLE_NAMES.TEAMS]: `
-    name,
-    lead_player_id (
-        name
-    ),
-    second_player_id (
-        name
-    ),
-    third_player_id (
-        name
-    ),
-    fourth_player_id (
-        name
-    ),
-    fifth_player_id (
-        name
-    )
+        id,
+        name,
+        lead_player_id (
+          id,
+          name
+        ),
+        second_player_id (
+          id,
+          name
+        )
+        third_player_id (
+          id,
+          name
+        )
+        fourth_player_id (
+          id,
+          name
+        )
+        fifth_player_id (
+          id,
+          name
+        )
+        sixth_player_id (
+          id,
+          name
+        )
+        seventh_player_id (
+          id,
+          name
+        )
     `,
     [TABLE_NAMES.SHOT_TYPES]: `
     name
