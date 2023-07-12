@@ -3,46 +3,9 @@
             <q-form @submit="onSave($event, onDialogOK)">
     <q-card>
       <q-card-section class="row wrap flex-break">
-
-        <GameColorSelect
-          v-model="editedGame.home_color"
-          class="col-3 q-pr-sm"
-          name="home_color"
-            :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <q-select
-          rounded
-          outlined
-          class="col-9 q-pl-sm q-pb-md"
-          v-model.number="editedGame.home"
-          label="Home"
-          :options="teamOptions"
-          emit-value
-          map-options
-          name="home"
-          aria-required="true"
-           :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <GameColorSelect
-          v-model="editedGame.away_color"
-          class="col-3 q-pr-sm"
-          name="away_color"
-            :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <q-select
-          rounded
-          outlined
-          class="col-9 q-pl-sm q-pb-md"
-          v-model.number="editedGame.away"
-          label="Away"
-          :options="teamOptions"
-          emit-value
-          map-options
-          name="away"
-        :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <EditorInputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
-        <q-input class="col-12" v-model="editedGame.name" label="Name (optional)" outlined rounded name="name"/>
+<q-input class="col-12" v-model="editedPlayer.name" label="Player name" outlined rounded name="name"  aria-required="true"
+           :rules="[VALIDATION_RULES.REQUIRED]"/>
+     
       </q-card-section>
       <q-card-actions>
         <q-btn color="primary" label="Save" type="submit" />
@@ -62,7 +25,7 @@ const props = defineProps({
     edited: Object,
 })
 
-const editedGame = ref({
+const editedPlayer = ref({
   id: null,
   home: null,
   away: null,
@@ -82,7 +45,7 @@ const teamOptions = computed(() => {
 onMounted(() => {
   store.getTeams();
   if (props.edited) {
-    Object.assign(editedGame.value, props.edited)
+    Object.assign(editedPlayer.value, props.edited)
   }
 });
 
@@ -92,8 +55,11 @@ const onSave = async (e, callback) => {
         const data = [...formData.entries()].reduce((all, [key, value]) => {
             return {...all, [key]: value}
         }, {})
-        console.log('save: ', {...data, id: editedGame.value.id})
-    store.insertGame({...data, id: editedGame.value.id})
+        const newPlayer = {...data};
+        if (editedPlayer.value.id) {
+          newPlayer.id = editedPlayer.value.id
+        }
+    store.insertPlayer(newPlayer)
     callback();
 
 }

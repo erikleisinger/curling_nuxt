@@ -1,6 +1,6 @@
 <template>
      <DialogPlayerEditor/>
-  <q-scroll-area class="col-grow">
+  <q-scroll-area class="col-grow" ref="tableArea">
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
@@ -29,17 +29,27 @@
 import {ref, onMounted} from "vue";
 import {useDataStore} from '@/store/data'
 import {useEditorStore} from '@/store/editor'
+import {useSwipe} from '@vueuse/core'
   const dataStore = useDataStore()
 
   const players = computed(() => dataStore.players)
   const loading = ref(false)
 
-onMounted(async () => {
-
-loading.value = true;
-await dataStore.fetchPlayers();
+const loadPlayers = async (force) => {
+  loading.value = true;
+await dataStore.fetchPlayers(force);
 loading.value = false;
+}
+onMounted(async () => {
+loadPlayers();
 });
 
 const {togglePlayerDialog} = useEditorStore();
+
+const tableArea = ref(null)
+const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
+  console.log(direction.value)
+  if (direction.value !== 'down') return;
+  loadPlayers(true);
+}})
 </script>

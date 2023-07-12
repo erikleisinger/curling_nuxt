@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout>
+  <NuxtLayout name="main">
     <template v-slot:header>
       <q-toolbar
         class="bg-primary text-white q-px-none"
@@ -71,9 +71,6 @@
 }
 </style>
 <script setup>
-definePageMeta({
-  layout: "main",
-});
 
 const tab = ref("games");
 </script>

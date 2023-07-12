@@ -41,7 +41,8 @@ export const useDataStore = defineStore("data", {
         this.shotTypes = shotTypes;
       }
     },
-    async getGames() {
+    async getGames(force) {
+      if (this.games?.length && !force) return;
       const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};
       const client = useSupabaseAuthClient();
@@ -95,5 +96,30 @@ export const useDataStore = defineStore("data", {
         }
       }
     },
+    async insertPlayer(player) {
+      const client = useSupabaseAuthClient();
+      const {getUser} = useDatabase();
+      const {id} = getUser() ?? {};
+      const {data, error} = await client
+        .from(TABLE_NAMES.PLAYERS)
+        .upsert({
+          ...player,
+          profile_id: id,
+        })
+        .select();
+        if (error) {
+          const {code} = error || {};
+        const bannerStore = useBannerStore();
+        bannerStore.setText(`Error creating player (code ${code})`, "negative");
+        } else {
+          const [player] = data;
+          const index = this.players.findIndex((g) => g.id === player.id);
+          if (index === -1) {
+            this.players.push(player);
+          } else {
+            this.players.splice(index, 1, player);
+          }
+        }
+    }
   },
 });
