@@ -33,11 +33,19 @@
       </transition-group>
             </KeepAlive>
 </template>
+<style lang="scss">
+#rings {
+    overscroll-behavior-y: v-bind('overscroll');
+}
+</style>
 <script setup>
 import {inject, ref} from "vue";
-import {useElementSize, useResizeObserver} from '@vueuse/core'
+import {useElementSize, useResizeObserver, useSwipe} from '@vueuse/core'
 const $q = useQuasar();
 const tab = inject('tab')
+const wow = ref(null)
+
+const overscroll = 'contain'
 
 const scoreBoard = ref(null)
 const scoreBoardHeight = ref(useElementSize(scoreBoard).height)
@@ -49,4 +57,18 @@ useResizeObserver(scoreBoard, (entries) => {
       scoreBoardHeight.value = height;
       
     })
+
+const {direction} = useSwipe(document.querySelector('body'), {threshold: 100, onSwipeEnd: (e) => {
+ 
+  if (Array.from(e.target.classList).includes('rock')) return;
+  console.log(direction)
+   if (direction.value === 'right') {
+    console.log('LEFT');
+    tab.value = 'rings';
+   }
+   if (direction.value === 'left') {
+    console.log('RIGHT');
+    tab.value = 'score'
+   }
+}})
 </script>

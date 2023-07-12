@@ -22,7 +22,6 @@
 
   </CurlingRings>
 </template>
-
 <script setup>
     import { computed, inject, ref} from 'vue';
 import { routerKey } from 'vue-router';

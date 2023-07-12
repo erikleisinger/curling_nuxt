@@ -1,5 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      meta: [
+        {name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no'},
+        {"http-equiv": "ScreenOrientation", content: "autoRotate:disabled"}
+      ]
+    },
+  },
   devtools: { enabled: false },
   quasar: {
     cssAddon: true,
@@ -41,7 +49,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@use '@/styles/variables.scss' as *;`
+          additionalData: `@use '@/styles/variables.scss' as *; @use '@/styles/global.scss' as *;`
         }
       }
     }

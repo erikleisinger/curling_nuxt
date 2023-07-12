@@ -25,6 +25,7 @@
   max-height: 100%;
   aspect-ratio: 15/27;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  overscroll-behavior: contain;
   &:before {
     content: "";
     top: 22.22%;
