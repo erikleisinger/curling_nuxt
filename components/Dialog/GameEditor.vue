@@ -41,6 +41,18 @@
           name="away"
         :rules="[VALIDATION_RULES.REQUIRED]"
         />
+        <q-select
+          rounded
+          outlined
+          class="col-12 "
+          v-model.number="editedGame.hammer_first_end"
+          label="Hammer first end"
+          :options="hammerTeamOptions"
+          emit-value
+          map-options
+          name="hammer_first_end"
+        :rules="[VALIDATION_RULES.REQUIRED]"
+        />
         <EditorInputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
         <q-input class="col-12" v-model="editedGame.name" label="Name (optional)" outlined rounded name="name"/>
       </q-card-section>
@@ -70,15 +82,19 @@ const editedGame = ref({
   home_color: "red",
   away_color: "yellow",
   start_time: null,
+  hammer_first_end: null,
 });
 const teamOptions = computed(() => {
   return store.teams.map((t) => {
     return {
-      label: t.name,
+      label: t.name || 'Unnamed team',
       value: t.id,
     };
   });
 });
+const hammerTeamOptions = computed(() => {
+  return teamOptions.value.filter((t) => t.value === editedGame.value.home || t.value === editedGame.value.away)
+})
 onMounted(() => {
   store.getTeams();
   if (props.edited) {

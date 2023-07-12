@@ -1,6 +1,6 @@
 const {formatDate} = useFormat();
 export const gameModel = (game = {}) => {
-    const {away ={}, home = {}, name, start_time, ends, id, home_color, away_color} = game;
+    const {away ={}, home = {}, name, start_time, ends, id, home_color, away_color, hammer_first_end} = game;
     const [data] = ends ?? [];
     return {
         start_time: formatDate(start_time),
@@ -17,6 +17,10 @@ export const gameModel = (game = {}) => {
         id,
         home_color,
         away_color,
+        hammer_first_end: {
+            ...hammer_first_end,
+            name: hammer_first_end?.name ?? 'N/A'
+        }
     }
     
 };

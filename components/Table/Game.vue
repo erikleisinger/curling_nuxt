@@ -63,6 +63,9 @@ import {useEditorStore} from "@/store/editor";
 import {useDataStore} from "@/store/data";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useSwipe} from "@vueuse/core";
+const props = defineProps({
+  edited: Object,
+})
 const loading = ref(true);
 
 const store = useGameStore();
@@ -92,6 +95,7 @@ const edit = (game) => {
     ...game,
     home: game.home.id,
     away: game.away.id,
+    hammer_first_end: game.hammer_first_end?.id,
     start_time: formatDate(game.start_time, "YYYY/MM/DD", null),
   });
 };

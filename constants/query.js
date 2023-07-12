@@ -14,7 +14,11 @@ export const TABLE_QUERIES = {
     name,
     ends(count),
     home_color,
-    away_color
+    away_color,
+    hammer_first_end (
+      id,
+      name
+    )
     `,
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `
