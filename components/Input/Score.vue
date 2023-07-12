@@ -16,7 +16,7 @@
           <q-btn
             flat
             round
-            @click.stop="fetchPlayers"
+            @click.stop="getPlayers(true)"
             :loading="loadingPlayers"
           >
             <q-icon name="refresh" />
@@ -117,14 +117,16 @@ const turnOptions = enumToSelectionOptions(Turn);
 // Players
 
 const loadingPlayers = ref(false);
-const {getPlayers, getShotTypes} = store;
-const fetchPlayers = async () => {
+const {fetchPlayers, getShotTypes} = store;
+
+const getPlayers = async (force: boolean | undefined) => {
   loadingPlayers.value = true;
-  await getPlayers();
+  await fetchPlayers(force);
   loadingPlayers.value = false;
 };
 const playerOptions = computed(() => {
-  return store.players;
+  const {formatPlayerForSelection} = useFormat();
+  return [...store.players].map((d) => formatPlayerForSelection(d));
 });
 
 // Shot types
@@ -141,7 +143,7 @@ const shotTypeOptions = computed(() => {
 
 onMounted(() => {
   fetchShotTypes();
-  fetchPlayers();
+  getPlayers(false);
 });
 
 // Disabled/loading state

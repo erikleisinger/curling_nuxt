@@ -13,7 +13,7 @@
           class="column justify-cente no-wrap"
         >
      
-          <ScoreBoard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md"/>
+          <ScoreBoard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md" />
 
         <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
           <CurlingRockController >
@@ -58,16 +58,13 @@ useResizeObserver(scoreBoard, (entries) => {
       
     })
 
+// Swiping
 const {direction} = useSwipe(document.querySelector('body'), {threshold: 100, onSwipeEnd: (e) => {
- 
   if (Array.from(e.target.classList).includes('rock')) return;
-  console.log(direction)
    if (direction.value === 'right') {
-    console.log('LEFT');
     tab.value = 'rings';
    }
    if (direction.value === 'left') {
-    console.log('RIGHT');
     tab.value = 'score'
    }
 }})

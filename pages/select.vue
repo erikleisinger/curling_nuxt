@@ -1,103 +1,79 @@
 <template>
-<section class="column">
-  <GameEditorDialog/>
-  <q-scroll-area class="col-grow">
-    <q-inner-loading
-      :showing="loading"
-      label="Please wait..."
-      color="primary"
-    />
-     <q-toolbar class="bg-primary text-white shadow-2">
-      <q-toolbar-title>Select a game</q-toolbar-title>
-    <q-space/>
-      <q-btn flat round dense icon="add" @click="openEditor"></q-btn>
-    </q-toolbar>
-     <q-list bordered separator >
-          <q-item  clickable v-ripple v-for="game in games" :key="game.id" @click="selectGame(game)">
-            <q-item-section>
-            <q-item-label overline>{{game.start_time}}</q-item-label>
-         <q-item-label>{{game.name}}</q-item-label>
-         <q-item-label caption>
-                 <div class="row"> <RockIcon :color="game.home_color"/>{{game.home.name}}</div>
-            <div class="row"> <RockIcon :color="game.away_color"/>{{game.away.name}}</div>
-      
-         </q-item-label>
-            </q-item-section>
-            <q-space/>
-            <q-item-section side >
-                <q-item-label >
-                    {{game.ends}} ends
-                </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-          <div class="text-grey-8 ">
-            <q-btn  size="12px" flat dense round icon="edit" @click.stop="edit(game)"></q-btn>
-          </div>
-        </q-item-section>
-            
-      </q-item>
-     </q-list>
-  </q-scroll-area>
-</section>
+  <NuxtLayout>
+    <template v-slot:header>
+      <q-toolbar
+        class="bg-primary text-white q-px-none"
+        v-if="$q.screen.lt.md"
+        role="navigation"
+      >
+        <q-tabs
+          v-model="tab"
+          inline-label
+          outside-arrows
+          mobile-arrows
+          class="col-grow"
+        >
+          <q-tab
+            label="Games"
+            name="games"
+            aria-controls="games"
+            tabindex="0"
+          />
+          <q-tab
+            label="Teams"
+            name="teams"
+            aria-controls="teams"
+            tabindex="0"
+          />
+          <q-tab
+            label="Players"
+            name="players"
+            aria-controls="players"
+            tabindex="0"
+          />
+        </q-tabs>
+      </q-toolbar>
+    </template>
+    <transition-group
+      appear
+      :enter-active-class="`animated ${
+        tab === 'games' ? 'slideInLeft' : 'slideInRight'
+      }`"
+      :leave-active-class="`animated ${
+        tab === 'games' ? 'slideOutRight' : 'slideOutLeft'
+      }`"
+    >
+      <section class="column" v-if="tab === 'games'" key="games">
+        <TableGame />
+      </section>
+      <section class="column" v-else-if="tab === 'teams'" key="teams">
+             <TableGame />
+      </section>
+      <section class="column" v-else-if="tab === 'players'" key="players">
+
+           <TablePlayers />
+      </section>
+    </transition-group>
+  </NuxtLayout>
 </template>
 <style lang="scss">
-    .rock__icon {
-        position: relative;
-        &:after {
-                content: "";
+.rock__icon {
+  position: relative;
+  &:after {
+    content: "";
     height: 50%;
     width: 50%;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     position: absolute;
     z-index: -1;
     border-radius: 50%;
-        }
-    }
+  }
+}
 </style>
 <script setup>
-import {ref, onMounted} from "vue";
-import {useGameStore} from '@/store/game'
-import { useEditorStore } from '@/store/editor'
-import {useDataStore} from '@/store/data'
-import {TABLE_NAMES} from "@/constants/tables";
-
 definePageMeta({
-  layout: 'main',
-})
-
-const loading = ref(true);
-
-
-const store = useGameStore();
-  const dataStore = useDataStore()
-
-  const games = computed(() => dataStore.games)
-
-onMounted(async () => {
-
-loading.value = true;
-await dataStore.getGames();
-loading.value = false;
+  layout: "main",
 });
 
-const selectGame = (game) => {
-  store.setGame(game);
-    navigateTo('/')
-}
-
-const openEditor = () => {
-    const editorStore = useEditorStore();
-    editorStore.toggleGameDialog()
-};
-const edit = (game) => {
-  console.log('GAME: ', game)
-  const {formatDate} = useFormat();
- const editorStore = useEditorStore();
-    editorStore.toggleGameDialog({
-        ...game,
-        home: game.home.id,
-        away: game.away.id,
-        start_time: formatDate(game.start_time, 'YYYY/MM/DD', null),
-      })
-}
+const tab = ref("games");
 </script>
