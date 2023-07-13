@@ -20,7 +20,7 @@
 <style lang="scss">
 .rock {
 
-  height: 3.41%;
+  height: 3.28%;
   aspect-ratio: 1/1;
   border-radius: 50%;
   top: 0;

@@ -21,6 +21,18 @@
       
          </q-item-label>
             </q-item-section> 
+             <q-item-section side >
+          <div class="text-grey-8">
+            <q-btn
+              size="12px"
+              flat
+              dense
+              round
+              icon="edit"
+              @click.stop="edit(player)"
+            ></q-btn>
+          </div>
+        </q-item-section>
       </q-item>
      </q-list>
   </q-scroll-area>
@@ -32,7 +44,8 @@ import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
   const dataStore = useDataStore()
 
-  const players = computed(() => dataStore.players)
+const {sortNameAlphabetically} = useSort()
+  const players = computed(() => [...dataStore.players].sort(sortNameAlphabetically))
   const loading = ref(false)
 
 const loadPlayers = async (force) => {
@@ -51,4 +64,7 @@ const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
   if (direction.value !== 'down') return;
   loadPlayers(true);
 }})
+const edit = (player) => {
+  togglePlayerDialog(player)
+}
 </script>

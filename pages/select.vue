@@ -31,6 +31,12 @@
             aria-controls="players"
             tabindex="0"
           />
+           <q-tab
+            label="Shot types"
+            name="shotTypes"
+            aria-controls="shotTypes"
+            tabindex="0"
+          />
         </q-tabs>
       </q-toolbar>
     </template>
@@ -52,6 +58,10 @@
       <section class="column" v-else-if="tab === 'players'" key="players">
 
            <TablePlayers />
+      </section>
+       <section class="column" v-else-if="tab === 'shotTypes'" key="shotTypes">
+
+           <TableShotTypes />
       </section>
     </transition-group>
   </NuxtLayout>

@@ -34,9 +34,7 @@ export const TABLE_QUERIES = {
     turn,
     line,
     score,
-    type_id (
-        name
-    ),
+    type_id,
     notes,
     rock_positions
     `,
@@ -82,6 +80,8 @@ export const TABLE_QUERIES = {
         )
     `,
     [TABLE_NAMES.SHOT_TYPES]: `
-    name
+    id,
+    name,
+    shot_type
     `
 };

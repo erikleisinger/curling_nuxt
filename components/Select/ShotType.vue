@@ -1,0 +1,52 @@
+<template>
+     <q-select
+        class="col-6 q-pt-lg q-pl-sm"
+        outlined
+        rounded
+        label="Shot type"
+        :options="shotTypeOptions"
+        v-model="editedShotType"
+        emit-value
+        map-options
+        :disable="globalLoading"
+      >
+        <template v-slot:append>
+          <q-btn
+            flat
+            round
+            @click.stop="getShotTypes(true)"
+            :loading="loadingShotTypes"
+          >
+            <q-icon name="refresh" />
+          </q-btn>
+        </template>
+      </q-select>
+</template>
+<script setup>
+import {useDataStore} from "@/store/data";
+const props = defineProps({
+    modelValue: [Number, String],
+})
+const emit = defineEmits(['update:modelValue'])
+const editedShotType = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
+})
+const store = useDataStore();
+const loadingShotTypes = ref(false);
+const {fetchShotTypes} = store;
+const getShotTypes = async (force) => {
+  loadingShotTypes.value = true;
+  await fetchShotTypes(force);
+  loadingShotTypes.value = false;
+};
+const shotTypeOptions = computed(() => {
+  const {formatShotTypeForSelection} = useFormat();
+  return [...store.shotTypes].map((d) => formatShotTypeForSelection(d));
+});
+const {globalLoading} = useLoading();
+</script>

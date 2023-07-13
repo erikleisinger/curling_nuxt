@@ -64,7 +64,8 @@ import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
   const dataStore = useDataStore()
 
-  const teams = computed(() => dataStore.teams)
+const {sortNameAlphabetically} = useSort()
+  const teams = computed(() => [...dataStore.teams].sort(sortNameAlphabetically))
   const loading = ref(false)
 
 const loadTeams = async (force) => {

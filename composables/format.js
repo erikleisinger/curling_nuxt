@@ -13,5 +13,13 @@ export const useFormat = () => {
         };
       }
 
-    return {formatDate, formatPlayerForSelection}
+    const formatShotTypeForSelection = (st) => {
+      const {id, name} = st;
+      return {
+        value: id,
+        label: name,
+      };
+    }
+
+    return {formatDate, formatPlayerForSelection, formatShotTypeForSelection}
 }

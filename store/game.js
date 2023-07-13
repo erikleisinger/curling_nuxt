@@ -172,6 +172,7 @@ export const useGameStore = defineStore("game", {
         localStorage.removeItem('game')
     },
     async saveShot(shot) {  
+        console.log('save shot: ', shot)
         const {objTheSame} = useValidation();
         const rockInStore = this.shots.find((s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id)
         if (objTheSame(rockInStore, shot)) return;

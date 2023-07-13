@@ -20,25 +20,26 @@ export const useDataStore = defineStore("data", {
         const bannerStore = useBannerStore();
         bannerStore.setText("Error getting players.");
       } else if (data) {
-        this.players = data;
+        this.players = data.sort((a,b) => a?.name?.toLowerCase() - b?.name?.toLowerCase())
       }
     },
-    async fetchShotTypes() {
+    async fetchShotTypes(force) {
+      if (this.shotTypes.length && !force) return;
+      console.log('FETCH SHOT TYPES')
       const client = useSupabaseAuthClient();
-      const {data} = await client.from(TABLE_NAMES.SHOT_TYPES).select("*");
+      const {getUser} = useDatabase()
+      const {id} = getUser();
+      const {data} = await client.from(TABLE_NAMES.SHOT_TYPES).select(`
+      id,
+      name,
+      shot_type
+      `).or(`profile_id.eq.${id},is_global.eq.true`)
       const errors = false;
       if (errors) {
         const bannerStore = useBannerStore();
         bannerStore.setText("Error getting shot types.");
       } else if (data) {
-        const shotTypes = data.map((st) => {
-          const {id, name} = st;
-          return {
-            value: id,
-            label: name,
-          };
-        });
-        this.shotTypes = shotTypes;
+        this.shotTypes = data
       }
     },
     async getGames(force) {
@@ -54,10 +55,6 @@ export const useDataStore = defineStore("data", {
       const gamesRaw = data ?? [];
       const {gameModel} = useModel();
       this.games = gamesRaw.map((g) => gameModel(g));
-    },
-    async getShotTypes() {
-      if (this.shotTypes?.length) return;
-      await this.fetchShotTypes();
     },
     async getTeams(force = false) {
       if (this.teams.length && !force) return;
@@ -143,6 +140,31 @@ export const useDataStore = defineStore("data", {
             this.teams.push(team);
           } else {
             this.teams.splice(index, 1, team);
+          }
+        }
+    },
+    async insertShotType(shotType) {
+      const client = useSupabaseAuthClient();
+      const {getUser, getQuery} = useDatabase();
+      const {id} = getUser() ?? {};
+      const {data, error} = await client
+        .from(TABLE_NAMES.SHOT_TYPES)
+        .upsert({
+          ...shotType,
+          profile_id: id,
+        })
+        .select(getQuery(TABLE_NAMES.SHOT_TYPES));
+        if (error) {
+          const {code} = error || {};
+        const bannerStore = useBannerStore();
+        bannerStore.setText(`Error creating shot type (code ${code})`, "negative");
+        } else {
+          const [st] = data;
+          const index = this.shotTypes.findIndex((s) => s.id === st.id);
+          if (index === -1) {
+            this.shotTypes.push(st);
+          } else {
+            this.shotTypes.splice(index, 1, st);
           }
         }
     }

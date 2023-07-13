@@ -6,6 +6,7 @@ import EditorDialog from "@/components/Editor/Dialog.vue";
 import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
 import DialogPlayerEditor from "@/components/Dialog/PlayerEditor.vue";
 import DialogTeamEditor from "@/components/Dialog/TeamEditor.vue";
+import  DialogShotTypeEditor  from "@/components/Dialog/ShotTypeEditor.vue";
 
 const defaultState = () => {
   return {
@@ -58,6 +59,14 @@ export const useEditorStore = defineStore("editor", {
     toggleTeamDialog(edited) {
       Dialog.create({
         component: DialogTeamEditor,
+        componentProps: {
+          edited,
+        }
+      });
+    },
+    toggleShotTypeDialog(edited) {
+      Dialog.create({
+        component: DialogShotTypeEditor,
         componentProps: {
           edited,
         }

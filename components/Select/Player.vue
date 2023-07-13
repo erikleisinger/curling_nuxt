@@ -30,7 +30,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const editedPlayer = computed({
     get() {
-        return this.player
+        return props.player
     },
     set(val) {
         emit('update:modelValue', val)

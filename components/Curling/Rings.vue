@@ -1,5 +1,5 @@
 <template>
-  <div class="rink">
+  <div class="rink" ref="rink" :style="`transform: scale(${scale})`">
     <slot />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
@@ -23,12 +23,12 @@
   bottom: 0;
   max-width: 100%;
   max-height: 100%;
-  aspect-ratio: 15/27;
+  aspect-ratio: 0.54/1;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
   &:before {
     content: "";
-    top: 22.22%;
+    top: 24%;
     width: 100%;
     height: 2px;
     background-color: rgb(0 0 0 / 20%);
@@ -48,9 +48,10 @@
     top: 0;
   }
   .rings__wrapper {
-    height: 44.44%;
-    width: 80%;
+    height: 41.62%;
+    width: 77%;
     margin: auto;
+    margin-top: 6.35%;
     .ring__outer {
       fill: var(--q-primary)
     }
@@ -60,3 +61,64 @@
   }
 }
 </style>
+<script setup>
+import {useEventListener} from "@vueuse/core";
+
+const rink = ref(null)
+
+const isPinching = ref(false)
+const initialPinch = ref(0)
+
+const scale = ref(1)
+
+const pinchStart = (e) => {
+  if (e.touches.length !== 2) return;
+  isPinching.value = true;
+  initialPinch.value = Math.hypot(
+    e.touches[0].pageX - e.touches[1].pageX,
+    e.touches[0].pageY - e.touches[1].pageY)
+}
+
+const pinchMove = (e) => {
+  if (!isPinching.value) return;
+  if (e.touches.length !== 2) return;
+  const currentTouches =  Math.hypot(
+    e.touches[0].pageX - e.touches[1].pageX,
+    e.touches[0].pageY - e.touches[1].pageY)
+// if (currentTouches - initialPinch.value < 20) return;
+const isZoomIn = currentTouches - initialPinch.value > 0;
+if (Math.abs(currentTouches - initialPinch.value) < 30) return;
+const toAdd = Math.abs(currentTouches - initialPinch.value) / 1000;
+console.log('to add: ', toAdd)
+if (isZoomIn) {
+
+  scale.value += toAdd
+} else {
+  if(scale.value - toAdd >= 1) scale.value -= toAdd
+ 
+}
+
+  // const isZoomIn = currentTouches[1].clientX - pinchCoords.value[1].clientX < 0 && currentTouches[1].clientY - pinchCoords.value[1].clientY < 0;
+ 
+  // const xDiff = Math.abs(currentTouches[0].clientX - pinchCoords.value[0].clientX) +  Math.abs(currentTouches[1].clientX - pinchCoords.value[1].clientX)
+  // const yDiff = Math.abs(currentTouches[0].clientY - pinchCoords.value[0].clientY) +Math.abs(currentTouches[1].clientY - pinchCoords.value[1].clientY)
+  // const totalDiff = Math.abs(xDiff - yDiff);
+  // if (totalDiff < 2) return;
+  // const toAdd = totalDiff / 3000
+  // if(isZoomIn) {
+  // scale.value += toAdd
+  // } else {
+  //   if (scale.value - toAdd > 1)scale.value -= toAdd
+      
+  // }
+
+}
+
+const pinchEnd = (e) => {
+  isPinching.value = false
+}
+
+useEventListener(document, "touchstart", pinchStart);
+useEventListener(document, "touchmove", pinchMove);
+useEventListener(document, "touchend", pinchEnd);
+</script>

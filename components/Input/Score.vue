@@ -32,28 +32,7 @@
         map-options
         :disable="globalLoading"
       />
-      <q-select
-        class="col-6 q-pt-lg q-pl-sm"
-        outlined
-        rounded
-        label="Shot type"
-        :options="shotTypeOptions"
-        v-model="editedShot.type_id"
-        emit-value
-        map-options
-        :disable="globalLoading"
-      >
-        <template v-slot:append>
-          <q-btn
-            flat
-            round
-            @click.stop="fetchShotTypes"
-            :loading="loadingShotTypes"
-          >
-            <q-icon name="refresh" />
-          </q-btn>
-        </template>
-      </q-select>
+     <SelectShotType v-model="editedShot.type_id"/>
       <q-input
         class="col-12 q-pt-lg"
         type="textarea"
@@ -94,15 +73,16 @@ const lineOptions = enumToSelectionOptions(Line);
 const turnOptions = enumToSelectionOptions(Turn);
 
 // Shot types
-const { getShotTypes} = store;
+const { fetchShotTypes} = store;
 const loadingShotTypes = ref(false);
-const fetchShotTypes = async () => {
+const getShotTypes = async (force: any) => {
   loadingShotTypes.value = true;
-  await getShotTypes();
+  await fetchShotTypes(force);
   loadingShotTypes.value = false;
 };
 const shotTypeOptions = computed(() => {
-  return store.shotTypes;
+   const {formatShotTypeForSelection} = useFormat();
+  return [...store.shotTypes].map((st) => formatShotTypeForSelection(st))
 });
 
 onMounted(() => {
