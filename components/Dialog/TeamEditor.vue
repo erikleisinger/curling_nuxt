@@ -64,6 +64,7 @@ const onSave = async (e, callback) => {
             return {...all, [key]: value}
         }, {})
        const newTeam = {...data};
+       console.log('NEW TEAM: ', newTeam)
         if (editedTeam.value.id) {
           newTeam.id = editedTeam.value.id
         }

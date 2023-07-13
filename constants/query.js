@@ -57,23 +57,23 @@ export const TABLE_QUERIES = {
         second_player_id (
           id,
           name
-        )
+        ),
         third_player_id (
           id,
           name
-        )
+        ),
         fourth_player_id (
           id,
           name
-        )
+        ),
         fifth_player_id (
           id,
           name
-        )
+        ),
         sixth_player_id (
           id,
           name
-        )
+        ),
         seventh_player_id (
           id,
           name

@@ -119,6 +119,7 @@ export const useDataStore = defineStore("data", {
         }
     },
     async insertTeam(team) {
+      console.log('INSERT TEAM: ', team)
       const client = useSupabaseAuthClient();
       const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};
