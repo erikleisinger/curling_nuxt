@@ -15,8 +15,35 @@ export const useGameStore = defineStore("game", {
   }),
   getters: {
     currentShot: (state) => {
-        return state.shots.find((s) => s.shot_no === state.shot)
-    }
+        const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id.end_number === state.end);
+        if (shot) return shot;
+        const {newShot}= useModel();
+        return newShot({end_id: state.currentEnd.id, shot_no: state.shot})
+    },
+    currentEnd: (state) => {
+        return state.ends.find(({end_number}) => end_number === state.end)
+    },
+    getShotColor: (state) => {
+        const whoThrowsFirst = state.whoThrowsFirst;
+        return (shot_no) => {
+            if (shot_no % 2 === 0) {
+                return whoThrowsFirst === 'home' ? state.game.away_color : state.game.home_color
+            }
+            return whoThrowsFirst === 'home' ? state.game.home_color : state.game.away_color
+        }
+    }, 
+    whoThrowsFirst: (state) => {
+        const {hammer_first_end: {id}} = state.game;
+        if (state.end === 1) return state.game.away.id === id ? 'home' : 'away'
+        const whoScoredLast = [...state.ends]
+        .filter((e) => e.end_number <= state.end)
+        .sort((a,b) => a.end_number - b.end_number)
+        .reduce((id, current) => {
+            if (current.points_scored > 0) return current.scoring_team_id.id;
+            return id
+        }, id)
+        return state.game.away.id === whoScoredLast ? 'home' : 'away'
+    },
   },
   actions: {
     async createEnd(gameId) {
@@ -29,10 +56,11 @@ export const useGameStore = defineStore("game", {
     async createShot(endId, currentShot) {
         const client = useSupabaseAuthClient()
         const insertData = {'end_id': Number(endId), 'shot_no': Number(this.shot)}
-        if (currentShot) {
+        if (currentShot && (currentShot.end_id === endId || currentShot.end_id?.id === endId)) {
             insertData['rock_positions'] = currentShot.rock_positions
         }
-        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert(insertData).select('*');
+        const {getQuery} = useDatabase();
+        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert(insertData).select(getQuery(TABLE_NAMES.SHOTS));
         if (error) return null;
         const [shot] = data;
         return shot;
@@ -66,7 +94,8 @@ export const useGameStore = defineStore("game", {
         if (shotInStore) return shotInStore;
         const client = useSupabaseAuthClient();
         let shot;
-        const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select('*')
+        const {getQuery} = useDatabase();
+        const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select(getQuery(TABLE_NAMES.SHOTS))
         if (!data?.length) {
             shot = await this.createShot(end_id, currentShot);
         } else {
@@ -132,7 +161,7 @@ export const useGameStore = defineStore("game", {
         } else {
             this.shot +=1;
         }
-        await this.getShot(currentShot)
+       await this.getShot(currentShot)
         this.loading = false;
     },
     resetStore() {
@@ -146,7 +175,11 @@ export const useGameStore = defineStore("game", {
         if (objTheSame(rockInStore, shot)) return;
         this.loading = true;
         const client = useSupabaseAuthClient();
-        const {data}= await client.from(TABLE_NAMES.SHOTS).upsert(shot).select(`*`)
+        const {getQuery} = useDatabase();
+        const {data}= await client.from(TABLE_NAMES.SHOTS).upsert({
+            ...shot,
+            end_id: shot.end_id?.id || shot.end_id,
+        }, {onConflict: 'end_id, shot_no'}).select(getQuery(TABLE_NAMES.SHOTS)).eq()
         const [savedShot] = data;
         if (!savedShot) return;
         this.insertShot(savedShot)

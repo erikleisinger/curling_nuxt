@@ -23,9 +23,11 @@ export const TABLE_QUERIES = {
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `
     end_id (
+        id,
         end_number
     ),
     player_id (
+        id,
         name
     ),
     shot_no,

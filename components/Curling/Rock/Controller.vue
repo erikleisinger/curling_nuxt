@@ -26,6 +26,9 @@
     import { computed, inject, ref} from 'vue';
 import { routerKey } from 'vue-router';
 import {useMounted} from '@vueuse/core'
+import { useGameStore } from '@/store/game'
+
+const store = useGameStore();
 
   const isMounted = useMounted()
 
@@ -59,6 +62,7 @@ import {useMounted} from '@vueuse/core'
         const rock = rockPositions.value.find((r) => r.shot_no === x)
         if (!rock) pending.push(x)
       }
+      if (editedShot.value)
       return pending;
     })
 
@@ -101,7 +105,9 @@ import {useMounted} from '@vueuse/core'
 
 
     const addNewRock = () => {
-        const newRock = {x:0, y:0, shot_no: pendingRocks.value[0]};
+      const color = store.getShotColor(pendingRocks.value[0])
+      console.log('COLOR: ', color)
+        const newRock = {x:0, y:0, shot_no: pendingRocks.value[0] || 1, color};
         addRock(newRock)
     }
     const addOop = () => {

@@ -24,10 +24,13 @@
   border: 1px solid rgb(70, 70, 70);
   z-index: 1;
   &.rock-red {
-    background-color: $rock-red;
+    background-color: $rock-red
   }
   &.rock-yellow {
-    background-color: $rock-yellow;
+    background-color: $rock-yellow
+  }
+  &.rock-blue {
+    background-color: $rock-blue
   }
 }
 </style>
@@ -44,6 +47,7 @@ const emit = defineEmits(["update", "remove", "outsideBounds"]);
 // Determine rock colors
 const isEven = computed(() => props.rock.shot_no % 2 === 0);
 const colorClass = computed(() => {
+  if (props.rock.color) return `rock-${props.rock.color}`;
   return isEven.value ? "rock-yellow" : "rock-red";
 });
 
@@ -90,7 +94,7 @@ const endDrag = () => {
   if (isOutside) {
     emit("remove");
   } else {
-    emit("update", {x: positionX.value, y: positionY.value});
+    emit("update", {x: positionX.value, y: positionY.value, color: props.rock.color});
   }
 };
 
