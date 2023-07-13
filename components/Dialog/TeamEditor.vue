@@ -3,13 +3,12 @@
             <q-form @submit="onSave($event, onDialogOK)">
     <q-card>
       <q-card-section class="row wrap flex-break">
-        <!-- rules="[VALIDATION_RULES.REQUIRED]"   aria-required="true" -->
              <q-input class="col-12" v-model="editedTeam.name" label="Team name (optional)" outlined rounded name="name" />
-        <SelectPlayer v-model.number="editedTeam.lead_player_id" label="Lead" name="lead_player_id"/>
-         <SelectPlayer v-model.number="editedTeam.second_player_id" label="Second" name="second_player_id"/>
-          <SelectPlayer v-model.number="editedTeam.third_player_id" label="Third"  name="third_player_id"/>
-           <SelectPlayer v-model.number="editedTeam.fourth_player_id" label="Fourth"  name="fourth_player_id"/>
-            <SelectPlayer v-model.number="editedTeam.fifth_player_id" label="Fifth"  name="fifth_player_id"/>
+        <SelectPlayer v-model.number="editedTeam.lead_player_id" label="Lead" name="lead_player_id" :rules="[playerRules('lead_player_id')]" reactive-rules/>
+         <SelectPlayer v-model.number="editedTeam.second_player_id" label="Second" name="second_player_id" :rules="[playerRules('second_player_id')]" reactive-rules/>
+          <SelectPlayer v-model.number="editedTeam.third_player_id" label="Third"  name="third_player_id" :rules="[playerRules('third_player_id')]" reactive-rules/>
+           <SelectPlayer v-model.number="editedTeam.fourth_player_id" label="Fourth"  name="fourth_player_id" :rules="[playerRules('fourth_player_id')]" reactive-rules/>
+            <SelectPlayer v-model.number="editedTeam.fifth_player_id" label="Fifth"  name="fifth_player_id" :rules="[playerRules('fifth_player_id')]" reactive-rules/>
              <!-- <SelectPlayer v-model.number="editedTeam.sixth_player_id" label="Sixth" name="sixth_player_id"/>
               <SelectPlayer v-model.number="editedTeam.seventh_player_id" label="Seventh" name="seventh_player_id"/> -->
       </q-card-section>
@@ -30,6 +29,18 @@ const store = useDataStore();
 const props = defineProps({
     edited: Object,
 })
+  const checkForExistingPlayer = (val, field) => {
+  return !Object.entries(editedTeam.value).some(([key, value]) => {
+    if (key === 'id' || key ==='name' || key === field) return false
+    return `${value}` === `${val}`
+  })
+
+
+  }
+const playerRules = (field) => {
+  return (val) => checkForExistingPlayer(val, field) || 'Player already selected'
+
+}
 
 const editedTeam = ref({
   id: null,
