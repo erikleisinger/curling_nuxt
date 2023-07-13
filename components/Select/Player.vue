@@ -1,6 +1,5 @@
 <template>
     <q-select
-        class="col-12 q-pt-lg"
         outlined
         rounded
         label="Player"
