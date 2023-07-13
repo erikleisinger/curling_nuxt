@@ -104,7 +104,13 @@ export const useGameStore = defineStore("game", {
             const [fetchedShot] = data;
             shot = fetchedShot
         };
-        this.insertShot(shot)
+        console.log('GET SHOT: ', shot)
+        const shotToInsert = {
+            ...shot,
+            end_id: shot.end_id?.id || shot.end_id,
+            player_id: shot.player_id?.id || shot.player_id
+        }
+        this.insertShot(shotToInsert)
         return shot;
     },
     async initGame() {
@@ -133,6 +139,7 @@ export const useGameStore = defineStore("game", {
         this.shots = shots;
     },  
     insertShot(shot) {
+        console.log('INSERT: ', shot)
         const index = this.shots.findIndex((s) => s.id === shot.id);
         if (index === -1) {
             this.shots.push(shot)
@@ -182,6 +189,7 @@ export const useGameStore = defineStore("game", {
         const {data}= await client.from(TABLE_NAMES.SHOTS).upsert({
             ...shot,
             end_id: shot.end_id?.id || shot.end_id,
+            player_id: shot.player_id?.id || shot.player_id
         }, {onConflict: 'end_id, shot_no'}).select(getQuery(TABLE_NAMES.SHOTS)).eq()
         const [savedShot] = data;
         if (!savedShot) return;

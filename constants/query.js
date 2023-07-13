@@ -22,6 +22,7 @@ export const TABLE_QUERIES = {
     `,
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `
+    id,
     end_id (
         id,
         end_number

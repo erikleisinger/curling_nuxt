@@ -1,7 +1,7 @@
 <template>
   <section class="score-inputs__wrap col-grow">
     <section class="row q-px-lg" style="">
-       <SelectPlayer v-model="editedShot.player_id"/>
+       <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg q-pr-sm" />
       <q-input
         class="col-6 q-pt-lg q-pr-sm"
         outlined

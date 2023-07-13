@@ -23,6 +23,7 @@ const {prevShot, nextShot, saveShot} = store;
 const {globalLoading} = useLoading();
 
 const goNext = async () => {
+  console.log('EDITED SHOT: ', editedShot.value)
   await saveShot(editedShot.value);
   nextShot(editedShot.value);
 };
