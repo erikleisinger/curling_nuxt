@@ -40,7 +40,6 @@ export const useEditorStore = defineStore("editor", {
       });
     },
     toggleGameDialog(edited) {
-      console.log('TOGGLE GAME: ', edited)
       Dialog.create({
         component: DialogGameEditor,
         componentProps: {

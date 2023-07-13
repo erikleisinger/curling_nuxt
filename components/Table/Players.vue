@@ -48,7 +48,6 @@ const {togglePlayerDialog} = useEditorStore();
 
 const tableArea = ref(null)
 const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
-  console.log(direction.value)
   if (direction.value !== 'down') return;
   loadPlayers(true);
 }})

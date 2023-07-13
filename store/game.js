@@ -15,10 +15,11 @@ export const useGameStore = defineStore("game", {
   }),
   getters: {
     currentShot: (state) => {
+        if (!state.game) return null;
         const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id.end_number === state.end);
         if (shot) return shot;
         const {newShot}= useModel();
-        return newShot({end_id: state.currentEnd.id, shot_no: state.shot})
+        return newShot({end_id: state.currentEnd?.id, shot_no: state.shot})
     },
     currentEnd: (state) => {
         return state.ends.find(({end_number}) => end_number === state.end)

@@ -39,7 +39,6 @@ const editedValue = computed({
     return props.modelValue;
   },
   set(val) {
-    console.log("SET:", val);
     emit("update:modelValue", val);
   },
 });

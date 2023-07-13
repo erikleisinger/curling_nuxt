@@ -106,7 +106,6 @@ const store = useGameStore();
 
     const addNewRock = () => {
       const color = store.getShotColor(pendingRocks.value[0])
-      console.log('COLOR: ', color)
         const newRock = {x:0, y:0, shot_no: pendingRocks.value[0] || 1, color};
         addRock(newRock)
     }

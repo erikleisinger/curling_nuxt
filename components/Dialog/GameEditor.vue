@@ -108,7 +108,6 @@ const onSave = async (e, callback) => {
         const data = [...formData.entries()].reduce((all, [key, value]) => {
             return {...all, [key]: value}
         }, {})
-        console.log('save: ', {...data, id: editedGame.value.id})
     store.insertGame({...data, id: editedGame.value.id})
     callback();
 
