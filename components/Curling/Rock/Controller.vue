@@ -24,8 +24,8 @@
 </template>
 <script setup>
     import { computed, inject, ref} from 'vue';
-import { routerKey } from 'vue-router';
 import {useMounted} from '@vueuse/core'
+
 import { useGameStore } from '@/store/game'
 
 const store = useGameStore();
@@ -120,6 +120,7 @@ const store = useGameStore();
     const onOutsideBounds = (bool) => {
       deleteOverlay.value = bool;
     };
+
 </script>
 
 

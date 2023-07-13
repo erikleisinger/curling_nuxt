@@ -34,7 +34,8 @@ export const useGameStore = defineStore("game", {
         }
     }, 
     whoThrowsFirst: (state) => {
-        const {hammer_first_end: {id}} = state.game;
+        const {hammer_first_end} = state.game || {};
+        const {id} = hammer_first_end || {};
         if (state.end === 1) return state.game.away.id === id ? 'home' : 'away'
         const whoScoredLast = [...state.ends]
         .filter((e) => e.end_number <= state.end)
