@@ -51,7 +51,8 @@
           emit-value
           map-options
           name="hammer_first_end"
-        :rules="[VALIDATION_RULES.REQUIRED]"
+        :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
+        reactive-rules
         />
         <EditorInputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
         <q-input class="col-12" v-model="editedGame.name" label="Name (optional)" outlined rounded name="name"/>
@@ -111,5 +112,11 @@ const onSave = async (e, callback) => {
     store.insertGame({...data, id: editedGame.value.id})
     callback();
 
+}
+
+// Validate that hammer_first_end team is one of the teams selected
+
+const isSelectedTeam = (val) => {
+  return (val === editedGame.value.home || val === editedGame.value.away) || 'Team is not playing in this game.'
 }
 </script>
