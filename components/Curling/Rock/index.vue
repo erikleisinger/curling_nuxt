@@ -1,6 +1,6 @@
 <template>
   <CurlingRockIcon
-    :class="colorClass"
+    :class="rockClasses"
     :style="{
       userSelect: 'none',
       top: `${positionY}%`,
@@ -19,7 +19,6 @@
 </template>
 <style lang="scss">
 .rock {
-
   height: 3.28%;
   aspect-ratio: 1/1;
   border-radius: 50%;
@@ -39,11 +38,17 @@
   &.draggable {
   position: absolute;
   }
+  &.selected {
+-webkit-box-shadow:0px 0px 6px 4px rgba(255,220,46,0.85);
+-moz-box-shadow: 0px 0px 6px 4px rgba(255,220,46,0.85);
+box-shadow: 0px 0px 6px 4px rgba(255,220,46,0.85);
+  }
 }
 </style>
 <script setup>
 import {computed, reactive, ref, onMounted, onUnmounted} from "vue";
 import {onLongPress, useEventListener, useMouseInElement, useElementSize, onClickOutside} from "@vueuse/core";
+import {useEventStore} from '@/store/event'
 
 const props = defineProps({
   rock: Object,
@@ -51,6 +56,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
+
+
 
 // Determine rock colors
 const isEven = computed(() => props.rock.shot_no % 2 === 0);
@@ -87,6 +94,7 @@ const mouse = reactive(useMouseInElement(target));
 const enableDragging = ref(false);
 const isDragging = ref(false)
 const startDrag = (e) => {
+  if (!isSelected.value) return;
   enableDragging.value = true;
 };
 const $q = useQuasar()
@@ -117,7 +125,19 @@ const endDrag = () => {
 };
 
 const rockRef = ref(null);
+
+const isSelected = ref(false);
+const eventStore = useEventStore()
+const selectRock = () => {
+  isSelected.value = !isSelected.value
+  eventStore.toggleRockSelected()
+}
+const rockClasses = computed(() => {
+  return `${colorClass.value} ${isSelected.value ? 'selected' : ''}`
+})
+onClickOutside(rockRef,selectRock)
 useEventListener(rockRef, "mousedown", startDrag);
+useEventListener(rockRef, "click", selectRock);
 useEventListener(rockRef, "touchstart", startDrag);
 useEventListener(document, "mousemove", onDrag);
 useEventListener(document, "touchmove", onDrag);
@@ -153,5 +173,7 @@ const changeColor = (color) => {
   emit("update", {x: positionX.value, y: positionY.value, color});
   longPressedHook.value = false;
 }
+
+
 
 </script>
