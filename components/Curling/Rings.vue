@@ -1,5 +1,5 @@
 <template>
-  <div class="rink">
+  <div class="rink" ref="rink">
     <slot v-bind:scale="scale"/>
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
@@ -18,17 +18,17 @@
   background-color: white;
   position: absolute;
   margin: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  left: v-bind(leftComputed);
+  top: v-bind(topComputed);
   max-width: 100%;
+  right:0;
   max-height: 100%;
   aspect-ratio: v-bind(aspectRatio);
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
   border-top: 2px solid rgba(0 0 0 / 20%);
   transform: v-bind(computedScale);
+  width: max-content;
   &:before {
     content: "";
     top: v-bind(teeLinePercentFromTop);
@@ -64,7 +64,7 @@
 }
 </style>
 <script setup>
-import {useEventListener} from "@vueuse/core";
+import {useEventListener, useSwipe} from "@vueuse/core";
 // Mobile pinch to zoom in / zoom out
 const rink = ref(null)
 const isPinching = ref(false)
@@ -89,14 +89,18 @@ const toAdd = Math.abs(currentTouches - initialPinch.value) / 1000;
 if (isZoomIn) {
   scale.value += toAdd
 } else {
-  if(scale.value - toAdd >= 1) scale.value -= toAdd
+  if(scale.value - toAdd >= 1) {
+    scale.value -= toAdd
+} else {
+  scale.value = 1;
 }
+  }
 }
 const pinchEnd = (e) => {
   isPinching.value = false
 }
 useEventListener(document, "touchstart", pinchStart);
-useEventListener(document, "touchmove", pinchMove);
+useEventListener(rink, "touchmove", pinchMove);
 useEventListener(document, "touchend", pinchEnd);
 
 const computedScale = computed(() => `scale(${scale.value})`)
@@ -114,4 +118,41 @@ const ringsWidthPercent = ref(`${144 / PLAYING_AREA_DIMENSIONS.x * 100}%`)
 
 const TEE_LINE_LOCATION_FROM_TOP_INCHES = 72;
 const teeLinePercentFromTop = ref(`${(TEE_LINE_LOCATION_FROM_TOP_INCHES) / PLAYING_AREA_DIMENSIONS.y * 100}%`)
+
+const swipeStartTop = ref(0)
+const swipeStartLeft = ref(0)
+const top = ref(0)
+const topComputed = computed(() => `${top.value}px`)
+const left = ref(0)
+const leftComputed = computed(() => `${left.value}px`)
+const rightComputed = computed(() => `${left.value * -1}px`)
+
+const calculateTopDiff = (e) => {
+const endVal = e.changedTouches[0].clientY;
+    const diff = endVal - swipeStartTop.value;
+    top.value += diff;
+}
+
+const calculateLeftDiff = (e) => {
+  const endVal = e.changedTouches[0].clientX;
+    const diff = endVal - swipeStartLeft.value;
+    left.value += diff;
+}
+
+
+const {direction} = useSwipe(rink, {
+  onSwipeStart: (e) => {
+    if (Array.from(e.target.classList).includes('rock')) return;
+    swipeStartTop.value = e.changedTouches[0].clientY
+    swipeStartLeft.value = e.changedTouches[0].clientX
+  },
+   onSwipe: (e) => {
+      if (Array.from(e.target.classList).includes('rock')) return;
+    calculateTopDiff(e);
+    calculateLeftDiff(e);
+    swipeStartTop.value = e.changedTouches[0].clientY
+    swipeStartLeft.value = e.changedTouches[0].clientX
+  },
+  threshold: 10
+})
 </script>

@@ -40,7 +40,7 @@
 </style>
 <script setup>
 import {inject, ref} from "vue";
-import {useElementSize, useResizeObserver, useSwipe} from '@vueuse/core'
+import {useElementSize, useResizeObserver} from '@vueuse/core'
 const $q = useQuasar();
 const tab = inject('tab')
 const wow = ref(null)
@@ -58,14 +58,4 @@ useResizeObserver(scoreBoard, (entries) => {
       
     })
 
-// Swiping
-const {direction} = useSwipe(document.querySelector('body'), {threshold: 100, onSwipeEnd: (e) => {
-  if (Array.from(e.target.classList).includes('rock')) return;
-   if (direction.value === 'right') {
-    tab.value = 'rings';
-   }
-   if (direction.value === 'left') {
-    tab.value = 'score'
-   }
-}})
 </script>
