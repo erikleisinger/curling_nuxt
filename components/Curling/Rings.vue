@@ -142,11 +142,13 @@ const calculateLeftDiff = (e) => {
 
 const {direction} = useSwipe(rink, {
   onSwipeStart: (e) => {
+    if (isPinching.value) return;
     if (Array.from(e.target.classList).includes('rock')) return;
     swipeStartTop.value = e.changedTouches[0].clientY
     swipeStartLeft.value = e.changedTouches[0].clientX
   },
    onSwipe: (e) => {
+     if (isPinching.value) return;
       if (Array.from(e.target.classList).includes('rock')) return;
     calculateTopDiff(e);
     calculateLeftDiff(e);
