@@ -90,6 +90,7 @@ const startDrag = (e) => {
 const $q = useQuasar()
 const onDrag = (e) => {
   if ($q.platform.is.mobile && e.type === 'mousemove') return;
+  if (e.type === 'mousemove') e.preventDefault();
   if (!enableDragging.value || longPressedHook.value) return;
     isDragging.value = true;
   const {elementY, elementX, isOutside} = mouse;
