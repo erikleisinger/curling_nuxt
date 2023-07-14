@@ -70,8 +70,9 @@ onMounted(() => {
   store.initGame();
 })
 const shot = computed(() => store.currentShot)
+const {shotEdited} = useModel();
 watch(shot, (val) => {
-  editedShot.value = {...val}
+  editedShot.value = shotEdited({...val})
 }, {deep: true, immediate: true})
 
 /* End edited shot */

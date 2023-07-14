@@ -22,5 +22,4 @@ export const gameModel = (game = {}) => {
             name: hammer_first_end?.name ?? 'N/A'
         }
     }
-    
 };

@@ -59,7 +59,6 @@ const onSave = async (e, callback) => {
 }
 
 const reservedNameCheck = (val) => {
-  console.log('VAL: ', val)
   return !RESERVED_NAMES.includes(val) || `${val} is a reserved name`
 }
 </script>

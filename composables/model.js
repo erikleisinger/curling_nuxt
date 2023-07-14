@@ -1,6 +1,6 @@
 import { gameModel } from "@/models/game"
-import {newShot} from '@/models/shot'
+import {newShot, shotEdited} from '@/models/shot'
 
 export const useModel = () => {
-    return {gameModel, newShot}
+    return {gameModel, newShot, shotEdited}
 }

@@ -25,7 +25,7 @@ export const useDataStore = defineStore("data", {
     },
     async fetchShotTypes(force) {
       if (this.shotTypes.length && !force) return;
-      console.log('FETCH SHOT TYPES')
+
       const client = useSupabaseAuthClient();
       const {getUser} = useDatabase()
       const {id} = getUser();
@@ -119,7 +119,7 @@ export const useDataStore = defineStore("data", {
         }
     },
     async insertTeam(team) {
-      console.log('INSERT TEAM: ', team)
+  
       const client = useSupabaseAuthClient();
       const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};

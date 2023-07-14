@@ -89,7 +89,6 @@ const pinchMove = (e) => {
 const isZoomIn = currentTouches - initialPinch.value > 0;
 if (Math.abs(currentTouches - initialPinch.value) < 30) return;
 const toAdd = Math.abs(currentTouches - initialPinch.value) / 1000;
-console.log('to add: ', toAdd)
 if (isZoomIn) {
 
   scale.value += toAdd
@@ -97,20 +96,6 @@ if (isZoomIn) {
   if(scale.value - toAdd >= 1) scale.value -= toAdd
  
 }
-
-  // const isZoomIn = currentTouches[1].clientX - pinchCoords.value[1].clientX < 0 && currentTouches[1].clientY - pinchCoords.value[1].clientY < 0;
- 
-  // const xDiff = Math.abs(currentTouches[0].clientX - pinchCoords.value[0].clientX) +  Math.abs(currentTouches[1].clientX - pinchCoords.value[1].clientX)
-  // const yDiff = Math.abs(currentTouches[0].clientY - pinchCoords.value[0].clientY) +Math.abs(currentTouches[1].clientY - pinchCoords.value[1].clientY)
-  // const totalDiff = Math.abs(xDiff - yDiff);
-  // if (totalDiff < 2) return;
-  // const toAdd = totalDiff / 3000
-  // if(isZoomIn) {
-  // scale.value += toAdd
-  // } else {
-  //   if (scale.value - toAdd > 1)scale.value -= toAdd
-      
-  // }
 
 }
 

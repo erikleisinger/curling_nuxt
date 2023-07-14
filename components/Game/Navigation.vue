@@ -18,17 +18,14 @@ const end = computed(() => store.end);
 
 const editedShot = inject("editedShot");
 
-const {prevShot, nextShot, saveShot} = store;
+const {prevShot, nextShot} = store;
 
 const {globalLoading} = useLoading();
 
 const goNext = async () => {
-  console.log('EDITED SHOT: ', editedShot.value)
-  await saveShot(editedShot.value);
   nextShot(editedShot.value);
 };
 const goPrev = async () => {
-  await saveShot(editedShot.value);
   prevShot(editedShot.value);
 };
 </script>

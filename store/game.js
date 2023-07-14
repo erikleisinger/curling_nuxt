@@ -16,7 +16,7 @@ export const useGameStore = defineStore("game", {
   getters: {
     currentShot: (state) => {
         if (!state.game) return null;
-        const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id.end_number === state.end);
+        const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id === state.currentEnd.id);
         if (shot) return shot;
         const {newShot}= useModel();
         return newShot({end_id: state.currentEnd?.id, shot_no: state.shot})
@@ -90,21 +90,27 @@ export const useGameStore = defineStore("game", {
         return end;
     },
     async getShot(currentShot) {
+        console.log('START GET SHOT: ', currentShot)
         const end = await this.getEnd()
         const {id: end_id} = end;
         const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === this.shot);
-        if (shotInStore) return shotInStore;
+        if (shotInStore) {
+            console.log('SHOT IN STORE: ', shotInStore);
+            return shotInStore
+        }
         const client = useSupabaseAuthClient();
         let shot;
         const {getQuery} = useDatabase();
         const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select(getQuery(TABLE_NAMES.SHOTS))
         if (!data?.length) {
             shot = await this.createShot(end_id, currentShot);
+            console.log('SHOT CREATED: ', shot)
         } else {
             const [fetchedShot] = data;
             shot = fetchedShot
+            console.log('SHOT FETCHED: ', shot)
         };
-        console.log('GET SHOT: ', shot)
+       
         const shotToInsert = {
             ...shot,
             end_id: shot.end_id?.id || shot.end_id,
@@ -149,6 +155,7 @@ export const useGameStore = defineStore("game", {
     },
     async prevShot(currentShot) {
         this.loading = true;
+        await this.saveShot(currentShot);
         if (!(this.shot === 1 && this.end === 1)) {
             if (this.shot === 1) {
                 this.end -= 1;
@@ -164,6 +171,7 @@ export const useGameStore = defineStore("game", {
     },
     async nextShot(currentShot) {
         this.loading = true;
+        await this.saveShot(currentShot);
         if (this.shot === 16) {
             this.shot = 1;
             this.end += 1;
@@ -179,10 +187,10 @@ export const useGameStore = defineStore("game", {
         localStorage.removeItem('game')
     },
     async saveShot(shot) {  
-        console.log('save shot: ', shot)
+        const {shotEdited} = useModel();
         const {objTheSame} = useValidation();
         const rockInStore = this.shots.find((s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id)
-        if (objTheSame(rockInStore, shot)) return;
+        if (objTheSame(shotEdited(rockInStore), shotEdited(shot))) return;
         this.loading = true;
         const client = useSupabaseAuthClient();
         const {getQuery} = useDatabase();
@@ -193,7 +201,7 @@ export const useGameStore = defineStore("game", {
         }, {onConflict: 'end_id, shot_no'}).select(getQuery(TABLE_NAMES.SHOTS)).eq()
         const [savedShot] = data;
         if (!savedShot) return;
-        this.insertShot(savedShot)
+        this.insertShot(shotEdited(savedShot))
         this.loading = false;
     },
     setGame(game) {
