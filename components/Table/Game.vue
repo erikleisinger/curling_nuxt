@@ -50,14 +50,14 @@
               icon="edit"
               @click.stop="edit(game)"
             ></q-btn>
-             <q-btn
-              size="12px"
-              flat
-              dense
-              round
-              icon="delete"
-              @click.stop="itemToDelete = game"
-            ></q-btn>
+              <q-btn
+                size="12px"
+                flat
+                dense
+                round
+                icon="delete"
+                @click.stop="itemToDelete = game"
+              ></q-btn>
           </div>
           
         </q-item-section>
