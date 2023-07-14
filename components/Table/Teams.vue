@@ -51,17 +51,29 @@
               icon="edit"
               @click.stop="edit(team)"
             ></q-btn>
+                    <q-btn
+              size="12px"
+              flat
+              dense
+              round
+              icon="delete"
+              @click.stop="itemToDelete = team"
+            ></q-btn>
           </div>
         </q-item-section>
       </q-item>
      </q-list>
   </q-scroll-area>
+      <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteTeam(itemToDelete)">
+    Are you sure you want to delete team "{{itemToDelete.name ?? 'Unnamed team'}}"
+  </DialogDeleteConfirmation>
 </template>
 <script setup>
 import {ref, onMounted} from "vue";
 import {useDataStore} from '@/store/data'
 import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
+import {TABLE_NAMES} from '@/constants/tables'
   const dataStore = useDataStore()
 
 const {sortNameAlphabetically} = useSort()
@@ -97,5 +109,11 @@ const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
   if (direction.value !== 'down') return;
   loadTeams(true);
 }})
+
+const itemToDelete = ref(null)
+const deleteTeam = async ({id}) => {
+  await dataStore.deleteItem(id, TABLE_NAMES.TEAMS)
+  itemToDelete.value = null
+}
 
 </script>

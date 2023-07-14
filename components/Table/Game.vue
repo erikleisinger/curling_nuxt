@@ -41,7 +41,7 @@
           <q-item-label> {{ game.ends }} ends </q-item-label>
         </q-item-section>
         <q-item-section side>
-          <div class="text-grey-8">
+          <div class="text-grey-8 row">
             <q-btn
               size="12px"
               flat
@@ -50,11 +50,23 @@
               icon="edit"
               @click.stop="edit(game)"
             ></q-btn>
+             <q-btn
+              size="12px"
+              flat
+              dense
+              round
+              icon="delete"
+              @click.stop="itemToDelete = game"
+            ></q-btn>
           </div>
+          
         </q-item-section>
       </q-item>
     </q-list>
   </q-scroll-area>
+  <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
+    Are you sure you want to delete the game "{{itemToDelete.name ?? 'Unnamed game'}}"
+  </DialogDeleteConfirmation>
 </template>
 
 <script setup>
@@ -68,7 +80,7 @@ const props = defineProps({
   edited: Object,
 })
 const loading = ref(true);
-
+const itemToDelete = ref(null)
 const store = useGameStore();
 const dataStore = useDataStore();
 
@@ -100,6 +112,11 @@ const edit = (game) => {
     start_time: formatDate(game.start_time, "YYYY/MM/DD", null),
   });
 };
+
+const deleteGame = async ({id}) => {
+  await dataStore.deleteItem(id, TABLE_NAMES.GAMES)
+  itemToDelete.value = null
+}
 
 const {toggleGameDialog} = useEditorStore();
 

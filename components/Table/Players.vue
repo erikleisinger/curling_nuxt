@@ -31,17 +31,29 @@
               icon="edit"
               @click.stop="edit(player)"
             ></q-btn>
+              <q-btn
+              size="12px"
+              flat
+              dense
+              round
+              icon="delete"
+              @click.stop="itemToDelete = player"
+            ></q-btn>
           </div>
         </q-item-section>
       </q-item>
      </q-list>
   </q-scroll-area>
+    <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deletePlayer(itemToDelete)">
+    Are you sure you want to delete player "{{itemToDelete.name ?? 'N/A'}}"
+  </DialogDeleteConfirmation>
 </template>
 <script setup>
 import {ref, onMounted} from "vue";
 import {useDataStore} from '@/store/data'
 import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
+import {TABLE_NAMES} from '@/constants/tables'
   const dataStore = useDataStore()
 
 const {sortNameAlphabetically} = useSort()
@@ -66,5 +78,11 @@ const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
 }})
 const edit = (player) => {
   togglePlayerDialog(player)
+}
+
+const itemToDelete = ref(null)
+const deletePlayer = async ({id}) => {
+  await dataStore.deleteItem(id, TABLE_NAMES.PLAYERS)
+  itemToDelete.value = null
 }
 </script>

@@ -37,11 +37,22 @@
               icon="edit"
               @click.stop="edit(shotType)"
             ></q-btn>
+                          <q-btn
+              size="12px"
+              flat
+              dense
+              round
+              icon="delete"
+              @click.stop="itemToDelete = shotType"
+            ></q-btn>
           </div>
         </q-item-section>
       </q-item>
     </q-list>
   </q-scroll-area>
+      <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteShotType(itemToDelete)">
+    Are you sure you want to delete shot type "{{itemToDelete.name ?? 'N/A'}}"
+  </DialogDeleteConfirmation>
 </template>
 <script setup>
 import {ref, onMounted} from "vue";
@@ -77,5 +88,11 @@ const {direction} = useSwipe(tableArea, {
 
 const edit = (shotType) => {
     toggleShotTypeDialog(shotType)
+}
+
+const itemToDelete = ref(null)
+const deleteShotType = async ({id}) => {
+  await dataStore.deleteItem(id, 'shotTypes')
+  itemToDelete.value = null
 }
 </script>

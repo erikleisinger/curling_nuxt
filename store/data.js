@@ -12,6 +12,19 @@ export const useDataStore = defineStore("data", {
     teams: useStorage("teams", []),
   }),
   actions: {
+    async deleteItem(id, resourceType) {
+      const client = useSupabaseAuthClient();
+      const {data, error} = await client.from(resourceType.toLowerCase()).delete().eq('id', id)
+      if (error) {
+        const {code} = error || {};
+        const bannerStore = useBannerStore();
+        bannerStore.setText(`Error deleting game (code ${code})`, "negative");
+      } else {
+        const index = this[resourceType].findIndex((g) => g.id === id);
+        if (index === -1) return;
+        this[resourceType].splice(index, 1)
+      }
+    },
     async initData() {
       const {setLoading} = useGameStore();
       setLoading(true)
