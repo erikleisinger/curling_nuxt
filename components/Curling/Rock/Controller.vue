@@ -1,4 +1,6 @@
 <template>
+<div class="column" style="position: relative; height: 100%; width: 100%">
+  <div style="position:relative" class="col-grow">
   <CurlingRings>
     <div style="height: 100%; width: 100%; position: absolute; overflow: hidden;transition: all 0.5s;"  id="curlingRockWrapper" >
        <transition
@@ -10,17 +12,20 @@
         <q-icon size="xl" name="delete" color="white"/>
       </div>
        </transition>
-      <button @click="addNewRock">Add</button>
+      <q-btn @click="addNewRock" flat round class="q-pa-md"><q-icon name="add_circle_outline" color="primary" size="md"/></q-btn>
       <button @click="addOop">Add OOP</button>
       <slot name="buttons"/>
       <div>OOP: {{outOfPlayRocks.length}}</div>
       <div>P: {{pendingRocks.length}}</div>
       <div>TOTAL: {{rockPositions.length}}</div>
-      <CurlingRock v-for="rock in rocksInPlay" :key="`rock-${rock.shot_no}-${editedShot.id}`" :rock="rock" @update="onRockPositionUpdated($event, rock.shot_no)" @remove="onRemoveRock(rock)" @outsideBounds="onOutsideBounds"  />
+     
 
     </div>
 
   </CurlingRings>
+   <CurlingRock v-for="rock in rocksInPlay" :key="`rock-${rock.shot_no}-${editedShot.id}`" :rock="rock" @update="onRockPositionUpdated($event, rock.shot_no)" @remove="onRemoveRock(rock)" @outsideBounds="onOutsideBounds"  />
+    </div>
+</div>
 </template>
 <script setup>
     import { computed, inject, ref} from 'vue';
@@ -106,7 +111,7 @@ const store = useGameStore();
 
     const addNewRock = () => {
       const color = store.getShotColor(pendingRocks.value[0])
-        const newRock = {x:0, y:0, shot_no: pendingRocks.value[0] || 1, color};
+        const newRock = {x:50, y:50, shot_no: pendingRocks.value[0] || 1, color};
         addRock(newRock)
     }
     const addOop = () => {

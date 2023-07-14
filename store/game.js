@@ -90,27 +90,20 @@ export const useGameStore = defineStore("game", {
         return end;
     },
     async getShot(currentShot) {
-        console.log('START GET SHOT: ', currentShot)
         const end = await this.getEnd()
         const {id: end_id} = end;
         const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === this.shot);
-        if (shotInStore) {
-            console.log('SHOT IN STORE: ', shotInStore);
-            return shotInStore
-        }
+        if (shotInStore)   return shotInStore
         const client = useSupabaseAuthClient();
         let shot;
         const {getQuery} = useDatabase();
         const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select(getQuery(TABLE_NAMES.SHOTS))
         if (!data?.length) {
             shot = await this.createShot(end_id, currentShot);
-            console.log('SHOT CREATED: ', shot)
         } else {
             const [fetchedShot] = data;
             shot = fetchedShot
-            console.log('SHOT FETCHED: ', shot)
         };
-       
         const shotToInsert = {
             ...shot,
             end_id: shot.end_id?.id || shot.end_id,
