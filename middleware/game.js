@@ -4,5 +4,4 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const store = useGameStore();
     const {game} = store;
     if (!game?.id) return navigateTo('/select')
-    
 })

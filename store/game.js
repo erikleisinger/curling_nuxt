@@ -48,18 +48,19 @@ export const useGameStore = defineStore("game", {
     },
   },
   actions: {
-    async createEnd(gameId) {
+    async createEnd(gameId, endNo) {
         const client = useSupabaseAuthClient()
-        const {data, error} = await client.from(TABLE_NAMES.ENDS).insert({'game_id': Number(gameId), 'end_number': Number(this.end)}).select('*');
+        const {data, error} = await client.from(TABLE_NAMES.ENDS).insert({'game_id': Number(gameId), 'end_number': Number(endNo)}).select('*');
         if (error) return null;
         const [end] = data;
         return end;
     },
-    async createShot(endId, currentShot) {
+    async createShot(endId, endNumber, shotNo) {
         const client = useSupabaseAuthClient()
-        const insertData = {'end_id': Number(endId), 'shot_no': Number(this.shot)}
-        if (currentShot && (currentShot.end_id === endId || currentShot.end_id?.id === endId)) {
-            insertData['rock_positions'] = currentShot.rock_positions
+        const insertData = {'end_id': Number(endId), 'shot_no': Number(shotNo)}
+        if (shotNo !== 1) {
+            const previousShot = await this.getShot(shotNo - 1, endNumber)
+            insertData['rock_positions'] = previousShot.rock_positions
         }
         const {getQuery} = useDatabase();
         const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert(insertData).select(getQuery(TABLE_NAMES.SHOTS));
@@ -67,9 +68,9 @@ export const useGameStore = defineStore("game", {
         const [shot] = data;
         return shot;
     },
-    async getEnd() {
+    async getEnd(endNo) {
         const {id: gameId} = this.game;
-        const endInStore = this.ends.find((e) => e.end_number === this.end);
+        const endInStore = this.ends.find((e) => e.end_number === endNo);
         if (endInStore) return endInStore;
         const client = useSupabaseAuthClient()
         if (!gameId) return;
@@ -79,9 +80,9 @@ export const useGameStore = defineStore("game", {
         end_number,
         scoring_team_id,
         points_scored
-        `).eq('end_number', this.end).eq('game_id', gameId)
+        `).eq('end_number', endNo).eq('game_id', gameId)
         if (!data?.length) {
-            end = await this.createEnd(gameId);
+            end = await this.createEnd(gameId, endNo);
         } else {
             const [fetchedEnd] = data;
             end = fetchedEnd
@@ -89,17 +90,17 @@ export const useGameStore = defineStore("game", {
         this.ends.push(end)
         return end;
     },
-    async getShot(currentShot) {
-        const end = await this.getEnd()
-        const {id: end_id} = end;
-        const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === this.shot);
+    async getShot(shotNo, endNo) {
+        const end = await this.getEnd(endNo)
+        const {id: end_id, end_number} = end;
+        const shotInStore = this.shots.find((s) => s.end_id === end_id && s.shot_no === shotNo);
         if (shotInStore)   return shotInStore
         const client = useSupabaseAuthClient();
         let shot;
         const {getQuery} = useDatabase();
-        const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', this.shot).select(getQuery(TABLE_NAMES.SHOTS))
+        const {data} = await client.from(TABLE_NAMES.SHOTS).select('*').eq('end_id', end_id).eq('shot_no', shotNo).select(getQuery(TABLE_NAMES.SHOTS))
         if (!data?.length) {
-            shot = await this.createShot(end_id, currentShot);
+            shot = await this.createShot(end_id, end_number, shotNo);
         } else {
             const [fetchedShot] = data;
             shot = fetchedShot
@@ -138,7 +139,6 @@ export const useGameStore = defineStore("game", {
         this.shots = shots;
     },  
     insertShot(shot) {
-        console.log('INSERT: ', shot)
         const index = this.shots.findIndex((s) => s.id === shot.id);
         if (index === -1) {
             this.shots.push(shot)
@@ -147,7 +147,7 @@ export const useGameStore = defineStore("game", {
         }
     },
     async prevShot(currentShot) {
-        this.loading = true;
+        this.setLoading(true)
         await this.saveShot(currentShot);
         if (!(this.shot === 1 && this.end === 1)) {
             if (this.shot === 1) {
@@ -159,11 +159,11 @@ export const useGameStore = defineStore("game", {
         }
      
    
-        await this.getShot(currentShot)
-        this.loading = false;
+        await this.getShot(this.shot, this.end)
+        this.setLoading(false)
     },
     async nextShot(currentShot) {
-        this.loading = true;
+        this.setLoading(true)
         await this.saveShot(currentShot);
         if (this.shot === 16) {
             this.shot = 1;
@@ -171,8 +171,16 @@ export const useGameStore = defineStore("game", {
         } else {
             this.shot +=1;
         }
-       await this.getShot(currentShot)
-        this.loading = false;
+       await this.getShot(this.shot, this.end)
+       this.setLoading(false)
+    },
+    async goToShot(shotNo, endNo, currentShot) {
+         this.setLoading(true)
+        await this.saveShot(currentShot)
+        this.shot = shotNo;
+        this.end = endNo;
+        await this.getShot(shotNo, endNo)
+        this.setLoading(false)
     },
     resetStore() {
         localStorage.removeItem('ends')
@@ -184,7 +192,7 @@ export const useGameStore = defineStore("game", {
         const {objTheSame} = useValidation();
         const rockInStore = this.shots.find((s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id)
         if (objTheSame(shotEdited(rockInStore), shotEdited(shot))) return;
-        this.loading = true;
+        this.setLoading(true)
         const client = useSupabaseAuthClient();
         const {getQuery} = useDatabase();
         const {data}= await client.from(TABLE_NAMES.SHOTS).upsert({
@@ -195,10 +203,15 @@ export const useGameStore = defineStore("game", {
         const [savedShot] = data;
         if (!savedShot) return;
         this.insertShot(shotEdited(savedShot))
-        this.loading = false;
+        this.setLoading(false)
     },
     setGame(game) {
+        this.setLoading(true)
       this.game = game;
+      this.setLoading(false)
+    },
+    setLoading(bool) {
+        this.loading = bool;
     },
     async updateScore(points_scored, end_number, scoring_team_id, game_id) {
         const client = useSupabaseAuthClient();

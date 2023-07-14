@@ -1,6 +1,6 @@
 <template>
 
-  <div class="rink" ref="rink" :style="`transform: scale(${scale})`">
+  <div class="rink">
     <slot />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
@@ -64,50 +64,6 @@
 }
 </style>
 <script setup>
-import {useEventListener} from "@vueuse/core";
-
-
-// Mobile pinch to zoom in / zoom out
-
-const rink = ref(null)
-
-const isPinching = ref(false)
-const initialPinch = ref(0)
-
-const scale = ref(1)
-
-const pinchStart = (e) => {
-  if (e.touches.length !== 2) return;
-  isPinching.value = true;
-  initialPinch.value = Math.hypot(
-    e.touches[0].pageX - e.touches[1].pageX,
-    e.touches[0].pageY - e.touches[1].pageY)
-}
-
-const pinchMove = (e) => {
-  if (!isPinching.value) return;
-  if (e.touches.length !== 2) return;
-  const currentTouches =  Math.hypot(
-    e.touches[0].pageX - e.touches[1].pageX,
-    e.touches[0].pageY - e.touches[1].pageY)
-const isZoomIn = currentTouches - initialPinch.value > 0;
-if (Math.abs(currentTouches - initialPinch.value) < 30) return;
-const toAdd = Math.abs(currentTouches - initialPinch.value) / 1000;
-if (isZoomIn) {
-  scale.value += toAdd
-} else {
-  if(scale.value - toAdd >= 1) scale.value -= toAdd
-
-}
-
-}
-const pinchEnd = (e) => {
-  isPinching.value = false
-}
-useEventListener(document, "touchstart", pinchStart);
-useEventListener(document, "touchmove", pinchMove);
-useEventListener(document, "touchend", pinchEnd);
-
 const PLAYING_AREA_DIMENSIONS = {x: 180, y: 324};
 
 // Calculate aspect ratio

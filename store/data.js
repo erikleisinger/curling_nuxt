@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useBannerStore} from "@/store/banner";
+import {useGameStore} from "@/store/game"
 import {useStorage} from "@vueuse/core";
 
 export const useDataStore = defineStore("data", {
@@ -11,6 +12,13 @@ export const useDataStore = defineStore("data", {
     teams: useStorage("teams", []),
   }),
   actions: {
+    async initData() {
+      const {setLoading} = useGameStore();
+      setLoading(true)
+      await this.fetchPlayers();
+      await this.fetchShotTypes();
+      setLoading(false)
+    },
     async fetchPlayers(force = false) {
       if (this.players.length && !force) return;
       const client = useSupabaseAuthClient();
@@ -119,7 +127,6 @@ export const useDataStore = defineStore("data", {
         }
     },
     async insertTeam(team) {
-  
       const client = useSupabaseAuthClient();
       const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};

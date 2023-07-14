@@ -23,6 +23,9 @@ export default defineNuxtConfig({
         'slideOutRight',
         'slideOutUp',
         'slideOutDown',
+      ],
+      fontIcons: [
+        'material-icons-outlined'
       ]
     },
       plugins: [

@@ -3,7 +3,8 @@
     <q-btn round flat @click="goPrev" :disabled="globalLoading"
       ><q-icon name="chevron_left"
     /></q-btn>
-    <div>End {{ end }} Shot {{ shot }}</div>
+    <div>End {{ end }} Shot {{ shot }} 
+      </div>
     <q-btn round flat @click="goNext" :disabled="globalLoading"
       ><q-icon name="chevron_right"
     /></q-btn>

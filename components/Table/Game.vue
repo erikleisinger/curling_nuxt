@@ -17,12 +17,13 @@
         </q-item-section>
       </q-item>
       <q-item
-        clickable
-        v-ripple
         v-for="game in games"
         :key="game.id"
-        @click="selectGame(game)"
+
       >
+       <q-item-section avatar>
+         <q-btn flat round  @click.stop="selectGame(game)"> <q-icon color="primary" name="launch"></q-icon></q-btn>
+        </q-item-section>
         <q-item-section>
           <q-item-label overline>{{ game.start_time }}</q-item-label>
           <q-item-label>{{ game.name }}</q-item-label>

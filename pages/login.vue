@@ -86,6 +86,7 @@ const onSubmit = async (e) => {
   );
   if (tab.value === TAB_NAMES.value.SIGN_IN) {
     const {data, error} = await client.auth.signInWithPassword(formData);
+    console.log('LOGGED IN: ', data)
     if (!error) navigateTo("/");
   } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
     const {data, error} = await client.auth.signUp(formData);

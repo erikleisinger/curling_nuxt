@@ -93,6 +93,7 @@ const onDrag = (e) => {
   if (e.type === 'mousemove') e.preventDefault();
   if (!enableDragging.value || longPressedHook.value) return;
     isDragging.value = true;
+    
   const {elementY, elementX, isOutside} = mouse;
   positionX.value = getPercentWidth(elementX, target);
   positionY.value = getPercentHeight(elementY, target);
