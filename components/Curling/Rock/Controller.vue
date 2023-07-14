@@ -12,9 +12,9 @@
       <div>P: {{ pendingRocks.length }}</div>
       <div>TOTAL: {{ rockPositions.length }}</div> -->
     </div>
-    <div style="position: relative" class="col-grow">
+    <div style="position: relative; overflow:hidden" class="col-grow">
       
-      <CurlingRings>
+      <CurlingRings v-slot="{scale}">
         <div
           style="
             height: 100%;
@@ -54,6 +54,7 @@
         @update="onRockPositionUpdated($event, rock.shot_no)"
         @remove="onRemoveRock(rock)"
         @outsideBounds="onOutsideBounds"
+        :scale="scale"
       />
       </CurlingRings>
 

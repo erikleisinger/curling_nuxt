@@ -1,7 +1,6 @@
 <template>
-
   <div class="rink">
-    <slot />
+    <slot v-bind:scale="scale"/>
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
         <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
@@ -29,6 +28,7 @@
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
   border-top: 2px solid rgba(0 0 0 / 20%);
+  transform: v-bind(computedScale);
   &:before {
     content: "";
     top: v-bind(teeLinePercentFromTop);
@@ -64,6 +64,42 @@
 }
 </style>
 <script setup>
+import {useEventListener} from "@vueuse/core";
+// Mobile pinch to zoom in / zoom out
+const rink = ref(null)
+const isPinching = ref(false)
+const initialPinch = ref(0)
+const scale = ref(1)
+const pinchStart = (e) => {
+  if (e.touches.length !== 2) return;
+  isPinching.value = true;
+  initialPinch.value = Math.hypot(
+    e.touches[0].pageX - e.touches[1].pageX,
+    e.touches[0].pageY - e.touches[1].pageY)
+}
+const pinchMove = (e) => {
+  if (!isPinching.value) return;
+  if (e.touches.length !== 2) return;
+  const currentTouches =  Math.hypot(
+    e.touches[0].pageX - e.touches[1].pageX,
+    e.touches[0].pageY - e.touches[1].pageY)
+const isZoomIn = currentTouches - initialPinch.value > 0;
+if (Math.abs(currentTouches - initialPinch.value) < 30) return;
+const toAdd = Math.abs(currentTouches - initialPinch.value) / 1000;
+if (isZoomIn) {
+  scale.value += toAdd
+} else {
+  if(scale.value - toAdd >= 1) scale.value -= toAdd
+}
+}
+const pinchEnd = (e) => {
+  isPinching.value = false
+}
+useEventListener(document, "touchstart", pinchStart);
+useEventListener(document, "touchmove", pinchMove);
+useEventListener(document, "touchend", pinchEnd);
+
+const computedScale = computed(() => `scale(${scale.value})`)
 const PLAYING_AREA_DIMENSIONS = {x: 180, y: 324};
 
 // Calculate aspect ratio

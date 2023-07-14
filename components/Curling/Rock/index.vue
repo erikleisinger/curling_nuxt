@@ -47,6 +47,7 @@ import {onLongPress, useEventListener, useMouseInElement, useElementSize, onClic
 
 const props = defineProps({
   rock: Object,
+  scale: Number,
 });
 
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
@@ -60,12 +61,11 @@ const colorClass = computed(() => {
 });
 
 // Utility functions
-
 const getPercentWidth = (pos, element) => {
-  return (pos / element.offsetWidth) * 100;
+  return (pos / (element.offsetWidth * props.scale)) * 100 - props.scale;
 };
 const getPercentHeight = (pos, element) => {
-  return (pos / element.offsetHeight) * 100;
+  return (pos / (element.offsetHeight * props.scale)) * 100 - props.scale;
 };
 
 // Define x,y and set initial values
@@ -81,6 +81,8 @@ onMounted(() => {
 
 const target = document.querySelector("#curlingRockWrapper");
 const mouse = reactive(useMouseInElement(target));
+
+
 
 const enableDragging = ref(false);
 const isDragging = ref(false)
@@ -136,6 +138,7 @@ onLongPress(
 )
 
 const {width} = useElementSize(rockRef)
+
 const colorSelectionMenu = ref(null)
 onClickOutside(colorSelectionMenu, (E) => {
   if(enableDragging.value) return;
