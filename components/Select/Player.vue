@@ -25,6 +25,7 @@
 import {useDataStore} from "@/store/data";
 const props = defineProps({
     player: String,
+    filter: Function,
 })
 const emit = defineEmits(['update:modelValue'])
 const editedPlayer = computed({
@@ -44,8 +45,12 @@ const getPlayers = async (force) => {
   loadingPlayers.value = false;
 };
 const playerOptions = computed(() => {
+  let players = [...store.players];
+  if (props.filter) {
+    players = players.filter(props.filter)
+  }
   const {formatPlayerForSelection} = useFormat();
-  return [...store.players].map((d) => formatPlayerForSelection(d));
+  return players.map((d) => formatPlayerForSelection(d));
 });
 const {globalLoading} = useLoading();
 </script>

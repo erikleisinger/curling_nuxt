@@ -27,6 +27,15 @@ export const useGameStore = defineStore("game", {
     getShotByNumberAndEnd: (state) => {
         return (shot_no, end_id) => state.shots.find((s) => s.shot_no === shot_no && s.end_id === end_id)
     },
+    getThrowingTeamId: (state) => {
+        const whoThrowsFirst = state.whoThrowsFirst;
+        return (shot_no) => {
+            if (shot_no % 2 === 0) {
+                return whoThrowsFirst === 'home' ? state.game?.away?.id : state.game?.home?.id;
+            }
+            return whoThrowsFirst === 'home' ? state.game?.home?.id : state.game?.away?.id
+        }
+    },
     getShotColor: (state) => {
         const whoThrowsFirst = state.whoThrowsFirst;
     return (shot_no) => {
