@@ -5,7 +5,7 @@
         ><q-icon name="add_circle_outline" color="primary" size="md"
       /></q-btn>
                 <slot name="buttons" />
-      <q-btn @click="addOop" flat round 
+      <q-btn @click="addOop" flat round  size="xs"
         ><q-icon name="add_circle_outline" color="negative" size="md"
       /></q-btn>
       <!-- <div>OOP: {{ outOfPlayRocks.length }}</div>
