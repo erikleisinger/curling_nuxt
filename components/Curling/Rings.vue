@@ -1,6 +1,5 @@
 <template>
   <div class="rink" ref="rink">
-    <div style="position:absolute; bottom:0; z-index:1"><button @click="scale -= .1">-</button><button @click="scale += .1">+</button></div>
     <slot v-bind:scale="scale" v-bind:left="left" v-bind:top="top" />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
@@ -68,9 +67,6 @@
 <script setup>
 import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
-
-const emit = defineEmits(['updatePos'])
-
 
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
@@ -217,7 +213,6 @@ const {direction} = useSwipe(rink, {
     calculateLeftDiff(e);
     swipeStartTop.value = e.changedTouches[0].clientY;
     swipeStartLeft.value = e.changedTouches[0].clientX;
-        emit('updatePos', {left: left.value, top: top.value})
   },
   threshold: 10,
 });
