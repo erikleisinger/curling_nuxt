@@ -7,7 +7,7 @@
       left: `${positionX}%`,
     }"
     class="rock row justify-center draggable"
-    :id="`rock-${rock.shot_no}`"
+    :id="rockId"
     ref="rockRef"
   >
     <div :style="`position: absolute; left: ${width + 10}px; background-color: rgba(0,0,0,0.6);`" v-if="longPressedHook" ref="colorSelectionMenu">
@@ -112,7 +112,7 @@ const onDrag = (e) => {
 
 };
 
-const endDrag = () => {
+const endDrag = (e) => {
   if (!enableDragging.value) return;
   enableDragging.value = false;
   const {isOutside} = mouse;
@@ -121,21 +121,30 @@ const endDrag = () => {
   } else {
     emit("update", {x: positionX.value, y: positionY.value, color: props.rock.color});
   }
-
+  deselectRock(e, true);
 };
 
 const rockRef = ref(null);
+const rockId = `rock-${props.rock.shot_no}`
 
-const isSelected = ref(false);
 const eventStore = useEventStore()
-const selectRock = () => {
-  isSelected.value = !isSelected.value
-  eventStore.toggleRockSelected()
+const selectedRock = computed(() => eventStore.rockSelected)
+const isSelected = computed(() => {
+
+  return selectedRock.value === rockId;
+})
+const selectRock = (e) => {
+  if (isSelected.value) return;
+  eventStore.toggleRockSelected(rockId)
+}
+const deselectRock = (e, isDragEnd = false) => {
+  if (Array.from(e.target.classList).includes("rock") && !isDragEnd) return;
+  eventStore.toggleRockSelected(null)
 }
 const rockClasses = computed(() => {
   return `${colorClass.value} ${isSelected.value ? 'selected' : ''}`
 })
-onClickOutside(rockRef,selectRock)
+onClickOutside(rockRef,deselectRock)
 useEventListener(rockRef, "mousedown", startDrag);
 useEventListener(rockRef, "click", selectRock);
 useEventListener(rockRef, "touchstart", startDrag);
@@ -144,7 +153,12 @@ useEventListener(document, "touchmove", onDrag);
 useEventListener(document, "mouseup", endDrag);
 useEventListener(document, "touchend", endDrag);
 
-// Long press for color change options
+
+/**
+ * COLOR CHANGING
+ * Long press to open menu
+ */
+
 const longPressedHook = ref(false);
 const initMenu = ref(false)
 const onLongPressCallback = () => {

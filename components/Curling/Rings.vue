@@ -1,6 +1,7 @@
 <template>
   <div class="rink" ref="rink">
-    <slot v-bind:scale="scale" />
+    <div style="position:absolute; bottom:0; z-index:1"><button @click="scale -= .1">-</button><button @click="scale += .1">+</button></div>
+    <slot v-bind:scale="scale" v-bind:left="left" v-bind:top="top" />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
         <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
@@ -65,8 +66,11 @@
 }
 </style>
 <script setup>
-import {useEventListener, useSwipe, useThrottleFn} from "@vueuse/core";
+import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
+
+const emit = defineEmits(['updatePos'])
+
 
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
@@ -162,20 +166,39 @@ const left = ref(0);
 const leftComputed = computed(() => `${left.value}px`);
 const rightComputed = computed(() => `${left.value * -1}px`);
 
+const parent = useParentElement()
 const calculateTopDiff = (e) => {
   const endVal = e.changedTouches[0].clientY;
   const diff = endVal - swipeStartTop.value;
+  const topMin = e.target.offsetHeight * scale.value * -1 /2
+    const topMax = ((parent.value.offsetHeight + (e.target.offsetHeight * scale.value))  - 200) / 2
+  if (top.value + diff < topMin) {
+    top.value = topMin
+  } else if (top.value + diff > topMax) {
+    top.value = topMax
+  } else {
   top.value += diff;
+  }
+
 };
+
 
 const calculateLeftDiff = (e) => {
   const endVal = e.changedTouches[0].clientX;
   const diff = endVal - swipeStartLeft.value;
+    const leftMax = ((parent.value.offsetWidth + (e.target.offsetWidth * scale.value))  - 100) / 2
+    const leftMin = (parent.value.offsetWidth + (e.target.offsetWidth * scale.value)) * -1 + 100;
+  if (left.value + diff > leftMax) {
+    left.value = leftMax
+  } else if (left.value + diff < leftMin) {
+    left.value = leftMin
+  } else {
   left.value += diff;
+  }
+    left.value += diff;
 };
 
 // Move rink around
-
 const {direction} = useSwipe(rink, {
   onSwipeStart: (e) => {
     if (isRockSelected.value) return;
@@ -194,6 +217,7 @@ const {direction} = useSwipe(rink, {
     calculateLeftDiff(e);
     swipeStartTop.value = e.changedTouches[0].clientY;
     swipeStartLeft.value = e.changedTouches[0].clientX;
+        emit('updatePos', {left: left.value, top: top.value})
   },
   threshold: 10,
 });

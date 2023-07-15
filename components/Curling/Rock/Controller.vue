@@ -1,5 +1,6 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
+           <div >{{left.toFixed()}} {{top.toFixed()}}</div>
     <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
       <q-btn @click="addNewRock" flat round  size="xs"
         ><q-icon name="add_circle_outline" color="primary" size="md"
@@ -14,7 +15,8 @@
     </div>
     <div style="position: relative; overflow:hidden" class="col-grow">
       
-      <CurlingRings v-slot="{scale}">
+      <CurlingRings v-slot="{scale}" @updatePos="updatePos">
+ 
         <div
           style="
             height: 100%;
@@ -66,6 +68,16 @@ import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
 
 import {useGameStore} from "@/store/game";
+
+// temp
+
+const left = ref(0);
+const top = ref(0)
+const updatePos = ({left: newLeft, top: newTop} ) => {
+  left.value = newLeft;
+  top.value = newTop
+}
+// end temp
 
 const store = useGameStore();
 
