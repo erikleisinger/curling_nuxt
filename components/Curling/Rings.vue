@@ -114,6 +114,10 @@ const handlePinchMove = (e) => {
     }
   }
   }
+  const isOutsideVertical = checkOutsideVerticalBounds(top.value)
+  const isOutsideHorizontal = checkOutsideHorizontalBounds(left.value)
+  if (isOutsideVertical) top.value = isOutsideVertical
+  if(isOutsideHorizontal) left.value = isOutsideHorizontal
   rafId.value = null;
 };
 
@@ -163,35 +167,50 @@ const leftComputed = computed(() => `${left.value}px`);
 const rightComputed = computed(() => `${left.value * -1}px`);
 
 const parent = useParentElement()
+const checkOutsideVerticalBounds = (newVal) => {
+  const topMin = rink.value.offsetHeight * scale.value * -1 /2
+    const topMax = ((parent.value.offsetHeight + (rink.value.offsetHeight * scale.value))  - 200) / 2
+    if (newVal > topMax) {
+      return topMax
+    } else if(newVal < topMin) {
+      return topMin
+    } else {
+      return null;
+    }
+}
 const calculateTopDiff = (e) => {
   const endVal = e.changedTouches[0].clientY;
   const diff = endVal - swipeStartTop.value;
-  const topMin = e.target.offsetHeight * scale.value * -1 /2
-    const topMax = ((parent.value.offsetHeight + (e.target.offsetHeight * scale.value))  - 200) / 2
-  if (top.value + diff < topMin) {
-    top.value = topMin
-  } else if (top.value + diff > topMax) {
-    top.value = topMax
+  const newValue = checkOutsideVerticalBounds(top.value + diff)
+  if (newValue) {
+     top.value = newValue
   } else {
-  top.value += diff;
+     top.value += diff;
   }
 
 };
 
-
+const checkOutsideHorizontalBounds = (newVal) => {
+    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * scale.value))  - 100) / 2
+    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * scale.value)) * -1 + 100;
+    if (newVal > leftMax) {
+      return leftMax
+    } else if(newVal < leftMin) {
+      return leftMin
+    } else {
+      return null;
+    }
+}
 const calculateLeftDiff = (e) => {
   const endVal = e.changedTouches[0].clientX;
   const diff = endVal - swipeStartLeft.value;
-    const leftMax = ((parent.value.offsetWidth + (e.target.offsetWidth * scale.value))  - 100) / 2
-    const leftMin = (parent.value.offsetWidth + (e.target.offsetWidth * scale.value)) * -1 + 100;
-  if (left.value + diff > leftMax) {
-    left.value = leftMax
-  } else if (left.value + diff < leftMin) {
-    left.value = leftMin
+
+  const newValue = checkOutsideHorizontalBounds(left.value + diff)
+  if (newValue) {
+     left.value = newValue
   } else {
-  left.value += diff;
+     left.value += diff;
   }
-    left.value += diff;
 };
 
 // Move rink around
