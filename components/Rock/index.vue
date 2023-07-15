@@ -1,5 +1,5 @@
 <template>
-  <CurlingRockIcon
+  <RockIcon
     :class="rockClasses"
     :style="{
       userSelect: 'none',
@@ -9,13 +9,15 @@
     class="rock row justify-center draggable"
     :id="rockId"
     ref="rockRef"
+    :color="props.rock.color"
+    :selected="isSelected"
   >
     <div :style="`position: absolute; left: ${width + 10}px; background-color: rgba(0,0,0,0.6);`" v-if="longPressedHook" ref="colorSelectionMenu">
-      <CurlingRockIcon class="rock-red rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('red')"/>
-        <CurlingRockIcon class="rock-yellow rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('yellow')"/>
-         <CurlingRockIcon class="rock-blue rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('blue')"/>
+      <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('red')"/>
+        <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('yellow')"/>
+         <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('blue')"/>
     </div>
-  </CurlingRockIcon>
+  </RockIcon>
 </template>
 <style lang="scss">
 .rock {
@@ -24,25 +26,12 @@
   border-radius: 50%;
   top: 0;
   left: 0;
-  border: 1px solid rgb(70, 70, 70);
   z-index: 1;
-  &.rock-red {
-    background-color: $rock-red
-  }
-  &.rock-yellow {
-    background-color: $rock-yellow
-  }
-  &.rock-blue {
-    background-color: $rock-blue
-  }
+
   &.draggable {
   position: absolute;
   }
-  &.selected {
--webkit-box-shadow:0px 0px 6px 4px rgba(255,220,46,0.85);
--moz-box-shadow: 0px 0px 6px 4px rgba(255,220,46,0.85);
-box-shadow: 0px 0px 6px 4px rgba(255,220,46,0.85);
-  }
+  
 }
 </style>
 <script setup>
@@ -56,16 +45,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
-
-
-
-// Determine rock colors
-const isEven = computed(() => props.rock.shot_no % 2 === 0);
-const colorClass = computed(() => {
-  if (longPressedHook.value) return ''
-  if (props.rock.color) return `rock-${props.rock.color}`;
-  return isEven.value ? "rock-yellow" : "rock-red";
-});
 
 // Utility functions
 const getPercentWidth = (pos, element) => {
@@ -142,7 +121,7 @@ const deselectRock = (e, isDragEnd = false) => {
   eventStore.toggleRockSelected(null)
 }
 const rockClasses = computed(() => {
-  return `${colorClass.value} ${isSelected.value ? 'selected' : ''}`
+  return `${isSelected.value ? 'selected' : ''}`
 })
 onClickOutside(rockRef,deselectRock)
 useEventListener(rockRef, "mousedown", startDrag);

@@ -8,13 +8,10 @@
       <q-btn @click="addOop" flat round  size="xs"
         ><q-icon name="add_circle_outline" color="negative" size="md"
       /></q-btn>
-      <!-- <div>OOP: {{ outOfPlayRocks.length }}</div>
-      <div>P: {{ pendingRocks.length }}</div>
-      <div>TOTAL: {{ rockPositions.length }}</div> -->
     </div>
     <div style="position: relative; overflow:hidden" class="col-grow">
       
-      <CurlingRings v-slot="{scale}">
+      <GameRings v-slot="{scale}">
  
         <div
           style="
@@ -48,7 +45,7 @@
 
 
         </div>
-              <CurlingRock
+              <Rock
         v-for="rock in rocksInPlay"
         :key="`rock-${rock.shot_no}-${editedShot.id}`"
         :rock="rock"
@@ -57,7 +54,7 @@
         @outsideBounds="onOutsideBounds"
         :scale="scale"
       />
-      </CurlingRings>
+      </GameRings>
 
     </div>
       <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
@@ -67,9 +64,6 @@
         <q-btn @click="save" flat round  size="xs"
         ><q-icon name="save" color="primary" size="md"
       /></q-btn>
-      <!-- <div>OOP: {{ outOfPlayRocks.length }}</div>
-      <div>P: {{ pendingRocks.length }}</div>
-      <div>TOTAL: {{ rockPositions.length }}</div> -->
     </div>
   </div>
 </template>

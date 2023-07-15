@@ -4,7 +4,7 @@
     <q-card>
       <q-card-section class="row wrap flex-break">
 
-        <GameColorSelect
+        <SelectColor
           v-model="editedGame.home_color"
           class="col-3 q-pr-sm"
           name="home_color"
@@ -23,7 +23,7 @@
           aria-required="true"
            :rules="[VALIDATION_RULES.REQUIRED]"
         />
-        <GameColorSelect
+        <SelectColor
           v-model="editedGame.away_color"
           class="col-3 q-pr-sm"
           name="away_color"
@@ -54,7 +54,7 @@
         :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
         reactive-rules
         />
-        <EditorInputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
+        <InputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
         <q-input class="col-12" v-model="editedGame.name" label="Name (optional)" outlined rounded name="name"/>
       </q-card-section>
       <q-card-actions>

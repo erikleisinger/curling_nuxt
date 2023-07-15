@@ -50,8 +50,6 @@ const tab = ref("rings");
 
 provide('tab', tab)
 
-
-
 const $q = useQuasar();
 
 // Global loading
@@ -82,6 +80,20 @@ const logout = async () => {
   store.resetStore();
   return navigateTo("/login");
 };
+
+onMounted(() => {
+  const client = useSupabaseAuthClient();
+  client.channel('*').on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'shots',
+      },
+      (payload) => console.log(payload)
+    )
+    .subscribe()
+})
 
 
 </script>

@@ -29,10 +29,10 @@
           <q-item-label>{{ game.name }}</q-item-label>
           <q-item-label caption>
             <div class="row">
-              <RockIcon :color="game.home_color" />{{ game.home.name }}
+              <RockIcon :color="game.home_color" class="q-mr-xs" />{{ game.home.name }}
             </div>
             <div class="row">
-              <RockIcon :color="game.away_color" />{{ game.away.name }}
+              <RockIcon :color="game.away_color" class="q-mr-xs"/>{{ game.away.name }}
             </div>
           </q-item-label>
         </q-item-section>
