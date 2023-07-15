@@ -50,9 +50,9 @@
       </q-item>
     </q-list>
   </q-scroll-area>
-      <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteShotType(itemToDelete)">
+      <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteShotType(itemToDelete)">
     Are you sure you want to delete shot type "{{itemToDelete.name ?? 'N/A'}}"
-  </DialogDeleteConfirmation>
+  </DialogConfirmation>
 </template>
 <script setup>
 import {ref, onMounted} from "vue";

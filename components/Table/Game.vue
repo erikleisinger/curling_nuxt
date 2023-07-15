@@ -64,9 +64,9 @@
       </q-item>
     </q-list>
   </q-scroll-area>
-  <DialogDeleteConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
+  <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
     Are you sure you want to delete the game "{{itemToDelete.name ?? 'Unnamed game'}}"
-  </DialogDeleteConfirmation>
+  </DialogConfirmation>
 </template>
 
 <script setup>

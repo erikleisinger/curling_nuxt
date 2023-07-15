@@ -1,6 +1,6 @@
 <template>
   <section class="score-inputs__wrap col-grow">
-    <section class="row q-px-lg" style="">
+    <section class="row q-px-lg">
        <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg q-pr-sm" />
       <q-input
         class="col-6 q-pt-lg q-pr-sm"
@@ -42,7 +42,12 @@
         :disable="globalLoading"
         v-model="editedShot.notes"
       />
+          <section class="row justify-center col-12 q-pt-lg">
+          <q-btn @click="save"  color="primary"
+        >Save changes</q-btn>
+    </section> 
     </section>
+ 
   </section>
 </template>
 <style lang="scss">
@@ -60,9 +65,12 @@ import Turn from "@/types/turn";
 import {useDataStore} from "@/store/data";
 import {useGameStore} from "@/store/game";
 import {TABLE_NAMES} from "@/constants/tables";
+import {toValue} from '@vueuse/core'
 
 const editedShot = inject("editedShot");
 const store = useDataStore();
+
+
 
 // Selection options
 
@@ -92,4 +100,11 @@ onMounted(() => {
 // Disabled/loading state
 
 const {globalLoading} = useLoading();
+
+// Save shot 
+
+const gameStore = useGameStore();
+const save = () => {
+  gameStore.saveShot(toValue(editedShot))
+}
 </script>

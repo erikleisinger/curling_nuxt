@@ -1,6 +1,6 @@
 <template>
   <Dialog v-slot="{onDialogOK, onDialogCancel}">
-    <q-form @submit="onSave($event, onDialogOK)">
+    <q-form @submit="onSave($event, onDialogOK)" ref="form">
       <q-card>
         <q-card-section class="row wrap flex-break">
           <q-input
@@ -66,6 +66,7 @@
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useDataStore} from "@/store/data";
+import {useEventListener} from "@vueuse/core"
 const store = useDataStore();
 
 const props = defineProps({
@@ -122,4 +123,11 @@ const onSave = async (e, callback) => {
   store.insertTeam(newTeam);
   callback();
 };
+
+const form = ref(null);
+useEventListener(form, 'keydown', (e) => {
+if (e.keyCode === 13) {
+    e.preventDefault();
+  }
+})
 </script>

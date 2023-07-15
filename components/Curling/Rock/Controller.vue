@@ -60,6 +60,17 @@
       </CurlingRings>
 
     </div>
+      <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
+      <q-btn @click="carryOverShots" flat round  size="xs" :disabled="editedShot && editedShot.shot_no === 1"
+        ><q-icon name="next_plan" color="primary" size="md"
+      /></q-btn>
+        <q-btn @click="save" flat round  size="xs"
+        ><q-icon name="save" color="primary" size="md"
+      /></q-btn>
+      <!-- <div>OOP: {{ outOfPlayRocks.length }}</div>
+      <div>P: {{ pendingRocks.length }}</div>
+      <div>TOTAL: {{ rockPositions.length }}</div> -->
+    </div>
   </div>
 </template>
 <script setup>
@@ -74,6 +85,10 @@ const isMounted = useMounted();
 
 const editedShot = inject("editedShot");
 
+const save = () => {
+  store.saveShot(editedShot.value)
+}
+
 // Rock positions
 
 // Raw value of rock_positions, converted from JSON --> Array
@@ -84,6 +99,17 @@ const rockPositions = computed(() => {
     return [];
   }
 });
+
+const carryOverShots = () => {
+  if (editedShot.value.shot_no === 1) return;
+  const previousShot = store.getShotByNumberAndEnd(editedShot.value.shot_no - 1, editedShot.value.end_id);
+  const {rock_positions} = previousShot;
+  editedShot.value.rock_positions = rock_positions
+}
+
+watch(editedShot, (val) => {
+
+}, {deep: true, immediate: true})
 
 const rocksInPlay = computed(() => {
   if (!isMounted.value) return [];

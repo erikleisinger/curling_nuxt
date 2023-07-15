@@ -24,6 +24,9 @@ export const useGameStore = defineStore("game", {
     currentEnd: (state) => {
         return state.ends.find(({end_number}) => end_number === state.end)
     },
+    getShotByNumberAndEnd: (state) => {
+        return (shot_no, end_id) => state.shots.find((s) => s.shot_no === shot_no && s.end_id === end_id)
+    },
     getShotColor: (state) => {
         const whoThrowsFirst = state.whoThrowsFirst;
         return (shot_no) => {
@@ -161,9 +164,8 @@ export const useGameStore = defineStore("game", {
         await this.getShot(this.shot, this.end)
         this.setLoading(false)
     },
-    async nextShot(currentShot) {
+    async nextShot() {
         this.setLoading(true)
-        await this.saveShot(currentShot);
         if (this.shot === 16) {
             this.shot = 1;
             this.end += 1;
@@ -173,9 +175,8 @@ export const useGameStore = defineStore("game", {
        await this.getShot(this.shot, this.end)
        this.setLoading(false)
     },
-    async goToShot(shotNo, endNo, currentShot) {
+    async goToShot(shotNo, endNo) {
          this.setLoading(true)
-        await this.saveShot(currentShot)
         this.shot = shotNo;
         this.end = endNo;
         await this.getShot(shotNo, endNo)

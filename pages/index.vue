@@ -66,9 +66,6 @@ const editedShot = ref({});
 provide('editedShot', editedShot);
 
 const store = useGameStore();
-onMounted(() => {
-  store.initGame();
-})
 const shot = computed(() => store.currentShot)
 const {shotEdited} = useModel();
 watch(shot, (val) => {
