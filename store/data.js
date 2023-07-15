@@ -26,7 +26,6 @@ export const useDataStore = defineStore("data", {
       }
     },
     async initData() {
-      console.log('INIT DATA')
       const {setLoading} = useGameStore();
       setLoading(true)
       await this.fetchPlayers();
