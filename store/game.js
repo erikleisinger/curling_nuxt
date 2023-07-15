@@ -70,7 +70,7 @@ export const useGameStore = defineStore("game", {
     },
     async getEnd(endNo) {
         const {id: gameId} = this.game;
-        const endInStore = this.ends.find((e) => e.end_number === endNo);
+        const endInStore = this.ends.find((e) => e.end_number === endNo && e.game_id === gameId);
         if (endInStore) return endInStore;
         const client = useSupabaseAuthClient()
         if (!gameId) return;
@@ -114,7 +114,6 @@ export const useGameStore = defineStore("game", {
         return shot;
     },
     async initGame() {
-        if (this.shots.length && this.ends.length) return;
         const {id: game_id} = this.game;
         const client = useSupabaseAuthClient();
         const {data:gameData} = await client.from(TABLE_NAMES.ENDS).select(`

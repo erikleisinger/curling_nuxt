@@ -65,7 +65,7 @@ border: 1px solid #999;
         return store.ends.reduce((all, current) => {
             return {...all,
             [current.end_number]: {
-                scoring_team_id: current.scoring_team_id.id,
+                scoring_team_id: current.scoring_team_id?.id,
                 points_scored: current.points_scored
             }
             }
@@ -73,7 +73,7 @@ border: 1px solid #999;
     })
     const score = computed(() => {
         return store.ends.reduce((all, current) => {
-            if (current.scoring_team_id.id === game.value.home.id) {
+            if (current.scoring_team_id?.id === game.value.home.id) {
                 return {
                     ...all,
                     home: all.home + current.points_scored
