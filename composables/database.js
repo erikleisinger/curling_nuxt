@@ -1,7 +1,7 @@
 import {TABLE_QUERIES} from "@/constants/query";
 
 export const useDatabase = () => {
-  const getQuery = (tableName: string) => {
+  const getQuery = (tableName) => {
     return TABLE_QUERIES[tableName] ?? "*";
   };
 
@@ -15,8 +15,8 @@ export const useDatabase = () => {
     return client;
   };
 
-  const enumToSelectionOptions = (e: any) => {
-    return Object.entries(e).reduce((all: any, [key, value]) => {
+  const enumToSelectionOptions = (e) => {
+    return Object.entries(e).reduce((all, [key, value]) => {
       if (isNaN(Number(value))) return all;
       return [
         ...all,
