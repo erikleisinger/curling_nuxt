@@ -72,6 +72,7 @@ const props = defineProps({
   edited: Object,
 });
 const checkForExistingPlayer = (val, field) => {
+  if (!val) return true;
   return !Object.entries(editedTeam.value).some(([key, value]) => {
     if (key === "id" || key === "name" || key === field) return false;
     return `${value}` === `${val}`;
