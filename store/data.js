@@ -26,10 +26,12 @@ export const useDataStore = defineStore("data", {
       }
     },
     async initData() {
+      console.log('INIT DATA')
       const {setLoading} = useGameStore();
       setLoading(true)
       await this.fetchPlayers();
       await this.fetchShotTypes();
+      await this.getTeams(true);
       setLoading(false)
     },
     async fetchPlayers(force = false) {

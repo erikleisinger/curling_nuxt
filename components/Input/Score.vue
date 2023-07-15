@@ -1,7 +1,7 @@
 <template>
   <section class="score-inputs__wrap col-grow">
     <section class="row q-px-lg">
-       <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg q-pr-sm" :filter="isPlayerOnCurrentTeam" />
+       <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg q-pr-sm" onlyThrowing />
       <q-input
         class="col-6 q-pt-lg q-pr-sm"
         outlined
@@ -106,16 +106,5 @@ const save = () => {
   gameStore.saveShot(toValue(editedShot))
 }
 
-// Filter player selection by team currently throwing
 
-const throwingTeam = computed(() => gameStore.getThrowingTeamId())
-
-const isPlayerOnCurrentTeam = (player:any) => {
-  const {id} = player;
-  console.log('IS PLAYER ON CURRENT REAM: ', player)
-  const currentThrowingTeam : any = store.teams.find((t:any) => t.id === throwingTeam.value)
-  const {lead_player_id, second_player_id, third_player_id, fourth_player_id, fifth_player_id, sixth_player_id, seventh_player_id} = currentThrowingTeam;
-  return [lead_player_id, second_player_id, third_player_id, fourth_player_id, fifth_player_id, sixth_player_id, seventh_player_id].some((p) => p?.id === id)
-
-}
 </script>
