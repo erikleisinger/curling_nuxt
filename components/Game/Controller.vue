@@ -13,7 +13,7 @@
           class="column justify-cente no-wrap"
         >
      
-          <ScoreBoard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md" />
+          <GameScoreboard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md" />
 
         <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
           <RockController >
@@ -26,7 +26,7 @@
         <section v-if="$q.screen.gt.sm || tab === 'score'"
           id="scorecard"
           key="scorecard" class="column">
-        <ScoreBoard v-if="$q.screen.gt.sm"/>
+        <GameScoreboard v-if="$q.screen.gt.sm"/>
          <InputScore />
          </section>
 

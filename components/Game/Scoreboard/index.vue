@@ -12,7 +12,7 @@
             <tr id="home">
 <td><div class="row no-wrap items-center"><q-icon name="circle" :color="game.home_color"/><div>{{game.home.name}}</div><q-icon name="hardware" class="hammer-icon" v-if="hammerFirstEnd === 'home'"/></div></td>
  <td v-for="index in 11" :key="`td-home-${index}`" >
-                    <ScoreBoardColumn :score="ends[index] && ends[index].scoring_team_id === game.home.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.home.id, game.id)"/>
+                    <GameScoreboardColumn :score="ends[index] && ends[index].scoring_team_id === game.home.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.home.id, game.id)"/>
                 </td>
                   <td>{{score.home}}</td>
             </tr>
@@ -20,7 +20,7 @@
             <tr id="away">
                 <td><div class="row no-wrap items-center"><q-icon name="circle" :color="game.away_color"/><div>{{game.away.name}}</div><q-icon v-if="hammerFirstEnd === 'away'" name="hardware" class="hammer-icon"/></div></td>
                 <td v-for="index in 11" :key="`td-away-${index}`">
-                    <ScoreBoardColumn :score="ends[index] && ends[index].scoring_team_id === game.away.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.away.id, game.id)"/>
+                    <GameScoreboardColumn :score="ends[index] && ends[index].scoring_team_id === game.away.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.away.id, game.id)"/>
                 </td>
                 <td>{{score.away}}</td>
             </tr>
