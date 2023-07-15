@@ -70,8 +70,6 @@ import {toValue} from '@vueuse/core'
 const editedShot = inject("editedShot");
 const store = useDataStore();
 
-
-
 // Selection options
 
 // Enums

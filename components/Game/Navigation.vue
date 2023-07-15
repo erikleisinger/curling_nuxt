@@ -3,8 +3,7 @@
     <q-btn round flat @click="goPrev(false)" :disabled="globalLoading"
       ><q-icon name="chevron_left"
     /></q-btn>
-    <div>End {{ end }} Shot {{ shot }} 
-      </div>
+    <div @click="dialogNavigationOpen = true">End {{ end }} Shot {{ shot }} </div>
     <q-btn round flat @click="goNext(false)" :disabled="globalLoading"
       ><q-icon name="chevron_right"
     /></q-btn>
@@ -12,6 +11,7 @@
   <DialogConfirmation v-if="!!confirmUnsaved" confirmButtonText="Proceed" @close="confirmUnsaved = false" @confirm="confirmUnsaved">
     You have unsaved changes to this shot. By proceeding, you will lose all unsaved changes. Would you like to proceed anyway? 
   </DialogConfirmation>
+  <DialogNavigation v-model="dialogNavigationOpen" @go="goToCustomShot" @cancel="dialogNavigationOpen = false"/>
 </template>
 <script setup>
 import {computed, inject} from "vue";
@@ -31,7 +31,7 @@ watch(currentLocation, () => {
   clear();
 }, {deep: true, immediate: true})
 
-const {prevShot, nextShot} = store;
+const {prevShot, nextShot, goToShot} = store;
 
 const {globalLoading} = useLoading();
 
@@ -59,4 +59,18 @@ const goPrev = async (force = false) => {
     confirmUnsaved.value = null;
   prevShot(editedShot.value);
 };
+
+// Manually go to shot/end
+const dialogNavigationOpen = ref(false)
+
+const goToCustomShot = (data, force = false) => {
+  dialogNavigationOpen.value = false;
+  if (unsavedChanges.value && !force) {
+    confirmUnsaved.value = () => goToCustomShot(data, true)
+    return;
+  }
+  const {shot: shotNo, end: endNo} = data;
+  goToShot(shotNo, endNo)
+
+}
 </script>

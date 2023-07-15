@@ -71,7 +71,9 @@ import {useEventStore} from "@/store/event";
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
 
-// Mobile pinch to zoom in / zoom out
+/**
+ * ZOOM IN / OUT
+ */
 const rink = ref(null);
 const isPinching = ref(false);
 const initialPinch = ref(0);
@@ -138,6 +140,10 @@ useEventListener(document, "touchstart", pinchStart);
 useEventListener(rink, "touchmove", pinchMove);
 useEventListener(document, "touchend", pinchEnd);
 
+/**
+ * RINK DIMENSIONS
+ */
+
 const computedScale = computed(() => `scale(${scale.value})`);
 const PLAYING_AREA_DIMENSIONS = {x: 180, y: 324};
 
@@ -157,6 +163,14 @@ const TEE_LINE_LOCATION_FROM_TOP_INCHES = 72;
 const teeLinePercentFromTop = ref(
   `${(TEE_LINE_LOCATION_FROM_TOP_INCHES / PLAYING_AREA_DIMENSIONS.y) * 100}%`
 );
+
+
+/**
+ * MOVE RINK AROUND
+ */
+
+// Ensure that rink does not go out of viewer bounds
+
 
 const swipeStartTop = ref(0);
 const swipeStartLeft = ref(0);
@@ -213,7 +227,8 @@ const calculateLeftDiff = (e) => {
   }
 };
 
-// Move rink around
+// Event handlers for moving rink
+
 const {direction} = useSwipe(rink, {
   onSwipeStart: (e) => {
     if (isRockSelected.value) return;
