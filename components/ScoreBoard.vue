@@ -10,7 +10,7 @@
         </thead>
         <tbody>
             <tr id="home">
-<td>{{game.home.name}}</td>
+<td><div class="row no-wrap items-center"><div>{{game.home.name}}</div><q-icon name="hardware" class="hammer-icon" v-if="hammerFirstEnd === 'home'"/></div></td>
  <td v-for="index in 11" :key="`td-home-${index}`" >
                     <ScoreBoardColumn :score="ends[index] && ends[index].scoring_team_id === game.home.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.home.id, game.id)"/>
                 </td>
@@ -18,7 +18,7 @@
             </tr>
 
             <tr id="away">
-                <td>{{game.away.name}}</td>
+                <td><div class="row no-wrap items-center"><div>{{game.away.name}}</div><q-icon v-if="hammerFirstEnd === 'away'" name="hardware" class="hammer-icon"/></div></td>
                 <td v-for="index in 11" :key="`td-away-${index}`">
                     <ScoreBoardColumn :score="ends[index] && ends[index].scoring_team_id === game.away.id ? ends[index].points_scored : 0" @update-score="updateScore($event, index, game.away.id, game.id)"/>
                 </td>
@@ -55,12 +55,23 @@ border: 1px solid #999;
         th:nth-child(1) {
             text-align: left;
         }
+        .hammer-icon {
+            transform: rotateZ(45deg)
+        }
     }
 </style>
 <script setup>
     import {useGameStore} from '@/store/game';
     const store = useGameStore();
       const game = computed(() => store.game)
+      const hammerFirstEnd = computed(() => {
+        const {hammer_first_end} = game.value || {};
+        if (!hammer_first_end?.id) return null;
+        if (hammer_first_end.id === game.value?.home?.id || hammer_first_end.id === game?.value?.home) return 'home';
+        if (hammer_first_end.id === game.value?.away?.id | hammer_first_end.id === game?.value?.away) return 'away'
+        return null;
+
+      })
     const ends = computed(() => {
         return store.ends.reduce((all, current) => {
             return {...all,

@@ -111,7 +111,7 @@ const onSave = async (e, callback) => {
         }, {})
   const newGame = {...data};
         if (editedGame.value.id) {
-          newGame.id = editedPlayer.value.id
+          newGame.id = editedGame.value.id
         }
     store.insertGame(newGame)
     callback();

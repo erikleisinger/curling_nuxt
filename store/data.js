@@ -112,6 +112,11 @@ export const useDataStore = defineStore("data", {
         } else {
           this.games.splice(index, 1, gameModel(game));
         }
+        const gameStore = useGameStore();
+        if (game?.id === gameStore?.game?.id) {
+        
+          gameStore.setGame(game)
+        }
       }
     },
     async insertPlayer(player) {
