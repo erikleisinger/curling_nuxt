@@ -1,10 +1,6 @@
-import {TABLE_SCHEMA} from "@/constants/tables";
 import {TABLE_QUERIES} from "@/constants/query";
 
 export const useDatabase = () => {
-  const getSchema = (tableName: string) => {
-    return TABLE_SCHEMA[tableName];
-  };
   const getQuery = (tableName: string) => {
     return TABLE_QUERIES[tableName] ?? "*";
   };
@@ -31,5 +27,5 @@ export const useDatabase = () => {
       ];
     }, []);
   };
-  return {enumToSelectionOptions, getClient, getSchema, getQuery, getUser};
+  return {enumToSelectionOptions, getClient, getQuery, getUser};
 };
