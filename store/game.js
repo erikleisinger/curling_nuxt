@@ -16,7 +16,7 @@ export const useGameStore = defineStore("game", {
   getters: {
     currentShot: (state) => {
         if (!state.game) return null;
-        const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id === state.currentEnd.id);
+        const shot = state.shots.find((s) => s.shot_no === state.shot && s.end_id === state.currentEnd?.id);
         if (shot) return shot;
         const {newShot}= useModel();
         return newShot({end_id: state.currentEnd?.id, shot_no: state.shot})
@@ -29,7 +29,7 @@ export const useGameStore = defineStore("game", {
     },
     getShotColor: (state) => {
         const whoThrowsFirst = state.whoThrowsFirst;
-        return (shot_no) => {
+    return (shot_no) => {
             if (shot_no % 2 === 0) {
                 return whoThrowsFirst === 'home' ? state.game.away_color : state.game.home_color
             }
@@ -41,13 +41,13 @@ export const useGameStore = defineStore("game", {
         const {id} = hammer_first_end || {};
         if (state.end === 1) return state.game.away.id === id ? 'home' : 'away'
         const whoScoredLast = [...state.ends]
-        .filter((e) => e.end_number <= state.end)
+        .filter((e) => e.end_number < state.end)
         .sort((a,b) => a.end_number - b.end_number)
         .reduce((id, current) => {
             if (current.points_scored > 0) return current.scoring_team_id.id;
             return id
         }, id)
-        return state.game.away.id === whoScoredLast ? 'home' : 'away'
+        return state.game.away.id === whoScoredLast ? 'away' : 'home'
     },
   },
   actions: {
