@@ -1,6 +1,5 @@
 <template>
      <q-select
-        class="col-6 q-pt-lg q-pl-sm"
         outlined
         rounded
         label="Shot type"

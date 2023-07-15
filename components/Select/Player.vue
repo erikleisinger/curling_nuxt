@@ -46,14 +46,14 @@ const getPlayers = async (force) => {
   loadingPlayers.value = false;
 };
 
-
+const {sortAlphabetically} = useSort();
 const playerOptions = computed(() => {
   let players = [...store.players];
   if (props.filter) {
     players.filter(props.filter)
   }
   const {formatPlayerForSelection} = useFormat();
-  return players.map((d) => formatPlayerForSelection(d));
+  return players.map((d) => formatPlayerForSelection(d)).sort((a,b) => sortAlphabetically(a.label, b.label))
 });
 const {globalLoading} = useLoading();
 

@@ -1,8 +1,8 @@
 <template>
   <section class="score-inputs__wrap col-grow">
     <section class="row q-px-lg">
-       <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg q-pr-sm" onlyThrowing />
-            <SelectShotType v-model="editedShot.type_id"/>
+       <SelectPlayer v-model="editedShot.player_id" class="col-12 q-pt-lg" onlyThrowing />
+            <SelectShotType v-model="editedShot.type_id"  class="col-6 q-pt-lg q-pr-sm"/>
              <q-select
         class="col-6 q-pt-lg q-pl-sm"
         outlined
@@ -26,7 +26,7 @@
         :disable="globalLoading"
       />
       <q-input
-        class="col-6 q-pt-lg q-pr-sm"
+        class="col-6 q-pt-lg q-pl-sm"
         outlined
         rounded
         label="Score"
