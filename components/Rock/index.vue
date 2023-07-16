@@ -16,8 +16,9 @@
 </template>
 <style lang="scss">
 .rock {
-  height: 3.28%;
+  height: v-bind(rockDiameterPercent);
   aspect-ratio: 1/1;
+  width: 5.9%;
   border-radius: 50%;
   top: 0;
   left: 0;
@@ -40,6 +41,7 @@ import {
 } from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import type {OnClickOutsideHandler} from "@vueuse/core";
+import {ROCK_DIAMETER_PERCENT} from '@/constants/dimensions'
 
 const props = defineProps({
   rock: {
@@ -52,6 +54,8 @@ const props = defineProps({
   },
 });
 
+const rockDiameterPercent = ref(`${ROCK_DIAMETER_PERCENT}%`)
+
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
 
 // Utility functions
@@ -61,7 +65,7 @@ const getPercentWidth = (pos: number, element: HTMLElement | null) => {
       throw new Error(
         "Error calculating rock percent width: argument `element` is not an element"
       );
-    return (pos / (element.offsetWidth * props.scale)) * 100 - props.scale;
+    return (pos / (element.offsetWidth * props.scale)) * 100 - ROCK_DIAMETER_PERCENT;
   } catch {
     return 0;
   }
@@ -72,7 +76,7 @@ const getPercentHeight = (pos: number, element: HTMLElement | null) => {
       throw new Error(
         "Error calculating rock percent height: argument `element` is not an element"
       );
-    return (pos / (element.offsetHeight * props.scale)) * 100 - props.scale;
+    return (pos / (element.offsetHeight * props.scale)) * 100 - ROCK_DIAMETER_PERCENT;
   } catch {
     return 0;
   }
@@ -96,6 +100,7 @@ const mouse = reactive(useMouseInElement(useParentElement()));
 
 const enableDragging = ref(false);
 const isDragging = ref(false);
+
 const startDrag = (e: Event) => {
   if (!isSelected.value) return;
   enableDragging.value = true;

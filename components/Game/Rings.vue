@@ -67,6 +67,7 @@
 <script setup>
 import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
+import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
@@ -145,23 +146,20 @@ useEventListener(document, "touchend", pinchEnd);
  */
 
 const computedScale = computed(() => `scale(${scale.value})`);
-const PLAYING_AREA_DIMENSIONS = {x: 180, y: 324};
 
 // Calculate aspect ratio
 const aspectRatio = ref(
-  `${PLAYING_AREA_DIMENSIONS.x}/${PLAYING_AREA_DIMENSIONS.y}`
+  `${RINK_ASPECT_RATIO}`
 );
 
-// Calculate rings dimensions & location from top of total rink
+// rings dimensions & location from top of total rink
 
-const ringsHeightPercent = ref(`${(144 / PLAYING_AREA_DIMENSIONS.y) * 100}%`);
-const ringsWidthPercent = ref(`${(144 / PLAYING_AREA_DIMENSIONS.x) * 100}%`);
+const ringsHeightPercent = ref(`${RINGS_HEIGHT_PERCENT}%`);
+const ringsWidthPercent = ref(`${RINGS_WIDTH_PERCENT}%`);
 
-// Calculate tee-line location relative to top of rink
-
-const TEE_LINE_LOCATION_FROM_TOP_INCHES = 72;
+// tee-line location relative to top of rink
 const teeLinePercentFromTop = ref(
-  `${(TEE_LINE_LOCATION_FROM_TOP_INCHES / PLAYING_AREA_DIMENSIONS.y) * 100}%`
+  `${TEE_LINE_PERCENT_FROM_TOP}%`
 );
 
 
