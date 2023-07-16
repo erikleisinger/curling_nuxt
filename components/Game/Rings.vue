@@ -159,7 +159,7 @@ const ringsWidthPercent = ref(`${RINGS_WIDTH_PERCENT}%`);
 
 // tee-line location relative to top of rink
 const teeLinePercentFromTop = ref(
-  `${TEE_LINE_PERCENT_FROM_TOP}%`
+  `calc(${TEE_LINE_PERCENT_FROM_TOP}% - 0.75px)`
 );
 
 

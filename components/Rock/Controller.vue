@@ -98,12 +98,13 @@ const carryOverShots = () => {
   if (editedShot.value.shot_no === 1) return;
   const previousShot = store.getShotByNumberAndEnd(editedShot.value.shot_no - 1, editedShot.value.end_id);
   const {rock_positions} = previousShot;
+  editedShot.value.rock_positions = {};
+  nextTick(() => {
   editedShot.value.rock_positions = rock_positions
+  });
+
 }
 
-watch(editedShot, (val) => {
-
-}, {deep: true, immediate: true})
 
 const rocksInPlay = computed(() => {
   if (!isMounted.value) return [];

@@ -18,7 +18,7 @@
 .rock {
   height: v-bind(rockDiameterPercent);
   aspect-ratio: 1/1;
-  width: 5.9%;
+  width: 5.8%;
   border-radius: 50%;
   top: 0;
   left: 0;
@@ -87,6 +87,7 @@ const getPercentHeight = (pos: number, element: HTMLElement | null) => {
 const positionX = ref(0);
 const positionY = ref(0);
 onMounted(() => {
+  console.log('rock mounted')
   positionY.value = props.rock?.y ?? 0;
   positionX.value = props.rock?.x ?? 0;
 });
