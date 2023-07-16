@@ -15,6 +15,7 @@
   top: -15%;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.4);
   &:after {
     content: "";
     height: 50%;
