@@ -65,9 +65,9 @@
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
-import {useDataStore} from "@/store/data";
+import {useTeamStore} from "@/store/teams";
 import {useEventListener} from "@vueuse/core"
-const store = useDataStore();
+const store = useTeamStore();
 
 const props = defineProps({
   edited: Object,
@@ -104,7 +104,7 @@ const teamOptions = computed(() => {
   });
 });
 onMounted(() => {
-  store.getTeams();
+  store.fetchTeams();
   if (props.edited) {
     Object.assign(editedTeam.value, props.edited);
   }

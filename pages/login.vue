@@ -57,6 +57,7 @@
 <script setup>
 import {ref} from "vue";
 import {VALIDATION_RULES} from "@/constants/validation";
+import {useAuthStore} from '@/store/auth'
 
 const TAB_NAMES = ref({
   SIGN_IN: 'signin',
@@ -70,6 +71,8 @@ const password = ref(null);
 const loading = ref(false);
 const tab = ref(TAB_NAMES.value.SIGN_IN);
 const loginForm = ref(null)
+
+const authStore = useAuthStore();
 
 
 
@@ -85,11 +88,17 @@ const onSubmit = async (e) => {
     {}
   );
   if (tab.value === TAB_NAMES.value.SIGN_IN) {
-    const {data, error} = await client.auth.signInWithPassword(formData);
-    console.log('LOGGED IN: ', data)
-    if (!error) navigateTo("/");
+    const {error} = await client.auth.signInWithPassword(formData);
+    if (!error) {
+      authStore.setLoggedIn(true)
+      navigateTo("/");
+    } else if(error?.message) {
+      setBanner(error.message)
+    } else {
+      console.log('error logging in: ', error)
+    }
   } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
-    const {data, error} = await client.auth.signUp(formData);
+    const {error} = await client.auth.signUp(formData);
     if (error?.message) {
         setBanner(error.message)
     }

@@ -79,7 +79,7 @@ import {useSwipe} from "@vueuse/core";
 const props = defineProps({
   edited: Object,
 })
-const loading = ref(true);
+const loading = ref(false);
 const itemToDelete = ref(null)
 const store = useGameStore();
 const dataStore = useDataStore();
@@ -91,10 +91,6 @@ const loadGames = async (force) => {
   await dataStore.getGames(force);
   loading.value = false;
 };
-
-onMounted(() => {
-  loadGames();
-});
 
 const selectGame = (game) => {
   store.setGame(game);

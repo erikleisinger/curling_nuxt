@@ -2,6 +2,8 @@ import {defineStore} from "pinia";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useStorage } from '@vueuse/core'
 import {useBannerStore} from '@/store/banner'
+import {useTeamStore} from '@/store/teams'
+import {newShot} from '@/models/shot'
 
 export const useGameStore = defineStore("game", {
   state: () => ({
@@ -36,8 +38,23 @@ export const useGameStore = defineStore("game", {
             return whoThrowsFirst === 'home' ? state.game?.home?.id : state.game?.away?.id
         }
     },
+    getCurrentThrower: (state) => {
+        const teamStore = useTeamStore();
+        const {shot:shotNo} = state;
+        const currentTeam = teamStore.teams.find((t) => t.id === state.getThrowingTeamId(shotNo));
+        if (shotNo <= 4) {
+          return currentTeam?.lead_player_id?.id || currentTeam?.lead_player_id;
+        } else if (shotNo <= 8 ) {
+          return currentTeam?.second_player_id?.id || currentTeam?.second_player_id;
+        } else if (shotNo <= 12) {
+          return currentTeam?.third_player_id?.id || currentTeam?.third_player_id;
+        } else if (shotNo <= 16){
+          return currentTeam?.fourth_player_id?.id || currentTeam?.fourth_player_id;
+        }
+    },
     getShotColor: (state) => {
         const whoThrowsFirst = state.whoThrowsFirst;
+        if (!whoThrowsFirst) return null;
     return (shot_no) => {
             if (shot_no % 2 === 0) {
                 return whoThrowsFirst === 'home' ? state.game.away_color : state.game.home_color
@@ -46,6 +63,7 @@ export const useGameStore = defineStore("game", {
         }
     }, 
     whoThrowsFirst: (state) => {
+        if (!state.game?.id) return null;
         const {hammer_first_end} = state.game || {};
         const {id} = hammer_first_end || {};
         if (state.end === 1) return state.game.away.id === id ? 'home' : 'away'
@@ -68,17 +86,12 @@ export const useGameStore = defineStore("game", {
         return end;
     },
     async createShot(endId, endNumber, shotNo) {
-        const client = useSupabaseAuthClient()
-        const insertData = {'end_id': Number(endId), 'shot_no': Number(shotNo)}
+        const shotToCreate = {...newShot(), 'end_id': Number(endId), 'shot_no': Number(shotNo), player_id: this.getCurrentThrower}
         if (shotNo !== 1) {
             const previousShot = await this.getShot(shotNo - 1, endNumber)
-            insertData['rock_positions'] = previousShot.rock_positions
+            shotToCreate['rock_positions'] = previousShot.rock_positions
         }
-        const {getQuery} = useDatabase();
-        const {data, error} = await client.from(TABLE_NAMES.SHOTS).insert(insertData).select(getQuery(TABLE_NAMES.SHOTS));
-        if (error) return null;
-        const [shot] = data;
-        return shot;
+        return shotToCreate
     },
     async getEnd(endNo) {
         const {id: gameId} = this.game;
@@ -126,6 +139,7 @@ export const useGameStore = defineStore("game", {
         return shot;
     },
     async initGame() {
+        this.setLoading(true)
         const {id: game_id} = this.game;
         const client = useSupabaseAuthClient();
         const {data:gameData} = await client.from(TABLE_NAMES.ENDS).select(`
@@ -148,9 +162,11 @@ export const useGameStore = defineStore("game", {
         }, {shots: [], ends: []})
         this.ends = ends;
         this.shots = shots;
+        await this.getShot(this.shot, this.end)
+        this.setLoading(false)
     },  
     insertShot(shot) {
-        const index = this.shots.findIndex((s) => s.id === shot.id);
+        const index = this.shots.findIndex((s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id);
         if (index === -1) {
             this.shots.push(shot)
         } else {
@@ -159,7 +175,6 @@ export const useGameStore = defineStore("game", {
     },
     async prevShot(currentShot) {
         this.setLoading(true)
-        await this.saveShot(currentShot);
         if (!(this.shot === 1 && this.end === 1)) {
             if (this.shot === 1) {
                 this.end -= 1;
@@ -195,6 +210,9 @@ export const useGameStore = defineStore("game", {
         localStorage.removeItem('ends')
         localStorage.removeItem('shots')
         localStorage.removeItem('game')
+        localStorage.removeItem('players')
+        localStorage.removeItem('games')
+        localStorage.removeItem('teams')
     },
     async saveShot(shot) {  
         const {shotEdited} = useModel();

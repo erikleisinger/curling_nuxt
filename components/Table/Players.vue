@@ -61,7 +61,7 @@ import type Player from "@/types/player";
 const store = usePlayerStore();
 
 const players = computed(() => store.players);
-const loading = ref(false);
+const loading = ref<boolean>(false);
 
 const loadPlayers = async (force: boolean = false) => {
   loading.value = true;
@@ -89,7 +89,8 @@ const edit = (player: Player) => {
 
 const itemToDelete = ref(null);
 const deletePlayer = async (player: Player) => {
-  const {id} = player;
+  const {id = null} = player;
+  
   await store.deletePlayer(id);
   itemToDelete.value = null;
 };

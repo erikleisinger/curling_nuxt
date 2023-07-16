@@ -7,7 +7,7 @@
       color="primary"
     />
      <q-list bordered separator >
-      <q-item clickable @click="toggleTeamDialog">
+      <q-item clickable @click="toggleTeamDialog(null)">
         <q-item-section >
           <div class="row items-center">
           <q-icon name="add" size="sm" class="q-mr-xs"/><div>Add new team</div>
@@ -68,21 +68,21 @@
     Are you sure you want to delete team "{{itemToDelete.name ?? 'Unnamed team'}}"
   </DialogConfirmation>
 </template>
-<script setup>
+<script setup lang="ts">
 import {ref, onMounted} from "vue";
-import {useDataStore} from '@/store/data'
+import {useTeamStore} from '@/store/teams'
 import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
 import {TABLE_NAMES} from '@/constants/tables'
-  const dataStore = useDataStore()
+import type Team from '@/types/team'
+  const teamStore = useTeamStore();
 
-const {sortNameAlphabetically} = useSort()
-  const teams = computed(() => [...dataStore.teams].sort(sortNameAlphabetically))
+  const teams = computed(() => [...teamStore.teams])
   const loading = ref(false)
 
-const loadTeams = async (force) => {
+const loadTeams = async (force:boolean = false) => {
   loading.value = true;
-await dataStore.getTeams(force);
+await teamStore.fetchTeams(force);
 loading.value = false;
 }
 onMounted(async () => {
@@ -91,7 +91,7 @@ loadTeams();
 
 const {toggleTeamDialog} = useEditorStore();
 
-const edit = (team) => {
+const edit = (team:Team) => {
     toggleTeamDialog({
         ...team,
         lead_player_id: team.lead_player_id?.id,
@@ -111,8 +111,9 @@ const {direction} = useSwipe(tableArea, {threshold: 200, onSwipeEnd: (e) => {
 }})
 
 const itemToDelete = ref(null)
-const deleteTeam = async ({id}) => {
-  await dataStore.deleteItem(id, TABLE_NAMES.TEAMS)
+const deleteTeam = async (team:Team) => {
+    const {id = null} = team;
+  await teamStore.deleteTeam(id)
   itemToDelete.value = null
 }
 

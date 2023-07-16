@@ -54,21 +54,15 @@ onMounted(() => {
   if (props.edited) {
     Object.assign(editedPlayer.value, props.edited);
     
-  } else {
-    Object.assign(editedPlayer, props.edited)
   }
-  console.log(editedPlayer.value)
 });
 
 const playerStore = usePlayerStore();
 const onSave = async (e: SubmitEvent, callback: Function) => {
   const newPlayer = {...editedPlayer.value}
-  console.log(newPlayer)
   if (!editedPlayer.value.id) {
-    console.log('deleteing id')
     delete newPlayer.id;
   }
-  console.log(newPlayer)
   playerStore.insertPlayer(newPlayer);
   callback();
 };

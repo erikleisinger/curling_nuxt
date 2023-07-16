@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface DatabaseSchema {
+export interface Database {
   public: {
     Tables: {
       ends: {
@@ -15,18 +15,24 @@ export interface DatabaseSchema {
           end_number: number | null
           game_id: number | null
           id: number
+          points_scored: number | null
+          scoring_team_id: number | null
         }
         Insert: {
           created_at?: string | null
           end_number?: number | null
           game_id?: number | null
           id?: number
+          points_scored?: number | null
+          scoring_team_id?: number | null
         }
         Update: {
           created_at?: string | null
           end_number?: number | null
           game_id?: number | null
           id?: number
+          points_scored?: number | null
+          scoring_team_id?: number | null
         }
         Relationships: [
           {
@@ -34,14 +40,23 @@ export interface DatabaseSchema {
             columns: ["game_id"]
             referencedRelation: "games"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ends_scoring_team_id_fkey"
+            columns: ["scoring_team_id"]
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
           }
         ]
       }
       games: {
         Row: {
           away: number | null
+          away_color: string | null
           created_at: string | null
+          hammer_first_end: number | null
           home: number | null
+          home_color: string | null
           id: number
           name: string | null
           profile_id: string | null
@@ -49,8 +64,11 @@ export interface DatabaseSchema {
         }
         Insert: {
           away?: number | null
+          away_color?: string | null
           created_at?: string | null
+          hammer_first_end?: number | null
           home?: number | null
+          home_color?: string | null
           id?: number
           name?: string | null
           profile_id?: string | null
@@ -58,8 +76,11 @@ export interface DatabaseSchema {
         }
         Update: {
           away?: number | null
+          away_color?: string | null
           created_at?: string | null
+          hammer_first_end?: number | null
           home?: number | null
+          home_color?: string | null
           id?: number
           name?: string | null
           profile_id?: string | null
@@ -69,6 +90,12 @@ export interface DatabaseSchema {
           {
             foreignKeyName: "games_away_fkey"
             columns: ["away"]
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_hammer_first_end_fkey"
+            columns: ["hammer_first_end"]
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
@@ -88,19 +115,16 @@ export interface DatabaseSchema {
       }
       players: {
         Row: {
-          created_at: string | null
           id: number
           name: string | null
           profile_id: string | null
         }
         Insert: {
-          created_at?: string | null
           id?: number
           name?: string | null
           profile_id?: string | null
         }
         Update: {
-          created_at?: string | null
           id?: number
           name?: string | null
           profile_id?: string | null
@@ -197,17 +221,33 @@ export interface DatabaseSchema {
       shottypes: {
         Row: {
           id: number
+          is_global: boolean | null
           name: string | null
+          profile_id: string | null
+          shot_type: Database["public"]["Enums"]["shot_type_enum"] | null
         }
         Insert: {
           id?: number
+          is_global?: boolean | null
           name?: string | null
+          profile_id?: string | null
+          shot_type?: Database["public"]["Enums"]["shot_type_enum"] | null
         }
         Update: {
           id?: number
+          is_global?: boolean | null
           name?: string | null
+          profile_id?: string | null
+          shot_type?: Database["public"]["Enums"]["shot_type_enum"] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "shottypes_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       teams: {
         Row: {
@@ -326,7 +366,7 @@ export interface DatabaseSchema {
       }
     }
     Enums: {
-      [_ in never]: never
+      shot_type_enum: "Draw" | "Hit"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -2,6 +2,8 @@ import {defineStore} from "pinia";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useBannerStore} from "@/store/banner";
 import {useGameStore} from "@/store/game"
+import {useTeamStore} from '@/store/teams'
+import { usePlayerStore } from "@/store/players";
 import {useStorage} from "@vueuse/core";
 
 export const useDataStore = defineStore("data", {
@@ -29,7 +31,9 @@ export const useDataStore = defineStore("data", {
       const {setLoading} = useGameStore();
       setLoading(true)
       await this.fetchShotTypes();
-      await this.getTeams(true);
+      await useTeamStore().fetchTeams();
+      await usePlayerStore().fetchPlayers();
+      await this.getGames()
       setLoading(false)
     },
     async fetchShotTypes(force) {

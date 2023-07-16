@@ -41,10 +41,10 @@ html {
 <script setup>
 import {computed, onMounted, provide, ref, watch} from "vue";
 import {useGameStore} from '@/store/game'
+import {useAuthStore} from '@/store/auth'
 definePageMeta({
   middleware: "game",
 });
-
 
 const tab = ref("rings");
 
@@ -73,27 +73,14 @@ watch(shot, (val) => {
 /* End edited shot */
 
 // Logout
-
+const authStore = useAuthStore();
 const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();
-  store.resetStore();
+  authStore.setLoggedIn(false)
   return navigateTo("/login");
 };
 
-onMounted(() => {
-  const client = useSupabaseAuthClient();
-  client.channel('*').on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'shots',
-      },
-      (payload) => console.log(payload)
-    )
-    .subscribe()
-})
 
 
 </script>

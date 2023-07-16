@@ -9,6 +9,9 @@ export const useDatabase = () => {
     const user = useSupabaseUser();
     return user?.value;
   };
+  const getUserId = () => {
+    return getUser()?.id;
+  }
 
   const getClient = () => {
     const client = useSupabaseAuthClient();
@@ -27,5 +30,5 @@ export const useDatabase = () => {
       ];
     }, []);
   };
-  return {enumToSelectionOptions, getClient, getQuery, getUser};
+  return {enumToSelectionOptions, getClient, getQuery, getUser, getUserId};
 };

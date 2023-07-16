@@ -26,7 +26,7 @@ import {usePlayerStore} from "@/store/players";
 import {useGameStore } from '@/store/game'
 const props = defineProps({
     player: String,
-    filter: Boolean,
+    filter: Function,
 })
 const emit = defineEmits(['update:modelValue'])
 const editedPlayer = computed({
@@ -46,6 +46,7 @@ const getPlayers = async (force) => {
   loadingPlayers.value = false;
 };
 
+const {formatPlayerForSelection} = useFormat();
 const playerOptions = computed(() => {
   let players = [...store.players];
   if (props.filter) {
