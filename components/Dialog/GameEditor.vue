@@ -104,6 +104,7 @@ onMounted(() => {
 });
 
 const onSave = async (e, callback) => {
+  console.log(e)
      const formData = new FormData(e.target);
      
         const data = [...formData.entries()].reduce((all, [key, value]) => {

@@ -1,41 +1,48 @@
 <template>
   <Dialog v-slot="{onDialogOK, onDialogCancel}">
-            <q-form @submit="onSave($event, onDialogOK)">
-    <q-card>
-      <q-card-section class="row wrap flex-break">
-<q-input class="col-12" v-model="editedPlayer.name" label="Player name" outlined rounded name="name"  aria-required="true"
-           :rules="[VALIDATION_RULES.REQUIRED]"/>
-     
-      </q-card-section>
-      <q-card-actions>
-        <q-btn color="primary" label="Save" type="submit" />
-        <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
-      </q-card-actions>
-    </q-card>
+    <q-form @submit="onSave($event, onDialogOK)">
+      <q-card>
+        <q-card-section class="row wrap flex-break">
+          <q-input
+            class="col-12"
+            v-model="editedPlayer.name"
+            label="Player name"
+            outlined
+            rounded
+            name="name"
+            aria-required="true"
+            :rules="[VALIDATION_RULES.REQUIRED]"
+          />
+        </q-card-section>
+        <q-card-actions>
+          <q-btn color="primary" label="Save" type="submit" />
+          <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
+        </q-card-actions>
+      </q-card>
     </q-form>
   </Dialog>
 </template>
-<script setup>
+<script setup lang="ts">
 import {VALIDATION_RULES} from "@/constants/validation";
-import {TABLE_NAMES} from '@/constants/tables'
+import {TABLE_NAMES} from "@/constants/tables";
 import {useDataStore} from "@/store/data";
+import {usePlayerStore} from "@/store/players";
+import {extractFormData} from "@/utils/form";
+import type Team from '@/types/team'
+import type Player from '@/types/player'
 const store = useDataStore();
 
 const props = defineProps({
-    edited: Object,
-})
+  edited: Object,
+});
 
-const editedPlayer = ref({
+const editedPlayer = ref<Player>({
   id: null,
-  home: null,
-  away: null,
   name: null,
-  home_color: "red",
-  away_color: "yellow",
-  start_time: null,
+  profile_id: null,
 });
 const teamOptions = computed(() => {
-  return store.teams.map((t) => {
+  return store.teams.map((t:Team) => {
     return {
       label: t.name,
       value: t.id,
@@ -45,22 +52,24 @@ const teamOptions = computed(() => {
 onMounted(() => {
   store.getTeams();
   if (props.edited) {
-    Object.assign(editedPlayer.value, props.edited)
+    Object.assign(editedPlayer.value, props.edited);
+    
+  } else {
+    Object.assign(editedPlayer, props.edited)
   }
+  console.log(editedPlayer.value)
 });
 
-const onSave = async (e, callback) => {
-     const formData = new FormData(e.target);
-     
-        const data = [...formData.entries()].reduce((all, [key, value]) => {
-            return {...all, [key]: value}
-        }, {})
-        const newPlayer = {...data};
-        if (editedPlayer.value.id) {
-          newPlayer.id = editedPlayer.value.id
-        }
-    store.insertPlayer(newPlayer)
-    callback();
-
-}
+const playerStore = usePlayerStore();
+const onSave = async (e: SubmitEvent, callback: Function) => {
+  const newPlayer = {...editedPlayer.value}
+  console.log(newPlayer)
+  if (!editedPlayer.value.id) {
+    console.log('deleteing id')
+    delete newPlayer.id;
+  }
+  console.log(newPlayer)
+  playerStore.insertPlayer(newPlayer);
+  callback();
+};
 </script>

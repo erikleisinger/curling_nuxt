@@ -22,7 +22,7 @@
       </q-select>
 </template>
 <script setup>
-import {useDataStore} from "@/store/data";
+import {usePlayerStore} from "@/store/players";
 import {useGameStore } from '@/store/game'
 const props = defineProps({
     player: String,
@@ -37,23 +37,21 @@ const editedPlayer = computed({
         emit('update:modelValue', val)
     }
 })
-const store = useDataStore();
+const store = usePlayerStore();
 const loadingPlayers = ref(false);
-const {fetchPlayers, getShotTypes} = store;
+const {fetchPlayers} = store;
 const getPlayers = async (force) => {
   loadingPlayers.value = true;
   await fetchPlayers(force);
   loadingPlayers.value = false;
 };
 
-const {sortAlphabetically} = useSort();
 const playerOptions = computed(() => {
   let players = [...store.players];
   if (props.filter) {
     players = players.filter(props.filter)
   }
-  const {formatPlayerForSelection} = useFormat();
-  return players.map((d) => formatPlayerForSelection(d)).sort((a,b) => sortAlphabetically(a.label, b.label))
+  return players.map((d) => formatPlayerForSelection(d))
 });
 const {globalLoading} = useLoading();
 

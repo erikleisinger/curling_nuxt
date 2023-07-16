@@ -28,22 +28,9 @@ export const useDataStore = defineStore("data", {
     async initData() {
       const {setLoading} = useGameStore();
       setLoading(true)
-      await this.fetchPlayers();
       await this.fetchShotTypes();
       await this.getTeams(true);
       setLoading(false)
-    },
-    async fetchPlayers(force = false) {
-      if (this.players.length && !force) return;
-      const client = useSupabaseAuthClient();
-      const {data} = await client.from(TABLE_NAMES.PLAYERS).select("*");
-      const errors = false;
-      if (errors) {
-        const bannerStore = useBannerStore();
-        bannerStore.setText("Error getting players.");
-      } else if (data) {
-        this.players = data.sort((a,b) => a?.name?.toLowerCase() - b?.name?.toLowerCase())
-      }
     },
     async fetchShotTypes(force) {
       if (this.shotTypes.length && !force) return;
@@ -119,31 +106,6 @@ export const useDataStore = defineStore("data", {
           gameStore.setGame(game)
         }
       }
-    },
-    async insertPlayer(player) {
-      const client = useSupabaseAuthClient();
-      const {getUser} = useDatabase();
-      const {id} = getUser() ?? {};
-      const {data, error} = await client
-        .from(TABLE_NAMES.PLAYERS)
-        .upsert({
-          ...player,
-          profile_id: id,
-        })
-        .select();
-        if (error) {
-          const {code} = error || {};
-        const bannerStore = useBannerStore();
-        bannerStore.setText(`Error creating player (code ${code})`, "negative");
-        } else {
-          const [player] = data;
-          const index = this.players.findIndex((g) => g.id === player.id);
-          if (index === -1) {
-            this.players.push(player);
-          } else {
-            this.players.splice(index, 1, player);
-          }
-        }
     },
     async insertTeam(team) {
       const client = useSupabaseAuthClient();

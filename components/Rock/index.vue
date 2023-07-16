@@ -12,11 +12,6 @@
     :color="props.rock.color"
     :selected="isSelected"
   >
-    <div :style="`position: absolute; left: ${width + 10}px; background-color: rgba(0,0,0,0.6);`" v-if="longPressedHook" ref="colorSelectionMenu">
-      <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('red')"/>
-        <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('yellow')"/>
-         <RockIcon class="rock" :style="`height: ${width + 10}px; width: ${width + 10}px;`" @click="changeColor('blue')"/>
-    </div>
   </RockIcon>
 </template>
 <style lang="scss">
@@ -29,29 +24,58 @@
   z-index: 1;
 
   &.draggable {
-  position: absolute;
+    position: absolute;
   }
-  
 }
 </style>
-<script setup>
+<script setup lang="ts">
 import {computed, reactive, ref, onMounted, onUnmounted} from "vue";
-import {onLongPress, useEventListener, useMouseInElement, useElementSize, onClickOutside} from "@vueuse/core";
-import {useEventStore} from '@/store/event'
+import {
+  useEventListener,
+  useMouseInElement,
+  useElementSize,
+  onClickOutside,
+  useParentElement,
+  toValue,
+} from "@vueuse/core";
+import {useEventStore} from "@/store/event";
+import type {OnClickOutsideHandler} from "@vueuse/core";
 
 const props = defineProps({
-  rock: Object,
-  scale: Number,
+  rock: {
+    type: Object,
+    required: true,
+  },
+  scale: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
 
 // Utility functions
-const getPercentWidth = (pos, element) => {
-  return (pos / (element.offsetWidth * props.scale)) * 100 - props.scale;
+const getPercentWidth = (pos: number, element: HTMLElement | null) => {
+  try {
+    if (!element)
+      throw new Error(
+        "Error calculating rock percent width: argument `element` is not an element"
+      );
+    return (pos / (element.offsetWidth * props.scale)) * 100 - props.scale;
+  } catch {
+    return 0;
+  }
 };
-const getPercentHeight = (pos, element) => {
-  return (pos / (element.offsetHeight * props.scale)) * 100 - props.scale;
+const getPercentHeight = (pos: number, element: HTMLElement | null) => {
+  try {
+    if (!element)
+      throw new Error(
+        "Error calculating rock percent height: argument `element` is not an element"
+      );
+    return (pos / (element.offsetHeight * props.scale)) * 100 - props.scale;
+  } catch {
+    return 0;
+  }
 };
 
 // Define x,y and set initial values
@@ -59,71 +83,77 @@ const getPercentHeight = (pos, element) => {
 const positionX = ref(0);
 const positionY = ref(0);
 onMounted(() => {
-  positionY.value = props.rock.y;
-  positionX.value = props.rock.x;
+  positionY.value = props.rock?.y ?? 0;
+  positionX.value = props.rock?.x ?? 0;
 });
 
 // Drag events
 
-const target = document.querySelector("#curlingRockWrapper");
-const mouse = reactive(useMouseInElement(target));
-
-
+const target: HTMLElement | null = document.querySelector(
+  "#curlingRockWrapper"
+);
+const mouse = reactive(useMouseInElement(useParentElement()));
 
 const enableDragging = ref(false);
-const isDragging = ref(false)
-const startDrag = (e) => {
+const isDragging = ref(false);
+const startDrag = (e: Event) => {
   if (!isSelected.value) return;
   enableDragging.value = true;
 };
-const $q = useQuasar()
-const onDrag = (e) => {
-  if ($q.platform.is.mobile && e.type === 'mousemove') return;
-  if (e.type === 'mousemove') e.preventDefault();
-  if (!enableDragging.value || longPressedHook.value) return;
-    isDragging.value = true;
-    
+const $q = useQuasar();
+const onDrag = (e: Event) => {
+  if ($q.platform.is.mobile && e.type === "mousemove") return;
+  if (e.type === "mousemove") e.preventDefault();
+  if (!enableDragging.value) return;
+  isDragging.value = true;
+
   const {elementY, elementX, isOutside} = mouse;
   positionX.value = getPercentWidth(elementX, target);
   positionY.value = getPercentHeight(elementY, target);
   emit("outsideBounds", isOutside);
-    isDragging.value = false;
-
+  isDragging.value = false;
 };
 
-const endDrag = (e) => {
+const endDrag = (e: TouchEvent | PointerEvent) => {
   if (!enableDragging.value) return;
   enableDragging.value = false;
   const {isOutside} = mouse;
   if (isOutside) {
     emit("remove");
   } else {
-    emit("update", {x: positionX.value, y: positionY.value, color: props.rock.color});
+    emit("update", {
+      x: positionX.value,
+      y: positionY.value,
+      color: props.rock.color,
+    });
   }
   deselectRock(e, true);
 };
 
 const rockRef = ref(null);
-const rockId = `rock-${props.rock.shot_no}`
+const rockId = `rock-${props.rock.shot_no}`;
 
-const eventStore = useEventStore()
-const selectedRock = computed(() => eventStore.rockSelected)
+const eventStore = useEventStore();
+const selectedRock = computed(() => eventStore.rockSelected);
 const isSelected = computed(() => {
-
   return selectedRock.value === rockId;
-})
-const selectRock = (e) => {
+});
+const selectRock = () => {
   if (isSelected.value) return;
-  eventStore.toggleRockSelected(rockId)
-}
-const deselectRock = (e, isDragEnd = false) => {
-  if (Array.from(e.target.classList).includes("rock") && !isDragEnd) return;
-  eventStore.toggleRockSelected(null)
-}
+  eventStore.toggleRockSelected(rockId);
+};
+const deselectRock = (
+  e: PointerEvent | TouchEvent,
+  isDragEnd: boolean = false
+) => {
+  const target = e.target as Element;
+  if (Array.from(target.classList).includes("rock") && !isDragEnd) return;
+  eventStore.toggleRockSelected(null);
+};
 const rockClasses = computed(() => {
-  return `${isSelected.value ? 'selected' : ''}`
-})
-onClickOutside(rockRef,deselectRock)
+  return `${isSelected.value ? "selected" : ""}`;
+});
+onClickOutside(rockRef, deselectRock);
 useEventListener(rockRef, "mousedown", startDrag);
 useEventListener(rockRef, "click", selectRock);
 useEventListener(rockRef, "touchstart", startDrag);
@@ -131,42 +161,4 @@ useEventListener(document, "mousemove", onDrag);
 useEventListener(document, "touchmove", onDrag);
 useEventListener(document, "mouseup", endDrag);
 useEventListener(document, "touchend", endDrag);
-
-
-/**
- * COLOR CHANGING
- * Long press to open menu
- */
-
-const longPressedHook = ref(false);
-const initMenu = ref(false)
-const onLongPressCallback = () => {
-  longPressedHook.value = true;
-  initMenu.value = true;
-}
-onLongPress(
-  rockRef,
-  onLongPressCallback,
-  {delay: 1500}
-)
-
-const {width} = useElementSize(rockRef)
-
-const colorSelectionMenu = ref(null)
-onClickOutside(colorSelectionMenu, (E) => {
-  if(enableDragging.value) return;
-  if (initMenu.value) {
-    initMenu.value = false;
-    return;
-  }
-  longPressedHook.value = false
-})
-
-const changeColor = (color) => {
-  emit("update", {x: positionX.value, y: positionY.value, color});
-  longPressedHook.value = false;
-}
-
-
-
 </script>
