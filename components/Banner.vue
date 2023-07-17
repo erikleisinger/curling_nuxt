@@ -26,9 +26,11 @@
 <script setup lang="ts">
 import {computed} from "vue";
 import {useBannerStore} from "@/store/banner";
+import type {BannerColors} from '@/types/color'
+
 
 const store = useBannerStore();
 const {clear} = store;
-const bannerText = computed(() => store.text);
-const bannerColor = computed(() => store.color)
+const bannerText = computed<string | null>(() => store.text);
+const bannerColor = computed<BannerColors | null>(() => store.color)
 </script>

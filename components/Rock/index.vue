@@ -87,7 +87,6 @@ const getPercentHeight = (pos: number, element: HTMLElement | null) => {
 const positionX = ref(0);
 const positionY = ref(0);
 onMounted(() => {
-  console.log('rock mounted')
   positionY.value = props.rock?.y ?? 0;
   positionX.value = props.rock?.x ?? 0;
 });
