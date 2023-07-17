@@ -4,7 +4,7 @@ export interface BasicPlayer {
 }
 
 interface Player extends BasicPlayer {
-  profile_id: string | null;
+  profile_id?: string | null;
 }
 
 export default Player;

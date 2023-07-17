@@ -13,15 +13,17 @@
   </DialogConfirmation>
   <DialogNavigation v-model="dialogNavigationOpen" @go="goToCustomShot" @cancel="dialogNavigationOpen = false"/>
 </template>
-<script setup>
+<script setup lang="ts">
 import {computed, inject} from "vue";
 import {useGameStore} from "@/store/game";
 import {useRefHistory} from '@vueuse/core'
+import type Shot from '@/types/Shot'
+import type {Ref} from 'vue'
 const store = useGameStore();
-const shot = computed(() => store.shot);
-const end = computed(() => store.end);
-
-const editedShot = inject("editedShot");
+const shot = computed<number>(() => store.shot);
+const end = computed<number>(() => store.end);
+const editedShotKey: InjectionKey<Ref<Shot>> = Symbol('editedShot')
+const editedShot = inject(editedShotKey, ref({}));
 
   const {history: shotHistory, clear} = useRefHistory(editedShot, {deep: true});
 
@@ -41,7 +43,7 @@ const unsavedChanges = computed(() => !objTheSame(editedShot.value, store.curren
 // Null if confirm dialog is not present
 // When truthy, this ref is a function that will be executed on dialog @confirm event
 // Either 'goNext' or 'goPrev'
-const confirmUnsaved = ref(null)
+const confirmUnsaved = ref<null | Function>(null)
 
 const goNext = async (force = false) => {
   if (unsavedChanges.value && !force) {
@@ -49,7 +51,7 @@ const goNext = async (force = false) => {
     return;
   }
   confirmUnsaved.value = null;
-  nextShot(editedShot.value);
+  nextShot();
 };
 const goPrev = async (force = false) => {
    if (unsavedChanges.value && !force) {
@@ -57,13 +59,13 @@ const goPrev = async (force = false) => {
     return;
   }
     confirmUnsaved.value = null;
-  prevShot(editedShot.value);
+  prevShot();
 };
 
 // Manually go to shot/end
 const dialogNavigationOpen = ref(false)
 
-const goToCustomShot = (data, force = false) => {
+const goToCustomShot = (data: {shot: number, end:number}, force = false) => {
   dialogNavigationOpen.value = false;
   if (unsavedChanges.value && !force) {
     confirmUnsaved.value = () => goToCustomShot(data, true)

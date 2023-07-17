@@ -1,0 +1,1 @@
+export type NullOrUnDefined = null | undefined

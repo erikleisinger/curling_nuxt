@@ -38,10 +38,11 @@ html {
   height: inherit;
 }
 </style>
-<script setup>
-import {computed, onMounted, provide, ref, watch} from "vue";
+<script setup lang="ts">
+import {computed, onMounted, provide, ref, watch, InjectionKey} from "vue";
 import {useGameStore} from '@/store/game'
 import {useAuthStore} from '@/store/auth'
+import type Shot from '@/types/shot'
 definePageMeta({
   middleware: "game",
 });
@@ -59,15 +60,26 @@ const {globalLoading} = useLoading()
 
 //  Edited shot provided to all children
 //  GameNavigation, InputScore, RockController
+const editedShotKey: InjectionKey<Ref<Shot>> = Symbol('editedShot')
+const editedShot = ref({
+   end_id: null,
+    player_id: null,
+    shot_no: null,
+    turn: null,
+    line: null,
+    score: null,
+    type_id: null,
+    notes: null,
+    rock_positions: {}
+});
 
-const editedShot = ref({});
-provide('editedShot', editedShot);
+provide(editedShotKey, editedShot);
 
 const store = useGameStore();
 const shot = computed(() => store.currentShot)
-const {shotEdited} = useModel();
 watch(shot, (val) => {
-  editedShot.value = shotEdited({...val})
+  if (!val) return;
+  editedShot.value = val;
 }, {deep: true, immediate: true})
 
 /* End edited shot */

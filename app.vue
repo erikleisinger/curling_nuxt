@@ -3,7 +3,7 @@
   <NuxtPage/>
   </NuxtLayout>
 </template>
-<script setup>
+<script setup lang="ts">
 import {useDataStore} from '@/store/data'
 import {useGameStore} from '@/store/game'
 import {useAuthStore} from '@/store/auth'
@@ -16,7 +16,7 @@ onBeforeMount(() => {
   authStore.setLoggedIn(!!user?.value)
 })
 
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const isLoggedIn = computed<boolean>(() => authStore.isLoggedIn)
 watch(isLoggedIn, (val) => {
   if (val) {
   useDataStore().initData();
@@ -26,7 +26,7 @@ gameStore.resetStore();
 
 }, {immediate: true})
 
-const currentGameId = computed(() => gameStore.game?.id);
+const currentGameId = computed<number | null>(() => gameStore.game?.id);
 watch(currentGameId, () => {
   gameStore.initGame();
 })
