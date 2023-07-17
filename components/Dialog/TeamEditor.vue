@@ -1,6 +1,6 @@
 <template>
   <Dialog v-slot="{onDialogOK, onDialogCancel}">
-    <q-form @submit="onSave($event, onDialogOK)" ref="form">
+    <q-form @submit="onSave(onDialogOK)" ref="form">
       <q-card>
         <q-card-section class="row wrap flex-break">
           <q-input
@@ -62,30 +62,41 @@
     </q-form>
   </Dialog>
 </template>
-<script setup>
+<script setup lang="ts">
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useTeamStore} from "@/store/teams";
 import {useEventListener} from "@vueuse/core"
+import type Team from '@/types/team'
+import type {TeamPlayers} from '@/types/team'
+import type PlayerId from '@/types/player'
 const store = useTeamStore();
 
 const props = defineProps({
   edited: Object,
 });
-const checkForExistingPlayer = (val, field) => {
+
+/**
+ * BEGIN VALIDATION
+ */
+const checkForExistingPlayer = (val:PlayerId, field:TeamPlayers) => {
   if (!val) return true;
   return !Object.entries(editedTeam.value).some(([key, value]) => {
     if (key === "id" || key === "name" || key === field) return false;
     return `${value}` === `${val}`;
   });
 };
-const playerRules = (field) => {
-  return (val) =>
+const playerRules = (field:TeamPlayers) => {
+  return (val:PlayerId) =>
     checkForExistingPlayer(val, field) || "Player already selected";
 };
 
-const editedTeam = ref({
-  id: null,
+/**
+ * END VALIDATION
+ */
+
+const editedTeam = ref<Team>({
+  id: undefined,
   name: null,
   lead_player_id: null,
   second_player_id: null,
@@ -110,24 +121,12 @@ onMounted(() => {
   }
 });
 
-const onSave = async (e, callback) => {
-  const formData = new FormData(e.target);
-
-  const data = [...formData.entries()].reduce((all, [key, value]) => {
-    return {...all, [key]: value};
-  }, {});
-  const newTeam = {...data};
-  if (editedTeam.value.id) {
-    newTeam.id = editedTeam.value.id;
+const onSave = async (callback: Function) => {
+  const newTeam = {...editedTeam.value};
+  if (!editedTeam.value.id) {
+    delete newTeam.id
   }
   store.insertTeam(newTeam);
   callback();
 };
-
-const form = ref(null);
-useEventListener(form, 'keydown', (e) => {
-if (e.keyCode === 13) {
-    e.preventDefault();
-  }
-})
 </script>

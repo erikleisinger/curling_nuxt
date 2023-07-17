@@ -69,9 +69,9 @@ export const useGameStore = defineStore("game", {
       return null;
     },
     getShotColor() {
-      const whoThrowsFirst = this.whoThrowsFirst;
-      if (!whoThrowsFirst) return null;
       return (shot_no: number) => {
+        const whoThrowsFirst = this.whoThrowsFirst;
+      if (!whoThrowsFirst) return null;
         if (shot_no % 2 === 0) {
           return whoThrowsFirst === "home"
             ? this.game.away_color

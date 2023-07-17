@@ -60,39 +60,42 @@ border: 1px solid #999;
         }
     }
 </style>
-<script setup>
+<script setup lang="ts">
     import {useGameStore} from '@/store/game';
+    import type Game from '@/types/game'
+    import type End from '@/types/end'
     const store = useGameStore();
-      const game = computed(() => store.game)
+      const game = computed(() => store.game) as unknown as Ref<Game>;
+
       const hammerFirstEnd = computed(() => {
         const {hammer_first_end} = game.value || {};
         if (!hammer_first_end?.id) return null;
-        if (hammer_first_end.id === game.value?.home?.id || hammer_first_end.id === game?.value?.home) return 'home';
-        if (hammer_first_end.id === game.value?.away?.id | hammer_first_end.id === game?.value?.away) return 'away'
+        if (hammer_first_end.id === game.value?.home?.id ) return 'home';
+        if (hammer_first_end.id === game.value?.away?.id) return 'away'
         return null;
 
       })
     const ends = computed(() => {
-        return store.ends.reduce((all, current) => {
+        return store.ends.reduce((all, current: End) => {
             return {...all,
             [current.end_number]: {
-                scoring_team_id: current.scoring_team_id?.id,
+                scoring_team_id: current.scoring_team_id,
                 points_scored: current.points_scored
             }
             }
         }, {})
     })
     const score = computed(() => {
-        return store.ends.reduce((all, current) => {
-            if (current.scoring_team_id?.id === game.value.home.id) {
+        return store.ends.reduce((all, current:End) => {
+            if (current.scoring_team_id === game.value.home.id) {
                 return {
                     ...all,
-                    home: all.home + current.points_scored
+                    home: all.home + (current.points_scored ?? 0)
                 }
             } else {
                 return {
                     ...all,
-                    away: all.away + current.points_scored
+                    away: all.away + (current.points_scored ?? 0)
                 }
             }
         }, {home: 0, away: 0})

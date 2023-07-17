@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" >
 .rink {
   background-color: white;
   position: absolute;
@@ -64,7 +64,7 @@
   }
 }
 </style>
-<script setup>
+<script setup lang="ts">
 import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
@@ -75,12 +75,12 @@ const isRockSelected = computed(() => eventStore.rockSelected);
 /**
  * ZOOM IN / OUT
  */
-const rink = ref(null);
+const rink = ref<HTMLElement | null>(null);
 const isPinching = ref(false);
 const initialPinch = ref(0);
-const rafId = ref(null)
+const rafId = ref<number | null>(null)
 const scale = ref(1);
-const pinchStart = (e) => {
+const pinchStart = (e: TouchEvent) => {
   if (isRockSelected.value) return;
   if (e.touches.length !== 2) return;
   isPinching.value = true;
@@ -91,16 +91,16 @@ const pinchStart = (e) => {
 };
 const SCALE_MIN = 1;
 const SCALE_MAX = 5;
-const handlePinchMove = (e) => {
+const handlePinchMove = (e: TouchEvent) => {
 
   const currentTouches = Math.hypot(
     e.touches[0].pageX - e.touches[1].pageX,
     e.touches[0].pageY - e.touches[1].pageY
   );
   const isZoomIn = currentTouches - initialPinch.value > 0;
-  if (Math.abs(currentTouches - initialPinch.value) >= 10) {
 
-  
+// Set threshold of 10 to ensure accidental pinch is not registered
+  if (Math.abs(currentTouches - initialPinch.value) >= 10) {
   const toAdd =
     (Math.abs(currentTouches - initialPinch.value) / 1000) * scale.value;
   if (isZoomIn) {
@@ -117,6 +117,7 @@ const handlePinchMove = (e) => {
     }
   }
   }
+
   const isOutsideVertical = checkOutsideVerticalBounds(top.value)
   const isOutsideHorizontal = checkOutsideHorizontalBounds(left.value)
   if (isOutsideVertical) top.value = isOutsideVertical
@@ -124,14 +125,14 @@ const handlePinchMove = (e) => {
   rafId.value = null;
 };
 
-const pinchMove = (e) => {
+const pinchMove = (e:TouchEvent) => {
     if (isRockSelected.value) return;
   if (!isPinching.value) return;
   if (e.touches.length !== 2) return;
   if (rafId.value) return;
   rafId.value = window.requestAnimationFrame(() => handlePinchMove(e));
 }
-const pinchEnd = (e) => {
+const pinchEnd = (e:TouchEvent) => {
   if (!isPinching.value) return;
   setTimeout(() => {
     isPinching.value = false;
@@ -140,6 +141,10 @@ const pinchEnd = (e) => {
 useEventListener(document, "touchstart", pinchStart);
 useEventListener(rink, "touchmove", pinchMove);
 useEventListener(document, "touchend", pinchEnd);
+
+/**
+ * END ZOOM IN / ZOOM OUT
+ */
 
 /**
  * RINK DIMENSIONS
@@ -178,8 +183,10 @@ const left = ref(0);
 const leftComputed = computed(() => `${left.value}px`);
 const rightComputed = computed(() => `${left.value * -1}px`);
 
-const parent = useParentElement()
-const checkOutsideVerticalBounds = (newVal) => {
+const parent = useParentElement() as Ref<HTMLElement> 
+const checkOutsideVerticalBounds = (newVal:number) => {
+  if (!rink?.value) return null;
+  // TODO: Error handling when no rink ref
   const topMin = rink.value.offsetHeight * scale.value * -1 /2
     const topMax = ((parent.value.offsetHeight + (rink.value.offsetHeight * scale.value))  - 200) / 2
     if (newVal > topMax) {
@@ -190,7 +197,20 @@ const checkOutsideVerticalBounds = (newVal) => {
       return null;
     }
 }
-const calculateTopDiff = (e) => {
+const checkOutsideHorizontalBounds = (newVal: number) => {
+    if (!rink?.value) return null;
+  // TODO: Error handling when no rink ref
+    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * scale.value))  - 100) / 2
+    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * scale.value)) * -1 + 100;
+    if (newVal > leftMax) {
+      return leftMax
+    } else if(newVal < leftMin) {
+      return leftMin
+    } else {
+      return null;
+    }
+}
+const calculateTopDiff = (e:TouchEvent) => {
   const endVal = e.changedTouches[0].clientY;
   const diff = endVal - swipeStartTop.value;
   const newValue = checkOutsideVerticalBounds(top.value + diff)
@@ -202,18 +222,7 @@ const calculateTopDiff = (e) => {
 
 };
 
-const checkOutsideHorizontalBounds = (newVal) => {
-    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * scale.value))  - 100) / 2
-    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * scale.value)) * -1 + 100;
-    if (newVal > leftMax) {
-      return leftMax
-    } else if(newVal < leftMin) {
-      return leftMin
-    } else {
-      return null;
-    }
-}
-const calculateLeftDiff = (e) => {
+const calculateLeftDiff = (e: TouchEvent) => {
   const endVal = e.changedTouches[0].clientX;
   const diff = endVal - swipeStartLeft.value;
 
@@ -225,22 +234,24 @@ const calculateLeftDiff = (e) => {
   }
 };
 
-// Event handlers for moving rink
+// Drag to move
 
 const {direction} = useSwipe(rink, {
-  onSwipeStart: (e) => {
+  onSwipeStart: (e:TouchEvent) => {
     if (isRockSelected.value) return;
     if (isPinching.value) return;
     if (e.touches.length !== 1) return;
-    if (Array.from(e.target.classList).includes("rock")) return;
+    const target = e.target as HTMLElement;
+    if (Array.from(target.classList).includes("rock")) return;
     swipeStartTop.value = e.changedTouches[0].clientY;
     swipeStartLeft.value = e.changedTouches[0].clientX;
   },
-  onSwipe: (e) => {
+  onSwipe: (e:TouchEvent) => {
     if (isRockSelected.value) return;
     if (isPinching.value) return;
     if (e.touches.length !== 1) return;
-    if (Array.from(e.target.classList).includes("rock")) return;
+    const target = e.target as HTMLElement;
+    if (Array.from(target.classList).includes("rock")) return;
     calculateTopDiff(e);
     calculateLeftDiff(e);
     swipeStartTop.value = e.changedTouches[0].clientY;

@@ -5,7 +5,7 @@ interface Shot {
   line: number | null;
   notes: string | null;
   player_id: number | null;
-  rock_positions: Json | object;
+  rock_positions: Json;
   score: number | null;
   shot_no: number | null;
   turn: number | null;

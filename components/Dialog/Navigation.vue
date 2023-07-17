@@ -13,7 +13,8 @@
         </q-card>
     </q-dialog>
 </template>
-<script setup>
+<script setup lang="ts">
+import type {QInput} from 'quasar/dist/types'
     const props = defineProps({
         modelValue: Boolean,
 
@@ -22,8 +23,8 @@
     const shot = ref(1);
     const end = ref(1);
 
-    const shotInput = ref(null);
-    const endInput = ref(null)
+    const shotInput = ref<QInput | null>(null);
+    const endInput = ref<QInput | null>(null)
 
     const disabled = computed(() => shotInput.value?.hasError || endInput.value?.hasError)
 </script>

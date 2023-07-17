@@ -67,17 +67,27 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
+import {EditedShotInjectionKey} from '@/symbols/editedShot'
+import type RockPosition from '@/types/rockPosition'
 
 import {useGameStore} from "@/store/game";
 
-const store = useGameStore();
+const store = useGameStore()!;
 
 const isMounted = useMounted();
 
-const editedShot = inject("editedShot");
+const editedShot = inject(EditedShotInjectionKey, ref({ end_id: null,
+    player_id: null,
+    shot_no: null,
+    turn: null,
+    line: null,
+    score: null,
+    type_id: null,
+    notes: null,
+    rock_positions: {}}));
 
 const save = () => {
   store.saveShot(editedShot.value)
@@ -86,18 +96,18 @@ const save = () => {
 // Rock positions
 
 // Raw value of rock_positions, converted from JSON --> Array
-const rockPositions = computed(() => {
+const rockPositions = computed<RockPosition[]>(() => {
   try {
-    return JSON.parse(editedShot?.value?.rock_positions)?.rocks ?? [];
+    return JSON.parse(`${editedShot?.value?.rock_positions}`)?.rocks ?? [];
   } catch {
     return [];
   }
 });
 
 const carryOverShots = () => {
-  if (editedShot.value.shot_no === 1) return;
+  if (!editedShot.value.shot_no || editedShot.value.shot_no === 1) return;
   const previousShot = store.getShotByNumberAndEnd(editedShot.value.shot_no - 1, editedShot.value.end_id);
-  const {rock_positions} = previousShot;
+  const {rock_positions} = previousShot || {rock_positions: {}}
   editedShot.value.rock_positions = {};
   nextTick(() => {
   editedShot.value.rock_positions = rock_positions
@@ -108,16 +118,17 @@ const carryOverShots = () => {
 
 const rocksInPlay = computed(() => {
   if (!isMounted.value) return [];
-  return rockPositions.value.filter((s) => !s.removed);
+  return rockPositions.value.filter((s: RockPosition) => !s.removed);
 });
 
 const outOfPlayRocks = computed(() => {
-  return rockPositions.value.filter((s) => !!s.removed);
+  return rockPositions.value.filter((s: RockPosition) => !!s.removed);
 });
 
 const pendingRocks = computed(() => {
   const {shot_no} = editedShot.value;
-  const pending = [];
+  const pending:number[] = [];
+  if (!shot_no) return pending;
   for (let x = 1; x <= shot_no; x++) {
     const rock = rockPositions.value.find((r) => r.shot_no === x);
     if (!rock) pending.push(x);
@@ -129,7 +140,7 @@ const pendingRocks = computed(() => {
 
 // Will replace or insert a rock in editedShot.rock_positions
 // Checks for existing rock based on rock.shot_no
-const upsertRock = (rock) => {
+const upsertRock = (rock: RockPosition) => {
   const {shot_no} = rock;
   const newRockPositions = [...rockPositions.value];
   const index = newRockPositions.findIndex((r) => r.shot_no === shot_no);
@@ -142,25 +153,30 @@ const upsertRock = (rock) => {
     rocks: newRockPositions,
   });
 };
-const onRockPositionUpdated = (e, shot_no) => {
+const onRockPositionUpdated = (e: RockPosition, shot_no: number) => {
   upsertRock({...e, shot_no});
 };
 
-const onRemoveRock = (rock) => {
+const onRemoveRock = (rock: RockPosition) => {
   deleteOverlay.value = false;
   upsertRock({...rock, removed: true});
 };
 
 // ADD Rocks
 
-const addRock = (rock) => {
-  if (rocksInPlay.value.length >= editedShot.value.shot_no) return;
+const addRock = (rock: RockPosition) => {
+  // TODO: Error if editedShot has no shot number
+  if (!editedShot.value?.shot_no || rocksInPlay.value.length >= editedShot.value.shot_no) return;
   upsertRock(rock);
 };
 
 const addNewRock = () => {
-  const color = store.getShotColor(pendingRocks.value[0]);
-  const newRock = {x: 50, y: 50, shot_no: pendingRocks.value[0] || 1, color};
+  const [nextPending] = pendingRocks.value ?? [];
+  if (!nextPending) return;
+  const color = store.getShotColor && store.getShotColor(nextPending);
+  if (!color) return;
+  // TODO: Error if no color
+  const newRock = {x: 50, y: 50, shot_no: nextPending || 1, color};
   addRock(newRock);
 };
 const addOop = () => {
@@ -171,7 +187,7 @@ const addOop = () => {
 // Delete overlay
 
 const deleteOverlay = ref(false);
-const onOutsideBounds = (bool) => {
+const onOutsideBounds = (bool:boolean) => {
   deleteOverlay.value = bool;
 };
 

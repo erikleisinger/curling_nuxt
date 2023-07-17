@@ -69,6 +69,7 @@
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from '@/constants/tables'
 import {useDataStore} from "@/store/data";
+import {useTeamStore} from '@/store/teams'
 const store = useDataStore();
 
 const props = defineProps({
@@ -85,8 +86,10 @@ const editedGame = ref({
   start_time: null,
   hammer_first_end: null,
 });
+
+const teamStore = useTeamStore();
 const teamOptions = computed(() => {
-  return store.teams.map((t) => {
+  return teamStore.teams.map((t) => {
     return {
       label: t.name || 'Unnamed team',
       value: t.id,
@@ -97,7 +100,6 @@ const hammerTeamOptions = computed(() => {
   return teamOptions.value.filter((t) => t.value === editedGame.value.home || t.value === editedGame.value.away)
 })
 onMounted(() => {
-  store.getTeams();
   if (props.edited) {
     Object.assign(editedGame.value, props.edited)
   }

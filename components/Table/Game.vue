@@ -69,13 +69,14 @@
   </DialogConfirmation>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref, onMounted} from "vue";
 import {useGameStore} from "@/store/game";
 import {useEditorStore} from "@/store/editor";
 import {useDataStore} from "@/store/data";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useSwipe} from "@vueuse/core";
+import type Game from '@/types/game'
 const props = defineProps({
   edited: Object,
 })
@@ -86,18 +87,18 @@ const dataStore = useDataStore();
 
 const games = computed(() => dataStore.games);
 
-const loadGames = async (force) => {
+const loadGames = async (force:boolean) => {
   loading.value = true;
   await dataStore.getGames(force);
   loading.value = false;
 };
 
-const selectGame = (game) => {
+const selectGame = (game:Game) => {
   store.setGame(game);
   navigateTo("/");
 };
 
-const edit = (game) => {
+const edit = (game:Game) => {
   const {formatDate} = useFormat();
   const editorStore = useEditorStore();
   editorStore.toggleGameDialog({
@@ -105,11 +106,14 @@ const edit = (game) => {
     home: game.home.id,
     away: game.away.id,
     hammer_first_end: game.hammer_first_end?.id,
-    start_time: formatDate(game.start_time, "YYYY/MM/DD", null),
+    start_time: formatDate(game.start_time, "YYYY/MM/DD", ""),
   });
 };
 
-const deleteGame = async ({id}) => {
+const deleteGame = async (game:Game) => {
+  const {id} = game;
+  if (!id) return;
+  // TODO: Error handling if no game id
   await dataStore.deleteItem(id, TABLE_NAMES.GAMES)
   itemToDelete.value = null
 }

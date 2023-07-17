@@ -33,7 +33,7 @@
       </transition-group>
             </KeepAlive>
 </template>
-<style lang="scss">
+<style lang="scss" lang="ts">
 #rings {
     overscroll-behavior-y: v-bind('overscroll');
 }
@@ -43,14 +43,10 @@ import {inject, ref} from "vue";
 import {useElementSize, useResizeObserver} from '@vueuse/core'
 const $q = useQuasar();
 const tab = inject('tab')
-const wow = ref(null)
-
 const overscroll = 'contain'
-
 const scoreBoard = ref(null)
 const scoreBoardHeight = ref(useElementSize(scoreBoard).height)
 const showScoreBoard = ref(false)
-
 useResizeObserver(scoreBoard, (entries) => {
       const [entry] = entries;
       const {height} = entry.contentRect;

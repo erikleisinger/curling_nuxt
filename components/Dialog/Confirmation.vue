@@ -15,7 +15,7 @@
         </q-card>
     </q-dialog>
 </template>
-<script setup>
+<script setup lang="ts">
     const isOpen = ref(true)
     const emit = defineEmits(['close', 'confirm'])
     const props = defineProps({

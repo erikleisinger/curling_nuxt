@@ -18,12 +18,11 @@ import {computed, inject} from "vue";
 import {useGameStore} from "@/store/game";
 import {useRefHistory} from '@vueuse/core'
 import type Shot from '@/types/Shot'
-import type {Ref} from 'vue'
+import {EditedShotInjectionKey} from '@/symbols/editedShot'
 const store = useGameStore();
 const shot = computed<number>(() => store.shot);
 const end = computed<number>(() => store.end);
-const editedShotKey: InjectionKey<Ref<Shot>> = Symbol('editedShot')
-const editedShot = inject(editedShotKey, ref({}));
+const editedShot = inject(EditedShotInjectionKey, ref({}));
 
   const {history: shotHistory, clear} = useRefHistory(editedShot, {deep: true});
 

@@ -1,5 +1,7 @@
+export type PlayerId = number | null | undefined
+
 export interface BasicPlayer {
-  id?: number | null;
+  id?: PlayerId;
   name: string | null;
 }
 

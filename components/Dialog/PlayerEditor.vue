@@ -25,38 +25,24 @@
 <script setup lang="ts">
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
-import {useDataStore} from "@/store/data";
 import {usePlayerStore} from "@/store/players";
-import {extractFormData} from "@/utils/form";
 import type Team from '@/types/team'
 import type Player from '@/types/player'
-const store = useDataStore();
 
 const props = defineProps({
   edited: Object,
 });
-
 const editedPlayer = ref<Player>({
   id: null,
   name: null,
   profile_id: null,
 });
-const teamOptions = computed(() => {
-  return store.teams.map((t:Team) => {
-    return {
-      label: t.name,
-      value: t.id,
-    };
-  });
-});
 onMounted(() => {
-  store.getTeams();
   if (props.edited) {
     Object.assign(editedPlayer.value, props.edited);
     
   }
 });
-
 const playerStore = usePlayerStore();
 const onSave = async (e: SubmitEvent, callback: Function) => {
   const newPlayer = {...editedPlayer.value}
