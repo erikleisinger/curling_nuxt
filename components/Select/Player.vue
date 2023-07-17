@@ -27,13 +27,13 @@ import {useGameStore} from "@/store/game";
 import type Player from "@/types/player";
 type FilterFunction = (arg:Player) => boolean
 const props = defineProps<{
-  player: string
+  modelValue: number,
   filter: FilterFunction
 }>();
 const emit = defineEmits(["update:modelValue"]);
 const editedPlayer = computed({
   get() {
-    return props.player;
+    return props.modelValue;
   },
   set(val) {
     emit("update:modelValue", val);

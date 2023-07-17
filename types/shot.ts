@@ -1,6 +1,6 @@
 import Json from "./json";
 interface Shot {
-  end_id: number | null
+  end_id: number | null;
   id?: number | null;
   line: number | null;
   notes: string | null;

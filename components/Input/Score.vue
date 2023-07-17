@@ -71,7 +71,7 @@ import {useTeamStore} from "@/store/teams"
 import {TABLE_NAMES} from "@/constants/tables";
 import {toValue} from '@vueuse/core'
 
-const editedShot : any = inject("editedShot");
+const editedShot = inject('editedShot');
 const store = useDataStore();
 
 // Selection options

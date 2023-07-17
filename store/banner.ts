@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { BannerColors } from 'types/color';
+import { BannerColors } from '@/types/color';
 
 interface BannerStoreState {
     color: BannerColors

@@ -9,7 +9,7 @@ import type Shot from "@/types/shot";
 import type Game from "@/types/game";
 import type {Database} from "@/types/supabase";
 import type { SupabaseShotReturn } from "types/fetch";
-import { BannerColors } from "types/color";
+import { BannerColors } from "@/types/color";
 
 export const useGameStore = defineStore("game", {
   state: () => ({

@@ -73,13 +73,13 @@ const editedShot = ref({
     rock_positions: {}
 });
 
-provide(editedShotKey, editedShot);
+provide('editedShot', editedShot);
 
 const store = useGameStore();
 const shot = computed(() => store.currentShot)
 watch(shot, (val) => {
   if (!val) return;
-  editedShot.value = val;
+  Object.assign(editedShot.value, val)
 }, {deep: true, immediate: true})
 
 /* End edited shot */

@@ -33,7 +33,7 @@
       </transition-group>
             </KeepAlive>
 </template>
-<style lang="scss" lang="ts">
+<style lang="scss">
 #rings {
     overscroll-behavior-y: v-bind('overscroll');
 }

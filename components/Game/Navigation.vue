@@ -16,27 +16,19 @@
 <script setup lang="ts">
 import {computed, inject} from "vue";
 import {useGameStore} from "@/store/game";
-import {useRefHistory} from '@vueuse/core'
 import type Shot from '@/types/Shot'
-import {EditedShotInjectionKey} from '@/symbols/editedShot'
 const store = useGameStore();
 const shot = computed<number>(() => store.shot);
 const end = computed<number>(() => store.end);
-const editedShot = inject(EditedShotInjectionKey, ref({}));
+const editedShot = inject<Ref>('editedShot')!
 
-  const {history: shotHistory, clear} = useRefHistory(editedShot, {deep: true});
-
-const currentLocation = computed(() => ({shot: shot.value, end: end.value}))
-
-watch(currentLocation, () => {
-  clear();
-}, {deep: true, immediate: true})
 
 const {prevShot, nextShot, goToShot} = store;
 
 const {globalLoading} = useLoading();
 
 const {objTheSame} = useValidation();
+const currentShot = computed(() => store.currentShot)
 const unsavedChanges = computed(() => !objTheSame(editedShot.value, store.currentShot))
 
 // Null if confirm dialog is not present

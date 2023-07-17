@@ -1,6 +1,28 @@
 export const useValidation = () => {
-    const objTheSame = (obj1, obj2) => {
-        return JSON.stringify(obj1) === JSON.stringify(obj2)
+  function isObject(object) {
+    return object != null && typeof object === "object";
+  }
+  const objTheSame = (object1, object2) => {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
     }
-    return {objTheSame}
-}
+
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
+      const areObjects = isObject(val1) && isObject(val2);
+      if (
+        (areObjects && !deepEqual(val1, val2)) ||
+        (!areObjects && val1 !== val2)
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+  return {objTheSame};
+};

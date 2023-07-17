@@ -70,7 +70,6 @@
 <script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
-import {EditedShotInjectionKey} from '@/symbols/editedShot'
 import type RockPosition from '@/types/rockPosition'
 
 import {useGameStore} from "@/store/game";
@@ -79,15 +78,7 @@ const store = useGameStore()!;
 
 const isMounted = useMounted();
 
-const editedShot = inject(EditedShotInjectionKey, ref({ end_id: null,
-    player_id: null,
-    shot_no: null,
-    turn: null,
-    line: null,
-    score: null,
-    type_id: null,
-    notes: null,
-    rock_positions: {}}));
+const editedShot = inject<Ref>('editedShot')!;
 
 const save = () => {
   store.saveShot(editedShot.value)
