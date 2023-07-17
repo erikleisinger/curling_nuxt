@@ -1,10 +1,12 @@
 <template>
+<div>
     <q-icon
       name="remove_circle"
       class="rotate-45 rock__icon"
       :class="[`rock-${props.color}`, props.selected ? 'selected' : '']"
       size="100%"
     />
+    </div>
 </template>
 <style lang="scss">
 .rock__icon {

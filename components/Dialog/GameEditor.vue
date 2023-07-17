@@ -1,80 +1,89 @@
 <template>
   <Dialog v-slot="{onDialogOK, onDialogCancel}">
-            <q-form @submit="onSave($event, onDialogOK)">
-    <q-card>
-      <q-card-section class="row wrap flex-break">
-
-        <SelectColor
-          v-model="editedGame.home_color"
-          class="col-3 q-pr-sm"
-          name="home_color"
+    <q-form @submit="onSave($event, onDialogOK)">
+      <q-card>
+        <q-card-section class="row wrap flex-break">
+          <SelectColor
+            v-model="editedGame.home_color"
+            class="col-3 q-pr-sm"
+            name="home_color"
             :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <q-select
-          rounded
-          outlined
-          class="col-9 q-pl-sm q-pb-md"
-          v-model.number="editedGame.home"
-          label="Home"
-          :options="teamOptions"
-          emit-value
-          map-options
-          name="home"
-          aria-required="true"
-           :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <SelectColor
-          v-model="editedGame.away_color"
-          class="col-3 q-pr-sm"
-          name="away_color"
+          />
+          <q-select
+            rounded
+            outlined
+            class="col-9 q-pl-sm q-pb-md"
+            v-model.number="editedGame.home"
+            label="Home"
+            :options="teamOptions"
+            emit-value
+            map-options
+            name="home"
+            aria-required="true"
             :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <q-select
-          rounded
-          outlined
-          class="col-9 q-pl-sm q-pb-md"
-          v-model.number="editedGame.away"
-          label="Away"
-          :options="teamOptions"
-          emit-value
-          map-options
-          name="away"
-        :rules="[VALIDATION_RULES.REQUIRED]"
-        />
-        <q-select
-          rounded
-          outlined
-          class="col-12 "
-          v-model.number="editedGame.hammer_first_end"
-          label="Hammer first end"
-          :options="hammerTeamOptions"
-          emit-value
-          map-options
-          name="hammer_first_end"
-        :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
-        reactive-rules
-        />
-        <InputDate v-model="editedGame.start_time" class="col-12 q-pb-md" label="Date" name="start_time" />
-        <q-input class="col-12" v-model="editedGame.name" label="Name (optional)" outlined rounded name="name"/>
-      </q-card-section>
-      <q-card-actions>
-        <q-btn color="primary" label="Save" type="submit" />
-        <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
-      </q-card-actions>
-    </q-card>
+          />
+          <SelectColor
+            v-model="editedGame.away_color"
+            class="col-3 q-pr-sm"
+            name="away_color"
+            :rules="[VALIDATION_RULES.REQUIRED]"
+          />
+          <q-select
+            rounded
+            outlined
+            class="col-9 q-pl-sm q-pb-md"
+            v-model.number="editedGame.away"
+            label="Away"
+            :options="teamOptions"
+            emit-value
+            map-options
+            name="away"
+            :rules="[VALIDATION_RULES.REQUIRED]"
+          />
+          <q-select
+            rounded
+            outlined
+            class="col-12"
+            v-model.number="editedGame.hammer_first_end"
+            label="Hammer first end"
+            :options="hammerTeamOptions"
+            emit-value
+            map-options
+            name="hammer_first_end"
+            :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
+            reactive-rules
+          />
+          <InputDate
+            v-model="editedGame.start_time"
+            class="col-12 q-pb-md"
+            label="Date"
+            name="start_time"
+          />
+          <q-input
+            class="col-12"
+            v-model="editedGame.name"
+            label="Name (optional)"
+            outlined
+            rounded
+            name="name"
+          />
+        </q-card-section>
+        <q-card-actions>
+          <q-btn color="primary" label="Save" type="submit" />
+          <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
+        </q-card-actions>
+      </q-card>
     </q-form>
   </Dialog>
 </template>
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
-import {TABLE_NAMES} from '@/constants/tables'
-import {useDataStore} from "@/store/data";
-import {useTeamStore} from '@/store/teams'
-const store = useDataStore();
+import {TABLE_NAMES} from "@/constants/tables";
+import {useTeamStore} from "@/store/teams";
 
 const props = defineProps({
-    edited: Object,
-})
+  edited: Object,
+});
 
 const editedGame = ref({
   id: null,
@@ -91,38 +100,39 @@ const teamStore = useTeamStore();
 const teamOptions = computed(() => {
   return teamStore.teams.map((t) => {
     return {
-      label: t.name || 'Unnamed team',
+      label: t.name || "Unnamed team",
       value: t.id,
     };
   });
 });
 const hammerTeamOptions = computed(() => {
-  return teamOptions.value.filter((t) => t.value === editedGame.value.home || t.value === editedGame.value.away)
-})
+  return teamOptions.value.filter(
+    (t) =>
+      t.value === editedGame.value.home || t.value === editedGame.value.away
+  );
+});
 onMounted(() => {
   if (props.edited) {
-    Object.assign(editedGame.value, props.edited)
+    Object.assign(editedGame.value, props.edited);
   }
 });
 
 const onSave = async (e, callback) => {
-     const formData = new FormData(e.target);
-     
-        const data = [...formData.entries()].reduce((all, [key, value]) => {
-            return {...all, [key]: value}
-        }, {})
-  const newGame = {...data};
-        if (editedGame.value.id) {
-          newGame.id = editedGame.value.id
-        }
-    store.insertGame(newGame)
-    callback();
-
-}
+  const newGame = {...editedGame.value};
+  if (!editedGame.value.id) {
+    delete newGame.id;
+  }
+  store.insertGame(newGame);
+  callback();
+};
 
 // Validate that hammer_first_end team is one of the teams selected
 
 const isSelectedTeam = (val) => {
-  return (val === editedGame.value.home || val === editedGame.value.away) || 'Team is not playing in this game.'
-}
+  return (
+    val === editedGame.value.home ||
+    val === editedGame.value.away ||
+    "Team is not playing in this game."
+  );
+};
 </script>

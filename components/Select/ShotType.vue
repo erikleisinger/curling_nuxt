@@ -22,7 +22,7 @@
       </q-select>
 </template>
 <script setup>
-import {useDataStore} from "@/store/data";
+import {useShotTypeStore} from '@/store/shotTypes'
 const props = defineProps({
     modelValue: [Number, String],
 })
@@ -35,12 +35,11 @@ const editedShotType = computed({
         emit('update:modelValue', val)
     }
 })
-const store = useDataStore();
+const store = useShotTypeStore();
 const loadingShotTypes = ref(false);
-const {fetchShotTypes} = store;
 const getShotTypes = async (force) => {
   loadingShotTypes.value = true;
-  await fetchShotTypes(force);
+  await store.fetchShotTypes(force);
   loadingShotTypes.value = false;
 };
 const shotTypeOptions = computed(() => {

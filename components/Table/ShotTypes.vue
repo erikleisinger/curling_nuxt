@@ -56,19 +56,19 @@
 </template>
 <script setup>
 import {ref, onMounted} from "vue";
-import {useDataStore} from "@/store/data";
+import {useShotTypeStore} from "@/store/shotTypes";
 import {useEditorStore} from "@/store/editor";
 import {useSwipe} from "@vueuse/core";
 import {RESERVED_NAMES} from '@/constants/shot-types'
-const dataStore = useDataStore();
+const store = useShotTypeStore();
 
 const {sortNameAlphabetically} = useSort()
-const shotTypes = computed(() => [...dataStore.shotTypes].sort(sortNameAlphabetically));
+const shotTypes = computed(() => [...store.shotTypes].sort(sortNameAlphabetically));
 const loading = ref(false);
 
 const getShotTypes = async (force) => {
   loading.value = true;
-  await dataStore.fetchShotTypes(force);
+  await store.fetchShotTypes(force);
   loading.value = false;
 };
 onMounted(async () => {
@@ -92,7 +92,7 @@ const edit = (shotType) => {
 
 const itemToDelete = ref(null)
 const deleteShotType = async ({id}) => {
-  await dataStore.deleteItem(id, 'shotTypes')
+  await store.deleteShotType(id)
   itemToDelete.value = null
 }
 </script>

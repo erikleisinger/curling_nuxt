@@ -23,7 +23,6 @@
 </template>
 <script setup lang="ts">
 import {usePlayerStore} from "@/store/players";
-import {useGameStore} from "@/store/game";
 import type Player from "@/types/player";
 type FilterFunction = (arg:Player) => boolean
 const props = defineProps<{

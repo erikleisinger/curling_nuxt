@@ -5,9 +5,11 @@
         ><q-icon name="add_circle_outline" color="primary" size="md"
       /></q-btn>
                 <slot name="buttons" />
+             
       <q-btn @click="addOop" flat round  size="xs"
         ><q-icon name="add_circle_outline" color="negative" size="md"
       /></q-btn>
+  
     </div>
     <div style="position: relative; overflow:hidden" class="col-grow">
       
@@ -72,9 +74,10 @@ import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
 import type RockPosition from '@/types/rockPosition'
 
-import {useGameStore} from "@/store/game";
+import {useSessionStore} from "@/store/session";
 
-const store = useGameStore()!;
+
+const store = useSessionStore()!;
 
 const isMounted = useMounted();
 

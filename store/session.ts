@@ -11,11 +11,11 @@ import type {Database} from "@/types/supabase";
 import type { SupabaseShotReturn } from "types/fetch";
 import { BannerColors } from "@/types/color";
 
-export const useGameStore = defineStore("game", {
+export const useSessionStore = defineStore("session", {
   state: () => ({
     end: 1,
     ends: useStorage("ends", [] as End[]),
-    game: useStorage("game", {} as Game),
+    game: useStorage("game", {} as Game | null),
     loading: false,
     promptScore: false,
     shot: 1,
@@ -268,14 +268,7 @@ export const useGameStore = defineStore("game", {
       await this.getShot(shotNo, endNo);
       this.setLoading(false);
     },
-    resetStore() {
-      localStorage.removeItem("ends");
-      localStorage.removeItem("shots");
-      localStorage.removeItem("game");
-      localStorage.removeItem("players");
-      localStorage.removeItem("games");
-      localStorage.removeItem("teams");
-    },
+ 
     async saveShot(shot:Shot) {
       const {objTheSame} = useValidation();
       const rockInStore = this.shots.find(
@@ -349,6 +342,14 @@ export const useGameStore = defineStore("game", {
       } else {
         this.ends.splice(index, 1, end);
       }
+    },
+    resetSession() {
+      this.game = null;
+      this.shots = [];
+      this.shot = 1;
+      this.end = 1;
+      this.ends = []
+
     },
   },
 });

@@ -81,7 +81,5 @@
 </style>
 <script setup>
   const $q = useQuasar();
-  const route = useRoute();
-  
 </script>
 

@@ -120,7 +120,9 @@ const onDrag = (e: Event) => {
 };
 
 const endDrag = (e: TouchEvent | PointerEvent) => {
+  console.log(getPercentWidth(mouse.elementX, target), getPercentHeight(mouse.elementY, target))
   if (!enableDragging.value) return;
+  
   enableDragging.value = false;
   const {isOutside} = mouse;
   if (isOutside) {

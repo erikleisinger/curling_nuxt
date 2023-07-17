@@ -25,7 +25,7 @@
          <q-btn flat round  @click.stop="selectGame(game)"> <q-icon color="primary" name="launch"></q-icon></q-btn>
         </q-item-section>
         <q-item-section>
-          <q-item-label overline>{{ game.start_time }}</q-item-label>
+          <q-item-label overline>{{ formatDate(game.start_time) }}</q-item-label>
           <q-item-label>{{ game.name }}</q-item-label>
           <q-item-label caption>
             <div class="row">
@@ -38,7 +38,7 @@
         </q-item-section>
         <q-space />
         <q-item-section side>
-          <q-item-label> {{ game.ends }} ends </q-item-label>
+          <q-item-label> {{ endCount(game) }} ends </q-item-label>
         </q-item-section>
         <q-item-section side>
           <div class="text-grey-8 row">
@@ -71,9 +71,9 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
-import {useGameStore} from "@/store/game";
+import {useSessionStore} from "@/store/session";
 import {useEditorStore} from "@/store/editor";
-import {useDataStore} from "@/store/data";
+import {useGameStore} from "@/store/games";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useSwipe} from "@vueuse/core";
 import type Game from '@/types/game'
@@ -82,14 +82,14 @@ const props = defineProps({
 })
 const loading = ref(false);
 const itemToDelete = ref(null)
-const store = useGameStore();
-const dataStore = useDataStore();
+const store = useSessionStore();
+const gameStore = useGameStore();
 
-const games = computed(() => dataStore.games);
+const games = computed(() => gameStore.games);
 
 const loadGames = async (force:boolean) => {
   loading.value = true;
-  await dataStore.getGames(force);
+  await gameStore.fetchGames(force);
   loading.value = false;
 };
 
@@ -114,7 +114,7 @@ const deleteGame = async (game:Game) => {
   const {id} = game;
   if (!id) return;
   // TODO: Error handling if no game id
-  await dataStore.deleteItem(id, TABLE_NAMES.GAMES)
+  await gameStore.deleteGame(id)
   itemToDelete.value = null
 }
 
@@ -128,4 +128,12 @@ const {direction} = useSwipe(tableArea, {
     loadGames(true);
   },
 });
+
+const {formatDate} = useFormat()
+
+const endCount = (game:Game) => {
+  const [end] = game.ends;
+  const {count} = end;
+  return count;
+}
 </script>

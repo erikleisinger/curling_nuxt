@@ -1,33 +1,41 @@
 <template>
   <NuxtLayout>
-  <NuxtPage/>
+    <global-loading v-if="loading" :value="progress"/>
+  <NuxtPage v-else/>
   </NuxtLayout>
 </template>
 <script setup lang="ts">
-import {useDataStore} from '@/store/data'
-import {useGameStore} from '@/store/game'
+import {useSessionStore} from '@/store/session'
 import {useAuthStore} from '@/store/auth'
  screen.orientation.lock('portrait-primary')
 
-const gameStore = useGameStore();
+const sessionStore = useSessionStore();
 const authStore = useAuthStore()
+const loading = ref(true)
 onBeforeMount(() => {
+  console.log('BEFORE MOUNT')
   const user = useSupabaseUser();
   authStore.setLoggedIn(!!user?.value)
 })
-
 const isLoggedIn = computed<boolean>(() => authStore.isLoggedIn)
-watch(isLoggedIn, (val) => {
-  if (val) {
-  useDataStore().initData();
+    const {initData, resetData, progress} = useData();
+onMounted(async () => {
+ if (isLoggedIn.value) {
+  await initData()
+  if(sessionStore.game?.id) {
+    await sessionStore.initGame()
   } else {
-gameStore.resetStore();
+    navigateTo('/select')
   }
 
-}, {immediate: true})
+  } else {
+    console.log('RESETTING DATA')
+   await resetData();
 
-const currentGameId = computed<number | null>(() => gameStore.game?.id);
-watch(currentGameId, () => {
-  gameStore.initGame();
+  }
+  console.log('AFTER MOUNT')
+  loading.value = false;
+
 })
+
 </script>

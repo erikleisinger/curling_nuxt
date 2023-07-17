@@ -65,14 +65,13 @@
 import {computed, inject, onMounted, ref, watch} from "vue";
 import Line from "@/types/line";
 import Turn from "@/types/turn";
-import {useDataStore} from "@/store/data";
-import {useGameStore} from "@/store/game";
+import {useSessionStore} from "@/store/session";
+import {useShotTypeStore} from '@/store/shotTypes'
 import {useTeamStore} from "@/store/teams"
 import {TABLE_NAMES} from "@/constants/tables";
 import {toValue} from '@vueuse/core'
 
-const editedShot = inject('editedShot');
-const store = useDataStore();
+const editedShot = inject<Ref>('editedShot')!;
 
 // Selection options
 
@@ -83,20 +82,20 @@ const lineOptions = enumToSelectionOptions(Line);
 const turnOptions = enumToSelectionOptions(Turn);
 
 // Shot types
-const { fetchShotTypes} = store;
+const shotTypeStore = useShotTypeStore()
 const loadingShotTypes = ref(false);
 const getShotTypes = async (force: any) => {
   loadingShotTypes.value = true;
-  await fetchShotTypes(force);
+  await shotTypeStore.fetchShotTypes(force);
   loadingShotTypes.value = false;
 };
 const shotTypeOptions = computed(() => {
    const {formatShotTypeForSelection} = useFormat();
-  return [...store.shotTypes].map((st) => formatShotTypeForSelection(st))
+  return [...shotTypeStore.shotTypes].map((st) => formatShotTypeForSelection(st))
 });
 
 onMounted(() => {
-  fetchShotTypes();
+  shotTypeStore.fetchShotTypes(true);
 });
 
 // Disabled/loading state
@@ -105,9 +104,9 @@ const {globalLoading} = useLoading();
 
 // Save shot 
 
-const gameStore = useGameStore();
+const sessionStore = useSessionStore();
 const save = () => {
-  gameStore.saveShot(toValue(editedShot))
+  sessionStore.saveShot(editedShot.value)
 }
 
 /**
@@ -115,7 +114,7 @@ const save = () => {
  * IF: props.onlyThrowing = true;
  */
 
-const throwingTeam: any = computed(() => gameStore.getThrowingTeamId(gameStore.shot))
+const throwingTeam: any = computed(() => sessionStore.getThrowingTeamId(sessionStore.shot))
 
 const teamStore = useTeamStore();
 const isPlayerOnCurrentTeam = (player:any) => {

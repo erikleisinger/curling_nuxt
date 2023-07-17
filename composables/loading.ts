@@ -1,7 +1,7 @@
 import {computed} from 'vue'
-import {useGameStore} from '@/store/game'
+import {useSessionStore} from '@/store/session'
 export const useLoading = () => {
-    const store = useGameStore()
+    const store = useSessionStore()
     const globalLoading = computed<boolean>(() => store.loading)
     return {globalLoading}
 };

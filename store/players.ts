@@ -74,5 +74,8 @@ export const usePlayerStore = defineStore("players", {
       const {sortNameAlphabetically} = useSort();
       this.players.sort(sortNameAlphabetically);
     },
+    resetPlayers() {
+      this.players = []
+    }
   },
 });

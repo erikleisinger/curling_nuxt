@@ -61,10 +61,10 @@ border: 1px solid #999;
     }
 </style>
 <script setup lang="ts">
-    import {useGameStore} from '@/store/game';
+    import {useSessionStore} from '@/store/session';
     import type Game from '@/types/game'
     import type End from '@/types/end'
-    const store = useGameStore();
+    const store = useSessionStore();
       const game = computed(() => store.game) as unknown as Ref<Game>;
 
       const hammerFirstEnd = computed(() => {

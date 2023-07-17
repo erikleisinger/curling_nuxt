@@ -15,9 +15,9 @@
 </template>
 <script setup lang="ts">
 import {computed, inject} from "vue";
-import {useGameStore} from "@/store/game";
+import {useSessionStore} from "@/store/session";
 import type Shot from '@/types/Shot'
-const store = useGameStore();
+const store = useSessionStore();
 const shot = computed<number>(() => store.shot);
 const end = computed<number>(() => store.end);
 const editedShot = inject<Ref>('editedShot')!

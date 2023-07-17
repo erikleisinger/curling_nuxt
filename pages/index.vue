@@ -40,13 +40,9 @@ html {
 </style>
 <script setup lang="ts">
 import {computed, onMounted, provide, ref, watch, InjectionKey} from "vue";
-import {useGameStore} from '@/store/game'
+import {useSessionStore} from '@/store/session'
 import {useAuthStore} from '@/store/auth'
 import type Shot from '@/types/shot'
-definePageMeta({
-  middleware: "game",
-});
-
 const tab = ref("rings");
 
 provide('tab', tab)
@@ -75,7 +71,7 @@ const editedShot = ref({
 
 provide('editedShot', editedShot);
 
-const store = useGameStore();
+const store = useSessionStore();
 const shot = computed(() => store.currentShot)
 watch(shot, (val) => {
   if (!val) return;

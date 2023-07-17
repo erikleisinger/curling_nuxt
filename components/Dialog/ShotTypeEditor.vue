@@ -19,9 +19,9 @@
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from '@/constants/tables'
-import {useDataStore} from "@/store/data";
+import {useShotTypeStore} from "@/store/shotTypes";
 import {RESERVED_NAMES} from '@/constants/shot-types'
-const store = useDataStore();
+const store = useShotTypeStore();
 
 const props = defineProps({
     edited: Object,
@@ -44,14 +44,9 @@ onMounted(() => {
 });
 
 const onSave = async (e, callback) => {
-     const formData = new FormData(e.target);
-     
-        const data = [...formData.entries()].reduce((all, [key, value]) => {
-            return {...all, [key]: value}
-        }, {})
-      const newShotType = {...data};
-        if (editedShotType.value.id) {
-         newShotType.id = editedShotType.value.id
+      const newShotType = {...editedShotType.value};
+        if (!editedShotType.value.id) {
+        delete newShotType.id
         }
     store.insertShotType(newShotType)
     callback();
