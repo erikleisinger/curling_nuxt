@@ -26,7 +26,7 @@ import {usePlayerStore} from "@/store/players";
 import type Player from "@/types/player";
 type FilterFunction = (arg:Player) => boolean
 const props = defineProps<{
-  modelValue: number,
+  modelValue: number | null,
   filter: FilterFunction
 }>();
 const emit = defineEmits(["update:modelValue"]);

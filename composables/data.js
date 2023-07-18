@@ -8,7 +8,6 @@ import {useShotTypeStore} from "@/store/shotTypes";
 export const useData = () => {
   const progress = ref(0)
   const initData = async () => {
-    console.log('INIT DATA')
       progress.value = 0
       const {fetchShotTypes} = useShotTypeStore()
       const {fetchTeams} = useTeamStore();
@@ -31,7 +30,6 @@ export const useData = () => {
           })
       );
       await Promise.all(promises);
-      console.log('INIT DATA DONE')
   };
   const resetData = () => {
     const {resetSession} = useSessionStore();

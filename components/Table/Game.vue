@@ -93,9 +93,12 @@ const loadGames = async (force:boolean) => {
   loading.value = false;
 };
 
-const selectGame = (game:Game) => {
+const selectGame = async (game:Game) => {
+  loading.value = true;
   store.setGame(game);
+  await store.initGame()
   navigateTo("/");
+    loading.value = false;
 };
 
 const edit = (game:Game) => {
@@ -132,8 +135,8 @@ const {direction} = useSwipe(tableArea, {
 const {formatDate} = useFormat()
 
 const endCount = (game:Game) => {
-  const [end] = game.ends;
-  const {count} = end;
-  return count;
+  const [end] = game?.ends || []
+  const {count} = end || {}
+  return count || 0
 }
 </script>

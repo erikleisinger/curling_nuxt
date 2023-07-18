@@ -30,7 +30,7 @@ const handleLoggedInState = async (isLoggedIn: boolean) => {
       navigateTo("/select");
     }
   } else {
-    navigateTo("/login");
+    await navigateTo("/login");
     await resetData();
   
   }
