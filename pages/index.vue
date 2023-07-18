@@ -56,6 +56,7 @@ const {globalLoading} = useLoading()
 
 //  Edited shot provided to all children
 //  GameNavigation, InputScore, RockController
+
 const editedShotKey: InjectionKey<Ref<Shot>> = Symbol('editedShot')
 const editedShot = ref({
    end_id: null,
@@ -86,7 +87,6 @@ const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();
   authStore.setLoggedIn(false)
-  return navigateTo("/login");
 };
 
 

@@ -275,6 +275,7 @@ export const useSessionStore = defineStore("session", {
         (s) => s.shot_no === shot.shot_no && s.end_id === shot.end_id
       );
       if (rockInStore && objTheSame(rockInStore, shot)) return;
+      if (!shot.id) delete shot.id;
       this.setLoading(true);
       const client = useSupabaseAuthClient<Database>();
       const {getQuery} = useDatabase();

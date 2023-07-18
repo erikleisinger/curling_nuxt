@@ -1,4 +1,5 @@
 const defaultShot =  () => ({
+    id: null,
     end_id: null,
     player_id: null,
     shot_no: null,
