@@ -12,6 +12,7 @@
         <q-btn-group spread flat class="col-grow" role="navigation" aria-label="pages">
             <q-btn flat  to="/"><q-icon name="adjust"/></q-btn>
              <q-btn flat to="/select"><q-icon name="table_view" /></q-btn>
+             <q-btn flat @click="logout"><q-icon name="logout"/></q-btn>
         </q-btn-group>
     </q-toolbar>
     </q-footer>
@@ -80,6 +81,13 @@
 }
 </style>
 <script setup>
+import {useAuthStore} from '@/store/auth'
   const $q = useQuasar();
+  const authStore = useAuthStore();
+const logout = async () => {
+  const client = useSupabaseAuthClient();
+  await client.auth.signOut();
+  authStore.setLoggedIn(false)
+};
 </script>
 

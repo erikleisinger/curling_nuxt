@@ -91,7 +91,6 @@ const onSubmit = async (e) => {
     const {error} = await client.auth.signInWithPassword(formData);
     if (!error) {
       authStore.setLoggedIn(true)
-      navigateTo("/");
     } else if(error?.message) {
       setBanner(error.message)
     } else {

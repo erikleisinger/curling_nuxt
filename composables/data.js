@@ -8,20 +8,30 @@ import {useShotTypeStore} from "@/store/shotTypes";
 export const useData = () => {
   const progress = ref(0)
   const initData = async () => {
- 
-    const {fetchShotTypes} = useShotTypeStore()
-    const {fetchTeams} = useTeamStore();
-    const {fetchPlayers} = usePlayerStore();
-    const {fetchGames} = useGameStore()
-    
-    await fetchShotTypes();
-    progress.value += .25
-    await fetchTeams();
-    progress.value += .25
-    await fetchPlayers();
-    progress.value += .25
-    await fetchGames();
-    progress.value += .25
+    console.log('INIT DATA')
+      progress.value = 0
+      const {fetchShotTypes} = useShotTypeStore()
+      const {fetchTeams} = useTeamStore();
+      const {fetchPlayers} = usePlayerStore();
+      const {fetchGames} = useGameStore()
+      const operations = [
+        fetchShotTypes,
+        fetchTeams,
+        fetchPlayers,
+        fetchGames
+      ];
+      const incrementValue = 1 / operations.length;
+      const promises = operations.map(
+        (operation) =>
+          new Promise((resolve) => {
+            operation().then(() => {
+              progress.value += incrementValue;
+              resolve();
+            });
+          })
+      );
+      await Promise.all(promises);
+      console.log('INIT DATA DONE')
   };
   const resetData = () => {
     const {resetSession} = useSessionStore();

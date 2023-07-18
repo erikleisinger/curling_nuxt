@@ -3,8 +3,8 @@
     :class="rockClasses"
     :style="{
       userSelect: 'none',
-      top: `${positionY}%`,
-      left: `${positionX}%`,
+      top: manualXY ? manualY : `${positionY}%`,
+      left: manualXY ? manualX : `${positionX}%`,
     }"
     class="rock row justify-center draggable"
     :id="rockId"
@@ -44,10 +44,14 @@ import type {OnClickOutsideHandler} from "@vueuse/core";
 import {ROCK_DIAMETER_PERCENT} from '@/constants/dimensions'
 
 const props = defineProps({
+  onDrag: Function,
   rock: {
     type: Object,
     required: true,
   },
+  manualXY: Boolean,
+  manualX: [Number, String],
+  manualY: [Number, String],
   scale: {
     type: Number,
     default: 1,
@@ -109,6 +113,10 @@ const $q = useQuasar();
 const onDrag = (e: Event) => {
   if ($q.platform.is.mobile && e.type === "mousemove") return;
   if (e.type === "mousemove") e.preventDefault();
+  if (props.onDrag) {
+    props.onDrag();
+    return;
+  }
   if (!enableDragging.value) return;
   isDragging.value = true;
 
@@ -120,7 +128,6 @@ const onDrag = (e: Event) => {
 };
 
 const endDrag = (e: TouchEvent | PointerEvent) => {
-  console.log(getPercentWidth(mouse.elementX, target), getPercentHeight(mouse.elementY, target))
   if (!enableDragging.value) return;
   
   enableDragging.value = false;

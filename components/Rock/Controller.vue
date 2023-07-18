@@ -59,13 +59,18 @@
       </GameRings>
 
     </div>
-      <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
+    <div class="column" :style="`width: ${width}px; margin: auto`">
+      <div style="height:15px">
+        <RockDraggable/>
+      </div>
+      <div class="row justify-between" >
       <q-btn @click="carryOverShots" flat round  size="xs" :disabled="editedShot && editedShot.shot_no === 1"
         ><q-icon name="next_plan" color="primary" size="md"
       /></q-btn>
         <q-btn @click="save" flat round  size="xs"
         ><q-icon name="save" color="primary" size="md"
       /></q-btn>
+    </div>
     </div>
   </div>
 </template>
@@ -76,7 +81,9 @@ import type RockPosition from '@/types/rockPosition'
 
 import {useSessionStore} from "@/store/session";
 
-
+const onDrag = () => {
+  console.log('DRAG')
+}
 const store = useSessionStore()!;
 
 const isMounted = useMounted();
