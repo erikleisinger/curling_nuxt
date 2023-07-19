@@ -1,12 +1,15 @@
 <template>
-<div>
+  <div>
     <q-icon
       name="remove_circle"
       class="rotate-45 rock__icon"
-      :class="[props.disabled ? 'rock-disabled' : `rock-${props.color}`, props.selected ? 'selected' : '']"
+      :class="[
+        props.disabled ? 'rock-disabled' : `rock-${props.color}`,
+        props.selected ? 'selected' : '',
+      ]"
       size="100%"
     />
-</div>
+  </div>
 </template>
 <style lang="scss">
 .rock__icon {
@@ -14,7 +17,7 @@
   top: -15%;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.4);
+  border: 1px solid rgba(0, 0, 0, 0.4);
   &:after {
     content: "";
     height: 50%;
@@ -39,7 +42,7 @@
   }
   &.rock-disabled {
     color: rgb(206, 206, 206);
-    background-color:rgb(206, 206, 206);
+    background-color: rgb(206, 206, 206);
   }
   &.selected {
     -webkit-box-shadow: 0px 0px 6px 4px rgba(255, 220, 46, 0.85);
@@ -50,9 +53,8 @@
 </style>
 <script setup lang="ts">
 const props = defineProps({
-      disabled: Boolean,
+  disabled: Boolean,
   color: {
-
     type: String,
     default() {
       return "red";

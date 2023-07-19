@@ -12,6 +12,7 @@
     :color="props.rock.color"
     :selected="isSelected"
   >
+
   </RockIcon>
 </template>
 <style lang="scss">

@@ -1,6 +1,8 @@
 import { MAX_NOTE_LENGTH } from "./constraints";
 
 export const ERROR_LIBRARY = {
+    MISSING_AWAY_TEAM: "games_home_fkey",
+    MISSING_HOME_TEAM: "games_home_fkey",
     NOTES_LENGTH: "check_notes_length",
     UNIQUE_END_NUMBER: "uq_game_end_number",
     UNIQUE_HOME_AWAY: "check_home_away_players",
@@ -9,6 +11,9 @@ export const ERROR_LIBRARY = {
 };
 
 export const ERROR_CODES = {
+    23503: [ // missing foreign key
+
+    ],
     23505: [
         ERROR_LIBRARY.UNIQUE_END_NUMBER,
         ERROR_LIBRARY.UNIQUE_SHOT_NUMBER,

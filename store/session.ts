@@ -189,6 +189,8 @@ export const useSessionStore = defineStore("session", {
     },
     async initGame() {
       this.setLoading(true);
+      this.end = 1;
+      this.shot = 1;
       const {id: game_id,} = this.game;
       const client = useSupabaseAuthClient<Database>();
       const {data: gameData, error} = await client

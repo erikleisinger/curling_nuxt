@@ -1,9 +1,9 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
-    <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
+    <div class="row justify-between" :style="`width: ${width}px; margin: auto; z-index:1;`">
       <slot name="buttons" />
     </div>
-    <div style="position: relative; overflow: hidden" class="col-grow">
+    <div style="position: relative" class="col-grow">
       <GameRings :scale="scale" :setScale="setScale">
         <div
           style="
@@ -47,11 +47,14 @@
         />
       </GameRings>
     </div>
-    <div class="column" :style="`min-width: ${width}px; margin: auto`">
-      <div class="row justify-between q-py-sm no-wrap">
-        <div style="position:relative; height: 15px" class="row q-mr-md" :style="`width: ${8 * 15}px`">
-                <div style="position:absolute" :style="`left: ${(Math.round(rock.shot_no / 2) - 1) * 15}px`"    v-for="rock in pendingHome"
-            :key="rock.shot_no" >
+    <div class="column" :style="`width: ${width}px; margin: auto`">
+      <div class="row justify-between q-py-sm no-wrap ">
+        <div style="position:relative;width: 80px; border-top-left-radius:5px; border-bottom-left-radius:5px;border:1px solid rgb(150, 150, 150);" class="row q-mr-md pending-rock-container home no-wrap" :class="homeColor">
+              <div style="width:10px;  height:100%; border-top-left-radius:5px; border-bottom-left-radius:5px" :style="{backgroundColor: homeColor}"></div>
+          <div class="row q-pa-xs q-mr-xs" style="max-height:38px; max-width:70px">
+          <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+                <div    v-for="rock in pendingHome"
+            :key="rock.shot_no" style="width: 15px; transition: all 0.3s" @vue:beforeUnmount="beforeUnmount">
           <RockDraggable
             @dragUp="endDrag($event, rock.shot_no, rock.color)"
             :color="rock.color"
@@ -62,10 +65,15 @@
                   @deselect="selected = null"
           />
           </div>
+          </transition-group>
+          </div>
+        
         </div>
-       <div style="position:relative" class="row q-ml-md" :style="`width: ${8 * 15}px`">
-          <div style="position:absolute" :style="`left: ${(Math.round(rock.shot_no / 2) - 1) * 15}px`"    v-for="rock in pendingAway" 
-            :key="rock.shot_no">
+       <div style="position:relative; width: 80px; border-top-right-radius:5px; border-bottom-right-radius:5px; border:1px solid rgb(150, 150, 150);" class="row q-ml-md pending-rock-container away no-wrap justify-between" :class="awayColor">
+        <div class="row q-pa-xs q-mr-xs" style="max-height:38px; max-width:75px">
+           <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+          <div style="width: 15px; transition: all 0.3s" @vue:beforeUnmount="beforeUnmount"   v-for="rock in pendingAway" 
+            :key="rock.shot_no" >
           <RockDraggable
             @dragUp="endDrag($event, rock.shot_no, rock.color)"
             :color="rock.color"
@@ -76,6 +84,9 @@
             @deselect="selected = null"
           />
           </div>
+           </transition-group>
+        </div>
+           <div style="width:10px;  height:100%; border-top-right-radius:5px; border-bottom-right-radius:5px; " :style="{backgroundColor: awayColor}"></div>
         </div>
       </div>
       <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
@@ -94,16 +105,38 @@
     </div>
   </div>
 </template>
+<style scoped lang="scss">
+  .pending-rock-container {
+    // background-color:rgba(0,0,0,0.1)
+
+    // &.red {
+    //   background-color: rgba(255,0,0,0.4);
+   
+    // }
+    //  &.yellow {
+    //   background-color: rgba(255,255,0,0.4);
+ 
+    // }
+    //  &.blue {
+    //   background-color: rgba(0,0,255,0.4);
+
+    // }
+  }
+</style>
 <script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
 import {ROCK_DIAMETER_PERCENT} from "@/constants/dimensions";
-
+import {VNode} from 'vue/types';
+ 
 import {useSessionStore} from "@/store/session";
 
+const beforeUnmount = async(e: VNode) => {
+  e.el.style.width = 0;
+}
 const scale = ref(1);
-function setScale(s) {
+function setScale(s:number) {
   scale.value = s
 }
 const rockInsert = ref(null);
@@ -223,6 +256,8 @@ const pendingRocks = computed(() => {
   return [];
 });
 const sessionStore = useSessionStore();
+const homeColor = computed(() =>  sessionStore.game?.home_color);
+const awayColor = computed(() =>  sessionStore.game?.away_color)
 const pendingHome = computed(() => {
   return pendingRocks.value.filter(
     ({color}) => sessionStore.game?.home_color === color

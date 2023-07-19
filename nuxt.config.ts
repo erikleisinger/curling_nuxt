@@ -29,7 +29,7 @@ export default defineNuxtConfig({
       ]
     },
       plugins: [
-        'Dialog'
+        'Dialog',
       ],
       sassVariables: true,
   
