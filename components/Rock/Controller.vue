@@ -91,14 +91,12 @@
             ></div>
           <div class="column" style="width:100%">
             <div
-              class="text-italic q-pr-sm"
+              class="text-italic q-pr-sm truncate-text"
               :style="{backgroundColor: homeColor}"
               style="
                 min-width: 0px;
                 width: 100%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
+      
               "
             >
               {{ homeTeamName }}
@@ -150,16 +148,14 @@
         >
           <div class="column items-end" style="width:calc(100% - 10px);">
             <div
-              class="text-right text-italic q-pl-sm"
+              class="text-right text-italic q-pl-sm truncate-text"
               :style="{backgroundColor: awayColor}"
               style="
-                white-space: nowrap;
+   
                 overflow: hidden;
                 min-width: 0px;
                 width:100%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
+
               "
             >
               {{ awayTeamName }}
