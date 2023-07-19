@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="background-color:white">
     <table class="score__table">
         <thead>
             <th>Team</th>

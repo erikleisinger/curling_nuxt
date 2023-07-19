@@ -19,7 +19,6 @@
 .rock {
   height: v-bind(rockDiameterPercent);
   aspect-ratio: 1/1;
-  width: 5.8%;
   border-radius: 50%;
   top: 0;
   left: 0;

@@ -13,7 +13,7 @@
           class="column justify-cente no-wrap"
         >
      
-          <GameScoreboard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md" />
+          <GameScoreboard ref="scoreBoard"  :class="showScoreBoard ? 'show' : 'hide'" v-if="$q.screen.lt.md" :style="{zIndex: showScoreBoard ? 1 : 0}" />
 
         <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
           <RockController >
