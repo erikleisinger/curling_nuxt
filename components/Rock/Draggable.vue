@@ -15,6 +15,7 @@
 </template>
 <script setup lang="ts">
 import {
+onClickOutside,
   useEventListener,
   useMouseInElement,
   useElementBounding
@@ -22,7 +23,7 @@ import {
 } from "@vueuse/core";
 import {useEventStore} from '@/store/event'
 
-const emit = defineEmits(['dragging', 'dragUp', 'select'])
+const emit = defineEmits(['deselect', 'dragging', 'dragUp', 'select'])
 const props = defineProps({
     color: String,
     disabled: Boolean,
@@ -69,4 +70,5 @@ useEventListener(document, "mousemove", onDrag);
 useEventListener(document, "touchmove", onDrag);
 useEventListener(document, "mouseup", endDrag);
 useEventListener(document, "touchend", endDrag);
+onClickOutside(rock, () => emit('deselect'));
 </script>

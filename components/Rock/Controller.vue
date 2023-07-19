@@ -59,6 +59,7 @@
             @dragging="setDragging(rock.shot_no)"
             @select="selectRock(rock.shot_no)"
               :selected="selected === rock.shot_no"
+                  @deselect="selected = null"
           />
           </div>
         </div>
@@ -72,6 +73,7 @@
             @dragging="setDragging(rock.shot_no)"
             @select="selectRock(rock.shot_no)"
             :selected="selected === rock.shot_no"
+            @deselect="selected = null"
           />
           </div>
         </div>
@@ -133,7 +135,10 @@ const getPercentHeight = (pos: number, element: HTMLElement | null) => {
 };
 const selected = ref(0)
 const selectRock = (shot_no:number) => {
+  nextTick(() => {
   selected.value = shot_no
+  })
+
 }
 const dragging = ref(0);
 const setDragging = (shot_no: number) => {
@@ -144,7 +149,6 @@ const endDrag = (
   shot_no: number,
   color: string
 ) => {
-  console.log("SHOT_NO: ", shot_no, dragging.value);
   if (dragging.value !== shot_no) return;
 
   const {isOutside} = mouse;
