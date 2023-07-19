@@ -80,6 +80,7 @@
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useTeamStore} from "@/store/teams";
+import {useGameStore} from "@/store/games";
 
 const props = defineProps({
   edited: Object,
@@ -117,12 +118,16 @@ onMounted(() => {
   }
 });
 
+const gameStore = useGameStore();
 const onSave = async (e, callback) => {
   const newGame = {...editedGame.value};
   if (!editedGame.value.id) {
     delete newGame.id;
   }
-  store.insertGame(newGame);
+  if (newGame.ends) {
+    delete newGame.ends
+  }
+  gameStore.insertGame(newGame);
   callback();
 };
 

@@ -1,20 +1,10 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
     <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
-      <q-btn @click="addNewRock" flat round  size="xs"
-        ><q-icon name="add_circle_outline" color="primary" size="md"
-      /></q-btn>
-                <slot name="buttons" />
-             
-      <q-btn @click="addOop" flat round  size="xs"
-        ><q-icon name="add_circle_outline" color="negative" size="md"
-      /></q-btn>
-  
+      <slot name="buttons" />
     </div>
-    <div style="position: relative; overflow:hidden" class="col-grow">
-      
-      <GameRings v-slot="{scale}">
- 
+    <div style="position: relative; overflow: hidden" class="col-grow">
+      <GameRings v-model="scale">
         <div
           style="
             height: 100%;
@@ -44,55 +34,141 @@
               <q-icon size="xl" name="delete" color="white" />
             </div>
           </transition>
-
-
         </div>
-              <Rock
-        v-for="rock in rocksInPlay"
-        :key="`rock-${rock.shot_no}-${editedShot.id}`"
-        :rock="rock"
-        @update="onRockPositionUpdated($event, rock.shot_no)"
-        @remove="onRemoveRock(rock)"
-        @outsideBounds="onOutsideBounds"
-        :scale="scale"
-      />
+        <div ref="rockInsert"></div>
+        <Rock
+          v-for="rock in rocksInPlay"
+          :key="`rock-${rock.shot_no}-${editedShot.id}`"
+          :rock="rock"
+          @update="onRockPositionUpdated($event, rock.shot_no)"
+          @remove="onRemoveRock(rock)"
+          @outsideBounds="onOutsideBounds"
+          :scale="scale"
+        />
       </GameRings>
-
     </div>
-    <div class="column" :style="`width: ${width}px; margin: auto`">
-      <div style="height:15px">
-        <RockDraggable/>
+    <div class="column" :style="`min-width: ${width}px; margin: auto`">
+      <div class="row justify-between q-py-sm no-wrap">
+        <div style="position:relative; height: 15px" class="row q-mr-md" :style="`width: ${8 * 15}px`">
+                <div style="position:absolute" :style="`left: ${(Math.round(rock.shot_no / 2) - 1) * 15}px`"    v-for="rock in pendingHome"
+            :key="rock.shot_no" >
+          <RockDraggable
+            @dragUp="endDrag($event, rock.shot_no, rock.color)"
+            :color="rock.color"
+            :disabled="rock.shot_no > editedShot.shot_no"
+            @dragging="setDragging(rock.shot_no)"
+            @select="selectRock(rock.shot_no)"
+              :selected="selected === rock.shot_no"
+          />
+          </div>
+        </div>
+       <div style="position:relative" class="row q-ml-md" :style="`width: ${8 * 15}px`">
+          <div style="position:absolute" :style="`left: ${(Math.round(rock.shot_no / 2) - 1) * 15}px`"    v-for="rock in pendingAway" 
+            :key="rock.shot_no">
+          <RockDraggable
+            @dragUp="endDrag($event, rock.shot_no, rock.color)"
+            :color="rock.color"
+            :disabled="rock.shot_no > editedShot.shot_no"
+            @dragging="setDragging(rock.shot_no)"
+            @select="selectRock(rock.shot_no)"
+            :selected="selected === rock.shot_no"
+          />
+          </div>
+        </div>
       </div>
-      <div class="row justify-between" >
-      <q-btn @click="carryOverShots" flat round  size="xs" :disabled="editedShot && editedShot.shot_no === 1"
-        ><q-icon name="next_plan" color="primary" size="md"
-      /></q-btn>
-        <q-btn @click="save" flat round  size="xs"
-        ><q-icon name="save" color="primary" size="md"
-      /></q-btn>
-    </div>
+      <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
+        <q-btn
+          @click="carryOverShots"
+          flat
+          round
+          size="xs"
+          :disabled="editedShot && editedShot.shot_no === 1"
+          ><q-icon name="next_plan" color="primary" size="md"
+        /></q-btn>
+        <q-btn @click="save" flat round size="xs"
+          ><q-icon name="save" color="primary" size="md"
+        /></q-btn>
+      </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
-import type RockPosition from '@/types/rockPosition'
+import type RockPosition from "@/types/rockPosition";
+import {ROCK_DIAMETER_PERCENT} from "@/constants/dimensions";
 
 import {useSessionStore} from "@/store/session";
 
-const onDrag = () => {
-  console.log('DRAG')
+const scale = ref(1);
+const rockInsert = ref(null);
+
+const mouse = reactive(useMouseInElement(useParentElement(rockInsert)));
+// Utility functions
+const getPercentWidth = (pos: number, element: HTMLElement | null) => {
+  try {
+    if (!element)
+      throw new Error(
+        "Error calculating rock percent width: argument `element` is not an element"
+      );
+    return (
+      (pos / (element.offsetWidth * scale.value)) * 100 - ROCK_DIAMETER_PERCENT
+    );
+  } catch {
+    return 0;
+  }
+};
+const getPercentHeight = (pos: number, element: HTMLElement | null) => {
+  try {
+    if (!element)
+      throw new Error(
+        "Error calculating rock percent height: argument `element` is not an element"
+      );
+    return (
+      (pos / (element.offsetHeight * scale.value)) * 100 - ROCK_DIAMETER_PERCENT
+    );
+  } catch {
+    return 0;
+  }
+};
+const selected = ref(0)
+const selectRock = (shot_no:number) => {
+  selected.value = shot_no
 }
+const dragging = ref(0);
+const setDragging = (shot_no: number) => {
+  dragging.value = shot_no;
+};
+const endDrag = (
+  e: TouchEvent | PointerEvent,
+  shot_no: number,
+  color: string
+) => {
+  console.log("SHOT_NO: ", shot_no, dragging.value);
+  if (dragging.value !== shot_no) return;
+
+  const {isOutside} = mouse;
+  if (isOutside) return;
+  const {elementX, elementY} = mouse;
+  const target: HTMLElement | null = document.querySelector(
+    "#curlingRockWrapper"
+  );
+  const positionX = getPercentWidth(elementX, target);
+  const positionY = getPercentHeight(elementY, target);
+
+  const newRock = {x: positionX, y: positionY, shot_no, color};
+  addRock(newRock);
+};
+
 const store = useSessionStore()!;
 
 const isMounted = useMounted();
 
-const editedShot = inject<Ref>('editedShot')!;
+const editedShot = inject<Ref>("editedShot")!;
 
 const save = () => {
-  store.saveShot(editedShot.value)
-}
+  store.saveShot(editedShot.value);
+};
 
 // Rock positions
 
@@ -107,15 +183,16 @@ const rockPositions = computed<RockPosition[]>(() => {
 
 const carryOverShots = () => {
   if (!editedShot.value.shot_no || editedShot.value.shot_no === 1) return;
-  const previousShot = store.getShotByNumberAndEnd(editedShot.value.shot_no - 1, editedShot.value.end_id);
-  const {rock_positions} = previousShot || {rock_positions: {}}
+  const previousShot = store.getShotByNumberAndEnd(
+    editedShot.value.shot_no - 1,
+    editedShot.value.end_id
+  );
+  const {rock_positions} = previousShot || {rock_positions: {}};
   editedShot.value.rock_positions = {};
   nextTick(() => {
-  editedShot.value.rock_positions = rock_positions
+    editedShot.value.rock_positions = rock_positions;
   });
-
-}
-
+};
 
 const rocksInPlay = computed(() => {
   if (!isMounted.value) return [];
@@ -128,13 +205,26 @@ const outOfPlayRocks = computed(() => {
 
 const pendingRocks = computed(() => {
   const {shot_no} = editedShot.value;
-  const pending:number[] = [];
+  const pending: RockPosition[] = [];
   if (!shot_no) return pending;
-  for (let x = 1; x <= shot_no; x++) {
+  for (let x = 1; x <= 16; x++) {
     const rock = rockPositions.value.find((r) => r.shot_no === x);
-    if (!rock) pending.push(x);
+    if (!rock)
+      pending.push({shot_no: x, x: 0, y: 0, color: store.getShotColor(x)});
   }
   if (editedShot.value) return pending;
+  return [];
+});
+const sessionStore = useSessionStore();
+const pendingHome = computed(() => {
+  return pendingRocks.value.filter(
+    ({color}) => sessionStore.game?.home_color === color
+  );
+});
+const pendingAway = computed(() => {
+  return pendingRocks.value.filter(
+    ({color}) => sessionStore.game?.away_color === color
+  );
 });
 
 // MODIFY Rocks
@@ -167,31 +257,21 @@ const onRemoveRock = (rock: RockPosition) => {
 
 const addRock = (rock: RockPosition) => {
   // TODO: Error if editedShot has no shot number
-  if (!editedShot.value?.shot_no || rocksInPlay.value.length >= editedShot.value.shot_no) return;
+  if (
+    !editedShot.value?.shot_no ||
+    rocksInPlay.value.length >= editedShot.value.shot_no
+  )
+    return;
   upsertRock(rock);
-};
-
-const addNewRock = () => {
-  const [nextPending] = pendingRocks.value ?? [];
-  if (!nextPending) return;
-  const color = store.getShotColor && store.getShotColor(nextPending);
-  if (!color) return;
-  // TODO: Error if no color
-  const newRock = {x: 50, y: 50, shot_no: nextPending || 1, color};
-  addRock(newRock);
-};
-const addOop = () => {
-  const newRock = outOfPlayRocks.value[0];
-  addRock({...newRock, removed: false, x: 0, y: 0});
 };
 
 // Delete overlay
 
 const deleteOverlay = ref(false);
-const onOutsideBounds = (bool:boolean) => {
+const onOutsideBounds = (bool: boolean) => {
   deleteOverlay.value = bool;
 };
 
-const curlingRockWrapper = ref(null)
-const {width} = useElementSize(curlingRockWrapper)
+const curlingRockWrapper = ref(null);
+const {width} = useElementSize(curlingRockWrapper);
 </script>

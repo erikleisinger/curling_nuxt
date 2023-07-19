@@ -3,6 +3,7 @@ import {useStorage} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Player from "@/types/player";
 import type {SupabasePlayerReturn} from "types/fetch";
+import { BannerColors } from "@/types/color";
 
 export const usePlayerStore = defineStore("players", {
   state: () => {
@@ -30,14 +31,12 @@ export const usePlayerStore = defineStore("players", {
     async fetchPlayers(force = false) {
       if (this.players.length && !force) return;
       const client = useSupabaseAuthClient();
-      const {getUserId} = useDatabase();
       const {error, data}: SupabasePlayerReturn = await client
         .from(TABLE_NAMES.PLAYERS)
         .select("*")
-        .eq("profile_id", getUserId());
       if (error) {
         const {setBanner} = useBanner();
-        setBanner("Error getting players.");
+        setBanner("Error getting players.", BannerColors.Negative);
       } else if (data) {
         this.players = data;
         this.sortPlayers();

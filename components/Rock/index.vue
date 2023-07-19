@@ -128,6 +128,8 @@ const onDrag = (e: Event) => {
 };
 
 const endDrag = (e: TouchEvent | PointerEvent) => {
+   const {elementY, elementX} = mouse;
+  console.log('END DRAG: ',getPercentWidth(elementX, target), getPercentHeight(elementY, target))
   if (!enableDragging.value) return;
   
   enableDragging.value = false;

@@ -69,6 +69,20 @@ import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueu
 import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
+const props = defineProps({
+  modelValue: Number,
+})
+const emit = defineEmits(['update:modelValue'])
+
+const scale = computed({
+  get() {
+    return props.modelValue
+  },
+  set(val) {
+    emit('update:modelValue')
+  }
+})
+
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
 
@@ -79,7 +93,6 @@ const rink = ref<HTMLElement | null>(null);
 const isPinching = ref(false);
 const initialPinch = ref(0);
 const rafId = ref<number | null>(null)
-const scale = ref(1);
 const pinchStart = (e: TouchEvent) => {
   if (isRockSelected.value) return;
   if (e.touches.length !== 2) return;
