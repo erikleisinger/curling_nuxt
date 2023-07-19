@@ -1,8 +1,19 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
-    <div class="row justify-between" :style="`width: ${width}px; margin: auto; z-index:1;`">
-      <slot name="buttons" />
-    </div>
+     <div class="row justify-between q-px-xl" :style="`width: 100%; margin: auto; z-index:3`">
+        <q-btn
+          @click="carryOverShots"
+          round
+          size="md"
+          color="primary"
+          :disabled="editedShot && editedShot.shot_no === 1"
+          ><q-icon name="next_plan" color="white" size="sm"
+        /></q-btn>
+        <slot name="buttons"/>
+        <q-btn @click="save" round size="md" color="primary"
+          ><q-icon name="save" color="white" size="sm"
+        /></q-btn>
+      </div>
     <div style="position: relative" class="col-grow">
       <GameRings :scale="scale" :setScale="setScale">
         <div
@@ -47,97 +58,149 @@
         />
       </GameRings>
     </div>
-    <div class="column" :style="`width: ${width}px; margin: auto`">
-      <div class="row justify-between q-py-sm no-wrap ">
-        <div style="position:relative;width: 80px; border-top-left-radius:5px; border-bottom-left-radius:5px;border:1px solid rgb(150, 150, 150);" class="row q-mr-md pending-rock-container home no-wrap" :class="homeColor">
-              <div style="width:10px;  height:100%; border-top-left-radius:5px; border-bottom-left-radius:5px" :style="{backgroundColor: homeColor}"></div>
-          <div class="row q-pa-xs q-mr-xs" style="max-height:38px; max-width:70px">
-          <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight">
-                <div    v-for="rock in pendingHome"
-            :key="rock.shot_no" style="width: 15px; transition: all 0.3s" @vue:beforeUnmount="beforeUnmount">
-          <RockDraggable
-            @dragUp="endDrag($event, rock.shot_no, rock.color)"
-            :color="rock.color"
-            :disabled="rock.shot_no > editedShot.shot_no"
-            @dragging="setDragging(rock.shot_no)"
-            @select="selectRock(rock.shot_no)"
-              :selected="selected === rock.shot_no"
-                  @deselect="selected = null"
-          />
+    <div class="column q-px-xl" :style="`width: 100%; margin: auto; z-index:1`">
+      <div class="row justify-between q-py-sm no-wrap">
+        <div class="column">
+          <div class="text-italic">{{homeTeamName}}</div>
+          <div
+            style="
+              position: relative;
+              width: 80px;
+              border-top-left-radius: 5px;
+              border-bottom-left-radius: 5px;
+              border: 1px solid rgb(150, 150, 150);
+            "
+            class="row q-mr-md pending-rock-container home no-wrap"
+            :class="homeColor"
+          >
+            <div
+              style="
+                width: 10px;
+                height: 100%;
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+              "
+              :style="{backgroundColor: homeColor}"
+            ></div>
+            <div
+              class="row q-pa-xs q-mr-xs"
+              style="max-height: 38px; max-width: 70px"
+            >
+              <transition-group
+                appear
+                enter-active-class="slideInLeft"
+                leave-active-class="slideOutRight"
+              >
+                <div
+                  v-for="rock in pendingHome"
+                  :key="rock.shot_no"
+                  style="width: 15px; transition: all 0.3s"
+                  @vue:beforeUnmount="beforeUnmount"
+                >
+                  <RockDraggable
+                    @dragUp="endDrag($event, rock.shot_no, rock.color)"
+                    :color="rock.color"
+                    :disabled="rock.shot_no > editedShot.shot_no"
+                    @dragging="setDragging(rock.shot_no)"
+                    @select="selectRock(rock.shot_no)"
+                    :selected="selected === rock.shot_no"
+                    @deselect="selected = null"
+                  />
+                </div>
+              </transition-group>
+            </div>
           </div>
-          </transition-group>
-          </div>
-        
         </div>
-       <div style="position:relative; width: 80px; border-top-right-radius:5px; border-bottom-right-radius:5px; border:1px solid rgb(150, 150, 150);" class="row q-ml-md pending-rock-container away no-wrap justify-between" :class="awayColor">
-        <div class="row q-pa-xs q-mr-xs" style="max-height:38px; max-width:75px">
-           <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight">
-          <div style="width: 15px; transition: all 0.3s" @vue:beforeUnmount="beforeUnmount"   v-for="rock in pendingAway" 
-            :key="rock.shot_no" >
-          <RockDraggable
-            @dragUp="endDrag($event, rock.shot_no, rock.color)"
-            :color="rock.color"
-            :disabled="rock.shot_no > editedShot.shot_no"
-            @dragging="setDragging(rock.shot_no)"
-            @select="selectRock(rock.shot_no)"
-            :selected="selected === rock.shot_no"
-            @deselect="selected = null"
-          />
+        <div class="column">
+          <div class="text-right text-italic">{{awayTeamName}}</div>
+          <div
+            style="
+              position: relative;
+              width: 80px;
+              border-top-right-radius: 5px;
+              border-bottom-right-radius: 5px;
+              border: 1px solid rgb(150, 150, 150);
+            "
+            class="row q-ml-md pending-rock-container away no-wrap justify-between"
+            :class="awayColor"
+          >
+            <div
+              class="row q-pa-xs q-mr-xs"
+              style="max-height: 38px; max-width: 75px"
+            >
+              <transition-group
+                appear
+                enter-active-class="slideInLeft"
+                leave-active-class="slideOutRight"
+              >
+                <div
+                  style="width: 15px; transition: all 0.3s"
+                  @vue:beforeUnmount="beforeUnmount"
+                  v-for="rock in pendingAway"
+                  :key="rock.shot_no"
+                >
+                  <RockDraggable
+                    @dragUp="endDrag($event, rock.shot_no, rock.color)"
+                    :color="rock.color"
+                    :disabled="rock.shot_no > editedShot.shot_no"
+                    @dragging="setDragging(rock.shot_no)"
+                    @select="selectRock(rock.shot_no)"
+                    :selected="selected === rock.shot_no"
+                    @deselect="selected = null"
+                  />
+                </div>
+              </transition-group>
+            </div>
+             <div
+            style="
+              width: 10px;
+              height: 100%;
+              border-top-right-radius: 5px;
+              border-bottom-right-radius: 5px;
+            "
+            :style="{backgroundColor: awayColor}"
+          ></div>
           </div>
-           </transition-group>
-        </div>
-           <div style="width:10px;  height:100%; border-top-right-radius:5px; border-bottom-right-radius:5px; " :style="{backgroundColor: awayColor}"></div>
+         
         </div>
       </div>
-      <div class="row justify-between" :style="`width: ${width}px; margin: auto`">
-        <q-btn
-          @click="carryOverShots"
-          flat
-          round
-          size="xs"
-          :disabled="editedShot && editedShot.shot_no === 1"
-          ><q-icon name="next_plan" color="primary" size="md"
-        /></q-btn>
-        <q-btn @click="save" flat round size="xs"
-          ><q-icon name="save" color="primary" size="md"
-        /></q-btn>
-      </div>
+     
     </div>
   </div>
 </template>
 <style scoped lang="scss">
-  .pending-rock-container {
-    // background-color:rgba(0,0,0,0.1)
+.pending-rock-container {
+  // background-color:rgba(0,0,0,0.1)
 
-    // &.red {
-    //   background-color: rgba(255,0,0,0.4);
-   
-    // }
-    //  &.yellow {
-    //   background-color: rgba(255,255,0,0.4);
- 
-    // }
-    //  &.blue {
-    //   background-color: rgba(0,0,255,0.4);
+  // &.red {
+  //   background-color: rgba(255,0,0,0.4);
 
-    // }
-  }
+  // }
+  //  &.yellow {
+  //   background-color: rgba(255,255,0,0.4);
+
+  // }
+  //  &.blue {
+  //   background-color: rgba(0,0,255,0.4);
+
+  // }
+}
 </style>
 <script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
 import {ROCK_DIAMETER_PERCENT} from "@/constants/dimensions";
-import {VNode} from 'vue/types';
- 
+import {VNode} from "vue/types";
+
 import {useSessionStore} from "@/store/session";
 
-const beforeUnmount = async(e: VNode) => {
+const beforeUnmount = async (e: VNode) => {
   e.el.style.width = 0;
-}
+};
 const scale = ref(1);
-function setScale(s:number) {
-  scale.value = s
+function setScale(s: number) {
+  scale.value = s;
 }
 const rockInsert = ref(null);
 
@@ -169,13 +232,12 @@ const getPercentHeight = (pos: number, element: HTMLElement | null) => {
     return 0;
   }
 };
-const selected = ref(0)
-const selectRock = (shot_no:number) => {
+const selected = ref(0);
+const selectRock = (shot_no: number) => {
   nextTick(() => {
-  selected.value = shot_no
-  })
-
-}
+    selected.value = shot_no;
+  });
+};
 const dragging = ref(0);
 const setDragging = (shot_no: number) => {
   dragging.value = shot_no;
@@ -256,8 +318,10 @@ const pendingRocks = computed(() => {
   return [];
 });
 const sessionStore = useSessionStore();
-const homeColor = computed(() =>  sessionStore.game?.home_color);
-const awayColor = computed(() =>  sessionStore.game?.away_color)
+const homeColor = computed(() => sessionStore.game?.home_color);
+const awayColor = computed(() => sessionStore.game?.away_color);
+const homeTeamName = computed(() => sessionStore.game?.home?.name || 'Unnamed team');
+const awayTeamName = computed(() => sessionStore.game?.away?.name || 'Unnamed team');
 const pendingHome = computed(() => {
   return pendingRocks.value.filter(
     ({color}) => sessionStore.game?.home_color === color
@@ -297,8 +361,8 @@ const onRemoveRock = (rock: RockPosition) => {
   if (index !== -1) {
     newRockPositions.splice(index, 1);
     editedShot.value.rock_positions = JSON.stringify({
-    rocks: newRockPositions,
-  });
+      rocks: newRockPositions,
+    });
   }
 };
 

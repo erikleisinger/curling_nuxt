@@ -18,7 +18,7 @@
         <div :style="`position:relative; width: 100%;  `" class=" col-grow curling-rings__wrap "> 
           <RockController >
             <template v-slot:buttons>
-   <q-btn flat round @click="showScoreBoard = !showScoreBoard" v-if="$q.screen.lt.md"><q-icon name="o_scoreboard"/></q-btn>
+   <q-btn size="md" round @click="showScoreBoard = !showScoreBoard" v-if="$q.screen.lt.md"  color="white"><q-icon name="o_scoreboard" size="sm" color="primary"/></q-btn>
             </template>
           </RockController>  
           </div>
