@@ -5,12 +5,11 @@
       props.disabled ? 'rock-disabled' : `rock-${props.color}`,
       props.selected ? 'selected' : '',
     ]"
+    :style="{position: draggable ? 'absolute' : 'relative'}"
   />
 </template>
 <style lang="scss">
 .rock__icon {
-  position: absolute;
-  top: -15%;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.4);
@@ -24,7 +23,6 @@
     transform: rotateZ(135deg);
     background-color: rgb(70, 70, 70);
     position: absolute;
-    z-index: -1;
   }
   &.rock-red {
     color: $rock-red;
@@ -52,6 +50,12 @@
 <script setup lang="ts">
 const props = defineProps({
   disabled: Boolean,
+  draggable: {
+    type:Boolean,
+    default() {
+      return true
+    }
+  },
   color: {
     type: String,
     default() {
