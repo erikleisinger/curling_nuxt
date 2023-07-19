@@ -204,7 +204,7 @@ export const useSessionStore = defineStore("session", {
         `
         )
         .eq("game_id", game_id);
-    if (!gameData?.length || error) {
+    if (error) {
         const {code} = error || {};
         const {setBanner} = useBanner()
         setBanner(`Error initializing game (code ${code})`, BannerColors.Negative);

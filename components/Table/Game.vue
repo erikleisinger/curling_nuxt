@@ -8,7 +8,7 @@
     />
 
     <q-list bordered separator>
-      <q-item clickable @click="toggleGameDialog">
+      <q-item clickable @click="toggleGameDialog(null)">
         <q-item-section>
           <div class="row items-center">
             <q-icon name="add" size="sm" class="q-mr-xs" />

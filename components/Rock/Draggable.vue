@@ -45,30 +45,40 @@ const onClick = () => {
 }
 const startDrag = () => {
     if (props.disabled || !props.selected) return;
+    startDragEvents();
 
 }
  const { x, y } = useMouseInElement()
 const onDrag = () => {
-    if (!props.selected) return;
+    if (props.disabled || !props.selected) return;
     emit('dragging')
-    console.log(conX.value, conY.value)
     position.value = 'fixed'
     positionX.value = `${x.value}px`
     positionY.value = `${y.value}px`
 }
 const endDrag = () => {
+    endDragEvents();
     position.value = 'relative'
      positionX.value = `1px`
     positionY.value = `1px`
     emit('dragUp')
 
 }
+const startDragEvents = () => {
+    document.addEventListener("mousemove", onDrag);
+document.addEventListener("touchmove", onDrag);
+document.addEventListener("mouseup", endDrag);
+document.addEventListener("touchend", endDrag);
+}
+const endDragEvents = () => {
+        document.removeEventListener("mousemove", onDrag);
+document.removeEventListener("touchmove", onDrag);
+document.removeEventListener("mouseup", endDrag);
+document.removeEventListener("touchend", endDrag);
+}
 useEventListener(rock, 'click', onClick)
 useEventListener(rock, "mousedown", startDrag);
 useEventListener(rock, "touchstart", startDrag);
-useEventListener(document, "mousemove", onDrag);
-useEventListener(document, "touchmove", onDrag);
-useEventListener(document, "mouseup", endDrag);
-useEventListener(document, "touchend", endDrag);
+
 onClickOutside(rock, () => emit('deselect'));
 </script>
