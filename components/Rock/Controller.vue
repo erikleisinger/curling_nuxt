@@ -4,7 +4,7 @@
       <slot name="buttons" />
     </div>
     <div style="position: relative; overflow: hidden" class="col-grow">
-      <GameRings v-model="scale">
+      <GameRings :scale="scale" :setScale="setScale">
         <div
           style="
             height: 100%;
@@ -103,6 +103,9 @@ import {ROCK_DIAMETER_PERCENT} from "@/constants/dimensions";
 import {useSessionStore} from "@/store/session";
 
 const scale = ref(1);
+function setScale(s) {
+  scale.value = s
+}
 const rockInsert = ref(null);
 
 const mouse = reactive(useMouseInElement(useParentElement(rockInsert)));

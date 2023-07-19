@@ -1,7 +1,8 @@
 <template>
   <div class="rink" ref="rink">
-    <slot v-bind:scale="scale" v-bind:left="left" v-bind:top="top" />
+    <slot v-bind:left="left" v-bind:top="top" />
     <div class="rings__wrapper">
+      {{props.scale}}
       <svg height="100%" width="100%">
         <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
         <circle cx="50%" cy="50%" r="33%" style="fill: white" />
@@ -70,18 +71,19 @@ import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
 const props = defineProps({
-  modelValue: Number,
+  scale: {
+    type: Number,
+    default() {
+      return 1  
+    }
+  },
+  setScale: {
+    type: Function,
+    required: true
+  }
 })
 const emit = defineEmits(['update:modelValue'])
 
-const scale = computed({
-  get() {
-    return props.modelValue
-  },
-  set(val) {
-    emit('update:modelValue')
-  }
-})
 
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
@@ -105,30 +107,33 @@ const pinchStart = (e: TouchEvent) => {
 const SCALE_MIN = 1;
 const SCALE_MAX = 5;
 const handlePinchMove = (e: TouchEvent) => {
-
   const currentTouches = Math.hypot(
     e.touches[0].pageX - e.touches[1].pageX,
     e.touches[0].pageY - e.touches[1].pageY
   );
   const isZoomIn = currentTouches - initialPinch.value > 0;
-
 // Set threshold of 10 to ensure accidental pinch is not registered
   if (Math.abs(currentTouches - initialPinch.value) >= 10) {
+
   const toAdd =
-    (Math.abs(currentTouches - initialPinch.value) / 1000) * scale.value;
+    (Math.abs(currentTouches - initialPinch.value) / 1000) * props.scale
+    let newScale = props.scale;
   if (isZoomIn) {
-    if (scale.value + toAdd > SCALE_MAX) {
-      scale.value = SCALE_MAX;
+    if (props.scale + toAdd > SCALE_MAX) {
+      newScale = SCALE_MAX;
     } else {
-      scale.value += toAdd;
+      newScale += toAdd;
     }
   } else {
-    if (scale.value - toAdd < SCALE_MIN) {
-      scale.value = SCALE_MIN;
+    if (props.scale - toAdd < SCALE_MIN) {
+      newScale = SCALE_MIN;
     } else {
-      scale.value -= toAdd;
+      newScale -= toAdd;
     }
+
+    
   }
+  props.setScale(newScale)
   }
 
   const isOutsideVertical = checkOutsideVerticalBounds(top.value)
@@ -163,7 +168,7 @@ useEventListener(document, "touchend", pinchEnd);
  * RINK DIMENSIONS
  */
 
-const computedScale = computed(() => `scale(${scale.value})`);
+const computedScale = computed(() => `scale(${props.scale})`);
 
 // Calculate aspect ratio
 const aspectRatio = ref(
@@ -200,8 +205,8 @@ const parent = useParentElement() as Ref<HTMLElement>
 const checkOutsideVerticalBounds = (newVal:number) => {
   if (!rink?.value) return null;
   // TODO: Error handling when no rink ref
-  const topMin = rink.value.offsetHeight * scale.value * -1 /2
-    const topMax = ((parent.value.offsetHeight + (rink.value.offsetHeight * scale.value))  - 200) / 2
+  const topMin = rink.value.offsetHeight * props.scale * -1 /2
+    const topMax = ((parent.value.offsetHeight + (rink.value.offsetHeight * props.scale))  - 200) / 2
     if (newVal > topMax) {
       return topMax
     } else if(newVal < topMin) {
@@ -213,8 +218,8 @@ const checkOutsideVerticalBounds = (newVal:number) => {
 const checkOutsideHorizontalBounds = (newVal: number) => {
     if (!rink?.value) return null;
   // TODO: Error handling when no rink ref
-    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * scale.value))  - 100) / 2
-    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * scale.value)) * -1 + 100;
+    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * props.scale))  - 100) / 2
+    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * props.scale)) * -1 + 100;
     if (newVal > leftMax) {
       return leftMax
     } else if(newVal < leftMin) {
