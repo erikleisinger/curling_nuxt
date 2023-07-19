@@ -94,15 +94,7 @@ const rink = ref<HTMLElement | null>(null);
 const isPinching = ref(false);
 const initialPinch = ref(0);
 const rafId = ref<number | null>(null)
-const pinchStart = (e: TouchEvent) => {
-  if (isRockSelected.value) return;
-  if (e.touches.length !== 2) return;
-  isPinching.value = true;
-  initialPinch.value = Math.hypot(
-    e.touches[0].pageX - e.touches[1].pageX,
-    e.touches[0].pageY - e.touches[1].pageY
-  );
-};
+
 const SCALE_MIN = 1;
 const SCALE_MAX = 5;
 const handlePinchMove = (e: TouchEvent) => {
@@ -151,13 +143,26 @@ const pinchMove = (e:TouchEvent) => {
 }
 const pinchEnd = (e:TouchEvent) => {
   if (!isPinching.value) return;
+    rink.value.removeEventListener("touchmove", pinchMove);
+      document.removeEventListener("touchend", pinchEnd);
   setTimeout(() => {
     isPinching.value = false;
   }, 200);
 };
+
+const pinchStart = (e: TouchEvent) => {
+  if (isRockSelected.value) return;
+  if (e.touches.length !== 2) return;
+  rink.value.addEventListener("touchmove", pinchMove);
+  document.addEventListener("touchend", pinchEnd);
+  isPinching.value = true;
+  initialPinch.value = Math.hypot(
+    e.touches[0].pageX - e.touches[1].pageX,
+    e.touches[0].pageY - e.touches[1].pageY
+  );
+};
 useEventListener(document, "touchstart", pinchStart);
-useEventListener(rink, "touchmove", pinchMove);
-useEventListener(document, "touchend", pinchEnd);
+
 
 /**
  * END ZOOM IN / ZOOM OUT

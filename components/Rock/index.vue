@@ -107,6 +107,7 @@ const isDragging = ref(false);
 
 const startDrag = (e: Event) => {
   if (!isSelected.value) return;
+  startEventListeners()
   enableDragging.value = true;
 };
 const $q = useQuasar();
@@ -127,9 +128,7 @@ const onDrag = (e: Event) => {
   isDragging.value = false;
 };
 
-const endDrag = (e: TouchEvent | PointerEvent) => {
-   const {elementY, elementX} = mouse;
-  console.log('END DRAG: ',getPercentWidth(elementX, target), getPercentHeight(elementY, target))
+const endDrag = (e: TouchEvent | PointerEvent | MouseEvent) => {
   if (!enableDragging.value) return;
   
   enableDragging.value = false;
@@ -144,7 +143,23 @@ const endDrag = (e: TouchEvent | PointerEvent) => {
     });
   }
   deselectRock(e, true);
+  endEventListeners();
 };
+
+const startEventListeners = () => {
+document.addEventListener("mousemove", onDrag);
+document.addEventListener("touchmove", onDrag);
+document.addEventListener("mouseup", endDrag);
+document.addEventListener("touchend", endDrag);
+}
+const endEventListeners = () => {
+  document.removeEventListener("mousemove", onDrag);
+document.removeEventListener("touchmove", onDrag);
+document.removeEventListener("mouseup", endDrag);
+document.removeEventListener("touchend", endDrag);
+}
+
+
 
 const rockRef = ref(null);
 const rockId = `rock-${props.rock.shot_no}`;
@@ -159,7 +174,7 @@ const selectRock = () => {
   eventStore.toggleRockSelected(rockId);
 };
 const deselectRock = (
-  e: PointerEvent | TouchEvent,
+  e: PointerEvent | TouchEvent | MouseEvent,
   isDragEnd: boolean = false
 ) => {
   const target = e.target as Element;
@@ -173,8 +188,5 @@ onClickOutside(rockRef, deselectRock);
 useEventListener(rockRef, "mousedown", startDrag);
 useEventListener(rockRef, "click", selectRock);
 useEventListener(rockRef, "touchstart", startDrag);
-useEventListener(document, "mousemove", onDrag);
-useEventListener(document, "touchmove", onDrag);
-useEventListener(document, "mouseup", endDrag);
-useEventListener(document, "touchend", endDrag);
+
 </script>
