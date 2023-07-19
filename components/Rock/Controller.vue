@@ -1,19 +1,22 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
-     <div class="row justify-between q-px-xl q-pt-xs" :style="`width: 100%; margin: auto; z-index:3`">
-        <q-btn
-          @click="carryOverShots"
-          round
-          size="md"
-          color="primary"
-          :disabled="editedShot && editedShot.shot_no === 1"
-          ><q-icon name="next_plan" color="white" size="sm"
-        /></q-btn>
-        <slot name="buttons"/>
-        <q-btn @click="save" round size="md" color="primary"
-          ><q-icon name="save" color="white" size="sm"
-        /></q-btn>
-      </div>
+    <div
+      class="row justify-between q-px-xl q-pt-xs"
+      :style="`width: 100%; margin: auto; z-index:3`"
+    >
+      <q-btn
+        @click="carryOverShots"
+        round
+        size="md"
+        color="primary"
+        :disabled="editedShot && editedShot.shot_no === 1"
+        ><q-icon name="next_plan" color="white" size="sm"
+      /></q-btn>
+      <slot name="buttons" />
+      <q-btn @click="save" round size="md" color="primary"
+        ><q-icon name="save" color="white" size="sm"
+      /></q-btn>
+    </div>
     <div style="position: relative" class="col-grow">
       <GameRings :scale="scale" :setScale="setScale">
         <div
@@ -58,30 +61,48 @@
         />
       </GameRings>
     </div>
-    <div class="column q-px-xl" :style="`width: 100%; margin: auto; z-index:1`">
-      <div class="row justify-between q-py-sm no-wrap">
-        <div class="column">
-          <div class="text-italic">{{homeTeamName}}</div>
-          <div
-            style="
-              position: relative;
-              width: 80px;
-              border-top-left-radius: 5px;
-              border-bottom-left-radius: 5px;
-              border: 1px solid rgb(150, 150, 150);
-            "
-            class="row q-mr-md pending-rock-container home no-wrap"
-            :class="homeColor"
-          >
+    <div
+      class="column"
+      :style="`width: calc(100% - 96px); z-index:1; margin:auto`"
+    >
+      <div class="row justify-between q-py-sm no-wrap" style="width: 100%">
+        <div
+          style="
+            position: relative;
+            border-top-left-radius: 5px;
+            border-color: rgb(150, 150, 150);
+            border-style: solid;
+            border-width: 1px 0px 0px 1px;
+            width:50%;
+            max-width: 250px;
+          "
+          class="row pending-rock-container home no-wrap"
+          :class="homeColor"
+        >
             <div
               style="
                 width: 10px;
                 height: 100%;
                 border-top-left-radius: 5px;
-                border-bottom-left-radius: 5px;
+                
               "
               :style="{backgroundColor: homeColor}"
+              class="col-grow"
             ></div>
+          <div class="column" style="width:100%">
+            <div
+              class="text-italic q-pr-sm"
+              :style="{backgroundColor: homeColor}"
+              style="
+                min-width: 0px;
+                width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+              "
+            >
+              {{ homeTeamName }}
+            </div>
             <div
               class="row q-pa-xs q-mr-xs"
               style="max-height: 38px; max-width: 70px"
@@ -110,24 +131,40 @@
               </transition-group>
             </div>
           </div>
+                  
         </div>
-        <div class="column">
-          <div class="text-right text-italic">{{awayTeamName}}</div>
-          <div
-            style="
-              position: relative;
-              width: 80px;
-              border-top-right-radius: 5px;
-              border-bottom-right-radius: 5px;
-              border: 1px solid rgb(150, 150, 150);
-            "
-            class="row q-ml-md pending-rock-container away no-wrap justify-between"
-            :class="awayColor"
-          >
+
+        <div
+          style="
+            position: relative;
+
+            border-top-right-radius: 5px;
+            border-color: rgb(150, 150, 150);
+            border-style: solid;
+            border-width: 1px 1px 0px 0px;
+            width:50%;
+            max-width:250px;
+          "
+          class="row pending-rock-container away no-wrap justify-between"
+          :class="awayColor"
+        >
+          <div class="column items-end" style="width:calc(50vw - 10px)">
             <div
-              class="row q-pa-xs q-mr-xs"
-              style="max-height: 38px; max-width: 75px"
+              class="text-right text-italic q-pl-sm"
+              :style="{backgroundColor: awayColor}"
+              style="
+                white-space: nowrap;
+                overflow: hidden;
+                min-width: 0px;
+                width:100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+              "
             >
+              {{ awayTeamName }}
+            </div>
+            <div class="row q-pa-xs" style="max-height: 38px; max-width: 75px">
               <transition-group
                 appear
                 enter-active-class="slideInLeft"
@@ -151,20 +188,20 @@
                 </div>
               </transition-group>
             </div>
-             <div
+          </div>
+            <div
             style="
               width: 10px;
               height: 100%;
               border-top-right-radius: 5px;
-              border-bottom-right-radius: 5px;
+  
             "
             :style="{backgroundColor: awayColor}"
+            class="col-grow"
           ></div>
-          </div>
-         
+        
         </div>
       </div>
-     
     </div>
   </div>
 </template>
@@ -224,10 +261,7 @@ const dragging = ref(0);
 const setDragging = (shot_no: number) => {
   dragging.value = shot_no;
 };
-const endDrag = (
-  shot_no: number,
-  color: string
-) => {
+const endDrag = (shot_no: number, color: string) => {
   if (dragging.value !== shot_no) return;
 
   const {isOutside} = mouse;
@@ -238,7 +272,6 @@ const endDrag = (
   );
   const positionX = getPercentWidth(elementX, target);
   const positionY = getPercentHeight(elementY, target);
-
 
   const newRock = {x: positionX, y: positionY, shot_no, color};
   addRock(newRock);
@@ -302,8 +335,12 @@ const pendingRocks = computed(() => {
 const sessionStore = useSessionStore();
 const homeColor = computed(() => sessionStore.game?.home_color);
 const awayColor = computed(() => sessionStore.game?.away_color);
-const homeTeamName = computed(() => sessionStore.game?.home?.name || 'Unnamed team');
-const awayTeamName = computed(() => sessionStore.game?.away?.name || 'Unnamed team');
+const homeTeamName = computed(
+  () => sessionStore.game?.home?.name || "Unnamed team"
+);
+const awayTeamName = computed(
+  () => sessionStore.game?.away?.name || "Unnamed team"
+);
 const pendingHome = computed(() => {
   return pendingRocks.value.filter(
     ({color}) => sessionStore.game?.home_color === color

@@ -29,7 +29,6 @@
   border-top: 2px solid rgba(0 0 0 / 20%);
   transform: v-bind(computedScale);
   width: max-content;
-  height: 100%;
   transition: scale 0.1s;
   &:before {
     content: "";
