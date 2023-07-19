@@ -185,8 +185,8 @@ const rockClasses = computed(() => {
   return `${isSelected.value ? "selected" : ""}`;
 });
 onClickOutside(rockRef, deselectRock);
-useEventListener(rockRef, "mousedown", startDrag);
 useEventListener(rockRef, "click", selectRock);
-useEventListener(rockRef, "touchstart", startDrag);
+useEventListener(document, "mousedown", startDrag);
+useEventListener(document, "touchstart", startDrag);
 
 </script>
