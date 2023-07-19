@@ -61,7 +61,10 @@ const endDrag = () => {
     position.value = 'relative'
      positionX.value = `1px`
     positionY.value = `1px`
-    emit('dragUp')
+    nextTick(() => {
+  emit('dragUp')
+    })
+  
 
 }
 const startDragEvents = () => {

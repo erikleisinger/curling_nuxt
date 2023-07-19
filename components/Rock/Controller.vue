@@ -98,7 +98,7 @@
                   @vue:beforeUnmount="beforeUnmount"
                 >
                   <RockDraggable
-                    @dragUp="endDrag($event, rock.shot_no, rock.color)"
+                    @dragUp="endDrag(rock.shot_no, rock.color)"
                     :color="rock.color"
                     :disabled="rock.shot_no > editedShot.shot_no"
                     @dragging="setDragging(rock.shot_no)"
@@ -140,7 +140,7 @@
                   :key="rock.shot_no"
                 >
                   <RockDraggable
-                    @dragUp="endDrag($event, rock.shot_no, rock.color)"
+                    @dragUp="endDrag(rock.shot_no, rock.color)"
                     :color="rock.color"
                     :disabled="rock.shot_no > editedShot.shot_no"
                     @dragging="setDragging(rock.shot_no)"
@@ -168,24 +168,6 @@
     </div>
   </div>
 </template>
-<style scoped lang="scss">
-.pending-rock-container {
-  // background-color:rgba(0,0,0,0.1)
-
-  // &.red {
-  //   background-color: rgba(255,0,0,0.4);
-
-  // }
-  //  &.yellow {
-  //   background-color: rgba(255,255,0,0.4);
-
-  // }
-  //  &.blue {
-  //   background-color: rgba(0,0,255,0.4);
-
-  // }
-}
-</style>
 <script setup lang="ts">
 import {computed, inject, ref} from "vue";
 import {useMounted, useElementSize} from "@vueuse/core";
@@ -243,7 +225,6 @@ const setDragging = (shot_no: number) => {
   dragging.value = shot_no;
 };
 const endDrag = (
-  e: TouchEvent | PointerEvent,
   shot_no: number,
   color: string
 ) => {
@@ -257,6 +238,7 @@ const endDrag = (
   );
   const positionX = getPercentWidth(elementX, target);
   const positionY = getPercentHeight(elementY, target);
+
 
   const newRock = {x: positionX, y: positionY, shot_no, color};
   addRock(newRock);
