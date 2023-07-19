@@ -1,6 +1,6 @@
 <template>
   <div class="column" style="position: relative; height: 100%; width: 100%">
-     <div class="row justify-between q-px-xl" :style="`width: 100%; margin: auto; z-index:3`">
+     <div class="row justify-between q-px-xl; q-pt-xs" :style="`width: 100%; margin: auto; z-index:3`">
         <q-btn
           @click="carryOverShots"
           round
