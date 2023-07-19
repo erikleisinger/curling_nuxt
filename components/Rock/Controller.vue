@@ -63,7 +63,7 @@
     </div>
     <div
       class="column"
-      :style="`width: calc(100% - 96px); z-index:1; margin:auto`"
+      :style="`width: calc(100vw - 96px); z-index:1; margin:auto`"
     >
       <div class="row justify-between q-py-sm no-wrap" style="width: 100%">
         <div
@@ -148,7 +148,7 @@
           class="row pending-rock-container away no-wrap justify-between"
           :class="awayColor"
         >
-          <div class="column items-end" style="width:calc(50vw - 10px)">
+          <div class="column items-end" style="width:calc(100% - 10px)">
             <div
               class="text-right text-italic q-pl-sm"
               :style="{backgroundColor: awayColor}"
