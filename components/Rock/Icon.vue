@@ -1,9 +1,11 @@
 <template>
-  <div class="rock__icon" :class="[
-        props.disabled ? 'rock-disabled' : `rock-${props.color}`,
-        props.selected ? 'selected' : '',
-      ]"/>
-
+  <div
+    class="rock__icon"
+    :class="[
+      props.disabled ? 'rock-disabled' : `rock-${props.color}`,
+      props.selected ? 'selected' : '',
+    ]"
+  />
 </template>
 <style lang="scss">
 .rock__icon {
@@ -14,12 +16,12 @@
   border: 1px solid rgba(0, 0, 0, 0.4);
   &:after {
     content: "";
-    height:50%;
+    height: 50%;
     width: 10%;
-    top:25%;
+    top: 25%;
 
     left: 45%;
-transform:rotateZ(135deg);
+    transform: rotateZ(135deg);
     background-color: rgb(70, 70, 70);
     position: absolute;
     z-index: -1;
@@ -48,7 +50,6 @@ transform:rotateZ(135deg);
 }
 </style>
 <script setup lang="ts">
-
 const props = defineProps({
   disabled: Boolean,
   color: {
@@ -59,5 +60,4 @@ const props = defineProps({
   },
   selected: Boolean,
 });
-
 </script>

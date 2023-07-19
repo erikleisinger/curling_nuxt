@@ -148,7 +148,7 @@
           class="row pending-rock-container away no-wrap justify-between"
           :class="awayColor"
         >
-          <div class="column items-end" style="width:calc(100% - 10px)">
+          <div class="column items-end" style="width:calc(100% - 10px);">
             <div
               class="text-right text-italic q-pl-sm"
               :style="{backgroundColor: awayColor}"
