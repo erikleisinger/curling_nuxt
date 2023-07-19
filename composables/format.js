@@ -1,8 +1,6 @@
-import {useDateFormat } from '@vueuse/core'
 export const useFormat = () => {
     const formatDate = (date, format = 'MMM D, YYYY', fallback = 'N/A') => {
-        const timestamp = Date.parse(date);
-        return isNaN(timestamp) ? fallback : useDateFormat(date, format).value
+      return date;
     }
 
     const formatPlayerForSelection = (player) => {

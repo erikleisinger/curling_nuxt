@@ -36,8 +36,7 @@ export const useTeamStore = defineStore("team", {
       const {id} = getUser() ?? {};
       const {data, error} = await client
         .from(TABLE_NAMES.TEAMS)
-        .select(getQuery(TABLE_NAMES.TEAMS))
-        .eq("profile_id", id) as SupabaseTeamReturn
+        .select(getQuery(TABLE_NAMES.TEAMS))as SupabaseTeamReturn
         if (!data || error) return;
       this.teams = data
       this.sortTeams();

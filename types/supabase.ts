@@ -12,24 +12,24 @@ export interface Database {
       ends: {
         Row: {
           created_at: string | null
-          end_number: number | null
-          game_id: number | null
+          end_number: number
+          game_id: number
           id: number
           points_scored: number | null
           scoring_team_id: number | null
         }
         Insert: {
           created_at?: string | null
-          end_number?: number | null
-          game_id?: number | null
+          end_number?: number
+          game_id: number
           id?: number
           points_scored?: number | null
           scoring_team_id?: number | null
         }
         Update: {
           created_at?: string | null
-          end_number?: number | null
-          game_id?: number | null
+          end_number?: number
+          game_id?: number
           id?: number
           points_scored?: number | null
           scoring_team_id?: number | null
@@ -142,14 +142,17 @@ export interface Database {
         Row: {
           created_at: string | null
           id: string
+          timezone: string | null
         }
         Insert: {
           created_at?: string | null
           id: string
+          timezone?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          timezone?: string | null
         }
         Relationships: [
           {
@@ -162,7 +165,7 @@ export interface Database {
       }
       shots: {
         Row: {
-          end_id: number | null
+          end_id: number
           id: number
           line: number | null
           notes: string | null
@@ -174,7 +177,7 @@ export interface Database {
           type_id: number | null
         }
         Insert: {
-          end_id?: number | null
+          end_id: number
           id?: number
           line?: number | null
           notes?: string | null
@@ -186,7 +189,7 @@ export interface Database {
           type_id?: number | null
         }
         Update: {
-          end_id?: number | null
+          end_id?: number
           id?: number
           line?: number | null
           notes?: string | null

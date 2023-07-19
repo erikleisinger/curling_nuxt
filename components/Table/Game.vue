@@ -25,7 +25,7 @@
          <q-btn flat round  @click.stop="selectGame(game)"> <q-icon color="primary" name="launch"></q-icon></q-btn>
         </q-item-section>
         <q-item-section>
-          <q-item-label overline>{{ formatDate(game.start_time) }}</q-item-label>
+          <q-item-label overline>{{ toTimezone(game.start_time) }}</q-item-label>
           <q-item-label>{{ game.name }}</q-item-label>
           <q-item-label caption>
             <div class="row no-wrap">
@@ -80,6 +80,8 @@ import type Game from '@/types/game'
 const props = defineProps({
   edited: Object,
 })
+const {toTimezone} = useTime();
+
 const loading = ref(false);
 const itemToDelete = ref(null)
 const store = useSessionStore();
@@ -102,14 +104,13 @@ const selectGame = async (game:Game) => {
 };
 
 const edit = (game:Game) => {
-  const {formatDate} = useFormat();
   const editorStore = useEditorStore();
   editorStore.toggleGameDialog({
     ...game,
     home: game.home.id,
     away: game.away.id,
     hammer_first_end: game.hammer_first_end?.id,
-    start_time: formatDate(game.start_time, "YYYY/MM/DD", ""),
+    start_time: toTimezone(game.start_time, "YYYY/MM/DD HH:mm"),
   });
 };
 
@@ -132,7 +133,6 @@ const {direction} = useSwipe(tableArea, {
   },
 });
 
-const {formatDate} = useFormat()
 
 const endCount = (game:Game) => {
   const [end] = game?.ends || []

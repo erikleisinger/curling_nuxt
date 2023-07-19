@@ -3,7 +3,7 @@ import {useTeamStore} from "@/store/teams";
 import {useGameStore} from "@/store/games";
 import {usePlayerStore} from "@/store/players";
 import {useShotTypeStore} from "@/store/shotTypes";
-
+import {useUserStore} from '@/store/user'
 
 export const useData = () => {
   const progress = ref(0)
@@ -13,11 +13,13 @@ export const useData = () => {
       const {fetchTeams} = useTeamStore();
       const {fetchPlayers} = usePlayerStore();
       const {fetchGames} = useGameStore()
+      const {getCurrentUser} = useUserStore();
       const operations = [
         fetchShotTypes,
         fetchTeams,
         fetchPlayers,
-        fetchGames
+        fetchGames,
+        getCurrentUser,
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(

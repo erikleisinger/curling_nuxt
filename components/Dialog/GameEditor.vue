@@ -127,6 +127,8 @@ const onSave = async (e, callback) => {
   if (newGame.ends) {
     delete newGame.ends
   }
+  const {toUTC} = useTime();
+  newGame.start_time =  toUTC(editedGame.value.start_time, null, true)
   gameStore.insertGame(newGame);
   callback();
 };

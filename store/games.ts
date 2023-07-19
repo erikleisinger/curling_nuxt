@@ -37,18 +37,15 @@ export const useGameStore = defineStore("games", {
         const client = useSupabaseAuthClient<Database>();
         const {data, error} = await client
           .from(TABLE_NAMES.GAMES)
-          .select(getQuery(TABLE_NAMES.GAMES))
-          .eq("profile_id", id) as SupabaseGameReturn
+          .select(getQuery(TABLE_NAMES.GAMES))as SupabaseGameReturn
+  
           if (error) {
             const {setBanner} = useBanner();
             setBanner("Error getting games.", BannerColors.Negative);
           } else if (data) {
             this.games =  data ?? [];
           }
-
-  
       },
-
       async insertGame(game: Game) {
         const client = useSupabaseAuthClient<Database>();
         const {getUser, getQuery} = useDatabase();
