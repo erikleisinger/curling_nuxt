@@ -250,7 +250,14 @@ const onRockPositionUpdated = (e: RockPosition, shot_no: number) => {
 
 const onRemoveRock = (rock: RockPosition) => {
   deleteOverlay.value = false;
-  upsertRock({...rock, removed: true});
+  const newRockPositions = [...rockPositions.value];
+  const index = newRockPositions.findIndex((r) => r.shot_no === rock.shot_no);
+  if (index !== -1) {
+    newRockPositions.splice(index, 1);
+    editedShot.value.rock_positions = JSON.stringify({
+    rocks: newRockPositions,
+  });
+  }
 };
 
 // ADD Rocks
