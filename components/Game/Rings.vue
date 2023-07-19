@@ -2,7 +2,6 @@
   <div class="rink" ref="rink">
     <slot v-bind:left="left" v-bind:top="top" />
     <div class="rings__wrapper">
-      {{props.scale}}
       <svg height="100%" width="100%">
         <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
         <circle cx="50%" cy="50%" r="33%" style="fill: white" />
