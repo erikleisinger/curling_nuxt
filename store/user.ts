@@ -3,6 +3,7 @@ import type {Database} from '@/types/supabase'
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
+      showNumbers: false,
       timezone: 'America/Toronto',
     };
   },
@@ -19,5 +20,8 @@ export const useUserStore = defineStore("user", {
         if (!timezone) return;
       this.timezone = timezone;
     },
+    toggleShowNumbers() {
+        this.showNumbers = !this.showNumbers
+    }
   },
 });

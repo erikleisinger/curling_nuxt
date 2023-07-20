@@ -12,7 +12,7 @@
     :color="props.rock.color"
     :selected="isSelected"
   >
-
+    <span v-if="showNumbers">{{Math.round(rock.shot_no / 2)}}</span>
   </RockIcon>
 </template>
 <style lang="scss">
@@ -56,6 +56,7 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  showNumbers: Boolean,
 });
 
 const rockDiameterPercent = ref(`${ROCK_DIAMETER_PERCENT}%`)

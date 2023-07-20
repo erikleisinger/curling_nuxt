@@ -8,7 +8,9 @@
          :selected="props.selected"
          :color="color"
          :disabled="disabled"
-      />
+      >
+    <span v-if="showNumbers">{{props.shotNo}}</span>
+        </RockIcon>
 
 
 
@@ -28,6 +30,8 @@ const props = defineProps({
     color: String,
     disabled: Boolean,
     selected: Boolean,
+    showNumbers: Boolean,
+    shotNo: Number,
 })
 const rock = ref(null);
 const isDraggable = ref(false)

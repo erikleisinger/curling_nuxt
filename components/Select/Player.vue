@@ -8,7 +8,23 @@
     emit-value
     map-options
     :disable="globalLoading"
+    use-input
+    input-debounce="0"
+    @input-value="onInput"
+    ref="playerSelect"
   >
+  <template v-slot:selected v-if="!editedPlayer  && input">
+       <q-chip class="glossy" color="positive" text-color="white" icon-right="add_circle_outline" style="order:1" @click="addPlayer" :clickable="!inserting">
+        {{input}}
+      </q-chip>
+  </template>
+  <template v-slot:before-options>
+    <q-item>
+        <q-item-section>
+        <q-item-label>Type a name to search for them, or tap to create a new player.</q-item-label>
+        </q-item-section>
+    </q-item>
+  </template>   
     <template v-slot:append>
       <q-btn
         flat
@@ -26,8 +42,8 @@ import {usePlayerStore} from "@/store/players";
 import type Player from "@/types/player";
 type FilterFunction = (arg:Player) => boolean
 const props = defineProps<{
-  modelValue: number | null,
-  filter: FilterFunction
+  modelValue: number | null | undefined,
+  filter?: FilterFunction,
 }>();
 const emit = defineEmits(["update:modelValue"]);
 const editedPlayer = computed({
@@ -56,4 +72,24 @@ const playerOptions = computed(() => {
   return players.map((d) => formatPlayerForSelection(d));
 });
 const {globalLoading} = useLoading();
+
+const input = ref('')
+const onInput = (e:string) => {
+    input.value = e;
+}
+
+const playerSelect = ref(null)
+const inserting = ref(false)
+const addPlayer = async () => {
+    inserting.value = true;
+  const newPlayer = {
+    name: input.value
+  }
+  const player = await store.insertPlayer(newPlayer);
+  editedPlayer.value = player?.id;
+  
+  inserting.value = false
+  playerSelect.value.blur();
+
+}
 </script>

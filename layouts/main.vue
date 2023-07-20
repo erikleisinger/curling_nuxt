@@ -10,7 +10,7 @@
         <slot name="footer"/>
                 <q-toolbar class="bg-primary text-white q-px-none" v-if="$q.screen.lt.md">
         <q-btn-group spread flat class="col-grow" role="navigation" aria-label="pages">
-            <q-btn flat  to="/"><q-icon name="adjust"/></q-btn>
+            <q-btn flat  to="/" :disable="!gameSelected"><q-icon name="adjust"/></q-btn>
              <q-btn flat to="/select"><q-icon name="table_view" /></q-btn>
              <q-btn flat @click="logout"><q-icon name="logout"/></q-btn>
         </q-btn-group>
@@ -82,8 +82,11 @@
 </style>
 <script setup>
 import {useAuthStore} from '@/store/auth'
+import { useSessionStore } from '@/store/session';
   const $q = useQuasar();
   const authStore = useAuthStore();
+  const sessionStore = useSessionStore();
+  const gameSelected = computed(() => sessionStore.game?.id)
 const logout = async () => {
   const client = useSupabaseAuthClient();
   await client.auth.signOut();

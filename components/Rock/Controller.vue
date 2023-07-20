@@ -12,6 +12,7 @@
         :disabled="editedShot && editedShot.shot_no === 1"
         ><q-icon name="next_plan" color="white" size="sm"
       /></q-btn>
+      <q-btn @click="toggleShowNumbers"  round :color="showNumbers ? 'primary' : 'white'"><q-icon name="123" :color="showNumbers ? 'white' : 'primary'" size="sm"/></q-btn>
       <slot name="buttons" />
       <q-btn @click="save" round size="md" color="primary"
         ><q-icon name="save" color="white" size="sm"
@@ -58,6 +59,7 @@
           @remove="onRemoveRock(rock)"
           @outsideBounds="onOutsideBounds"
           :scale="scale"
+          :showNumbers="showNumbers"
         />
       </GameRings>
     </div>
@@ -124,6 +126,8 @@
                     @select="selectRock(rock.shot_no)"
                     :selected="selected === rock.shot_no"
                     @deselect="selected = null"
+                    :showNumbers="showNumbers"
+                    :shotNo="Math.round(rock.shot_no / 2)"
                   />
                 </div>
               </transition-group>
@@ -180,7 +184,8 @@
                     @select="selectRock(rock.shot_no)"
                     :selected="selected === rock.shot_no"
                     @deselect="selected = null"
-                  />
+                      :showNumbers="showNumbers"
+                    :shotNo="Math.round(rock.shot_no / 2)"/>
                 </div>
               </transition-group>
             </div>
@@ -209,6 +214,13 @@ import {ROCK_DIAMETER_PERCENT} from "@/constants/dimensions";
 import {VNode} from "vue/types";
 
 import {useSessionStore} from "@/store/session";
+import {useUserStore} from '@/store/user'
+
+const userStore = useUserStore()
+
+const {toggleShowNumbers} = userStore
+
+const showNumbers = computed(() => userStore.showNumbers)
 
 const beforeUnmount = async (e: VNode) => {
   e.el.style.width = 0;
@@ -293,6 +305,10 @@ const rockPositions = computed<RockPosition[]>(() => {
     return [];
   }
 });
+const rocksInPlay = computed(() => {
+  if (!isMounted.value) return [];
+  return rockPositions.value.filter((s: RockPosition) => !s.removed)
+});
 
 const carryOverShots = () => {
   if (!editedShot.value.shot_no || editedShot.value.shot_no === 1) return;
@@ -307,27 +323,25 @@ const carryOverShots = () => {
   });
 };
 
-const rocksInPlay = computed(() => {
-  if (!isMounted.value) return [];
-  return rockPositions.value.filter((s: RockPosition) => !s.removed);
-});
-
-const outOfPlayRocks = computed(() => {
-  return rockPositions.value.filter((s: RockPosition) => !!s.removed);
-});
-
-const pendingRocks = computed(() => {
-  const {shot_no} = editedShot.value;
+const calcInitialPending = () => {
   const pending: RockPosition[] = [];
-  if (!shot_no) return pending;
   for (let x = 1; x <= 16; x++) {
     const rock = rockPositions.value.find((r) => r.shot_no === x);
     if (!rock)
       pending.push({shot_no: x, x: 0, y: 0, color: store.getShotColor(x)});
   }
+
   if (editedShot.value) return pending;
   return [];
-});
+}
+
+const pendingRocks = ref<RockPosition[]>([]);
+
+onBeforeMount(() => {
+    pendingRocks.value = calcInitialPending();
+})
+
+
 const sessionStore = useSessionStore();
 const homeColor = computed(() => sessionStore.game?.home_color);
 const awayColor = computed(() => sessionStore.game?.away_color);
@@ -340,12 +354,12 @@ const awayTeamName = computed(
 const pendingHome = computed(() => {
   return pendingRocks.value.filter(
     ({color}) => sessionStore.game?.home_color === color
-  );
+  ).sort((a,b) => a.shot_no - b.shot_no);
 });
 const pendingAway = computed(() => {
   return pendingRocks.value.filter(
     ({color}) => sessionStore.game?.away_color === color
-  );
+  ).sort((a,b) => a.shot_no - b.shot_no);
 });
 
 // MODIFY Rocks
@@ -379,17 +393,19 @@ const onRemoveRock = (rock: RockPosition) => {
       rocks: newRockPositions,
     });
   }
+   pendingRocks.value.splice(Math.round(rock.shot_no / 2) - 1, 0, rock)
 };
 
 // ADD Rocks
 
 const addRock = (rock: RockPosition) => {
   // TODO: Error if editedShot has no shot number
-  if (
-    !editedShot.value?.shot_no ||
-    rocksInPlay.value.length >= editedShot.value.shot_no
-  )
-    return;
+  const newPending = [...pendingRocks.value];
+  const index = newPending.findIndex(({shot_no}) => rock.shot_no === shot_no);
+  if (index !== -1){
+    newPending.splice(index, 1);
+    pendingRocks.value = newPending
+  }
   upsertRock(rock);
 };
 
@@ -402,4 +418,10 @@ const onOutsideBounds = (bool: boolean) => {
 
 const curlingRockWrapper = ref(null);
 const {width} = useElementSize(curlingRockWrapper);
+
+const shotNo = computed(() => editedShot.value.shot_no)
+watch(shotNo, () => {
+    
+    pendingRocks.value = calcInitialPending();
+}, {flush:'post'})
 </script>
