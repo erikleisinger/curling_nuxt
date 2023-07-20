@@ -46,6 +46,12 @@
                     <div class="truncate-text text-center" style="width: 100%">
                         {{ game.home.name }}
                     </div>
+                     <div v-if="game.home_percentage">Team: {{getPercent(game.home_percentage)}}%</div>
+                       <div v-if="game.home_percentage_lead">Lead: {{getPercent(game.home_percentage_lead)}}%</div>
+                      <div v-if="game.home_percentage_second">second: {{getPercent(game.home_percentage_second)}}%</div>
+                       <div v-if="game.home_percentage_third">third: {{getPercent(game.home_percentage_third)}}%</div>
+                        <div v-if="game.hpme_percentage_fourth">fourth: {{getPercent(game.home_percentage_fourth)}}%</div>
+                         <div v-if="game.home_percentage_fifth">fifth: {{getPercent(game.home_percentage_fifth)}}%</div>
                 </div>
                 <!-- Score -->
                 <div class="column">
@@ -70,6 +76,12 @@
                     <div class="truncate-text text-center" style="width: 100%">
                         {{ game.away.name }}
                     </div>
+          <div v-if="game.away_percentage">Team: {{getPercent(game.away_percentage)}}%</div>
+                       <div v-if="game.away_percentage_lead">Lead: {{getPercent(game.away_percentage_lead)}}%</div>
+                      <div v-if="game.away_percentage_second">second: {{getPercent(game.away_percentage_second)}}%</div>
+                       <div v-if="game.away_percentage_third">third: {{getPercent(game.away_percentage_third)}}%</div>
+                        <div v-if="game.hpme_percentage_fourth">fourth: {{getPercent(game.away_percentage_fourth)}}%</div>
+                         <div v-if="game.away_percentage_fifth">fifth: {{getPercent(game.away_percentage_fifth)}}%</div>
                 </div>
             </div>
           
@@ -94,5 +106,10 @@ const props = defineProps<{
 const emit = defineEmits(["delete", "edit", "select"]);
 
 const { toTimezone } = useTime();
+const getPercent = (score: number | null) => {
+    if (!score) return 0
+    const percent = score / 4 *100
+    return percent.toFixed();
+}
 
 </script>
