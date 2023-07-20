@@ -1,6 +1,6 @@
 <template>
   <DialogGameEditor />
-  <q-scroll-area class="col-grow" ref="tableArea">
+  <q-scroll-area class="col-grow game-table__container" ref="tableArea" >
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
@@ -23,7 +23,11 @@
     Are you sure you want to delete the game "{{itemToDelete.name ?? 'Unnamed game'}}"
   </DialogConfirmation>
 </template>
-
+<style lang="scss">
+    .game-table__container {
+        background-color:rgb(240, 240, 240);
+    }
+</style>
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
 import {useSessionStore} from "@/store/session";

@@ -1,5 +1,5 @@
 <template>
-    <q-item >
+  <div class="q-ma-md q-pa-sm game-item__container">
         <div style="position: absolute; top: 0; right: 0" class="q-pa-xs row">
             <q-btn
                 flat
@@ -43,7 +43,7 @@
                         style="height: 50px; width: 50px"
                         :color="game.home_color"
                     />
-                    <div class="truncate-text text-center q-pt-xs" style="width: 100%">
+                    <div class="truncate-text text-center" style="width: 100%;padding-top:8px">
                         {{ game.home.name }}
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                         style="height: 50px; width: 50px"
                         :color="game.away_color"
                     />
-                    <div class="truncate-text text-center q-pt-xs" style="width: 100%">
+                    <div class="truncate-text text-center" style="width: 100%; padding-top:8px">
                         {{ game.away.name }}
                     </div>
                 </div> 
@@ -69,15 +69,22 @@
                     <percentage
                         :percent="getPercent(game.home_percentage)"
                         :color="game.home_color"
-                        label="All"
+                        label="Total"
                         
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_lead)"
+                      <percentage
+                        :percent="getPercent(game.home_percentage_fourth)"
                         :color="game.home_color"
-                        label="Lead"
+                        label="Fourth"
                       
+                         
+                    />
+                  <percentage
+                        :percent="getPercent(game.home_percentage_third)"
+                        :color="game.home_color"
+                        label="Third"
+   
                          
                     />
                     <percentage
@@ -87,51 +94,33 @@
                         
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_third)"
+                   
+                     <percentage
+                        :percent="getPercent(game.home_percentage_lead)"
                         :color="game.home_color"
-                        label="Third"
-   
-                         
-                    />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_fourth)"
-                        :color="game.home_color"
-                        label="Fourth"
+                        label="Lead"
                       
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_fifth)"
-                        :color="game.home_color"
-                        label="Fifth"
-                      
-                         
-                    />
+        
                 </div>
                 <div/>
                 <div  class="percent-container col-6" :style="{maxHeight: showStats ? '1000px' : '0px'}">
                     <percentage
                         :percent="getPercent(game.away_percentage)"
                         :color="game.away_color"
-                        label="All"
+                        label="Total"
                         reverse
                         
                     />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_lead)"
+                       <percentage
+                        :percent="getPercent(game.away_percentage_fourth)"
                         :color="game.away_color"
-                        label="Lead"
+                        label="Fourth"
                         reverse
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_second)"
-                        :color="game.away_color"
-                        label="Second"
-                        reverse
-                         
-                    />
+                
                     <percentage
                         :percent="getPercent(game.away_percentage_third)"
                         :color="game.away_color"
@@ -139,39 +128,45 @@
                         reverse
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_fourth)"
+                
+                       <percentage
+                        :percent="getPercent(game.away_percentage_second)"
                         :color="game.away_color"
-                        label="Fourth"
+                        label="Second"
                         reverse
                          
                     />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_fifth)"
+                     <percentage
+                        :percent="getPercent(game.away_percentage_lead)"
                         :color="game.away_color"
-                        label="Fifth"
+                        label="Lead"
                         reverse
                          
                     />
                 </div>
 
             </div>
-      <q-btn @click="showStats = !showStats" style="transition: all 0.3s" flat color="primary">{{showStats ? 'Hide stats' : 'Show stats'}}</q-btn>
+      <!-- <q-btn @click="showStats = !showStats" style="transition: all 0.3s" flat color="primary">{{showStats ? 'Hide stats' : 'Show stats'}}</q-btn> -->
         </q-item-section>
-    </q-item>
+    </div>
 </template>
 <style lang="scss">
+.game-item__container {
+    border-radius: 8px;
+    background-color: white;
 .score-display {
     width: 100%;
     display: grid;
     grid-template-rows: 1fr auto;
     // grid-template-columns: calc(33% - 32px) 33% calc(33% - 32px);
     grid-template-columns: minmax(0, 1fr) 50px 3em 50px minmax(0, 1fr);
+    row-gap: 16px;
     .percent-container {
         grid-column: span 2;
         transition: all 1s;
         overflow:hidden;
     }
+}
 }
 </style>
 <script setup lang="ts">
