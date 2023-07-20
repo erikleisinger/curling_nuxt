@@ -11,6 +11,7 @@
     ref="rockRef"
     :color="props.rock.color"
     :selected="isSelected"
+    :overlay="showNumbers"
   >
     <span v-if="showNumbers">{{Math.round(rock.shot_no / 2)}}</span>
   </RockIcon>

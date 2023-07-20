@@ -9,37 +9,14 @@
             name="home_color"
             :rules="[VALIDATION_RULES.REQUIRED]"
           />
-          <q-select
-            rounded
-            outlined
-            class="col-9 q-pl-sm q-pb-md"
-            v-model.number="editedGame.home"
-            label="Home"
-            :options="teamOptions"
-            emit-value
-            map-options
-            name="home"
-            aria-required="true"
-            :rules="[VALIDATION_RULES.REQUIRED]"
-          />
+          <SelectTeam v-model="editedGame.home"/>
           <SelectColor
             v-model="editedGame.away_color"
             class="col-3 q-pr-sm"
             name="away_color"
             :rules="[VALIDATION_RULES.REQUIRED]"
           />
-          <q-select
-            rounded
-            outlined
-            class="col-9 q-pl-sm q-pb-md"
-            v-model.number="editedGame.away"
-            label="Away"
-            :options="teamOptions"
-            emit-value
-            map-options
-            name="away"
-            :rules="[VALIDATION_RULES.REQUIRED]"
-          />
+            <SelectTeam v-model="editedGame.away"/>
           <q-select
             rounded
             outlined
@@ -79,8 +56,9 @@
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
-import {useTeamStore} from "@/store/teams";
 import {useGameStore} from "@/store/games";
+import {useTeamStore} from "@/store/teams";
+
 
 const props = defineProps({
   edited: Object,
@@ -96,8 +74,7 @@ const editedGame = ref({
   start_time: null,
   hammer_first_end: null,
 });
-
-const teamStore = useTeamStore();
+    const teamStore = useTeamStore();
 const teamOptions = computed(() => {
   return teamStore.teams.map((t) => {
     return {
@@ -142,4 +119,6 @@ const isSelectedTeam = (val) => {
     "Team is not playing in this game."
   );
 };
+
+
 </script>

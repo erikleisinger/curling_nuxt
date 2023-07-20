@@ -7,7 +7,7 @@
     ]"
     :style="{position: draggable ? 'absolute' : 'relative'}"
   >
-  <div class="number-label row justify-center items-center">
+  <div class="row justify-center items-center number-label" v-if="props.overlay">
     <slot/>
   </div>
   </div>
@@ -67,12 +67,13 @@
     width: 100%;
     position:absolute;
     z-index:1;
-    background-color:rgba(0,0,0,0.3);
+ background-color:rgba(0,0,0,0.3);
     border-radius:50%;
     font-size:90%;
     text-align:center;
     font-weight: 600;
     line-height:88%;
+
   }
 }
 </style>
@@ -91,6 +92,9 @@ const props = defineProps({
       return "red";
     },
   },
+  overlay: Boolean,
   selected: Boolean,
+
 });
+
 </script>

@@ -66,7 +66,6 @@
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useTeamStore} from "@/store/teams";
-import {useEventListener} from "@vueuse/core"
 import type Team from '@/types/team'
 import type {TeamPlayers} from '@/types/team'
 import type PlayerId from '@/types/player'

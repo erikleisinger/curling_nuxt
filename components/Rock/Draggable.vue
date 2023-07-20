@@ -8,6 +8,7 @@
          :selected="props.selected"
          :color="color"
          :disabled="disabled"
+         :overlay="showNumbers"
       >
     <span v-if="showNumbers">{{props.shotNo}}</span>
         </RockIcon>

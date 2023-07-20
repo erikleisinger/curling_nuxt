@@ -89,7 +89,11 @@ const addPlayer = async () => {
   editedPlayer.value = player?.id;
   
   inserting.value = false
-  playerSelect.value.blur();
+  nextTick(() => {
+ playerSelect.value.blur();
+  playerSelect.hidePopup();
+  })
+ 
 
 }
 </script>

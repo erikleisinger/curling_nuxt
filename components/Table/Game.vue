@@ -29,10 +29,10 @@
           <q-item-label>{{ game.name }}</q-item-label>
           <q-item-label caption>
             <div class="row no-wrap">
-            <RockIcon :color="game.home_color"  style="height:1em; width:1em; min-width:1em" :draggable="false" class="q-mr-xs"/><div class="col-shrink truncate-text">{{ game.home.name }}</div>
+            <RockIcon :color="game.home_color"  style="height:1em; width:1em; min-width:1em" :draggable="false" class="q-mr-xs"/><div class="col-shrink truncate-text" >{{ game.home.name }}</div>
             </div>
             <div class="row no-wrap">
-              <RockIcon :color="game.away_color" :draggable="false"  style="height:1em; width:1em; min-width:1em" class="q-mr-xs"/><div class="col-shrink truncate-text">{{ game.away.name }}</div>
+              <RockIcon :color="game.away_color" :draggable="false"  style="height:1em; width:1em; min-width:1em" class="q-mr-xs" /><div class="col-shrink truncate-text">{{ game.away.name }}</div>
             </div>
           </q-item-label>
         </q-item-section>

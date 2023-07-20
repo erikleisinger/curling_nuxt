@@ -7,11 +7,12 @@
     emit-value
     map-options
     standout
+    hide-dropdown-icon
   >
     <template v-slot:option="{opt, toggleOption}">
       <q-item clickable @click="toggleOption(opt.value)">
         <q-item-section avatar>
-          <RockIcon :color="opt.value" />
+          <RockIcon :color="opt.value" style="height:20px; width:20px;" :draggable="false" />
         </q-item-section>
         <q-item-section>
           {{ opt.label }}
@@ -19,7 +20,7 @@
       </q-item>
     </template>
     <template v-slot:selected-item="{opt}">
-      <RockIcon :color="opt.value" size="sm" />
+      <RockIcon :color="opt.value" size="sm" style="height:20px; width:20px" :draggable="false" />
     </template>
   </q-select>
 </template>

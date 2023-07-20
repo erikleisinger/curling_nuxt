@@ -44,7 +44,6 @@ export const usePlayerStore = defineStore("players", {
     },
 
     async insertPlayer(player: any) {
-        console.log('INSERTING')
       const client = useSupabaseAuthClient();
       const {getUser} = useDatabase();
       const {id} = getUser() ?? {};
@@ -56,7 +55,6 @@ export const usePlayerStore = defineStore("players", {
         })
         .select();
       const [newPlayer] = data || [];
-      console.log('NEW PLAYER: ', newPlayer)
       if (error || !newPlayer) {
         const {code} = error || {};
         const {setBanner} = useBanner();
@@ -70,7 +68,6 @@ export const usePlayerStore = defineStore("players", {
           this.players.splice(index, 1, newPlayer);
         }
         this.sortPlayers();
-        console.log('heres a new player: ', newPlayer)
         return newPlayer
       }
     },
