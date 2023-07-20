@@ -46,12 +46,7 @@
                     <div class="truncate-text text-center" style="width: 100%">
                         {{ game.home.name }}
                     </div>
-                     <div v-if="game.home_percentage">Team: {{getPercent(game.home_percentage)}}%</div>
-                       <div v-if="game.home_percentage_lead">Lead: {{getPercent(game.home_percentage_lead)}}%</div>
-                      <div v-if="game.home_percentage_second">second: {{getPercent(game.home_percentage_second)}}%</div>
-                       <div v-if="game.home_percentage_third">third: {{getPercent(game.home_percentage_third)}}%</div>
-                        <div v-if="game.hpme_percentage_fourth">fourth: {{getPercent(game.home_percentage_fourth)}}%</div>
-                         <div v-if="game.home_percentage_fifth">fifth: {{getPercent(game.home_percentage_fifth)}}%</div>
+               
                 </div>
                 <!-- Score -->
                 <div class="column">
@@ -76,13 +71,26 @@
                     <div class="truncate-text text-center" style="width: 100%">
                         {{ game.away.name }}
                     </div>
-          <div v-if="game.away_percentage">Team: {{getPercent(game.away_percentage)}}%</div>
-                       <div v-if="game.away_percentage_lead">Lead: {{getPercent(game.away_percentage_lead)}}%</div>
-                      <div v-if="game.away_percentage_second">second: {{getPercent(game.away_percentage_second)}}%</div>
-                       <div v-if="game.away_percentage_third">third: {{getPercent(game.away_percentage_third)}}%</div>
-                        <div v-if="game.hpme_percentage_fourth">fourth: {{getPercent(game.away_percentage_fourth)}}%</div>
-                         <div v-if="game.away_percentage_fifth">fifth: {{getPercent(game.away_percentage_fifth)}}%</div>
+                   
                 </div>
+                       <div style="width:100%"  class="percent-container">
+                      <percentage :percent="getPercent(game.home_percentage)" :color="game.home_color" label="All"/>
+                     <percentage :percent="getPercent(game.home_percentage_lead)" :color="game.home_color" label="Lead"/>
+                     <percentage :percent="getPercent(game.home_percentage_second)" :color="game.home_color" label="Second"/>
+                     <percentage :percent="getPercent(game.home_percentage_third)" :color="game.home_color" label="Third"/>
+                     <percentage :percent="getPercent(game.home_percentage_fourth)" :color="game.home_color" label="Fourth"/>
+                     <percentage :percent="getPercent(game.home_percentage_fifth)" :color="game.home_color" label="Fifth"/>
+                     </div>
+                     <div/>
+                 <div style="width:100%" class="percent-container">
+                   <percentage :percent="getPercent(game.away_percentage)" :color="game.away_color" label="All" reverse/>
+                     <percentage :percent="getPercent(game.away_percentage_lead)" :color="game.away_color" label="Lead" reverse/>
+                     <percentage :percent="getPercent(game.away_percentage_second)" :color="game.away_color" label="Second" reverse/>
+                     <percentage :percent="getPercent(game.away_percentage_third)" :color="game.away_color" label="Third" reverse/>
+                     <percentage :percent="getPercent(game.away_percentage_fourth)" :color="game.away_color" label="Fourth" reverse/>
+                     <percentage :percent="getPercent(game.away_percentage_fifth)" :color="game.away_color" label="Fifth" reverse/>
+
+                         </div>
             </div>
           
         </q-item-section>
@@ -92,9 +100,13 @@
 .score-display {
     width:100%;
     display: grid;
-    grid-template-rows: 1fr;
+    grid-template-rows: 1fr auto;
     grid-template-columns: calc(33% - 32px) 33% calc(33% - 32px);
     column-gap: 32px;
+    .percent-container {
+        grid-column : span 1
+    }
+
 }
 </style>
 <script setup lang="ts">
@@ -109,7 +121,7 @@ const { toTimezone } = useTime();
 const getPercent = (score: number | null) => {
     if (!score) return 0
     const percent = score / 4 *100
-    return percent.toFixed();
+    return Number(percent.toFixed())
 }
 
 </script>
