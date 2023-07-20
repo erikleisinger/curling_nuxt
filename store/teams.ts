@@ -4,6 +4,7 @@ import type Team from "@/types/team";
 import type {SupabaseTeamReturn} from "types/fetch";
 import {TABLE_NAMES} from "@/constants/tables";
 import type {Database} from '@/types/supabase'
+import { BannerColors } from "@/types/color";
 
 export const useTeamStore = defineStore("team", {
   state: () => {
@@ -43,20 +44,17 @@ export const useTeamStore = defineStore("team", {
     },
     async insertTeam(team: Team) {
       const client = useSupabaseAuthClient<Database>();
-      const {getUser, getQuery} = useDatabase();
-      const {id} = getUser() ?? {};
+      const { getQuery} = useDatabase();
+    //   const {id} = getUser() ?? {};
       const {data, error} = await client
         .from(TABLE_NAMES.TEAMS)
-        .upsert({
-          ...team,
-          profile_id: id,
-        })
+        .upsert(team)
         .select(getQuery(TABLE_NAMES.TEAMS)) as SupabaseTeamReturn
       const [newTeam] = data || [];
       if (error || !newTeam) {
         const {code} = error || {};
         const {setBanner} = useBanner();
-        setBanner(`Error creating team (code ${code})`, "negative");
+        setBanner(`Error creating team (code ${code})`, BannerColors.Negative);
       } else {
         const index = this.teams.findIndex((g) => g.id === newTeam.id);
         if (index === -1) {

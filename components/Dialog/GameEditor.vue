@@ -9,14 +9,14 @@
             name="home_color"
             :rules="[VALIDATION_RULES.REQUIRED]"
           />
-          <SelectTeam v-model="editedGame.home"/>
+          <SelectTeam v-model="editedGame.home" label="Home" name="home" class="col-9"/>
           <SelectColor
             v-model="editedGame.away_color"
             class="col-3 q-pr-sm"
             name="away_color"
             :rules="[VALIDATION_RULES.REQUIRED]"
           />
-            <SelectTeam v-model="editedGame.away"/>
+            <SelectTeam v-model="editedGame.away" label="Away" name="away" class="col-9"/>
           <q-select
             rounded
             outlined
@@ -30,6 +30,8 @@
             :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
             reactive-rules
           />
+          <SelectRink v-model="editedGame.rink_id" class="col-12 q-field--with-bottom" label="Rink" name="rink"/>
+          <SelectSheet v-model="editedGame.sheet_id" class="col-12 q-field--with-bottom" label="Sheet" name="sheet"/>
           <InputDate
             v-model="editedGame.start_time"
             class="col-12 q-pb-md"
@@ -73,6 +75,8 @@ const editedGame = ref({
   away_color: "yellow",
   start_time: null,
   hammer_first_end: null,
+  rink_id: null,
+  sheet_id: null,
 });
     const teamStore = useTeamStore();
 const teamOptions = computed(() => {

@@ -40,6 +40,14 @@
 
            <TableShotTypes />
       </section>
+        <section class="column" v-else-if="tab === TAB_VALUES.RINKS" key="rinks">
+
+           <TableRinks />
+      </section>
+       <section class="column" v-else-if="tab === TAB_VALUES.SHEETS" key="sheets">
+
+           <TableSheets />
+      </section>
     </transition-group>
   </NuxtLayout>
 </template>
@@ -62,7 +70,16 @@ const TABS = [
   {
     label: 'Shot types',
     value: 3
-  }
+  },
+    {
+    label: 'Rinks',
+    value: 4
+  },
+     {
+    label: 'Sheets',
+    value: 5
+  },
+
 ]
 
 const TAB_VALUES = {
@@ -70,6 +87,8 @@ const TAB_VALUES = {
   TEAMS: 1,
   PLAYERS: 2,
   SHOT_TYPES: 3,
+  RINKS: 4,
+  SHEETS: 5,
 }
 
 const tab = ref(0);

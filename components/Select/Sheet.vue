@@ -2,13 +2,10 @@
        <q-select
             rounded
             outlined
-
-   
-            :options="teamOptions"
-            v-model="selectedTeam"
+            :options="sheetOptions"
+            v-model="selectedSheet"
             emit-value
             map-options
-
             aria-required="true"
             :rules="[VALIDATION_RULES.REQUIRED]"
           >
@@ -19,7 +16,7 @@
       <q-btn
         flat
         round
-        @click.stop="toggleTeamDialog(null)"
+        @click.stop="toggleSheetDialog(null)"
     
       >
         <q-icon name="add_circle_outline" />
@@ -30,13 +27,13 @@
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
 import { useEditorStore } from "@/store/editor";
-import {useTeamStore} from "@/store/teams";
+import {useSheetStore} from "@/store/sheets";
 
 const props = defineProps({
     modelValue: Number,
 })
 const emit = defineEmits(['update:modelValue'])
-const selectedTeam = computed({
+const selectedSheet = computed({
     get() {
         return props.modelValue
     },
@@ -44,15 +41,15 @@ const selectedTeam = computed({
         emit('update:modelValue', val)
     }
 })
-    const teamStore = useTeamStore();
-const teamOptions = computed(() => {
-  return teamStore.teams.map((t) => {
+    const sheetStore = useSheetStore();
+const sheetOptions = computed(() => {
+  return sheetStore.sheets.map((t) => {
     return {
-      label: t.name || "Unnamed team",
+      label: t.name || "Unnamed sheet",
       value: t.id,
     };
   });
 });
 
-const {toggleTeamDialog} = useEditorStore();
+const {toggleSheetDialog} = useEditorStore();
 </script>

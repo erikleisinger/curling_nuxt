@@ -13,5 +13,7 @@ interface Game {
     home_color: string,
     away_color: string,
     hammer_first_end: BasicTeam,
+    sheet_id?: number | null,
+    rink_id?: number | null
 }
 export default Game

@@ -48,14 +48,10 @@ export const useGameStore = defineStore("games", {
       },
       async insertGame(game: Game) {
         const client = useSupabaseAuthClient<Database>();
-        const {getUser, getQuery} = useDatabase();
-        const {id} = getUser() ?? {};
+        const {getQuery} = useDatabase();
         const {data, error} = await client
           .from(TABLE_NAMES.GAMES)
-          .upsert({
-            ...game,
-            profile_id: id,
-          })
+          .upsert(game)
           .select(getQuery(TABLE_NAMES.GAMES)) as SupabaseGameReturn
         if (error || !data?.length) {
           const {code} = error || {};

@@ -5,14 +5,15 @@
         <q-card-section class="row wrap flex-break">
           <q-input
             class="col-12"
-            v-model="editedPlayer.name"
-            label="Player name"
+            v-model="editedSheet.name"
+            label="Sheet name"
             outlined
             rounded
             name="name"
             aria-required="true"
             :rules="[VALIDATION_RULES.REQUIRED]"
           />
+          <SelectRink v-model="editedSheet.rink_id" class="col-12" label="Rink"/>
         </q-card-section>
         <q-card-actions>
           <q-btn color="primary" label="Save" type="submit" />
@@ -25,30 +26,31 @@
 <script setup lang="ts">
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
-import {usePlayerStore} from "@/store/players";
+import {useSheetStore} from "@/store/sheets";
 import type Team from '@/types/team'
-import type Player from '@/types/player'
+import type Sheet from '@/types/sheet'
 
 const props = defineProps({
   edited: Object,
 });
-const editedPlayer = ref<Player>({
+const editedSheet = ref<Sheet>({
   id: null,
   name: null,
+  rink_id: null
 });
 onMounted(() => {
   if (props.edited) {
-    Object.assign(editedPlayer.value, props.edited);
+    Object.assign(editedSheet.value, props.edited);
     
   }
 });
-const playerStore = usePlayerStore();
+const sheetStore = useSheetStore();
 const onSave = async (e: SubmitEvent, callback: Function) => {
-  const newPlayer = {...editedPlayer.value}
-  if (!editedPlayer.value.id) {
-    delete newPlayer.id;
+  const newSheet = {...editedSheet.value}
+  if (!editedSheet.value.id) {
+    delete newSheet.id;
   }
-  playerStore.insertPlayer(newPlayer);
+  sheetStore.insertSheet(newSheet);
   callback();
 };
 </script>

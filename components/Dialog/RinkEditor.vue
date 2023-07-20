@@ -5,8 +5,8 @@
         <q-card-section class="row wrap flex-break">
           <q-input
             class="col-12"
-            v-model="editedPlayer.name"
-            label="Player name"
+            v-model="editedRink.name"
+            label="Rink name"
             outlined
             rounded
             name="name"
@@ -25,30 +25,30 @@
 <script setup lang="ts">
 import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
-import {usePlayerStore} from "@/store/players";
+import {useRinkStore} from "@/store/rinks";
 import type Team from '@/types/team'
-import type Player from '@/types/player'
+import type Rink from '@/types/rink'
 
 const props = defineProps({
   edited: Object,
 });
-const editedPlayer = ref<Player>({
+const editedRink = ref<Rink>({
   id: null,
   name: null,
 });
 onMounted(() => {
   if (props.edited) {
-    Object.assign(editedPlayer.value, props.edited);
+    Object.assign(editedRink.value, props.edited);
     
   }
 });
-const playerStore = usePlayerStore();
+const rinkStore = useRinkStore();
 const onSave = async (e: SubmitEvent, callback: Function) => {
-  const newPlayer = {...editedPlayer.value}
-  if (!editedPlayer.value.id) {
-    delete newPlayer.id;
+  const newRink = {...editedRink.value}
+  if (!editedRink.value.id) {
+    delete newRink.id;
   }
-  playerStore.insertPlayer(newPlayer);
+  rinkStore.insertRink(newRink);
   callback();
 };
 </script>

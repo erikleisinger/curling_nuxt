@@ -2,6 +2,9 @@ import type Player from "@/types/player";
 import type Team from "@/types/team";
 import type Shot from '@/types/shot'
 import type Game from '@/types/game'
+import type Rink from '@/types/rink'
+import type Sheet from '@/types/sheet'
+import type Rock from '@/types/rock'
 interface SupabaseReturn {
   error: any;
 }
@@ -21,3 +24,12 @@ export interface SupabaseGameReturn extends SupabaseReturn {
 export interface SupabaseShotTypeReturn extends SupabaseReturn {
   data: ShotType[] | null;
 }
+export interface SupabaseRinkReturn extends SupabaseReturn {
+    data: Rink[] | null;
+  }
+  export interface SupabaseSheetReturn extends SupabaseReturn {
+    data: Sheet[] | null;
+  }
+  export interface SupabaseRockReturn extends SupabaseReturn {
+    data: Rock[] | null;
+  }
