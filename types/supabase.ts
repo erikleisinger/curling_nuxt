@@ -49,6 +49,43 @@ export interface Database {
           }
         ]
       }
+      events: {
+        Row: {
+          created_at: string | null
+          id: number
+          name: string | null
+          profile_id: string | null
+          rink_id: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+          rink_id?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+          rink_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_rink_id_fkey"
+            columns: ["rink_id"]
+            referencedRelation: "rinks"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       games: {
         Row: {
           away: number | null
@@ -60,6 +97,8 @@ export interface Database {
           id: number
           name: string | null
           profile_id: string | null
+          rink_id: number | null
+          sheet_id: number | null
           start_time: string | null
         }
         Insert: {
@@ -72,6 +111,8 @@ export interface Database {
           id?: number
           name?: string | null
           profile_id?: string | null
+          rink_id?: number | null
+          sheet_id?: number | null
           start_time?: string | null
         }
         Update: {
@@ -84,6 +125,8 @@ export interface Database {
           id?: number
           name?: string | null
           profile_id?: string | null
+          rink_id?: number | null
+          sheet_id?: number | null
           start_time?: string | null
         }
         Relationships: [
@@ -109,6 +152,18 @@ export interface Database {
             foreignKeyName: "games_profile_id_fkey"
             columns: ["profile_id"]
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_rink_id_fkey"
+            columns: ["rink_id"]
+            referencedRelation: "rinks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_sheet_id_fkey"
+            columns: ["sheet_id"]
+            referencedRelation: "sheets"
             referencedColumns: ["id"]
           }
         ]
@@ -159,6 +214,114 @@ export interface Database {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      rinks: {
+        Row: {
+          created_at: string | null
+          id: number
+          name: string | null
+          profile_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rinks_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      rocks: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: number
+          notes: string | null
+          number: number | null
+          profile_id: string | null
+          sheet_id: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: number
+          notes?: string | null
+          number?: number | null
+          profile_id?: string | null
+          sheet_id?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: number
+          notes?: string | null
+          number?: number | null
+          profile_id?: string | null
+          sheet_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rocks_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rocks_sheet_id_fkey"
+            columns: ["sheet_id"]
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sheets: {
+        Row: {
+          created_at: string | null
+          id: number
+          name: string | null
+          profile_id: string | null
+          rink_id: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+          rink_id?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          name?: string | null
+          profile_id?: string | null
+          rink_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sheets_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sheets_rink_id_fkey"
+            columns: ["rink_id"]
+            referencedRelation: "rinks"
             referencedColumns: ["id"]
           }
         ]
@@ -357,6 +520,10 @@ export interface Database {
           data_type: string
         }[]
       }
+      get_games: {
+        Args: Record<PropertyKey, never>
+        Returns: Record<string, unknown>[]
+      }
       get_table_info: {
         Args: {
           tablename: string
@@ -372,7 +539,10 @@ export interface Database {
       shot_type_enum: "Draw" | "Hit"
     }
     CompositeTypes: {
-      [_ in never]: never
+      team_info: {
+        id: number
+        name: string
+      }
     }
   }
 }

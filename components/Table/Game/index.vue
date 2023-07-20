@@ -16,52 +16,7 @@
           </div>
         </q-item-section>
       </q-item>
-      <q-item
-        v-for="game in games"
-        :key="game.id"
-
-      >
-       <q-item-section avatar>
-         <q-btn flat round  @click.stop="selectGame(game)"> <q-icon color="primary" name="launch"></q-icon></q-btn>
-        </q-item-section>
-        <q-item-section>
-          <q-item-label overline>{{ toTimezone(game.start_time) }}</q-item-label>
-          <q-item-label>{{ game.name }}</q-item-label>
-          <q-item-label caption>
-            <div class="row no-wrap">
-            <RockIcon :color="game.home_color"  style="height:1em; width:1em; min-width:1em" :draggable="false" class="q-mr-xs"/><div class="col-shrink truncate-text" >{{ game.home.name }}</div>
-            </div>
-            <div class="row no-wrap">
-              <RockIcon :color="game.away_color" :draggable="false"  style="height:1em; width:1em; min-width:1em" class="q-mr-xs" /><div class="col-shrink truncate-text">{{ game.away.name }}</div>
-            </div>
-          </q-item-label>
-        </q-item-section>
-        <q-space />
-        <q-item-section side>
-          <q-item-label> {{ endCount(game) }} ends </q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <div class="text-grey-8 row">
-            <q-btn
-              size="12px"
-              flat
-              dense
-              round
-              icon="edit"
-              @click.stop="edit(game)"
-            ></q-btn>
-              <q-btn
-                size="12px"
-                flat
-                dense
-                round
-                icon="delete"
-                @click.stop="itemToDelete = game"
-              ></q-btn>
-          </div>
-          
-        </q-item-section>
-      </q-item>
+      <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit"/>
     </q-list>
   </q-scroll-area>
   <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
@@ -132,11 +87,4 @@ const {direction} = useSwipe(tableArea, {
     loadGames(true);
   },
 });
-
-
-const endCount = (game:Game) => {
-  const [end] = game?.ends || []
-  const {count} = end || {}
-  return count || 0
-}
 </script>

@@ -15,5 +15,7 @@ interface Game {
     hammer_first_end: BasicTeam,
     sheet_id?: number | null,
     rink_id?: number | null
+    score_home?: number | null,
+    score_away?: number | null
 }
 export default Game
