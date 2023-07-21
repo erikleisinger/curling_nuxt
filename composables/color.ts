@@ -13,6 +13,7 @@ export const useColor = () => {
             indigo: '#3949ab',
             amber: '#ffc107',
             orange: '#ff5722',
+            deepOrange: '#d84315',
             teal: '#4db6ac',
             primary: '#1976D2',
             secondary: '#26A69A',

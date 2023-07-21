@@ -11,7 +11,9 @@
         track-color="red"
     >
         <div class="column items-center">
-            <div style="font-size: 0.8rem">{{ label }}</div>
+            <div style="font-size: 0.8rem; color: black; font-weight: bold">
+                {{ label }}
+            </div>
             <div>{{ val.toFixed() }}%</div>
         </div>
     </q-knob>
@@ -39,12 +41,12 @@ const props = defineProps({
 });
 const val = ref(0);
 const { upTick } = useAnimate();
+const { getColor } = useColor();
 onMounted(() => {
     upTick(val, props.value, 7);
 });
 
 const barColor = computed(() => {
-    const { getColor } = useColor();
     return getColor(props.color);
 });
 </script>

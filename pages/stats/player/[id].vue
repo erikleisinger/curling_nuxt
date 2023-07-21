@@ -5,26 +5,21 @@
                 <header
                     class="q-pa-lg column justify-center items-center no-wrap"
                 >
-                    <!-- <div class="profile-picture row justify-center items-center">
-                <q-icon name="person" size="md" color="grey"/>
-            </div> -->
                     <div style="" class="column items-center">
                         <StatsWheel
                             :value="getPercent(data[dataMap.TOTAL])"
                             size="150px"
                             label="Total"
+                            color="primary"
                         />
                     </div>
                     <h1 class="q-mt-xs text-black">
                         {{ getPlayerName(Number(route.params.id)) }}
                     </h1>
-                    <!-- <h2></h2> -->
-
-                    <!-- <q-chip icon="content_copy">Friend ID</q-chip> -->
                 </header>
                 <main class="main-content__wrap">
                     <div class="main-percent__container">
-                         <div
+                        <div
                             class="column items-between justify-center q-mb-xl q-mr-sm"
                         >
                             <StatsWheel
@@ -37,24 +32,24 @@
                         <div class="column items-center q-mb-xl q-ml-sm">
                             <percentage
                                 :percent="data[dataMap.INSIDE]"
-                                color="amber"
-                                reverse
-                                label="Inside"
-                                  static
-                            />
-                            <percentage
-                               :percent="data[dataMap.ON_BROOM]"
                                 color="pink"
                                 reverse
+                                label="Inside"
+                                static
+                            />
+                            <percentage
+                                :percent="data[dataMap.ON_BROOM]"
+                                color="teal"
+                                reverse
                                 label="On broom"
-                                  static
+                                static
                             />
                             <percentage
                                 :percent="data[dataMap.OUTSIDE]"
-                                color="teal"
+                                color="amber"
                                 reverse
                                 label="Outside"
-                                  static
+                                static
                             />
                         </div>
                         <div
@@ -62,32 +57,32 @@
                         >
                             <StatsWheel
                                 :value="getPercent(data[dataMap.INTURN])"
-                               size="150px"
-                                color="accent"
+                                size="150px"
+                                color="orange"
                                 label="Inturn"
                             />
                         </div>
                         <div class="column items-center q-mb-xl q-ml-sm">
                             <percentage
-                                :percent="50"
-                                color="amber"
-                                reverse
-                                label="Inside"
-                                  static
-                            />
-                            <percentage
-                                :percent="50"
+                                :percent="data[dataMap.INTURN_INSIDE]"
                                 color="pink"
                                 reverse
-                                label="On broom"
-                                  static
+                                label="Inside"
+                                static
                             />
                             <percentage
-                                :percent="50"
+                                   :percent="data[dataMap.INTURN_ON_BROOM]"
                                 color="teal"
                                 reverse
+                                label="On broom"
+                                static
+                            />
+                            <percentage
+                                  :percent="data[dataMap.INTURN_OUTSIDE]"
+                                color="amber"
+                                reverse
                                 label="Outside"
-                                  static
+                                static
                             />
                         </div>
                         <div
@@ -96,31 +91,31 @@
                             <StatsWheel
                                 :value="getPercent(data[dataMap.OUTTURN])"
                                 size="150px"
-                                color="indigo"
+                                color="red"
                                 label="Outturn"
                             />
                         </div>
                         <div class="column items-center q-mb-xl q-ml-sm">
                             <percentage
-                                :percent="50"
-                                color="amber"
-                                reverse
-                                label="Inside"
-                                  static
-                            />
-                            <percentage
-                                :percent="50"
+                                   :percent="data[dataMap.OUTTURN_INSIDE]"
                                 color="pink"
                                 reverse
-                                label="On broom"
-                                  static
+                                label="Inside"
+                                static
                             />
                             <percentage
-                                :percent="50"
+                                :percent="data[dataMap.OUTTURN_ON_BROOM]"
                                 color="teal"
                                 reverse
+                                label="On broom"
+                                static
+                            />
+                            <percentage
+                                 :percent="data[dataMap.OUTTURN_OUTSIDE]"
+                                color="amber"
+                                reverse
                                 label="Outside"
-                                  static
+                                static
                             />
                         </div>
                         <div
@@ -128,30 +123,30 @@
                         >
                             <StatsWheel
                                 :value="getPercent(data[dataMap.DRAW])"
-                                 size="150px"
-                                color="orange"
+                                size="150px"
+                                color="purple"
                                 label="Draw"
-                                  static
+                                static
                             />
                         </div>
                         <div class="column items-center q-mb-xl q-ml-sm">
                             <percentage
-                                :percent="50"
-                                color="amber"
-                                reverse
-                                label="Inside"
-                                  static
-                            />
-                            <percentage
-                                :percent="50"
+                                :percent="data[dataMap.DRAW_INSIDE]"
                                 color="pink"
                                 reverse
-                                label="On broom"
-                                  static
+                                label="Inside"
+                                static
                             />
                             <percentage
-                                :percent="50"
+                                :percent="data[dataMap.DRAW_ON_BROOM]"
                                 color="teal"
+                                reverse
+                                label="On broom"
+                                static
+                            />
+                            <percentage
+                                :percent="data[dataMap.DRAW_OUTSIDE]"
+                                color="amber"
                                 reverse
                                 label="Outside"
                                 static
@@ -162,32 +157,32 @@
                         >
                             <StatsWheel
                                 :value="getPercent(data[dataMap.HIT])"
-                              size="150px"
-                                color="positive"
+                                size="150px"
+                                color="pink"
                                 label="Hit"
                             />
                         </div>
                         <div class="column items-center q-mb-xl q-ml-sm">
                             <percentage
-                                :percent="50"
-                                color="amber"
-                                reverse
-                                label="Inside"
-                                  static
-                            />
-                            <percentage
-                                :percent="50"
+                                 :percent="data[dataMap.HIT_INSIDE]"
                                 color="pink"
                                 reverse
-                                label="On broom"
-                                  static
+                                label="Inside"
+                                static
                             />
                             <percentage
-                                :percent="50"
+                                :percent="data[dataMap.HIT_ON_BROOM]"
                                 color="teal"
                                 reverse
+                                label="On broom"
+                                static
+                            />
+                            <percentage
+                                 :percent="data[dataMap.HIT_OUTSIDE]"
+                                color="amber"
+                                reverse
                                 label="Outside"
-                                  static
+                                static
                             />
                         </div>
                     </div>
@@ -258,7 +253,7 @@ const route = useRoute();
 const loading = ref(false);
 
 const client = useSupabaseAuthClient();
-const { data: d } = await client.rpc("get_shot_averages", {
+const { data: d } = await client.rpc("get_shot_averages_player", {
     player_id_param: route.params.id,
 });
 const [data] = d || [{}];
@@ -272,6 +267,18 @@ const dataMap = {
     INSIDE: "avg_inside",
     ON_BROOM: "avg_onbroom",
     OUTSIDE: "avg_outside",
+    INTURN_INSIDE: "avg_inside_inturn",
+    INTURN_ON_BROOM: "avg_onbroom_inturn",
+    INTURN_OUTSIDE: "avg_outside_inturn",
+    OUTTURN_INSIDE: "avg_inside_outturn",
+    OUTTURN_ON_BROOM: "avg_onbroom_outturn",
+    OUTTURN_OUTSIDE: "avg_outside_outturn",
+    DRAW_INSIDE: "avg_inside_draw",
+    DRAW_ON_BROOM: "avg_onbroom_draw",
+    DRAW_OUTSIDE: "avg_outside_draw",
+    HIT_INSIDE: "avg_inside_hit",
+    HIT_ON_BROOM: "avg_onbroom_hit",
+    HIT_OUTSIDE: "avg_outside_hit",
 };
 
 const { getPercent } = useConvert();
