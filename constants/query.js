@@ -18,7 +18,8 @@ export const TABLE_QUERIES = {
     hammer_first_end (
       id,
       name
-    )
+    ),
+    completed
     `,
     [TABLE_NAMES.PLAYERS]: '*',
     [TABLE_NAMES.SHOTS]: `

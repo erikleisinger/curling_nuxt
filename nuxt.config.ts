@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
     app: {
         head: {
+            link: [{ rel: 'stylesheet', href: 'https://unpkg.com/pattern.css' }],
             meta: [
                 {
                     name: "viewport",

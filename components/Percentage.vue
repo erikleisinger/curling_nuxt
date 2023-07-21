@@ -11,10 +11,10 @@
             style="padding-bottom: 8px"
         >
             <div style="font-weight: bold">{{ label }}</div>
-            <div style="font-weight: bold">{{ percent }}%</div>
+            <div style="font-weight: bold">{{ width }}%</div>
         </div>
         <div class="row justify-end" :class="{ reverse }">
-            <div class="percent-wrapper" v-if="targetVisible" />
+            <div class="percent-wrapper"  />
         </div>
     </div>
 </template>
@@ -26,25 +26,20 @@
     width: 100%;
     height: 8px;
     background-color: rgba(213, 213, 213, 0.3);
+ 
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
     &:after {
         content: "";
         height: 100%;
         border-radius: 8px;
-        background-color: v-bind(color);
+        background-color: v-bind(bg);
         position: absolute;
         left: v-bind(left);
         right: v-bind(right);
         animation: 0.8s grow forwards;
         animation-delay: 0.2s;
-    }
-}
-
-@keyframes grow {
-    0% {
-        width: 0%;
-    }
-    100% {
-        width: v-bind(width)
+        width: v-bind(widthComputed);
+      box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
     }
 }
 </style>
@@ -56,9 +51,33 @@ const props = defineProps({
     label: String,
     reverse: Boolean,
 });
-const width = computed(() => `${props.percent}%`);
+const width = ref(0)
+const widthComputed = computed(() => `${width.value}%`);
 const left = computed(() => (props.reverse ? 0 : "unset"));
 const right = computed(() => (props.reverse ? "unset" : 0));
 const el = ref(null)
 const targetVisible = useElementVisibility(el)
+    const upTick = () => {
+        if (width.value >= props.percent) return;
+        width.value +=1;
+        setTimeout(() => {
+ upTick();
+        },10)
+       
+    }
+const bg = computed(() => {
+    return {
+        yellow: '#ffec3d',
+        blue: '#3790e9',
+        red: '#e53734'
+    }[props.color]
+})
+
+watch(targetVisible, (val) => {
+    
+    if (!val) return;
+    console.log('target vis')
+    width.value = 0;
+    upTick();
+}, {immediate:true})
 </script>

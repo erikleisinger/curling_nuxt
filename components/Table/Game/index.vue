@@ -1,6 +1,6 @@
 <template>
   <DialogGameEditor />
-  <q-scroll-area class="col-grow game-table__container" ref="tableArea" >
+  <q-scroll-area class="col-grow game-table__container " ref="tableArea" >
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
@@ -25,7 +25,8 @@
 </template>
 <style lang="scss">
     .game-table__container {
-        background-color:rgb(240, 240, 240);
+    //     background-color:rgba(246, 247, 252, 0.1);
+    // color:rgba(246, 247, 252, 1);
     }
 </style>
 <script setup lang="ts">

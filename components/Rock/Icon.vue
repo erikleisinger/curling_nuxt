@@ -2,7 +2,7 @@
   <div
     class="rock__icon"
     :class="[
-      props.disabled ? 'rock-disabled' : `rock-${props.color}`,
+      props.disabled ? 'rock-disabled' : '',
       props.selected ? 'selected' : '',
     ]"
     :style="{position: draggable ? 'absolute' : 'relative'}"
@@ -18,37 +18,22 @@
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.4);
   color:black;
+  background-image: v-bind(bg);;
+ box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+ 
+   .number-label {
+        color:white
+    }
   &:after {
     content: "";
     height: 50%;
     width: 10%;
     top: 25%;
-
+border-radius: 4px;
     left: 45%;
     transform: rotateZ(135deg);
-    background-color: rgb(70, 70, 70);
+    background-color: v-bind(handleColor);
     position: absolute;
-  }
-  &.rock-red {
-    color: $rock-red;
-    background-color: $rock-red;
-     .number-label {
-        color:white;
-    }
-  }
-  &.rock-yellow {
-    color: $rock-yellow;
-    background-color: $rock-yellow;
-     .number-label {
-        color:white
-    }
-  }
-  &.rock-blue {
-    color: $rock-blue;
-    background-color: $rock-blue;
-     .number-label {
-        color:white;
-    }
   }
   &.rock-disabled {
     color: rgb(206, 206, 206);
@@ -96,5 +81,19 @@ const props = defineProps({
   selected: Boolean,
 
 });
+const bg = computed(() => {
+    return {
+        blue: 'linear-gradient(to top, #3790e9 0%, #2e8be9 100%)',
+        yellow: 'linear-gradient(to top, #ffec3d 0%, #f3dc0f 100%)',
+        red: 'linear-gradient(to top, #e53734 0%, #d33131 100%)'
+    }[props.color] || 'unset'
+})
+const handleColor = computed(() => {
+    return {
+        blue: '#003060',
+        yellow: '#837600',
+        red: '#640200'
+    }[props.color] || 'unset'
+})
 
 </script>

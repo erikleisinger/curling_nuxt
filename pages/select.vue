@@ -26,10 +26,10 @@
         leaveAnimation
       }`"
     >
-      <section class="column" v-if="tab === TAB_VALUES.GAMES" key="games">
+      <section class="column" v-if="tab === TAB_VALUES.GAMES" key="games" name="games">
         <TableGame />
       </section>
-      <section class="column" v-else-if="tab === TAB_VALUES.TEAMS" key="teams">
+      <section class="column" v-else-if="tab === TAB_VALUES.TEAMS" key="teams" name="teams">
              <TableTeams />
       </section>
       <section class="column" v-else-if="tab === TAB_VALUES.PLAYERS" key="players">
@@ -108,5 +108,5 @@ watch(tab, (newTab) => {
     enterAnimation.value = 'slideInLeft'
     leaveAnimation.value = 'slideOutRight'
   }
-})
+}, {immediate: true})
 </script>
