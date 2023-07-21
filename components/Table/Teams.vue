@@ -1,6 +1,6 @@
 <template>
      <DialogTeamEditor/>
-  <q-scroll-area class="col-grow" ref="tableArea">
+  <q-scroll-area class="col-grow bg-white" ref="tableArea">
     <q-inner-loading
       :showing="loading"
       label="Please wait..."

@@ -289,11 +289,7 @@ const showStats = ref(false);
 const emit = defineEmits(["delete", "edit", "select"]);
 
 const { toTimezone } = useTime();
-const getPercent = (score: number | null) => {
-    if (!score) return 0;
-    const percent = (score / 4) * 100;
-    return Number(percent.toFixed());
-};
+const {getPercent} = useConvert();
 
 const selected = ref(false);
 const gameContainer = ref(null);

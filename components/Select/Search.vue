@@ -1,4 +1,7 @@
 <template>
+<q-chip>
+    
+</q-chip>
     <q-input v-model="search">
         <template v-slot:append>
                <div style="position: absolute; left:0; top:100%; width:100%; background-color:white; z-index:3; max-height: 200px;overflow:scroll" v-if="results.length">

@@ -1,6 +1,6 @@
 <template>
   <DialogPlayerEditor />
-  <q-scroll-area class="col-grow" ref="tableArea">
+  <q-scroll-area class="col-grow bg-white" ref="tableArea">
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
@@ -15,7 +15,7 @@
           </div>
         </q-item-section>
       </q-item>
-      <q-item clickable v-ripple v-for="player in players" :key="player.id">
+      <q-item clickable v-ripple v-for="player in players" :key="player.id" :to="`/stats/player/${player.id}`">
         <q-item-section>
           <q-item-label>{{ player.name }}</q-item-label>
           <q-item-label caption> </q-item-label>

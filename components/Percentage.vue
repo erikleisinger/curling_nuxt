@@ -39,7 +39,7 @@
         animation: 0.8s grow forwards;
         animation-delay: 0.2s;
         width: v-bind(widthComputed);
-      box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+        box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
     }
 }
 </style>
@@ -50,6 +50,7 @@ const props = defineProps({
     percent: Number,
     label: String,
     reverse: Boolean,
+    static: Boolean,
 });
 const width = ref(0)
 const widthComputed = computed(() => `${width.value}%`);
@@ -57,27 +58,22 @@ const left = computed(() => (props.reverse ? 0 : "unset"));
 const right = computed(() => (props.reverse ? "unset" : 0));
 const el = ref(null)
 const targetVisible = useElementVisibility(el)
-    const upTick = () => {
-        if (width.value >= props.percent) return;
-        width.value +=1;
-        setTimeout(() => {
- upTick();
-        },10)
-       
-    }
-const bg = computed(() => {
-    return {
-        yellow: '#ffec3d',
-        blue: '#3790e9',
-        red: '#e53734'
-    }[props.color]
-})
+ const {upTick} = useAnimate();
+
+const rendered = ref(false)
+
 
 watch(targetVisible, (val) => {
-    
-    if (!val) return;
-    console.log('target vis')
+    if (!val || (props.static && rendered.value)) return;
     width.value = 0;
-    upTick();
+    rendered.value = true;
+    upTick(width, props.percent);
 }, {immediate:true})
+
+
+
+const bg = computed(() => {
+     const {getColor} = useColor();
+    return getColor(props.color)
+})
 </script>

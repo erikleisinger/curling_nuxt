@@ -11,6 +11,13 @@ export const usePlayerStore = defineStore("players", {
       players: useStorage("players", [] as Player[]),
     };
   },
+  getters: {
+    getPlayerName() {
+        return (playerId: number) => {
+            return this.players.find(({id}) => playerId === id)?.name || 'Unnamed player'
+        }
+    },
+  },
   actions: {
     async deletePlayer(id: number | null) {
       const client = useSupabaseAuthClient();
@@ -21,7 +28,7 @@ export const usePlayerStore = defineStore("players", {
       if (error) {
         const {code} = error || {};
         const {setBanner} = useBanner();
-        setBanner(`Error deleting player (code ${code})`, "negative");
+        setBanner(`Error deleting player (code ${code})`, BannerColors.Negative);
       } else {
         const index = this.players.findIndex((g) => g.id === id);
         if (index === -1) return;
