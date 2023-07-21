@@ -30,6 +30,7 @@
 </template>
 <style lang="scss">
     .score__table {
+
         td, tr {
 border: 1px solid #999;
         }
@@ -62,6 +63,7 @@ width: calc(100% - 1em);
             transform: rotateZ(45deg)
         }
     }
+    
 </style>
 <script setup lang="ts">
     import {useSessionStore} from '@/store/session';

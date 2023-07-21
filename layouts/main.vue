@@ -59,31 +59,7 @@
         background-color: white;
     }
 }
-.show {
-    height: 81px;
-    animation: show 0.5s;
-}
-.hide {
-    height: 0px;
-    animation: hide 0.5s;
-}
 
-@keyframes show {
-    0% {
-        height: 0px;
-    }
-    100% {
-        height: 81px;
-    }
-}
-@keyframes hide {
-    0% {
-        height: 81px;
-    }
-    100% {
-        height: 0px;
-    }
-}
 
 @media all and (min-width: 1000px) {
     .wrapper {

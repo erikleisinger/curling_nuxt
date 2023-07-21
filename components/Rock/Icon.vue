@@ -82,6 +82,7 @@ const props = defineProps({
 
 });
 const bg = computed(() => {
+    if (props.disabled) return 'unset'
     return {
         blue: 'linear-gradient(to top, #3790e9 0%, #2e8be9 100%)',
         yellow: 'linear-gradient(to top, #ffec3d 0%, #f3dc0f 100%)',
@@ -89,6 +90,7 @@ const bg = computed(() => {
     }[props.color] || 'unset'
 })
 const handleColor = computed(() => {
+    if (props.disabled) return 'gray'
     return {
         blue: '#003060',
         yellow: '#837600',
