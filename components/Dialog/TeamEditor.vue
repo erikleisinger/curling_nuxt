@@ -3,6 +3,7 @@
     <q-form @submit="onSave(onDialogOK)" ref="form">
       <q-card>
         <q-card-section class="row wrap flex-break">
+            <SelectSearch/>
           <q-input
             class="col-12 q-field--with-bottom"
             v-model="editedTeam.name"
@@ -51,6 +52,7 @@
             reactive-rules
             class="col-12"
           />
+          
           <!-- <SelectPlayer v-model.number="editedTeam.sixth_player_id" label="Sixth" name="sixth_player_id"/>
               <SelectPlayer v-model.number="editedTeam.seventh_player_id" label="Seventh" name="seventh_player_id"/> -->
         </q-card-section>
