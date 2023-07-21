@@ -1,5 +1,9 @@
 <template>
-  <q-select
+<div class="row justify-between">
+    <div v-for="player in playerOptions" :key="player.id" class="player__wrap">
+    </div>
+</div>
+  <!-- <q-select
     outlined
     rounded
     label="Player"
@@ -35,8 +39,19 @@
         <q-icon name="refresh" />
       </q-btn>
     </template>
-  </q-select>
+  </q-select> -->
 </template>
+<style lang="scss">
+    .player__wrap {
+        border-radius: 50%;
+        border: 1px solid black;
+        height: 50px;
+        width: 50px;
+        &:hover {
+            background-color: seashell;
+        }
+    }
+</style>
 <script setup lang="ts">
 import {usePlayerStore} from "@/store/players";
 import type Player from "@/types/player";
@@ -69,7 +84,7 @@ const playerOptions = computed(() => {
   if (props.filter) {
     players = players.filter(props.filter);
   }
-  return players.map((d) => formatPlayerForSelection(d));
+  return players
 });
 const {globalLoading} = useLoading();
 

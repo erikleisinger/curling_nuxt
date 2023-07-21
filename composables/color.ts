@@ -1,7 +1,7 @@
-export const useColor = () => {
+export const useColorr = () => {
     const getColor = (key: string) => {
         return {
-            yellow: '#ffec3d',
+            yellow: '#fbc02d',
             blue: '#3790e9',
             red: '#e53734',
             purple: '#ab47bc',

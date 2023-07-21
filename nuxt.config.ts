@@ -28,6 +28,8 @@ export default defineNuxtConfig({
             animations: [
                 "fadeIn",
                 "fadeOut",
+                "fadeInDown",
+                "fadeOutUp",
                 "shakeX",
                 "slideInUp",
                 "slideInRight",

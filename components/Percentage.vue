@@ -50,7 +50,12 @@ const props = defineProps({
     percent: Number,
     label: String,
     reverse: Boolean,
-    static: Boolean,
+    static: {
+        type: Boolean,
+        default() {
+            return true;
+        }
+    }
 });
 const width = ref(0)
 const widthComputed = computed(() => `${width.value}%`);
@@ -59,7 +64,7 @@ const right = computed(() => (props.reverse ? "unset" : 0));
 const el = ref(null)
 const targetVisible = useElementVisibility(el)
  const {upTick} = useAnimate();
-     const {getColor} = useColor();
+     const {getColor} = useColorr();
 
 const rendered = ref(false)
 

@@ -1,18 +1,18 @@
 <template>
     <NuxtLayout name="main">
-        <q-scroll-area>
-            <div class="player-stats__container">
+        <q-scroll-area >
+            <div class="player-stats__container ">
                 <header
-                    class="q-pa-lg column justify-center items-center no-wrap"
+                    class="q-pa-lg column justify-center items-center no-wrap  "
                 >
-                    <div style="" class="column items-center">
+                    <!-- <div style="" class="column items-center">
                         <StatsWheel
                             :value="getPercent(data[dataMap.TOTAL])"
                             size="150px"
                             label="Total"
                             color="primary"
                         />
-                    </div>
+                    </div> -->
                     <h1 class="q-mt-xs text-black">
                         {{ getPlayerName(Number(route.params.id)) }}
                     </h1>
@@ -186,20 +186,6 @@
                             />
                         </div>
                     </div>
-                    <!-- <div class="line__container">
-                       <div class="column items-center">
-                            <StatsWheel :value="data[dataMap.INSIDE]" size="65px" label="inside" color="light-blue-6" />
-                           
-                            </div>
-                          <div class="column items-center">
-                            <StatsWheel :value="data[dataMap.ON_BROOM]" size="65px" label="on broom" color="light-blue-8"  />
-                          
-                            </div>
-                             <div class="column items-center">
-                            <StatsWheel :value="data[dataMap.OUTSIDE]" size="65px" label="outside" color="light-blue-10"  />
-                         
-                            </div>
-                    </div> -->
                 </main>
             </div>
         </q-scroll-area>
@@ -208,11 +194,13 @@
 <style scoped lang="scss">
 .player-stats__container {
     display: grid;
-    grid-template-rows: minmax(300px, 20vh) 1fr;
+    grid-template-rows: minmax(80px, 15vh) 1fr;
     grid-template-columns: 1fr;
+
     header {
         position: relative;
         z-index: 1;
+      
 
         .profile-picture {
             height: 100px;
@@ -226,12 +214,13 @@
         }
     }
     .main-content__wrap {
+
         background-color: white;
         min-height: calc(90vh - 50px);
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
-        margin: 0px 8px;
+        // margin: 0px 8px;
         padding: 32px;
 
         .main-percent__container {

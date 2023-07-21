@@ -1,7 +1,7 @@
 <template>
 <NuxtLayout name="main">
   <template v-slot:header>
-       <q-toolbar class="bg-primary text-white q-px-none" v-if="$q.screen.lt.md" role="navigation">
+       <!-- <q-toolbar class="bg-primary text-white q-px-none"  role="navigation">
       <q-tabs v-model="tab" inline-label
         outside-arrows
         mobile-arrows
@@ -10,8 +10,10 @@
         <q-tab label="Score" name="score" aria-controls="score" tabindex="0" />
       </q-tabs>
      
-    </q-toolbar>
-    <q-toolbar class="bg-primary text-white" v-else>
+    </q-toolbar> -->
+
+  
+    <q-toolbar class="bg-primary text-white" v-if="$q.screen.gt.sm">
       <q-space />
       <q-btn flat round dense @click="logout">
         <q-icon name="logout"></q-icon>

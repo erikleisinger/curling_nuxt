@@ -41,7 +41,7 @@ const props = defineProps({
 });
 const val = ref(0);
 const { upTick } = useAnimate();
-const { getColor } = useColor();
+const { getColor } = useColorr();
 onMounted(() => {
     upTick(val, props.value, 7);
 });
