@@ -1,5 +1,20 @@
 <template>
     <div class="column" style="position: relative; height: 100%; width: 100%">
+        <div style="position: absolute; top:0; right:0; z-index: 100; margin-top: 5%; margin-right: 2%" class="column">
+            <q-btn
+                @click="toggleShowNumbers"
+                round
+
+                :color="showNumbers ? 'primary' : 'white'"
+                ><q-icon
+                    name="123"
+                    :color="showNumbers ? 'white' : 'primary'"
+                    size="sm"
+            /></q-btn>
+               <slot name="buttons" />
+        
+
+        </div>
         <div style="position: relative" class="col-grow">
             <GameRings :scale="scale" :setScale="setScale">
                 <div
@@ -45,7 +60,7 @@
                 />
             </GameRings>
         </div>
-                <!-- <div
+        <!-- <div
             class="row justify-between q-px-xl q-pt-xs"
             :style="`width: 100%; margin: auto; z-index:3`"
         >
@@ -72,10 +87,59 @@
             /></q-btn>
         </div> -->
         <div
-            class="column"
-            :style="`width: calc(100vw - 96px); z-index:1; margin:auto`"
+            class="row justify-between"
+            :style="`z-index:1; margin:auto; position: absolute; bottom: 0; width: 100%`"
         >
-            <div
+        <div style="position: relative; height: 100%;width: 100%">
+            <div class="row  q-ma-md" :style="`width: ${rockContainerWidth}px; max-height: ${rockContainerWidth/2}px; position: absolute; left: 0; bottom:0`">
+                <transition-group
+                    appear
+                    enter-active-class="slideInLeft"
+                    leave-active-class="slideOutRight"
+                >
+                    <RockDraggable
+                        v-for="rock in pendingHome"
+                        :key="rock.shot_no"
+                        @dragUp="endDrag(rock.shot_no, rock.color)"
+                        :color="rock.color"
+                        :disabled="rock.shot_no > editedShot.shot_no"
+                        @dragging="setDragging(rock.shot_no)"
+                        @select="selectRock(rock.shot_no)"
+                        :selected="selected === rock.shot_no"
+                        @deselect="selected = null"
+                        :showNumbers="showNumbers"
+                        :shotNo="Math.round(rock.shot_no / 2)"
+                         :width="`${rockContainerWidth / 4}px`"
+         
+                        @vue:beforeUnmount="beforeUnmount"
+                    />
+                </transition-group>
+            </div>
+            <div class="row q-ma-md" :style="`width: ${rockContainerWidth}px;  max-height: ${rockContainerWidth/2}px; position: absolute; right: 0;bottom:0`">
+                <transition-group
+                    appear
+                    enter-active-class="slideInLeft"
+                    leave-active-class="slideOutRight"
+                >
+                    <RockDraggable
+                        @dragUp="endDrag(rock.shot_no, rock.color)"
+                        :width="`${rockContainerWidth / 4}px`"
+                        :color="rock.color"
+                        :disabled="rock.shot_no > editedShot.shot_no"
+                        @dragging="setDragging(rock.shot_no)"
+                        @select="selectRock(rock.shot_no)"
+                        :selected="selected === rock.shot_no"
+                        @deselect="selected = null"
+                        :showNumbers="showNumbers"
+                        :shotNo="Math.round(rock.shot_no / 2)"
+                        @vue:beforeUnmount="beforeUnmount"
+                        v-for="rock in pendingAway"
+                        :key="rock.shot_no"
+                    />
+                </transition-group>
+            </div>
+            </div>
+            <!-- <div
                 class="row justify-between q-py-sm no-wrap"
                 style="width: 100%"
             >
@@ -113,34 +177,7 @@
                             class="row q-pa-xs q-mr-xs"
                             style="max-height: 38px; max-width: 70px"
                         >
-                            <transition-group
-                                appear
-                                enter-active-class="slideInLeft"
-                                leave-active-class="slideOutRight"
-                            >
-                                <div
-                                    v-for="rock in pendingHome"
-                                    :key="rock.shot_no"
-                                    style="width: 15px; transition: all 0.3s"
-                                    @vue:beforeUnmount="beforeUnmount"
-                                >
-                                    <RockDraggable
-                                        @dragUp="
-                                            endDrag(rock.shot_no, rock.color)
-                                        "
-                                        :color="rock.color"
-                                        :disabled="
-                                            rock.shot_no > editedShot.shot_no
-                                        "
-                                        @dragging="setDragging(rock.shot_no)"
-                                        @select="selectRock(rock.shot_no)"
-                                        :selected="selected === rock.shot_no"
-                                        @deselect="selected = null"
-                                        :showNumbers="showNumbers"
-                                        :shotNo="Math.round(rock.shot_no / 2)"
-                                    />
-                                </div>
-                            </transition-group>
+                            
                         </div>
                     </div>
                 </div>
@@ -174,39 +211,7 @@
                         >
                             {{ awayTeamName }}
                         </div>
-                        <div
-                            class="row q-pa-xs"
-                            style="max-height: 38px; max-width: 75px"
-                        >
-                            <transition-group
-                                appear
-                                enter-active-class="slideInLeft"
-                                leave-active-class="slideOutRight"
-                            >
-                                <div
-                                    style="width: 15px; transition: all 0.3s"
-                                    @vue:beforeUnmount="beforeUnmount"
-                                    v-for="rock in pendingAway"
-                                    :key="rock.shot_no"
-                                >
-                                    <RockDraggable
-                                        @dragUp="
-                                            endDrag(rock.shot_no, rock.color)
-                                        "
-                                        :color="rock.color"
-                                        :disabled="
-                                            rock.shot_no > editedShot.shot_no
-                                        "
-                                        @dragging="setDragging(rock.shot_no)"
-                                        @select="selectRock(rock.shot_no)"
-                                        :selected="selected === rock.shot_no"
-                                        @deselect="selected = null"
-                                        :showNumbers="showNumbers"
-                                        :shotNo="Math.round(rock.shot_no / 2)"
-                                    />
-                                </div>
-                            </transition-group>
-                        </div>
+                      
                     </div>
                     <div
                         style="
@@ -218,9 +223,8 @@
                         class="col-grow"
                     ></div>
                 </div>
-            </div>
+            </div> -->
         </div>
-
     </div>
 </template>
 <script setup lang="ts">
@@ -443,6 +447,8 @@ const onOutsideBounds = (bool: boolean) => {
 
 const curlingRockWrapper = ref(null);
 const { width } = useElementSize(curlingRockWrapper);
+
+const rockContainerWidth = computed(() => width.value / 3);
 
 const shotNo = computed(() => editedShot.value.shot_no);
 watch(

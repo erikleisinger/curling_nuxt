@@ -1,5 +1,5 @@
 <template>
-    <section class="score-container__wrap">
+    <section class="score-container__wrap q-mb-lg">
         <section class="row justify-start items-center score__container">
             <div class="column col-12 no-wrap q-px-lg">
                 <label><h1>Turn</h1></label>
@@ -24,8 +24,10 @@
                     <SelectLine v-model="editedShot.line" />
                 </div>
             </div>
-            <q-input
-                class="col-12 q-pt-lg"
+             <div class="column col-12 no-wrap q-mt-lg">
+                <label><h1>Notes</h1></label>
+                 <q-input
+                class="col-12"
                 type="textarea"
                 outlined
                 rounded
@@ -33,6 +35,8 @@
                 :disable="globalLoading"
                 v-model="editedShot.notes"
             />
+            </div>
+           
         </section>
     </section>
 </template>

@@ -29,7 +29,7 @@
         />
 
         <div
-            :style="`position:relative; width: 100%; margin-bottom: 90px`"
+            :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"
         >
            <div class="menu__floating" v-show="!showScoreInput">
@@ -43,6 +43,7 @@
                         @click="showScoreBoard = !showScoreBoard"
                         v-if="$q.screen.lt.md"
                         color="white"
+                        class="q-mt-sm"
                         ><q-icon name="o_scoreboard" size="sm" color="primary"
                     /></q-btn>
                 </template>
@@ -53,7 +54,7 @@
             style="
                 max-height: 100%;
                 overflow: hidden;
-                transition: all 0.3s;
+                transition: all 0.2s;
                 z-index: 150;
             "
             :class="showScoreInput ? 'showScore' : 'hideScore'"
@@ -108,7 +109,7 @@
                     maxHeight: showScoreInput ? 'calc(100% - 100px)' : '0px',
                     height: showScoreInput ? '100%' : '0px',
                 }"
-                style="transition: all 0.3s; overflow: auto"
+                style="transition: all 0.2s; overflow: auto"
             >
                 <InputScore />
             </div>

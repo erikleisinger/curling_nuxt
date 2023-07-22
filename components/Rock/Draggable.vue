@@ -2,9 +2,8 @@
 
         <RockIcon
             ref="rock"
-         class="rock row justify-center draggable"
-         :style="{position, top: positionY, left: positionX}"
-         style="width:15px"
+         class="row justify-center draggable"
+         :style="{position, top: positionY, left: positionX, width}"
          :selected="props.selected"
          :color="color"
          :disabled="disabled"
@@ -33,6 +32,7 @@ const props = defineProps({
     selected: Boolean,
     showNumbers: Boolean,
     shotNo: Number,
+    width: String,
 })
 const rock = ref(null);
 const isDraggable = ref(false)
@@ -57,6 +57,7 @@ const startDrag = () => {
 const onDrag = () => {
     if (props.disabled || !props.selected) return;
     emit('dragging')
+    console.log(x.value, y.value)
     position.value = 'fixed'
     positionX.value = `${x.value}px`
     positionY.value = `${y.value}px`

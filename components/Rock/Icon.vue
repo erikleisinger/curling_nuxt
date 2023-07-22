@@ -20,6 +20,7 @@
   color:black;
   background-image: v-bind(bg);;
  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+ aspect-ratio: 1/1;
  
    .number-label {
         color:white
@@ -57,7 +58,7 @@ border-radius: 4px;
     font-size:90%;
     text-align:center;
     font-weight: 600;
-    line-height:88%;
+    line-height:100%
 
   }
 }
