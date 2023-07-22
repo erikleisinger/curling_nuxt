@@ -1,8 +1,9 @@
 <template>
     <q-layout class="column main__wrap pattern-diagonal-stripes-sm slategray h-5">
-        <q-header elevated class="bg-primary text-white" height-hint="98">
+        <!-- <q-header elevated class="bg-primary text-white" height-hint="98">
             <slot name="header" />
-        </q-header>
+        </q-header> -->
+        <slot name="header"/>
         <q-page-container
             class="col-grow wrapper "
             style="overflow: hidden"
@@ -10,7 +11,7 @@
         >
             <slot />
         </q-page-container>
-        <q-footer elevated v-if="$q.screen.lt.md">
+        <!-- <q-footer elevated v-if="$q.screen.lt.md">
             <slot name="footer" />
             <q-toolbar
                 class="bg-primary text-white q-px-none"
@@ -33,7 +34,7 @@
                     <q-btn flat @click="logout"><q-icon name="logout" /></q-btn>
                 </q-btn-group>
             </q-toolbar>
-        </q-footer>
+        </q-footer> -->
         <Banner />
     </q-layout>
 </template>

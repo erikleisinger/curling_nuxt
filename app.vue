@@ -1,9 +1,14 @@
 <template>
-  <NuxtLayout>
+
     <global-loading v-if="loading" :value="progress" />
     <NuxtPage v-else />
-  </NuxtLayout>
+
 </template>
+<style lang="scss">
+    #__nuxt {
+height:inherit;
+  }
+</style>
 <script setup lang="ts">
 import {useSessionStore} from "@/store/session";
 import {useAuthStore} from "@/store/auth";

@@ -43,6 +43,8 @@
     overflow: auto;
     background-color: rgba(255, 255, 255, 0.9);
     font-family: "Montserrat", sans-serif;
+    display: grid;
+    grid-template-rows: minmax(100% ,100%) auto;
     h1 {
         font-size: 1.5em;
     }

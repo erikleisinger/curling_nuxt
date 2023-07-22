@@ -1,45 +1,6 @@
 <template>
-<NuxtLayout name="main">
-  <template v-slot:header>
-       <!-- <q-toolbar class="bg-primary text-white q-px-none"  role="navigation">
-      <q-tabs v-model="tab" inline-label
-        outside-arrows
-        mobile-arrows
-        class="col-grow">
-        <q-tab label="Rings" name="rings" aria-controls="rings" tabindex="0" />
-        <q-tab label="Score" name="score" aria-controls="score" tabindex="0" />
-      </q-tabs>
-     
-    </q-toolbar> -->
-
-  
-    <q-toolbar class="bg-primary text-white" v-if="$q.screen.gt.sm">
-      <q-space />
-      <q-btn flat round dense @click="logout">
-        <q-icon name="logout"></q-icon>
-      </q-btn>
-    </q-toolbar>
-    
-  </template>
-    <GameController/>
-    <q-inner-loading :showing="globalLoading"/>
-    <template v-slot:footer>
-      <!-- <GameNavigation/> -->
-
-    </template>
-</NuxtLayout>
+<GameController/>
 </template>
-<style lang="scss">
-body,
-html {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-}
-#__nuxt {
-  height: inherit;
-}
-</style>
 <script setup lang="ts">
 import {computed, onMounted, provide, ref, watch, InjectionKey} from "vue";
 import {useSessionStore} from '@/store/session'
