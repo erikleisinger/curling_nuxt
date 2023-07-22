@@ -85,6 +85,7 @@
     width: v-bind(height);
     transition: all 0.1s;
     z-index: 3;
+    touch-action: none;
     .option__center {
         height: 50%;
         width: 50%;

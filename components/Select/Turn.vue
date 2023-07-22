@@ -1,7 +1,7 @@
 <template>
      
 
-    <div class="row justify-around items-center turn-select-btn__wrap">
+    <div class="row turn-select-btn__wrap">
        
         <div
             class="select__button pretty-shadow"
@@ -33,9 +33,6 @@
 .turn-select-btn__wrap {
     width: 100%;
     height: fit-content;
-    // display: grid;
-    // grid-template-rows: 1fr;
-    // grid-template-columns: repeat(2, 1fr);
     font-family: inherit;
  
     h1 {
@@ -60,8 +57,9 @@
 }
 </style>
 <script setup>
-const model = ref(0);
+
 const props = defineProps({
+    modelValue: Number,
     size: {
         type: String,
         default() {
@@ -69,6 +67,17 @@ const props = defineProps({
         },
     },
 });
+
+const emit = defineEmits(['update:modelValue'])
+
+const model = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
+})
 
 const height = computed(() => props.size || '90px')
 </script>

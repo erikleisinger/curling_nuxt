@@ -1,6 +1,5 @@
 <template>
-<div class="column">
-    <label class="col-shrink"><h1>Line</h1></label>
+
  <div class="row justify-around items-center turn-select-btn__wrap no-wrap">
         <div
             class="select__button pretty-shadow"
@@ -23,15 +22,15 @@
         </div>
          <div
             class="select__button pretty-shadow"
-            @click="model = 1"
-            :class="{ selected: model === 1 }"
+            @click="model = 2"
+            :class="{ selected: model === 2 }"
         >
             <div class="column items-center justify-center no-wrap">
                 Wide
             </div>
         </div>
     </div>
-    </div>
+
 </template>
 <style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
@@ -44,11 +43,6 @@
     }
 .turn-select-btn__wrap {
     width: 100%;
-    // display: grid;
-    // grid-template-rows: 1fr;
-    // grid-template-columns: repeat(2, 1fr);
- 
-
     .select__button {
         
         height: v-bind(size);
@@ -70,13 +64,26 @@
 }
 </style>
 <script setup>
-    const model = ref(0);
+
+    const emit = defineEmits('update:modelValue');
+
     const props = defineProps({
+        modelValue: [Number, null],
     size: {
         type: String,
         default() {
             return "90px";
         },
     },
+
+       
 });
+ const model = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
+ })
 </script>

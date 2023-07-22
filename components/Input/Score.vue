@@ -1,30 +1,30 @@
 <template>
-
-    
-        <section class="row justify-start items-start q-px-lg score__container">
-            <!-- <SelectPlayer
-                v-model="editedShot.player_id"
-                class="col-12 q-pt-lg"
-                :filter="isPlayerOnCurrentTeam" 
-            /> -->
-            <div class="row col-12 no-wrap items-center">
-                         <label class="col-grow"><h1>Turn</h1></label>
-            <SelectTurn class=" justify-between q-mt-md" />
+    <section class="score-container__wrap">
+        <section class="row justify-start items-center score__container">
+            <div class="column col-12 no-wrap q-px-lg">
+                <label><h1>Turn</h1></label>
+                <SelectTurn class="justify-around" v-model="editedShot.turn" />
             </div>
-           <div class="row items-center justify-between no-wrap col-12" >
-                <label ><h1>Type</h1></label>
-                <div class="row justify-around col-grow items-center" style="height: 120px">
-           <SelectShotType v-model="editedShot.type_id"  />
+            <div class="column col-12 no-wrap q-px-lg">
+                <label><h1>Type</h1></label>
+                <div class="row justify-around items-center">
+                    <SelectShotType v-model="editedShot.type_id" />
                 </div>
-           </div>
-               
-            <!-- <SelectLine class="col-12 q-mt-md" /> -->
-   <div class="row col-grow no-wrap items-center">
-      <label><h1>Score</h1></label>
-            <InputShotScore  />
-    </div>
+            </div>
 
-            <!-- <q-input
+            <div class="column col-12 no-wrap q-px-lg">
+                <label><h1>Score </h1></label>
+                <InputShotScore v-model="editedShot.score" class="justify-around" />
+            </div>
+        </section>
+        <section class="q-px-lg row justify-start items-start">
+            <div class="column col-12 no-wrap">
+                <label><h1>Line</h1></label>
+                <div class="row justify-around col-grow items-center">
+                    <SelectLine v-model="editedShot.line" />
+                </div>
+            </div>
+            <q-input
                 class="col-12 q-pt-lg"
                 type="textarea"
                 outlined
@@ -32,41 +32,40 @@
                 label="Notes"
                 :disable="globalLoading"
                 v-model="editedShot.notes"
-            /> -->
-             </section>
-            <!-- <section class="row justify-center col-12 q-pt-lg">
-                <q-btn @click="save" color="primary">Save changes</q-btn>
-            </section> -->
-       
-
-
+            />
+        </section>
+    </section>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
-.score__container {
-       font-family: "Montserrat", sans-serif;
-height: 100%;
-h1 {
-    font-size: 1.5em;
-}
-    .header {
-    height: 30%;
-    }
-    main {
-        border-radius: 50px;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-    background-color:white;
-    padding: 32px;
-    height:70%
-    }
-}
-.score-inputs__wrap {
+.score-container__wrap {
+    height: 100%;
     overflow: auto;
-    overflow-x: hidden;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-family: "Montserrat", sans-serif;
+    h1 {
+        font-size: 1.5em;
+    }
+    .score__container {
+        height: 100%;
+        background-color: unset !important;
 
+        .header {
+            height: 30%;
+        }
+        main {
+            border-radius: 50px;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
 
-
+            padding: 32px;
+            height: 70%;
+        }
+    }
+    .score-inputs__wrap {
+        overflow: auto;
+        overflow-x: hidden;
+    }
 }
 </style>
 <script setup lang="ts">
@@ -81,7 +80,7 @@ import { toValue } from "@vueuse/core";
 
 const editedShot = inject<Ref>("editedShot")!;
 
-const active = ref(0)
+const active = ref(0);
 
 // Selection options
 
@@ -155,4 +154,5 @@ const isPlayerOnCurrentTeam = (player: any) => {
         seventh_player_id,
     ].some((p) => p?.id === id);
 };
+
 </script>
