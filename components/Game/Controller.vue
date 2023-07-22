@@ -39,9 +39,8 @@
                         />
                     </div>
                     <div class="column items-center justify-center">
-                        <div class="header">End 1</div>
-                        <div class="text-white footer">Dawn Askin's 1st</div>
-                        <!-- {{ footerText }} -->
+                        <div class="header">End {{end}}</div>
+                        <div class="text-white footer">{{ footerText }}</div>
                     </div>
                     <div class="row justify-end">
                         <q-btn
@@ -126,7 +125,7 @@
     }
     .score-input__wrap {
         overflow: hidden;
-        height: 100%;
+        height: 0px;
     }
 }
 
@@ -171,6 +170,7 @@
 }
 
 .hideScore {
+    height: 0px;
     animation: hideScore 0.3s forwards;
 }
 
@@ -205,6 +205,7 @@ import { inject, ref } from "vue";
 import { useElementSize, useResizeObserver, useSwipe } from "@vueuse/core";
 import { useUserStore } from "@/store/user";
 import { useSessionStore } from "@/store/session";
+import { usePlayerStore } from "@/store/players";
 const $q = useQuasar();
 const tab = inject("tab");
 const overscroll = "contain";
@@ -234,7 +235,7 @@ const currentColor = computed(() => store.getShotColor(store.shot));
 
 const { capitalizeFirstLetter, formatNumberWithSuffix } = useFormat();
 const footerText = computed(
-    () => `${formatNumberWithSuffix(Math.round(store.shot / 2))} shot`
+    () => `${currentThrowerName.value}'s ${formatNumberWithSuffix(Math.round(store.shot / 2))}`
 );
 
 const shot = computed<number>(() => store.shot);
@@ -303,4 +304,8 @@ const goToCustomShot = (data: { shot: number; end: number }, force = false) => {
     const { shot: shotNo, end: endNo } = data;
     goToShot(shotNo, endNo);
 };
+
+const currentThrower = computed(() => store.getCurrentThrower)
+const playerStore = usePlayerStore();
+const currentThrowerName = computed(() => playerStore.players.find((p) => p.id === currentThrower.value)?.name ?? 'Unnamed player')
 </script>
