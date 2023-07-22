@@ -371,7 +371,7 @@ const dragEnd = (e) => {
 const focused = ref(false);
 
 // useEventListener(wheelInput, 'touchstart', startDrag)
-onLongPress(wheelInput, startDrag, { delay: 10 });
+onLongPress(wheelInput, startDrag, { delay: 50 });
 useEventListener(wheelInput, "mouseup", dragEnd);
 useEventListener(wheelInput, "click", (e) => {
     if (e.pointerType === "touch") return;

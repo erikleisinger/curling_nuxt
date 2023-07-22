@@ -60,46 +60,24 @@
                 />
             </GameRings>
         </div>
-        <!-- <div
-            class="row justify-between q-px-xl q-pt-xs"
-            :style="`width: 100%; margin: auto; z-index:3`"
-        >
-            <q-btn
-                @click="carryOverShots"
-                round
-                size="md"
-                color="primary"
-                :disabled="editedShot && editedShot.shot_no === 1"
-                ><q-icon name="next_plan" color="white" size="sm"
-            /></q-btn>
-            <q-btn
-                @click="toggleShowNumbers"
-                round
-                :color="showNumbers ? 'primary' : 'white'"
-                ><q-icon
-                    name="123"
-                    :color="showNumbers ? 'white' : 'primary'"
-                    size="sm"
-            /></q-btn>
-            <slot name="buttons" />
-            <q-btn @click="save" round size="md" color="primary"
-                ><q-icon name="save" color="white" size="sm"
-            /></q-btn>
-        </div> -->
         <div
             class="row justify-between"
             :style="`z-index:1; margin:auto; position: absolute; bottom: 0; width: 100%`"
         >
         <div style="position: relative; height: 100%;width: 100%">
-            <div class="row  q-ma-md" :style="`width: ${rockContainerWidth}px; max-height: ${rockContainerWidth/2}px; position: absolute; left: 0; bottom:0`">
-                <transition-group
+            <div class="row  q-ma-md" :style="`width: ${rockContainerWidth}px; max-height: ${rockContainerWidth/2}px; position: absolute; left: 0; bottom:0; transition: all 0.2s`">
+   <transition-group
                     appear
                     enter-active-class="slideInLeft"
                     leave-active-class="slideOutRight"
                 >
-                    <RockDraggable
-                        v-for="rock in pendingHome"
+                <div :style="`width: ${rockContainerWidth / 4}px; transition: all 0.2s`"
+                     v-for="rock in pendingHome"
                         :key="rock.shot_no"
+                 @vue:beforeUnmount="beforeUnmount"
+                >
+                    <RockDraggable
+                   
                         @dragUp="endDrag(rock.shot_no, rock.color)"
                         :color="rock.color"
                         :disabled="rock.shot_no > editedShot.shot_no"
@@ -111,15 +89,22 @@
                         :shotNo="Math.round(rock.shot_no / 2)"
                          :width="`${rockContainerWidth / 4}px`"
          
-                        @vue:beforeUnmount="beforeUnmount"
+                       
                     />
-                </transition-group>
+                    </div>
+   </transition-group>
+           
             </div>
-            <div class="row q-ma-md" :style="`width: ${rockContainerWidth}px;  max-height: ${rockContainerWidth/2}px; position: absolute; right: 0;bottom:0`">
+            <div class="row q-ma-md reverse" :style="`width: ${rockContainerWidth}px;  max-height: ${rockContainerWidth/2}px; position: absolute; right: 0;bottom:0`">
                 <transition-group
                     appear
                     enter-active-class="slideInLeft"
                     leave-active-class="slideOutRight"
+                >
+                         <div :style="`width: ${rockContainerWidth / 4}px; transition: all 0.2s`"
+                   v-for="rock in pendingAway"
+                        :key="rock.shot_no"
+                 @vue:beforeUnmount="beforeUnmount"
                 >
                     <RockDraggable
                         @dragUp="endDrag(rock.shot_no, rock.color)"
@@ -133,97 +118,12 @@
                         :showNumbers="showNumbers"
                         :shotNo="Math.round(rock.shot_no / 2)"
                         @vue:beforeUnmount="beforeUnmount"
-                        v-for="rock in pendingAway"
-                        :key="rock.shot_no"
+                      
                     />
+                         </div>
                 </transition-group>
             </div>
             </div>
-            <!-- <div
-                class="row justify-between q-py-sm no-wrap"
-                style="width: 100%"
-            >
-                <div
-                    style="
-                        position: relative;
-                        border-top-left-radius: 5px;
-                        border-color: rgb(150, 150, 150);
-                        border-style: solid;
-                        border-width: 1px 0px 0px 1px;
-                        width: 50%;
-                        max-width: 250px;
-                    "
-                    class="row pending-rock-container home no-wrap"
-                    :class="homeColor"
-                >
-                    <div
-                        style="
-                            width: 10px;
-                            height: 100%;
-                            border-top-left-radius: 5px;
-                        "
-                        :style="{ backgroundColor: homeColor }"
-                        class="col-grow"
-                    ></div>
-                    <div class="column" style="width: 100%">
-                        <div
-                            class="text-italic q-pr-sm truncate-text"
-                            :style="{ backgroundColor: homeColor }"
-                            style="min-width: 0px; width: 100%"
-                        >
-                            {{ homeTeamName }}
-                        </div>
-                        <div
-                            class="row q-pa-xs q-mr-xs"
-                            style="max-height: 38px; max-width: 70px"
-                        >
-                            
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    style="
-                        position: relative;
-
-                        border-top-right-radius: 5px;
-                        border-color: rgb(150, 150, 150);
-                        border-style: solid;
-                        border-width: 1px 1px 0px 0px;
-                        width: 50%;
-                        max-width: 250px;
-                    "
-                    class="row pending-rock-container away no-wrap justify-between"
-                    :class="awayColor"
-                >
-                    <div
-                        class="column items-end"
-                        style="width: calc(100% - 10px)"
-                    >
-                        <div
-                            class="text-right text-italic q-pl-sm truncate-text"
-                            :style="{ backgroundColor: awayColor }"
-                            style="
-                                overflow: hidden;
-                                min-width: 0px;
-                                width: 100%;
-                            "
-                        >
-                            {{ awayTeamName }}
-                        </div>
-                      
-                    </div>
-                    <div
-                        style="
-                            width: 10px;
-                            height: 100%;
-                            border-top-right-radius: 5px;
-                        "
-                        :style="{ backgroundColor: awayColor }"
-                        class="col-grow"
-                    ></div>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -245,6 +145,7 @@ const showNumbers = computed(() => userStore.showNumbers);
 
 const beforeUnmount = async (e: VNode) => {
     e.el.style.width = 0;
+    console.log('BEFORE UNMOUNT')
 };
 const scale = ref(1);
 function setScale(s: number) {

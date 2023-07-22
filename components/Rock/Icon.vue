@@ -38,7 +38,7 @@ border-radius: 4px;
   }
   &.rock-disabled {
     color: rgb(206, 206, 206);
-    background-color: rgb(206, 206, 206);
+    background-color: rgb(206, 206, 206, 0.4);
     .number-label {
         color:white;
     }

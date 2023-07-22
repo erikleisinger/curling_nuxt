@@ -59,8 +59,8 @@ const onDrag = () => {
     emit('dragging')
     console.log(x.value, y.value)
     position.value = 'fixed'
-    positionX.value = `${x.value}px`
-    positionY.value = `${y.value}px`
+    positionX.value = `calc(${x.value}px - ${props.width} / 2)`
+    positionY.value =  `calc(${y.value}px - ${props.width} / 2)`
 }
 const endDrag = () => {
     endDragEvents();
