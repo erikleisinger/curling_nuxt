@@ -1,26 +1,28 @@
 <template>
 
     
-        <section class="row justify-between q-px-lg">
+        <section class="row justify-start items-start q-px-lg score__container">
             <!-- <SelectPlayer
                 v-model="editedShot.player_id"
                 class="col-12 q-pt-lg"
-                :filter="isPlayerOnCurrentTeam"
+                :filter="isPlayerOnCurrentTeam" 
             /> -->
-            <SelectShotType
-                v-model="editedShot.type_id"
-                class="col-6 q-mt-lg"
-                :active="active === 0"
-            />
-            <SelectShotType
-                v-model="editedShot.type_id"
-                class="col-6 q-mt-lg"
-                :active="active === 1"
-            />
-            <SelectTurn class="col-12 q-mt-md" />
+            <div class="row col-12 no-wrap items-center">
+                         <label class="col-grow"><h1>Turn</h1></label>
+            <SelectTurn class=" justify-between q-mt-md" />
+            </div>
+           <div class="row items-center justify-between no-wrap col-12" >
+                <label ><h1>Type</h1></label>
+                <div class="row justify-around col-grow items-center" style="height: 120px">
+           <SelectShotType v-model="editedShot.type_id"  />
+                </div>
+           </div>
+               
             <!-- <SelectLine class="col-12 q-mt-md" /> -->
-
-            <InputShotScore class="col-12 q-pt-lg" />
+   <div class="row col-grow no-wrap items-center">
+      <label><h1>Score</h1></label>
+            <InputShotScore  />
+    </div>
 
             <!-- <q-input
                 class="col-12 q-pt-lg"
@@ -39,10 +41,14 @@
 
 
 </template>
-<style lang="scss" scoped>
-
+<style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
 .score__container {
+       font-family: "Montserrat", sans-serif;
 height: 100%;
+h1 {
+    font-size: 1.5em;
+}
     .header {
     height: 30%;
     }

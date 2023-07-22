@@ -1,7 +1,6 @@
 <template>
      
-<div class="column">
-    <label class="col-shrink"><h1>Turn</h1></label>
+
     <div class="row justify-around items-center turn-select-btn__wrap">
        
         <div
@@ -24,49 +23,21 @@
             </div>
         </div>
     </div>
-    </div>
-    <!-- <q-btn-toggle
-        v-model="model"
-        spread
-        class="my-custom-toggle line__select"
-        no-caps
-        rounded
-        unelevated
-        toggle-color="primary"
-        color="white"
-        text-color="primary"
-        :options="[
-          {value: 0, slot:'in'},
-          { value: 1, slot:'out'},
-        ]"
-      >
-       <template v-slot:in>
-        <div class="row no-wrap">
-          <q-icon name="rotate_right"/>IN
-        </div>
-        </template>
-         <template v-slot:out>
-             <div class="row no-wrap">
-                <q-icon name="rotate_left"/>OUT
-                      </div>
-        </template>
-        </q-btn-toggle> -->
+
 </template>
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
+
 .line__select {
     border: 1px solid $blue-7;
 }
-    h1 {
-        font-size: 2em;
-           font-family: "Montserrat", sans-serif;
-    }
 .turn-select-btn__wrap {
     width: 100%;
+    height: fit-content;
     // display: grid;
     // grid-template-rows: 1fr;
     // grid-template-columns: repeat(2, 1fr);
-    font-family: "Montserrat", sans-serif;
+    font-family: inherit;
+ 
     h1 {
         font-size: 2em;
     }
