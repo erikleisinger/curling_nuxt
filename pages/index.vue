@@ -24,7 +24,7 @@
     <GameController/>
     <q-inner-loading :showing="globalLoading"/>
     <template v-slot:footer>
-      <GameNavigation/>
+      <!-- <GameNavigation/> -->
 
     </template>
 </NuxtLayout>

@@ -1,28 +1,28 @@
 <template>
-<div class="score__container blue--background">
-<div class="header ">
-</div>
-<main class="pretty-shadow">
 
-</main>
-</div>
     
-        <!-- <section class="row q-px-lg">
-            <SelectPlayer
+        <section class="row justify-between q-px-lg">
+            <!-- <SelectPlayer
                 v-model="editedShot.player_id"
                 class="col-12 q-pt-lg"
                 :filter="isPlayerOnCurrentTeam"
+            /> -->
+            <SelectShotType
+                v-model="editedShot.type_id"
+                class="col-6 q-mt-lg"
+                :active="active === 0"
             />
             <SelectShotType
                 v-model="editedShot.type_id"
-                class="col-12 q-mt-lg"
+                class="col-6 q-mt-lg"
+                :active="active === 1"
             />
-            <SelectTurn class="col-12 q-mt-lg" />
-            <SelectLine class="col-12 q-mt-lg" />
+            <SelectTurn class="col-12 q-mt-md" />
+            <!-- <SelectLine class="col-12 q-mt-md" /> -->
 
             <InputShotScore class="col-12 q-pt-lg" />
 
-            <q-input
+            <!-- <q-input
                 class="col-12 q-pt-lg"
                 type="textarea"
                 outlined
@@ -30,9 +30,9 @@
                 label="Notes"
                 :disable="globalLoading"
                 v-model="editedShot.notes"
-            />
+            /> -->
              </section>
-            <section class="row justify-center col-12 q-pt-lg">
+            <!-- <section class="row justify-center col-12 q-pt-lg">
                 <q-btn @click="save" color="primary">Save changes</q-btn>
             </section> -->
        
@@ -40,6 +40,7 @@
 
 </template>
 <style lang="scss" scoped>
+
 .score__container {
 height: 100%;
     .header {
@@ -59,6 +60,7 @@ height: 100%;
     overflow-x: hidden;
 
 
+
 }
 </style>
 <script setup lang="ts">
@@ -72,6 +74,8 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { toValue } from "@vueuse/core";
 
 const editedShot = inject<Ref>("editedShot")!;
+
+const active = ref(0)
 
 // Selection options
 

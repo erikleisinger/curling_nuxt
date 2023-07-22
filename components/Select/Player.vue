@@ -1,6 +1,6 @@
 <template>
 <div class="row justify-between">
-    <div v-for="player in playerOptions" :key="player.id" class="player__wrap">
+    <div v-for="player in playerOptions" :key="player.id" class="player__wrap" >
     </div>
 </div>
   <!-- <q-select
