@@ -147,14 +147,19 @@
 </template>
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
-import { useMounted, useElementSize, useDebounceFn } from "@vueuse/core";
+import {
+    useMounted,
+    useElementSize,
+    useDebounceFn,
+    whenever,
+} from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
 import { ROCK_DIAMETER_PERCENT } from "@/constants/dimensions";
 import { VNode } from "vue/types";
-import PinchZoom from 'pinch-zoom-js'
+import PinchZoom from "pinch-zoom-js";
 import { useSessionStore } from "@/store/session";
 import { useUserStore } from "@/store/user";
-import {useEventStore} from '@/store/event'
+import { useEventStore } from "@/store/event";
 
 const userStore = useUserStore();
 
@@ -170,37 +175,37 @@ function setScale(s: number) {
     scale.value = s;
 }
 
-
 /**
  * ZOOM IN / OUT
  */
 
 const onEnd = (e: PinchZoom) => {
-
-    const {zoomFactor} = e;
-    setScale(zoomFactor)
-}
+    const { zoomFactor } = e;
+    setScale(zoomFactor);
+};
 let pinch: PinchZoom;
 onMounted(() => {
-    const rink = document.querySelector('#rink') as HTMLElement;
-    pinch = new PinchZoom(rink, {onZoomUpdate: useDebounceFn(onEnd), maxZoom: 6})
-})
+    const rink = document.querySelector("#rink") as HTMLElement;
+    pinch = new PinchZoom(rink, {
+        onZoomUpdate: useDebounceFn(onEnd),
+        maxZoom: 6,
+    });
+});
 
 const eventStore = useEventStore();
 const selectedRock = computed(() => eventStore.rockSelected);
 
 watch(selectedRock, (v) => {
     if (!!v) {
-        pinch.disable()
+        pinch.disable();
     } else {
-         pinch.enable()
+        pinch.enable();
     }
-})
+});
 
 /**
  * END ZOOM IN / ZOOM OUT
  */
-
 
 const rockInsert = ref(null);
 
@@ -403,10 +408,13 @@ const { width } = useElementSize(curlingRockWrapper);
 const rockContainerWidth = computed(() => width.value / 3);
 
 const shotNo = computed(() => editedShot.value.shot_no);
+const loadingDone = computed(() => !store.loading);
 watch(
     shotNo,
     () => {
-        pendingRocks.value = calcInitialPending();
+        whenever(loadingDone, () => {
+            pendingRocks.value = calcInitialPending();
+        });
     },
     { flush: "post" }
 );
