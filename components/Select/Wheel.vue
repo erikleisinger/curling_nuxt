@@ -10,39 +10,32 @@
         >
             <div
                 class="option__center row justify-center items-center"
-                :class="{ selected: props.active }"
+                :class="{ selected: selected === 0 || modelValue || focused }"
                 @click="select(0)"
                 :style="{
                     height: focused ? '50%' : '100%',
                     width: focused ? '50%' : '100%',
                 }"
             >
-                <div
-                    v-if="props.active && focused"
-                    :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`"
-                >
-                    {{ options[0] && options[0].label }}
-                </div>
-                <div
-                    v-else-if="modelValue"
-                     :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`"
-                    class="column items-center"
-                >
-                    <div>
+                <div class="column items-center">
+                    <div
+                        v-if="
+                            modelValue &&
+                            options[modelValue] &&
+                            options[modelValue].label
+                        "
+                    >
                         {{ options[modelValue] && options[modelValue].label }}
                     </div>
-                    <div style="font-weight: 300">
+                    <div
+                        :style="{
+                            fontWeight: modelValue === 0 ? 'bold' : '300',
+                        }"
+                    >
                         {{ options[0] && options[0].label }}
                     </div>
                 </div>
-                <div v-else  :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`">
-                    {{ options[0] && options[0].label }}
-                </div>
             </div>
-            <!-- :style="{
-                height: props.active && focused ? '100%' : '50%',
-                width: props.active && focused ? '100%' : '50%',
-            }" -->
             <div class="input__container pretty-shadow">
                 <div
                     class="option"
@@ -78,10 +71,7 @@
                     <div>{{ options[4] && options[4].label }}</div>
                 </div>
 
-                <div
-                    class="center__blind"
-                    :class="{ active: props.active && focused }"
-                />
+                <div class="center__blind" :class="{ active: focused }" />
             </div>
         </div>
     </div>
@@ -113,9 +103,9 @@
         z-index: 5;
         color: v-bind(color);
         background-color: white;
-    border-width: 3px;
+        border-width: 3px;
 
-            &.selected {    
+        &.selected {
             color: white !important;
             font-weight: bold;
             background-color: v-bind(color);
@@ -166,7 +156,6 @@
             }
             > div {
                 text-align: center;
-
             }
             &:nth-child(1) {
                 border-right-width: 1px;
@@ -222,7 +211,7 @@
     }
 }
 </style>
-<script setup>
+<script setup lang="ts">
 import {
     useThrottleFn,
     useEventListener,
@@ -231,30 +220,27 @@ import {
     onClickOutside,
     onLongPress,
 } from "@vueuse/core";
-const props = defineProps({
-    active: Boolean,
-    color: {
-        type: String,
-        default() {
-            return "#1976d2";
-        },
-    },
-    options: Array,
-    modelValue: [Number, null],
-    persistent: Boolean,
-    size: {
-        type: String,
-        default() {
-            return "130px";
-        },
-    },
-    sizeUnfocused: {
-        type: String,
-        default() {
-            return "80px";
-        },
-    },
+
+interface WheelOption {
+    label: string;
+    value: number;
+    to: string;
+}
+
+interface Props {
+    color?: string;
+    options: WheelOption[];
+    modelValue: number | null;
+    persistent?: boolean;
+    size: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    color: "#1976d2",
+    size: "130px",
+    persistent: false,
 });
+
 const emit = defineEmits(["blur", "update:modelValue"]);
 
 const selected = computed({
@@ -271,27 +257,15 @@ const hideWheel = computed(() => (selected.value === 0 ? "none" : "block"));
 
 const transition = ref("transform 0.3s");
 
-const select = (num) => {
-    console.log('SELECT')
+const select = (num: number, force = false) => {
     if (!props.options[num]) return;
-    if (selected.value === num) {
+    if (selected.value === num && !force) {
         selected.value = null;
     } else {
         selected.value = num;
     }
-    if (props.options[num].to) navigateTo(props.options[num].to)
+    if (props.options[num].to) navigateTo(props.options[num].to);
 };
-
-const isActive = computed(() => props.active);
-
-watch(
-    isActive,
-    (v) => {
-        if (!v) selected.value = null;
-       
-    },
-    { immediate: true }
-);
 
 const dragging = ref(false);
 const wheelInput = ref(null);
@@ -300,21 +274,32 @@ const startDrag = () => {
     if (dragging.value) return;
     focused.value = true;
     dragging.value = true;
-    wheelInput.value.addEventListener("touchmove", dragMove);
+    document.addEventListener("touchmove", dragMove);
     document.addEventListener("touchend", dragEnd);
 };
 
-function distanceToCenter(x1, y1, x2, y2) {
+function distanceToCenter(x1: number, y1: number, x2: number, y2: number) {
     const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     return distance;
 }
 
-const isInsideCircle = (centerX, centerY, pointX, pointY, radius) => {
+const isInsideCircle = (
+    centerX: number,
+    centerY: number,
+    pointX: number,
+    pointY: number,
+    radius: number
+) => {
     const distance = distanceToCenter(centerX, centerY, pointX, pointY);
     return distance < radius;
 };
 
-const getCircleQuadrant = (xPos, yPos, elementHeight, elementWidth) => {
+const getCircleQuadrant = (
+    xPos: number,
+    yPos: number,
+    elementHeight: number,
+    elementWidth: number
+) => {
     const isCenter = isInsideCircle(
         elementWidth / 2,
         elementHeight / 2,
@@ -340,11 +325,8 @@ const getCircleQuadrant = (xPos, yPos, elementHeight, elementWidth) => {
     }
 };
 
-const dragMove = useThrottleFn((e) => {
-    e.preventDefault();
-    e.stopPropagation();
+const dragMove = () => {
     if (!dragging.value) return;
-
     const { elementX, elementY, elementHeight, elementWidth } = mouse;
     const newQuadrant = getCircleQuadrant(
         elementX.value,
@@ -359,35 +341,36 @@ const dragMove = useThrottleFn((e) => {
             elementY.value,
             elementHeight.value,
             elementWidth.value
-        )
+        ),
+        true
     );
-}, 50);
-const dragEnd = (e) => {
+};
+const dragEnd = (e: TouchEvent) => {
     e.preventDefault();
     if (!dragging.value) return;
     if (!props.persistent) focused.value = false;
     dragging.value = false;
 
-    wheelInput.value?.removeEventListener("touchmove", dragMove);
+    document.removeEventListener("touchmove", dragMove);
     document.removeEventListener("touchend", dragEnd);
 };
 
 const focused = ref(false);
 onBeforeMount(() => {
-    if (props.persistent) focused.value = true
-})
+    if (props.persistent) focused.value = true;
+});
 
-// useEventListener(wheelInput, 'touchstart', startDrag)
-onLongPress(wheelInput, startDrag, { delay: 50 });
+// useEventListener(wheelInput, 'touchstart', () => selected.value = 0)
+onLongPress(wheelInput, startDrag, { delay: 1 });
 useEventListener(wheelInput, "mouseup", dragEnd);
-useEventListener(wheelInput, "click", (e) => {
+useEventListener(wheelInput, "click", (e: PointerEvent) => {
     if (e.pointerType === "touch") return;
     focused.value = true;
 });
 
 const borderRadius = computed(() => (focused.value ? `50%` : "16px"));
 onClickOutside(wheelInput, () => {
-    if (!props.persistent)focused.value = false;
+    if (!props.persistent) focused.value = false;
 });
 
 const height = computed(() =>
