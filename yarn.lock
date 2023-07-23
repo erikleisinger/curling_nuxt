@@ -3494,6 +3494,14 @@
     nuxt "^3.6.1"
     vue-demi ">=0.14.5"
 
+"@vueuse/router@^10.2.1":
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/router/-/router-10.2.1.tgz#2b81d85772674ce76816e951ba924aeaa9a142b4"
+  integrity sha512-H/1T4fLzMmeBNEmcXlbqk6AEp0HQpzf+0eeNJ6fGrs3RWClE2i3nYEFbtxfQeSm/7nZ6nf/UhgahzUQdyMhIwQ==
+  dependencies:
+    "@vueuse/shared" "10.2.1"
+    vue-demi ">=0.14.5"
+
 "@vueuse/shared@10.2.1":
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-10.2.1.tgz#0fd0a5dd014b7713b7fe03347b30fad69bb15b30"

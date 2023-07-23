@@ -1,6 +1,6 @@
 <template>
     <q-dialog v-model="isOpen" persistent>
-        <q-card>
+        <q-card style="max-width: 90%; width: 90%">
             <q-card-section>
                 <slot/>
             </q-card-section>

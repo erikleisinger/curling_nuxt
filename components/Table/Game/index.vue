@@ -1,5 +1,5 @@
 <template>
-  <DialogGameEditor />
+
   <q-scroll-area class="col-grow game-table__container " ref="tableArea" >
     <q-inner-loading
       :showing="loading"
@@ -37,6 +37,7 @@ import {useGameStore} from "@/store/games";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useSwipe} from "@vueuse/core";
 import type Game from '@/types/game'
+
 const props = defineProps({
   edited: Object,
 })
@@ -59,7 +60,7 @@ const selectGame = async (game:Game) => {
   loading.value = true;
   store.setGame(game);
   await store.initGame()
-  navigateTo("/");
+  navigateTo("/game");
     loading.value = false;
 };
 
@@ -92,4 +93,6 @@ const {direction} = useSwipe(tableArea, {
     loadGames(true);
   },
 });
+
+
 </script>

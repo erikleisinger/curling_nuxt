@@ -29,7 +29,6 @@
   border-top: 2px solid rgba(0 0 0 / 20%);
   transform: v-bind(computedScale);
   width: max-content;
-  transition: scale 0.1s;
   &:before {
     content: "";
     top: v-bind(teeLinePercentFromTop);
@@ -65,11 +64,12 @@
 }
 </style>
 <script setup lang="ts">
-import {useEventListener, useSwipe, useThrottleFn, useParentElement} from "@vueuse/core";
+import {useEventListener, useSwipe, useParentElement, useElementBounding} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
 const props = defineProps({
+    reset:Boolean,
   scale: {
     type: Number,
     default() {
@@ -81,7 +81,7 @@ const props = defineProps({
     required: true
   }
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['resetted', 'update:modelValue'])
 
 
 const eventStore = useEventStore();
@@ -91,6 +91,7 @@ const isRockSelected = computed(() => eventStore.rockSelected);
  * ZOOM IN / OUT
  */
 const rink = ref<HTMLElement | null>(null);
+const {x,y, top:rinkTop, right:rinkRight, left:rinkLeft, bottom:rinkBottom} = useElementBounding(rink)
 const isPinching = ref(false);
 const initialPinch = ref(0);
 const rafId = ref<number | null>(null)
@@ -107,7 +108,7 @@ const handlePinchMove = (e: TouchEvent) => {
   if (Math.abs(currentTouches - initialPinch.value) >= 10) {
 
   const toAdd =
-    (Math.abs(currentTouches - initialPinch.value) / 1000) * props.scale
+    (Math.abs(currentTouches - initialPinch.value) / 400) * props.scale
     let newScale = props.scale;
   if (isZoomIn) {
     if (props.scale + toAdd > SCALE_MAX) {
@@ -118,6 +119,8 @@ const handlePinchMove = (e: TouchEvent) => {
   } else {
     if (props.scale - toAdd < SCALE_MIN) {
       newScale = SCALE_MIN;
+      top.value = 0;
+      left.value = 0;
     } else {
       newScale -= toAdd;
     }
@@ -203,7 +206,6 @@ const top = ref(0);
 const topComputed = computed(() => `${top.value}px`);
 const left = ref(0);
 const leftComputed = computed(() => `${left.value}px`);
-const rightComputed = computed(() => `${left.value * -1}px`);
 
 const parent = useParentElement() as Ref<HTMLElement> 
 const checkOutsideVerticalBounds = (newVal:number) => {
@@ -269,9 +271,11 @@ const {direction} = useSwipe(rink, {
     swipeStartLeft.value = e.changedTouches[0].clientX;
   },
   onSwipe: (e:TouchEvent) => {
+    console.log(e)
     if (isRockSelected.value) return;
     if (isPinching.value) return;
     if (e.touches.length !== 1) return;
+    console.log('ONSWIPE')
     const target = e.target as HTMLElement;
     if (Array.from(target.classList).includes("rock")) return;
     calculateTopDiff(e);
@@ -281,4 +285,11 @@ const {direction} = useSwipe(rink, {
   },
   threshold: 10,
 });
+const resetComputed = computed(() => props.reset)
+watch(resetComputed, (v) => {
+    if (!v) return;
+    left.value = 0;
+    top.value = 0;
+    emit('resetted')
+})
 </script>

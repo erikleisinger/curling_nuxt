@@ -170,10 +170,10 @@
     width: 100%;
     transition: all 0.3s;
 
-    &.showing {
-        border-bottom-left-radius: 32px;
-        border-bottom-right-radius: 32px;
-    }
+    // &.showing {
+    //     border-bottom-left-radius: 32px;
+    //     border-bottom-right-radius: 32px;
+    // }
     &:not(.showing) {
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;

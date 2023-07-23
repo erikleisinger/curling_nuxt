@@ -1,23 +1,8 @@
 <template>
-<div style="position:relative">
-    <div style="position: absolute; width: 100%; top: -16px" class="row justify-center">
-        <div style="position: relative; width: 145px">
-            <div
-                style="position:absolute;"
-                class="shadow-box"
-            ></div>
-        </div>
-    </div>
-    <div
-        class="game-item__container"
-        :class="{ selected }"
-        @click="selected = true"
-        ref="gameContainer"
-    >
-        <q-item-section style="position: relative">
+<TableGameItemContainer :selected="selected" @click="selected = true"         ref="gameContainer">
+    <template v-slot:label>
             <!-- Game info: date, rink, sheet -->
-            <div class="game-info__container">
-                <div class="game-info">
+          
                     <div class="column items-center" style="font-size: 0.85em">
                         <div>{{ toTimezone(game.start_time) }}</div>
                         <div class="row">
@@ -30,8 +15,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+        
+    </template>
             <!-- Begin score display -->
             <div class="score-display">
                 <!-- Home team -->
@@ -195,45 +180,12 @@
                 }}</q-btn>
             </div>
             <!-- </transition> -->
-        </q-item-section>
-    </div>
-    </div>
+</TableGameItemContainer>
 </template>
 <style lang="scss">
-.game-item__container {
-    border-radius: 16px;
-    background-color: white;
-    margin: 16px;
-    margin-top: 48px;
-    // box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    padding: 16px;
-    transition: all 0.2s;
-    position: relative;
-    &.selected {
-        transform: scale(1.02);
-    }
-    .game-info__container {
-        height: 24px;
-        position: relative;
-        .game-info {
-            width: 145px;
-            margin: auto;
-            position: absolute;
-            right: 0;
-            left: 0;
-            top: -32px;
-            background-color: white;
-            border-radius: 50px;
-            padding: 15px;
-            font-size: 0.9em;
-            padding-bottom: 0;
-            position: relative;
-        }
-     
+
+   
           
-    
-    }
     .score-display {
         width: 100%;
         display: grid;
@@ -248,33 +200,8 @@
             overflow: hidden;
         }
     }
-}
-   .shadow-box {
-            height:15px;
-             width: 120px;
-            margin: auto;
-            position: absolute;
-            right: 0;
-            left: 0;
-            background-color: white;
-            border-radius: 50px;
-            font-size: 0.9em;
-            padding-bottom: 0;
-            position: relative;
-            top:0px;
-            &:after {
-                content: "";
-                position: absolute;
-                z-index: -2;
-                height: 100%;
-                width: 100%;
-                border-radius: inherit;
-             box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
-                top: 0;
-                left: 0;
 
-            }  
-        }
+  
 </style>
 <script setup lang="ts">
 import type Game from "@/types/game";
@@ -290,8 +217,7 @@ const emit = defineEmits(["delete", "edit", "select"]);
 
 const { toTimezone } = useTime();
 const {getPercent} = useConvert();
-
-const selected = ref(false);
+    const selected = ref(false);
 const gameContainer = ref(null);
 onClickOutside(gameContainer, () => {
     selected.value = false;

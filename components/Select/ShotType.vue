@@ -44,6 +44,7 @@ const updateHit = (v) => {
 };
 
 const selectActive = (n) => {
+    console.log('SELECT: ', n)
     active.value = n
 };
 
@@ -94,11 +95,11 @@ watch(
     selectedType,
     (v) => {
         emit('update:modelValue', v)
-        // if (!v) {
-        //     setTimeout(() => {
-        //         selectActive(null)
-        //     }, 10)
-        // }
+        if (!v) {
+            setTimeout(() => {
+                selectActive(null)
+            }, 1)
+        }
     },
     { immediate: true }
 );

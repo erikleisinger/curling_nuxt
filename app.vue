@@ -1,7 +1,7 @@
 <template>
 
-    <global-loading v-if="loading" :value="progress" />
-    <NuxtPage v-else />
+    <NuxtLoadingIndicator/>
+    <NuxtPage/>
 
 </template>
 <style lang="scss">

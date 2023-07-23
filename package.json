@@ -37,6 +37,7 @@
     "@nuxtjs/supabase": "^0.3.7",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
+    "@vueuse/router": "^10.2.1",
     "nuxt-quasar-ui": "^2.0.2",
     "pattern.css": "^1.0.0",
     "pinia": "^2.1.4",

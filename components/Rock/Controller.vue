@@ -11,12 +11,20 @@
                     :color="showNumbers ? 'white' : 'primary'"
                     size="sm"
             /></q-btn>
+                <q-btn
+                @click="resetBoardPosition"
+                round
+
+                color="white" 
+                class="q-mt-sm"
+                >
+                <q-icon name="open_with" color="primary"/></q-btn>
                <slot name="buttons" />
         
 
         </div>
         <div style="position: relative" class="col-grow">
-            <GameRings :scale="scale" :setScale="setScale">
+            <GameRings :scale="scale" :setScale="setScale" :reset="shouldReset" @resetted="shouldReset = false">
                 <div
                     style="
                         height: 100%;
@@ -145,12 +153,20 @@ const showNumbers = computed(() => userStore.showNumbers);
 
 const beforeUnmount = async (e: VNode) => {
     e.el.style.width = 0;
-    console.log('BEFORE UNMOUNT')
 };
 const scale = ref(1);
 function setScale(s: number) {
     scale.value = s;
 }
+
+const shouldReset = ref(false)
+
+const resetBoardPosition = () => {
+    setScale(1);
+    shouldReset.value = true;
+}
+
+
 const rockInsert = ref(null);
 
 const mouse = reactive(useMouseInElement(useParentElement(rockInsert)));

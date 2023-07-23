@@ -19,13 +19,13 @@
             >
                 <div
                     v-if="props.active && focused"
-                    style="pointer-events: none"
+                    :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`"
                 >
                     {{ options[0] && options[0].label }}
                 </div>
                 <div
                     v-else-if="modelValue"
-                    style="pointer-events: none"
+                     :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`"
                     class="column items-center"
                 >
                     <div>
@@ -35,7 +35,7 @@
                         {{ options[0] && options[0].label }}
                     </div>
                 </div>
-                <div v-else style="pointer-events: none">
+                <div v-else  :style="`pointer-events: ${options[0].to ? 'all' : 'none'}`">
                     {{ options[0] && options[0].label }}
                 </div>
             </div>
@@ -114,7 +114,8 @@
         color: v-bind(color);
         background-color: white;
     border-width: 3px;
-        &.selected {    
+
+            &.selected {    
             color: white !important;
             font-weight: bold;
             background-color: v-bind(color);
@@ -154,7 +155,7 @@
             border: 0px solid;
             border-color: inherit;
             color: v-bind(color);
-            font-size: 75%;
+            font-size: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -240,6 +241,7 @@ const props = defineProps({
     },
     options: Array,
     modelValue: [Number, null],
+    persistent: Boolean,
     size: {
         type: String,
         default() {
@@ -270,12 +272,14 @@ const hideWheel = computed(() => (selected.value === 0 ? "none" : "block"));
 const transition = ref("transform 0.3s");
 
 const select = (num) => {
+    console.log('SELECT')
     if (!props.options[num]) return;
     if (selected.value === num) {
         selected.value = null;
     } else {
         selected.value = num;
     }
+    if (props.options[num].to) navigateTo(props.options[num].to)
 };
 
 const isActive = computed(() => props.active);
@@ -361,7 +365,7 @@ const dragMove = useThrottleFn((e) => {
 const dragEnd = (e) => {
     e.preventDefault();
     if (!dragging.value) return;
-    focused.value = false;
+    if (!props.persistent) focused.value = false;
     dragging.value = false;
 
     wheelInput.value?.removeEventListener("touchmove", dragMove);
@@ -369,6 +373,9 @@ const dragEnd = (e) => {
 };
 
 const focused = ref(false);
+onBeforeMount(() => {
+    if (props.persistent) focused.value = true
+})
 
 // useEventListener(wheelInput, 'touchstart', startDrag)
 onLongPress(wheelInput, startDrag, { delay: 50 });
@@ -380,7 +387,7 @@ useEventListener(wheelInput, "click", (e) => {
 
 const borderRadius = computed(() => (focused.value ? `50%` : "16px"));
 onClickOutside(wheelInput, () => {
-    focused.value = false;
+    if (!props.persistent)focused.value = false;
 });
 
 const height = computed(() =>

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="main">
+  <NuxtLayout name="main" v-if="!editing">
     <template v-slot:header>
       <q-toolbar
         class="bg-primary text-white q-px-none"
@@ -50,9 +50,11 @@
       </section> -->
     </transition-group>
   </NuxtLayout>
+    <GameEditor v-else/>
 </template>
 <script setup>
 import {useRefHistory} from '@vueuse/core'
+import {useRouteQuery} from '@vueuse/router';
 
 const TABS = [
   {
@@ -109,4 +111,10 @@ watch(tab, (newTab) => {
     leaveAnimation.value = 'slideOutRight'
   }
 }, {immediate: true})
+
+const editQuery = useRouteQuery('edit');
+const editing = ref(false)
+onMounted(() => {
+    if (editQuery.value) editing.value = true;
+})
 </script>

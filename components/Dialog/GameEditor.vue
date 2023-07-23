@@ -30,8 +30,8 @@
             :rules="[VALIDATION_RULES.REQUIRED, isSelectedTeam]"
             reactive-rules
           />
-          <SelectRink v-model="editedGame.rink_id" class="col-12 q-field--with-bottom" label="Rink" name="rink"/>
-          <SelectSheet v-model="editedGame.sheet_id" class="col-12 q-field--with-bottom" label="Sheet" name="sheet"/>
+          <!-- <SelectRink v-model="editedGame.rink_id" class="col-12 q-field--with-bottom" label="Rink" name="rink"/>
+          <SelectSheet v-model="editedGame.sheet_id" class="col-12 q-field--with-bottom" label="Sheet" name="sheet"/> -->
           <InputDate
             v-model="editedGame.start_time"
             class="col-12 q-pb-md"
