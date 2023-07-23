@@ -3,38 +3,53 @@
         v-if="$q.screen.gt.sm || tab === 'rings'"
         id="rings"
         key="rings"
-        class="column justify-center no-wrap pattern-diagonal-stripes-sm slategray "
-        style="background-color:rgba(246, 247, 252, 0.1);color:rgba(246, 247, 252, 1);height: 100%"
+        class="column justify-center no-wrap pattern-diagonal-stripes-sm slategray"
+        style="
+            background-color: rgba(246, 247, 252, 0.1);
+            color: rgba(246, 247, 252, 1);
+            height: 100%;
+        "
         ref="ringsElement"
-
     >
-        <transition appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutLeft">
-    <div class="nav__drawer--wrap" v-if="showLeftDrawer" ref="nav">
-        <q-list style="margin-top: 62px">
-            <q-item clickable to="/select">
-                <q-item-section>
-                    <q-item-label>Go back to selection</q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
-    </div>
+        <transition
+            appear
+            enter-active-class="animated slideInLeft"
+            leave-active-class="animated slideOutLeft"
+        >
+            <div class="nav__drawer--wrap" v-if="showLeftDrawer" ref="nav">
+                <q-list style="margin-top: 62px">
+                    <q-item clickable to="/select">
+                        <q-item-section>
+                            <q-item-label>Go back to selection</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+            </div>
         </transition>
-
-     
 
         <GameScoreboard
             ref="scoreBoard"
             :class="showScoreBoard ? 'show' : 'hide'"
             v-if="$q.screen.lt.md"
-            :style="{ zIndex: showScoreBoard ? 1 : 0, animationDuration: initialized ? '0.3s' : '0s'}"
+            :style="{
+                zIndex: showScoreBoard ? 1 : 0,
+                animationDuration: initialized ? '0.3s' : '0s',
+            }"
         />
 
         <div
             :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"
         >
-           <div class="menu__floating" v-show="!showScoreInput">
-            <q-btn flat round icon="menu" color="black" size="lg" @click="showLeftDrawer = !showLeftDrawer"/>
+            <div class="menu__floating" v-show="!showScoreInput">
+                <q-btn
+                    flat
+                    round
+                    icon="menu"
+                    color="black"
+                    size="lg"
+                    @click="showLeftDrawer = !showLeftDrawer"
+                />
             </div>
             <RockController>
                 <template v-slot:buttons>
@@ -57,6 +72,7 @@
                 overflow: hidden;
                 transition: all 0.2s;
                 z-index: 150;
+                ; color:black
             "
             :class="showScoreInput ? 'showScore' : 'hideScore'"
         >
@@ -139,7 +155,7 @@
     top: 0;
     left: 0;
     margin: 8px;
-    z-index: 250
+    z-index: 250;
 }
 .nav__drawer--wrap {
     width: 300px;
@@ -148,12 +164,12 @@
     z-index: 200;
     left: 0;
     top: 0;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     .q-list {
         margin-top: 64px;
         .q-item {
-           color:white;
-            border: 1px solid rgba(0,0,0,0.2);
+            color: white;
+            border: 1px solid rgba(0, 0, 0, 0.2);
             border-left-width: 0px;
             border-right-width: 0px;
         }
@@ -250,7 +266,12 @@
 </style>
 <script setup lang="ts">
 import { inject, ref } from "vue";
-import { useElementSize, useResizeObserver, useSwipe, onClickOutside } from "@vueuse/core";
+import {
+    useElementSize,
+    useResizeObserver,
+    useSwipe,
+    onClickOutside,
+} from "@vueuse/core";
 import { useUserStore } from "@/store/user";
 import { useSessionStore } from "@/store/session";
 import { usePlayerStore } from "@/store/players";
@@ -266,7 +287,7 @@ useResizeObserver(scoreBoard, (entries) => {
     scoreBoardHeight.value = height;
 });
 
-const leftDrawerOpen = ref(true)
+const leftDrawerOpen = ref(true);
 const userStore = useUserStore();
 
 const { toggleShowNumbers } = userStore;
@@ -365,12 +386,12 @@ const currentThrowerName = computed(
         "Unnamed player"
 );
 
-const showLeftDrawer = ref(false)
+const showLeftDrawer = ref(false);
 const nav = ref(null);
-onClickOutside(nav, () => showLeftDrawer.value = false)
+onClickOutside(nav, () => (showLeftDrawer.value = false));
 
-const initialized = ref(false)
+const initialized = ref(false);
 onMounted(() => {
     initialized.value = true;
-})
+});
 </script>
