@@ -1,6 +1,6 @@
 <template>
-  <div class="rink" ref="rink">
-    <slot v-bind:left="left" v-bind:top="top" />
+  <div class="rink" id="rink">
+    <slot />
     <div class="rings__wrapper">
       <svg height="100%" width="100%">
         <circle cx="50%" cy="50%" r="50%" class="ring__outer" />
@@ -15,19 +15,17 @@
 <style lang="scss" >
 .rink {
   background-color: white;
-  position: absolute;
   margin: auto;
-  left: v-bind(leftComputed);
-  top: v-bind(topComputed);
   max-width: 100%;
-  right: 0;
   max-height: 100%;
+  left:0;
+margin:0;
   aspect-ratio: v-bind(aspectRatio);
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
   border-top: 2px solid rgba(0 0 0 / 20%);
-  transform: v-bind(computedScale);
+//   transform: v-bind(computedScale);
   width: max-content;
   &:before {
     content: "";
@@ -64,116 +62,18 @@
 }
 </style>
 <script setup lang="ts">
-import {useEventListener, useSwipe, useParentElement, useElementBounding} from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
-const props = defineProps({
-    reset:Boolean,
-  scale: {
-    type: Number,
-    default() {
-      return 1  
-    }
-  },
-  setScale: {
-    type: Function,
-    required: true
-  }
-})
-const emit = defineEmits(['resetted', 'update:modelValue'])
 
+const emit = defineEmits(['update:modelValue'])
 
 const eventStore = useEventStore();
 const isRockSelected = computed(() => eventStore.rockSelected);
 
 /**
- * ZOOM IN / OUT
- */
-const rink = ref<HTMLElement | null>(null);
-const {x,y, top:rinkTop, right:rinkRight, left:rinkLeft, bottom:rinkBottom} = useElementBounding(rink)
-const isPinching = ref(false);
-const initialPinch = ref(0);
-const rafId = ref<number | null>(null)
-
-const SCALE_MIN = 1;
-const SCALE_MAX = 5;
-const handlePinchMove = (e: TouchEvent) => {
-  const currentTouches = Math.hypot(
-    e.touches[0].pageX - e.touches[1].pageX,
-    e.touches[0].pageY - e.touches[1].pageY
-  );
-  const isZoomIn = currentTouches - initialPinch.value > 0;
-// Set threshold of 10 to ensure accidental pinch is not registered
-  if (Math.abs(currentTouches - initialPinch.value) >= 10) {
-
-  const toAdd =
-    (Math.abs(currentTouches - initialPinch.value) / 400) * props.scale
-    let newScale = props.scale;
-  if (isZoomIn) {
-    if (props.scale + toAdd > SCALE_MAX) {
-      newScale = SCALE_MAX;
-    } else {
-      newScale += toAdd;
-    }
-  } else {
-    if (props.scale - toAdd < SCALE_MIN) {
-      newScale = SCALE_MIN;
-    } else {
-      newScale -= toAdd;
-    }
-
-    
-  }
-  props.setScale(newScale)
-  }
-
-  const isOutsideVertical = checkOutsideVerticalBounds(top.value)
-  const isOutsideHorizontal = checkOutsideHorizontalBounds(left.value)
-  if (isOutsideVertical) top.value = isOutsideVertical
-  if(isOutsideHorizontal) left.value = isOutsideHorizontal
-  rafId.value = null;
-};
-
-const pinchMove = (e:TouchEvent) => {
-    if (isRockSelected.value) return;
-  if (!isPinching.value) return;
-  if (e.touches.length !== 2) return;
-  if (rafId.value) return;
-  rafId.value = window.requestAnimationFrame(() => handlePinchMove(e));
-}
-const pinchEnd = (e:TouchEvent) => {
-  if (!isPinching.value) return;
-    rink.value.removeEventListener("touchmove", pinchMove);
-      document.removeEventListener("touchend", pinchEnd);
-  setTimeout(() => {
-    isPinching.value = false;
-  }, 200);
-};
-
-const pinchStart = (e: TouchEvent) => {
-  if (isRockSelected.value) return;
-  if (e.touches.length !== 2) return;
-  rink.value.addEventListener("touchmove", pinchMove);
-  document.addEventListener("touchend", pinchEnd);
-  isPinching.value = true;
-  initialPinch.value = Math.hypot(
-    e.touches[0].pageX - e.touches[1].pageX,
-    e.touches[0].pageY - e.touches[1].pageY
-  );
-};
-useEventListener(document, "touchstart", pinchStart);
-
-
-/**
- * END ZOOM IN / ZOOM OUT
- */
-
-/**
  * RINK DIMENSIONS
  */
-
-const computedScale = computed(() => `scale(${props.scale})`);
 
 // Calculate aspect ratio
 const aspectRatio = ref(
@@ -189,105 +89,4 @@ const ringsWidthPercent = ref(`${RINGS_WIDTH_PERCENT}%`);
 const teeLinePercentFromTop = ref(
   `calc(${TEE_LINE_PERCENT_FROM_TOP}% - 0.75px)`
 );
-
-
-/**
- * MOVE RINK AROUND
- */
-
-// Ensure that rink does not go out of viewer bounds
-
-
-const swipeStartTop = ref(0);
-const swipeStartLeft = ref(0);
-const top = ref(0);
-const topComputed = computed(() => `${top.value}px`);
-const left = ref(0);
-const leftComputed = computed(() => `${left.value}px`);
-
-const parent = useParentElement() as Ref<HTMLElement> 
-const checkOutsideVerticalBounds = (newVal:number) => {
-  if (!rink?.value) return null;
-  // TODO: Error handling when no rink ref
-  const topMin = rink.value.offsetHeight * props.scale * -1 /2
-    const topMax = ((parent.value.offsetHeight + (rink.value.offsetHeight * props.scale))  - 200) / 2
-    if (newVal > topMax) {
-      return topMax
-    } else if(newVal < topMin) {
-      return topMin
-    } else {
-      return null;
-    }
-}
-const checkOutsideHorizontalBounds = (newVal: number) => {
-    if (!rink?.value) return null;
-  // TODO: Error handling when no rink ref
-    const leftMax = ((parent.value.offsetWidth + (rink.value.offsetWidth * props.scale))  - 100) / 2
-    const leftMin = (parent.value.offsetWidth + (rink.value.offsetWidth * props.scale)) * -1 + 100;
-    if (newVal > leftMax) {
-      return leftMax
-    } else if(newVal < leftMin) {
-      return leftMin
-    } else {
-      return null;
-    }
-}
-const calculateTopDiff = (e:TouchEvent) => {
-  const endVal = e.changedTouches[0].clientY;
-  const diff = endVal - swipeStartTop.value;
-  const newValue = checkOutsideVerticalBounds(top.value + diff)
-  if (newValue) {
-     top.value = newValue
-  } else {
-     top.value += diff;
-  }
-
-};
-
-const calculateLeftDiff = (e: TouchEvent) => {
-  const endVal = e.changedTouches[0].clientX;
-  const diff = endVal - swipeStartLeft.value;
-
-  const newValue = checkOutsideHorizontalBounds(left.value + diff)
-  if (newValue) {
-     left.value = newValue
-  } else {
-     left.value += diff;
-  }
-};
-
-// Drag to move
-
-const {direction} = useSwipe(rink, {
-  onSwipeStart: (e:TouchEvent) => {
-    if (isRockSelected.value) return;
-    if (isPinching.value) return;
-    if (e.touches.length !== 1) return;
-    const target = e.target as HTMLElement;
-    if (Array.from(target.classList).includes("rock")) return;
-    swipeStartTop.value = e.changedTouches[0].clientY;
-    swipeStartLeft.value = e.changedTouches[0].clientX;
-  },
-  onSwipe: (e:TouchEvent) => {
-    console.log(e)
-    if (isRockSelected.value) return;
-    if (isPinching.value) return;
-    if (e.touches.length !== 1) return;
-    console.log('ONSWIPE')
-    const target = e.target as HTMLElement;
-    if (Array.from(target.classList).includes("rock")) return;
-    calculateTopDiff(e);
-    calculateLeftDiff(e);
-    swipeStartTop.value = e.changedTouches[0].clientY;
-    swipeStartLeft.value = e.changedTouches[0].clientX;
-  },
-  threshold: 10,
-});
-const resetComputed = computed(() => props.reset)
-watch(resetComputed, (v) => {
-    if (!v) return;
-    left.value = 0;
-    top.value = 0;
-    emit('resetted')
-})
 </script>

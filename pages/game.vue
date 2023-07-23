@@ -1,6 +1,7 @@
 <template>
 <GameController/>
 </template>
+
 <script setup lang="ts">
 import {computed, onMounted, provide, ref, watch, InjectionKey} from "vue";
 import {useSessionStore} from '@/store/session'

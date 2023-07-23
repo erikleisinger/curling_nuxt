@@ -1,30 +1,29 @@
 <template>
     <div class="column" style="position: relative; height: 100%; width: 100%">
-        <div style="position: absolute; top:0; right:0; z-index: 100; margin-top: 5%; margin-right: 2%" class="column">
+        <div
+            style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 100;
+                margin-top: 5%;
+                margin-right: 2%;
+            "
+            class="column"
+        >
             <q-btn
                 @click="toggleShowNumbers"
                 round
-
                 :color="showNumbers ? 'primary' : 'white'"
                 ><q-icon
                     name="123"
                     :color="showNumbers ? 'white' : 'primary'"
                     size="sm"
             /></q-btn>
-                <q-btn
-                @click="resetBoardPosition"
-                round
-
-                color="white" 
-                class="q-mt-sm"
-                >
-                <q-icon name="open_with" color="primary"/></q-btn>
-               <slot name="buttons" />
-        
-
+            <slot name="buttons" />
         </div>
         <div style="position: relative" class="col-grow">
-            <GameRings :scale="scale" :setScale="setScale" :reset="shouldReset" @resetted="shouldReset = false">
+            <GameRings ref="rink">
                 <div
                     style="
                         height: 100%;
@@ -72,78 +71,90 @@
             class="row justify-between"
             :style="`z-index:1; margin:auto; position: absolute; bottom: 0; width: 100%`"
         >
-        <div style="position: relative; height: 100%;width: 100%">
-            <div class="row  q-ma-md" :style="`width: ${rockContainerWidth}px; max-height: ${rockContainerWidth/2}px; position: absolute; left: 0; bottom:0; transition: all 0.2s`">
-   <transition-group
-                    appear
-                    enter-active-class="slideInLeft"
-                    leave-active-class="slideOutRight"
+            <div style="position: relative; height: 100%; width: 100%">
+                <div
+                    class="row q-ma-md"
+                    :style="`width: ${rockContainerWidth}px; max-height: ${
+                        rockContainerWidth / 2
+                    }px; position: absolute; left: 0; bottom:0; transition: all 0.2s`"
                 >
-                <div :style="`width: ${rockContainerWidth / 4}px; transition: all 0.2s`"
-                     v-for="rock in pendingHome"
-                        :key="rock.shot_no"
-                 @vue:beforeUnmount="beforeUnmount"
+                    <transition-group
+                        appear
+                        enter-active-class="slideInLeft"
+                        leave-active-class="slideOutRight"
+                    >
+                        <div
+                            :style="`width: ${
+                                rockContainerWidth / 4
+                            }px; transition: all 0.2s`"
+                            v-for="rock in pendingHome"
+                            :key="rock.shot_no"
+                            @vue:beforeUnmount="beforeUnmount"
+                        >
+                            <RockDraggable
+                                @dragUp="endDrag(rock.shot_no, rock.color)"
+                                :color="rock.color"
+                                :disabled="rock.shot_no > editedShot.shot_no"
+                                @dragging="setDragging(rock.shot_no)"
+                                @select="selectRock(rock.shot_no)"
+                                :selected="selected === rock.shot_no"
+                                @deselect="selected = null"
+                                :showNumbers="showNumbers"
+                                :shotNo="Math.round(rock.shot_no / 2)"
+                                :width="`${rockContainerWidth / 4}px`"
+                            />
+                        </div>
+                    </transition-group>
+                </div>
+                <div
+                    class="row q-ma-md reverse"
+                    :style="`width: ${rockContainerWidth}px;  max-height: ${
+                        rockContainerWidth / 2
+                    }px; position: absolute; right: 0;bottom:0`"
                 >
-                    <RockDraggable
-                   
-                        @dragUp="endDrag(rock.shot_no, rock.color)"
-                        :color="rock.color"
-                        :disabled="rock.shot_no > editedShot.shot_no"
-                        @dragging="setDragging(rock.shot_no)"
-                        @select="selectRock(rock.shot_no)"
-                        :selected="selected === rock.shot_no"
-                        @deselect="selected = null"
-                        :showNumbers="showNumbers"
-                        :shotNo="Math.round(rock.shot_no / 2)"
-                         :width="`${rockContainerWidth / 4}px`"
-         
-                       
-                    />
-                    </div>
-   </transition-group>
-           
-            </div>
-            <div class="row q-ma-md reverse" :style="`width: ${rockContainerWidth}px;  max-height: ${rockContainerWidth/2}px; position: absolute; right: 0;bottom:0`">
-                <transition-group
-                    appear
-                    enter-active-class="slideInLeft"
-                    leave-active-class="slideOutRight"
-                >
-                         <div :style="`width: ${rockContainerWidth / 4}px; transition: all 0.2s`"
-                   v-for="rock in pendingAway"
-                        :key="rock.shot_no"
-                 @vue:beforeUnmount="beforeUnmount"
-                >
-                    <RockDraggable
-                        @dragUp="endDrag(rock.shot_no, rock.color)"
-                        :width="`${rockContainerWidth / 4}px`"
-                        :color="rock.color"
-                        :disabled="rock.shot_no > editedShot.shot_no"
-                        @dragging="setDragging(rock.shot_no)"
-                        @select="selectRock(rock.shot_no)"
-                        :selected="selected === rock.shot_no"
-                        @deselect="selected = null"
-                        :showNumbers="showNumbers"
-                        :shotNo="Math.round(rock.shot_no / 2)"
-                        @vue:beforeUnmount="beforeUnmount"
-                      
-                    />
-                         </div>
-                </transition-group>
-            </div>
+                    <transition-group
+                        appear
+                        enter-active-class="slideInLeft"
+                        leave-active-class="slideOutRight"
+                    >
+                        <div
+                            :style="`width: ${
+                                rockContainerWidth / 4
+                            }px; transition: all 0.2s`"
+                            v-for="rock in pendingAway"
+                            :key="rock.shot_no"
+                            @vue:beforeUnmount="beforeUnmount"
+                        >
+                            <RockDraggable
+                                @dragUp="endDrag(rock.shot_no, rock.color)"
+                                :width="`${rockContainerWidth / 4}px`"
+                                :color="rock.color"
+                                :disabled="rock.shot_no > editedShot.shot_no"
+                                @dragging="setDragging(rock.shot_no)"
+                                @select="selectRock(rock.shot_no)"
+                                :selected="selected === rock.shot_no"
+                                @deselect="selected = null"
+                                :showNumbers="showNumbers"
+                                :shotNo="Math.round(rock.shot_no / 2)"
+                                @vue:beforeUnmount="beforeUnmount"
+                            />
+                        </div>
+                    </transition-group>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
-import { useMounted, useElementSize } from "@vueuse/core";
+import { useMounted, useElementSize, useDebounceFn } from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
 import { ROCK_DIAMETER_PERCENT } from "@/constants/dimensions";
 import { VNode } from "vue/types";
-
+import PinchZoom from 'pinch-zoom-js'
 import { useSessionStore } from "@/store/session";
 import { useUserStore } from "@/store/user";
+import {useEventStore} from '@/store/event'
 
 const userStore = useUserStore();
 
@@ -159,12 +170,36 @@ function setScale(s: number) {
     scale.value = s;
 }
 
-const shouldReset = ref(false)
 
-const resetBoardPosition = () => {
-    setScale(1);
-    shouldReset.value = true;
+/**
+ * ZOOM IN / OUT
+ */
+
+const onEnd = (e: PinchZoom) => {
+
+    const {zoomFactor} = e;
+    setScale(zoomFactor)
 }
+let pinch: PinchZoom;
+onMounted(() => {
+    const rink = document.querySelector('#rink') as HTMLElement;
+    pinch = new PinchZoom(rink, {onZoomUpdate: useDebounceFn(onEnd), maxZoom: 6})
+})
+
+const eventStore = useEventStore();
+const selectedRock = computed(() => eventStore.rockSelected);
+
+watch(selectedRock, (v) => {
+    if (!!v) {
+        pinch.disable()
+    } else {
+         pinch.enable()
+    }
+})
+
+/**
+ * END ZOOM IN / ZOOM OUT
+ */
 
 
 const rockInsert = ref(null);

@@ -8281,6 +8281,11 @@ pify@^4.0.1:
   resolved "https://registry.yarnpkg.com/pify/-/pify-4.0.1.tgz#4b2cd25c50d598735c50292224fd8c6df41e3231"
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
 
+pinch-zoom-js@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/pinch-zoom-js/-/pinch-zoom-js-2.3.5.tgz#bb598bbd695c006ce8222b71a900064acb8b41b6"
+  integrity sha512-/fydIbmKTbVFINRTd/YytTADpmUBX54K+UEjpACiFN7JT1PkzffcZak8Mabx8o0hbzTsYmaDRmN/89t2U55oTw==
+
 pinia@>=2.1.0, pinia@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.1.4.tgz#a642adfe6208e10c36d3dc16184a91064788142a"

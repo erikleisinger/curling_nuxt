@@ -3,9 +3,10 @@
         v-if="$q.screen.gt.sm || tab === 'rings'"
         id="rings"
         key="rings"
-        class="column justify-center no-wrap"
+        class="column justify-center no-wrap pattern-diagonal-stripes-sm slategray "
+        style="background-color:rgba(246, 247, 252, 0.1);color:rgba(246, 247, 252, 1);height: 100%"
         ref="ringsElement"
-        style="height: 100%"
+
     >
         <transition appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutLeft">
     <div class="nav__drawer--wrap" v-if="showLeftDrawer" ref="nav">

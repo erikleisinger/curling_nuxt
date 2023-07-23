@@ -65,24 +65,17 @@ const rockDiameterPercent = ref(`${ROCK_DIAMETER_PERCENT}%`)
 const emit = defineEmits(["update", "remove", "outsideBounds"]);
 
 // Utility functions
-const getPercentWidth = (pos: number, element: HTMLElement | null) => {
+const getPercentWidth = (pos: number,parentWidth: number) => {
   try {
-    if (!element)
-      throw new Error(
-        "Error calculating rock percent width: argument `element` is not an element"
-      );
-    return (pos / (element.offsetWidth * props.scale)) * 100 - ROCK_DIAMETER_PERCENT;
+
+    return (pos / parentWidth) * 100 - ROCK_DIAMETER_PERCENT;
   } catch {
     return 0;
   }
 };
-const getPercentHeight = (pos: number, element: HTMLElement | null) => {
+const getPercentHeight = (pos: number, parentHeight: number) => {
   try {
-    if (!element)
-      throw new Error(
-        "Error calculating rock percent height: argument `element` is not an element"
-      );
-    return (pos / (element.offsetHeight * props.scale)) * 100 - ROCK_DIAMETER_PERCENT;
+    return (pos / parentHeight) * 100 - ROCK_DIAMETER_PERCENT;
   } catch {
     return 0;
   }
@@ -99,11 +92,9 @@ onMounted(() => {
 
 // Drag events
 
-const target: HTMLElement | null = document.querySelector(
-  "#curlingRockWrapper"
-);
 const mouse = reactive(useMouseInElement(useParentElement()));
 
+ 
 const enableDragging = ref(false);
 const isDragging = ref(false);
 
@@ -123,9 +114,9 @@ const onDrag = (e: Event) => {
   if (!enableDragging.value) return;
   isDragging.value = true;
 
-  const {elementY, elementX, isOutside} = mouse;
-  positionX.value = getPercentWidth(elementX, target);
-  positionY.value = getPercentHeight(elementY, target);
+  const {elementY, elementX, isOutside, elementHeight, elementWidth} = mouse;
+  positionX.value = getPercentWidth(elementX, elementWidth);
+  positionY.value = getPercentHeight(elementY, elementHeight);
   emit("outsideBounds", isOutside);
   isDragging.value = false;
 };

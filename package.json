@@ -40,6 +40,7 @@
     "@vueuse/router": "^10.2.1",
     "nuxt-quasar-ui": "^2.0.2",
     "pattern.css": "^1.0.0",
+    "pinch-zoom-js": "^2.3.5",
     "pinia": "^2.1.4",
     "quasar": "^2.12.1"
   }
