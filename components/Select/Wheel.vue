@@ -361,7 +361,7 @@ onBeforeMount(() => {
 });
 
 // useEventListener(wheelInput, 'touchstart', () => selected.value = 0)
-onLongPress(wheelInput, startDrag, { delay: 1 });
+onLongPress(wheelInput, startDrag, { delay: 60 });
 useEventListener(wheelInput, "mouseup", dragEnd);
 useEventListener(wheelInput, "click", (e: PointerEvent) => {
     if (e.pointerType === "touch") return;
