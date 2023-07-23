@@ -119,8 +119,6 @@ const handlePinchMove = (e: TouchEvent) => {
   } else {
     if (props.scale - toAdd < SCALE_MIN) {
       newScale = SCALE_MIN;
-      top.value = 0;
-      left.value = 0;
     } else {
       newScale -= toAdd;
     }
