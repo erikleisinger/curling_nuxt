@@ -6,12 +6,13 @@
                 top: 0;
                 right: 0;
                 z-index: 100;
-                margin-top: 5%;
-                margin-right: 2%;
+                margin-top: 3%;
+                margin-right: 3%;
             "
             class="column"
         >
-            <q-btn
+         <q-fab color="primary" flat round icon="build" direction="down" >
+             <q-btn
                 @click="toggleShowNumbers"
                 round
                 :color="showNumbers ? 'primary' : 'white'"
@@ -20,7 +21,7 @@
                     :color="showNumbers ? 'white' : 'primary'"
                     size="sm"
             /></q-btn>
-             <q-btn
+      <q-btn
                 @click="carryOverShots"
                 round
                 color="white"
@@ -41,6 +42,9 @@
                     size="sm"
             /></q-btn>
             <slot name="buttons" />
+      </q-fab>
+
+           
         </div>
         <div style="position: relative" class="col-grow">
             <GameRings ref="rink">
@@ -165,6 +169,7 @@
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
 import {

@@ -11,21 +11,7 @@
         "
         ref="ringsElement"
     >
-        <transition
-            appear
-            enter-active-class="animated slideInLeft"
-            leave-active-class="animated slideOutLeft"
-        >
-            <div class="nav__drawer--wrap" v-if="showLeftDrawer" ref="nav">
-                <q-list style="margin-top: 62px">
-                    <q-item clickable to="/select">
-                        <q-item-section>
-                            <q-item-label>Go back to selection</q-item-label>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-            </div>
-        </transition>
+
 
         <GameScoreboard
             ref="scoreBoard"
@@ -45,10 +31,10 @@
                 <q-btn
                     flat
                     round
-                    icon="menu"
-                    color="black"
+                    icon="arrow_back"
+                    color="grey-6"
                     size="lg"
-                    @click="showLeftDrawer = !showLeftDrawer"
+                    @click="navigateTo('/')"
                 />
             </div>
             <RockController>
@@ -414,9 +400,6 @@ const currentThrowerName = computed(
         "Unnamed player"
 );
 
-const showLeftDrawer = ref(false);
-const nav = ref(null);
-onClickOutside(nav, () => (showLeftDrawer.value = false));
 
 const initialized = ref(false);
 onMounted(() => {
