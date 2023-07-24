@@ -24,8 +24,22 @@
                 @click="carryOverShots"
                 round
                 color="white"
-                name="edit"
-                ></q-btn>
+                class="q-mt-sm"
+                ><q-icon
+                    name="redo"
+                    color="primary"
+                    size="sm"
+            /></q-btn>
+             <q-btn
+                @click="resetShots"
+                round
+                color="white"
+                class="q-mt-sm"
+                ><q-icon
+                    name="change_circle"
+                    color="primary"
+                    size="sm"
+            /></q-btn>
             <slot name="buttons" />
         </div>
         <div style="position: relative" class="col-grow">
@@ -306,8 +320,14 @@ const carryOverShots = () => {
     editedShot.value.rock_positions = {};
     nextTick(() => {
         editedShot.value.rock_positions = rock_positions;
+        calcInitialPending();
     });
 };
+
+const resetShots = () => {
+    editedShot.value.rock_positions = {};
+    calcInitialPending();
+}
 
 const calcInitialPending = () => {
     const pending: RockPosition[] = [];
@@ -322,14 +342,14 @@ const calcInitialPending = () => {
             });
     }
 
-    if (editedShot.value) return pending;
-    return [];
+    if (editedShot.value) pendingRocks.value = pending;
+    
 };
 
 const pendingRocks = ref<RockPosition[]>([]);
 
 onBeforeMount(() => {
-    pendingRocks.value = calcInitialPending();
+    calcInitialPending();
 });
 
 const sessionStore = useSessionStore();
@@ -419,7 +439,7 @@ watch(
     shotNo,
     () => {
         whenever(loadingDone, () => {
-            pendingRocks.value = calcInitialPending();
+            calcInitialPending();
         });
     },
     { flush: "post" }

@@ -5,10 +5,10 @@
                 <slot/>
             </q-card-section>
              <slot name="buttons">
-            <q-card-actions align="right">
+            <q-card-actions align="right" class="row justify-between">
                
-          <q-btn flat :label="props.cancelButtonText" color="primary" @click="emit('close')" v-close-popup></q-btn>
-          <q-btn flat :label="props.confirmButtonText" color="negative" @click="emit('confirm')" v-close-popup></q-btn>
+          <q-btn flat :label="props.cancelButtonText" :color="cancelColor" @click="emit('close')" v-close-popup></q-btn>
+          <q-btn flat :label="props.confirmButtonText" :color="confirmColor" @click="emit('confirm')" v-close-popup></q-btn>
            
         </q-card-actions>
              </slot>
@@ -25,11 +25,23 @@
                 return 'Delete'
             }
         },
+        confirmColor: {
+            type: String,
+            default() {
+                return 'negative'
+            }
+        },
         cancelButtonText: {
             type: String,
             default() {
                 return 'Cancel'
             }
-        }
+        },
+          cancelColor: {
+            type: String,
+            default() {
+                return 'primary'
+            }
+        },
     })
 </script>

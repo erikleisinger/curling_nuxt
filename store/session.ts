@@ -54,7 +54,6 @@ export const useSessionStore = defineStore("session", {
     getCurrentThrower(): number | null {
       const teamStore = useTeamStore();
       const shotNo: number = this.shot;
-      console.log(this.getThrowingTeamId(shotNo))
       const currentTeam = teamStore.teams.find(
         (t) => t.id === this.getThrowingTeamId(shotNo)
       );

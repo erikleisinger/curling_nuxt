@@ -138,6 +138,8 @@
         :cancelButtonText="'Discard'"
         @close="onDiscardChanges"
         @confirm="confirmUnsaved"
+        cancelColor="negative"
+        confirmColor="primary"
     >
         Save changes?
     </DialogConfirmation>
