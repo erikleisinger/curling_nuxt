@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", {
         const client = useSupabaseAuthClient<Database>();
         const {data} = await client.from('profiles').select()
         const [user] = data || [];
-        const {timezone} = user;
+        const {timezone} = user || {};
         this.setTimezone(timezone)
     },
     setTimezone(timezone: string | null | undefined) {

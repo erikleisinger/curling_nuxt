@@ -21,8 +21,7 @@ const {globalLoading} = useLoading()
 //  Edited shot provided to all children
 //  GameNavigation, InputScore, RockController
 
-const editedShotKey: InjectionKey<Ref<Shot>> = Symbol('editedShot')
-const editedShot = ref({
+const defaultShot = {
    end_id: null,
     player_id: null,
     shot_no: null,
@@ -32,12 +31,15 @@ const editedShot = ref({
     type_id: null,
     notes: null,
     rock_positions: {}
-});
+};
+
+const editedShot = ref(defaultShot);
 
 provide('editedShot', editedShot);
 
 const store = useSessionStore();
 const shot = computed(() => store.currentShot)
+
 watch(shot, (val) => {
   if (!val) return;
   Object.assign(editedShot.value, val)

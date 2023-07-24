@@ -203,7 +203,17 @@ export const useSessionStore = defineStore("session", {
             end_number,
             scoring_team_id,
             points_scored,
-            shots(*)
+            shots(
+                end_id,
+                player_id,
+                shot_no,
+                turn,
+                line,
+                score,
+                type_id,
+                notes,
+                rock_positions
+            )
         `
         )
         .eq("game_id", game_id);
