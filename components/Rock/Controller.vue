@@ -41,7 +41,19 @@
                     color="primary"
                     size="sm"
             /></q-btn>
-            <slot name="buttons" />
+            <!-- <slot name="buttons" /> -->
+             <q-btn
+                    round
+                color="white"
+                class="q-mt-sm"
+                    @click="navigateTo('/')"
+                     >
+                     <q-icon
+                    name="arrow_back"
+                    color="primary"
+                    size="sm"
+            />
+             </q-btn>
       </q-fab>
 
            

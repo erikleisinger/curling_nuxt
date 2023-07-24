@@ -27,16 +27,7 @@
             :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"
         >
-            <div class="menu__floating" v-show="!showScoreInput">
-                <q-btn
-                    flat
-                    round
-                    icon="arrow_back"
-                    color="grey-6"
-                    size="lg"
-                    @click="navigateTo('/')"
-                />
-            </div>
+           
             <RockController>
                 <template v-slot:buttons>
                     <q-btn
@@ -292,11 +283,30 @@ const save = async () => {
 
 const currentColor = computed(() => store.getShotColor(store.shot));
 
+function mapNumber(inputNumber: number) {
+  const group1 = [1, 2, 5, 6];
+  const group2 = [3, 4, 7];
+  
+  if (typeof inputNumber !== 'number' || inputNumber < 1 || !Number.isInteger(inputNumber)) {
+    throw new Error("Invalid input. Please provide a positive integer.");
+  }
+
+  const adjustedInput = (inputNumber - 1) % 8 + 1;
+
+  if (group1.includes(adjustedInput)) {
+    return 1;
+  } else if (group2.includes(adjustedInput)) {
+    return 2;
+  }
+
+  throw new Error("Invalid input. The input number does not match any group.");
+}
+
 const { capitalizeFirstLetter, formatNumberWithSuffix } = useFormat();
 const footerText = computed(
     () =>
         `${currentThrowerName.value}'s ${formatNumberWithSuffix(
-            Math.round(store.shot / 2)
+            mapNumber(store.shot)
         )}`
 );
 
