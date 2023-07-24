@@ -57,11 +57,9 @@ const loadGames = async (force:boolean) => {
 };
 
 const selectGame = async (game:Game) => {
-  loading.value = true;
   store.setGame(game);
-  await store.initGame()
+
   navigateTo("/game");
-    loading.value = false;
 };
 
 const edit = (game:Game) => {

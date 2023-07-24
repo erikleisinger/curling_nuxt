@@ -1,20 +1,21 @@
 <template>
-<GameController/>
+    <GameController v-if="initialized" />
+    <GlobalLoading infinite v-else />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, provide, ref, watch, InjectionKey} from "vue";
-import {useSessionStore} from '@/store/session'
-import {useAuthStore} from '@/store/auth'
-import type Shot from '@/types/shot'
+import { computed, onMounted, provide, ref, watch, InjectionKey } from "vue";
+import { useSessionStore } from "@/store/session";
+import { useAuthStore } from "@/store/auth";
+import type Shot from "@/types/shot";
 const tab = ref("rings");
 
-provide('tab', tab)
+provide("tab", tab);
 
 const $q = useQuasar();
 
 // Global loading
-const {globalLoading} = useLoading()
+const { globalLoading } = useLoading();
 
 /* Edited Shot */
 
@@ -31,31 +32,49 @@ const defaultShot = {
     score: null,
     type_id: null,
     notes: null,
-    rock_positions: {}
+    rock_positions: {},
 };
 
 const editedShot = ref(defaultShot);
 
-provide('editedShot', editedShot);
+provide("editedShot", editedShot);
 
 const store = useSessionStore();
-const shot = computed(() => store.currentShot)
-
-watch(shot, (val) => {
-  if (!val) return;
-  Object.assign(editedShot.value, val)
-}, {deep: true, immediate: true})
+const shot = computed(() => store.currentShot);
 
 /* End edited shot */
 
 // Logout
 const authStore = useAuthStore();
 const logout = async () => {
-  const client = useSupabaseAuthClient();
-  await client.auth.signOut();
-  authStore.setLoggedIn(false)
+    const client = useSupabaseAuthClient();
+    await client.auth.signOut();
+    authStore.setLoggedIn(false);
 };
 
+const initialized = ref(false);
+onBeforeMount(async () => {
+    if (!store.game?.id) {
+        navigateTo("/select");
+    } else {
+        await store.initGame();
+        nextTick(() => {
+            initialized.value = true;
+        });
+    }
+});
 
+const assignShot = (val: Shot | null) => {
+    if (!val || !store.game?.id) return;
+    Object.assign(editedShot.value, val);
+};
 
+// TODO: MAKE SURE EDITED SHOT IS INIT ON INITIAL
+watch(
+    shot,
+    (val) => {
+        assignShot(val);
+    },
+    { deep: true }
+);
 </script>

@@ -1,8 +1,5 @@
 <template>
-
-    <NuxtLoadingIndicator/>
     <NuxtPage/>
-
 </template>
 <style lang="scss">
     #__nuxt {
@@ -28,12 +25,7 @@ const handleLoggedInState = async (isLoggedIn: boolean) => {
   loading.value = true;
   if (isLoggedIn) {
      await initData();
-    if (sessionStore.game?.id) {
-      await sessionStore.initGame();
-      navigateTo("/");
-    } else {
-      navigateTo("/select");
-    }
+     navigateTo("/");
   } else {
     await navigateTo("/login");
     await resetData();

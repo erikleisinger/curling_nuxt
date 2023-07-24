@@ -9,105 +9,19 @@
             color: rgba(246, 247, 252, 1);
             height: 100%;
         "
-        ref="ringsElement"
     >
-
-
-        <GameScoreboard
-            ref="scoreBoard"
-            :class="showScoreBoard ? 'show' : 'hide'"
-            v-if="$q.screen.lt.md"
-            :style="{
-                zIndex: showScoreBoard ? 1 : 0,
-                animationDuration: initialized ? '0.3s' : '0s',
-            }"
-        />
 
         <div
             :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"
         >
-           
-            <RockController>
-                <template v-slot:buttons>
-                    <q-btn
-                        size="md"
-                        round
-                        @click="showScoreBoard = !showScoreBoard"
-                        v-if="$q.screen.lt.md"
-                        color="white"
-                        class="q-mt-sm"
-                        ><q-icon name="o_scoreboard" size="sm" color="primary"
-                    /></q-btn>
-                </template>
-            </RockController>
+            <RockController/>
         </div>
-        <div
-            class="score-input__wrap"
-            style="
-                max-height: 100%;
-                overflow: hidden;
-                transition: all 0.2s;
-                z-index: 150;
-                color: black;
-            "
-            :class="showScoreInput ? 'showScore' : 'hideScore'"
-        >
-            <div
-                class="player__header box-shadow--dark column"
-                :class="{
-                    [`${currentColor}--background`]: true,
-                    showing: showScoreInput,
-                }"
-                ref="headerEl"
-            >
-                <div
-                    class="row justify-center"
-                    style="margin-bottom: -4px"
-                    :style="{ order: showScoreInput ? '2' : '0' }"
-                >
-                    <q-icon
-                        name="drag_handle"
-                        color="white"
-                        size="sm"
-                        @click="showScoreInput = !showScoreInput"
-                    />
-                </div>
-                <div class="row items-center justify-between">
-                    <div class="row justify-end">
-                        <q-btn
-                            flat
-                            round
-                            icon="chevron_left"
-                            color="white"
-                            @click="goPrev(false)"
-                        />
-                    </div>
-                    <div class="column items-center justify-center">
-                        <div class="header">End {{ end }}</div>
-                        <div class="text-white footer">{{ footerText }}</div>
-                    </div>
-                    <div class="row justify-end">
-                        <q-btn
-                            flat
-                            round
-                            icon="chevron_right"
-                            color="white"
-                            @click="goNext(false)"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div
-                :style="{
-                    maxHeight: showScoreInput ? 'calc(100% - 100px)' : '0px',
-                    height: showScoreInput ? '100%' : '0px',
-                }"
-                style="transition: all 0.2s; overflow: auto"
-            >
-                <InputScore />
-            </div>
-        </div>
+        <GameScoreSlider
+            :onNext="() => goNext(false)"
+            :onBack="() => goPrev(false)"
+            @navigate="dialogNavigationOpen = true"
+        />
     </section>
     <DialogConfirmation
         v-if="!!confirmUnsaved"
@@ -128,73 +42,6 @@
 </template>
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
-
-.menu__floating {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 8px;
-    z-index: 250;
-}
-.nav__drawer--wrap {
-    width: 300px;
-    height: 100%;
-    position: absolute;
-    z-index: 200;
-    left: 0;
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    .q-list {
-        margin-top: 64px;
-        .q-item {
-            color: white;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            border-left-width: 0px;
-            border-right-width: 0px;
-        }
-    }
-}
-.player__header {
-    position: relative;
-    bottom: 0;
-    padding: 8px 16px;
-    width: inherit;
-    border-radius: inherit;
-    height: 100px;
-    top: 0px;
-    z-index: 10;
-    width: 100%;
-    transition: all 0.3s;
-
-    // &.showing {
-    //     border-bottom-left-radius: 32px;
-    //     border-bottom-right-radius: 32px;
-    // }
-    &:not(.showing) {
-        border-top-left-radius: 32px;
-        border-top-right-radius: 32px;
-    }
-
-    .header {
-        font-family: "Montserrat", sans-serif;
-        font-weight: bold;
-        color: white;
-
-        font-size: 2em;
-    }
-    .footer {
-        font-family: "Hind", sans-serif;
-    }
-    :after {
-    }
-}
-.score-input__wrap {
-    overflow: hidden;
-    height: 0px;
-    position: absolute;
-    z-index: 5;
-    bottom: 0;
-}
 
 #rings {
     overscroll-behavior-y: v-bind("overscroll");
@@ -223,25 +70,6 @@
         height: 0px;
     }
 }
-
-.showScore {
-    height: 100%;
-    animation: showScore 0.3s forwards;
-}
-
-.hideScore {
-    height: 100px;
-    animation: hideScore 0.3s forwards;
-}
-
-@keyframes rotation {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(359deg);
-    }
-}
 </style>
 <script setup lang="ts">
 import { inject, ref } from "vue";
@@ -258,57 +86,14 @@ import type Shot from "@/types/shot";
 const $q = useQuasar();
 const tab = inject("tab");
 const overscroll = "contain";
-const scoreBoard = ref(null);
-const scoreBoardHeight = ref(useElementSize(scoreBoard).height);
-const showScoreBoard = ref(false);
-useResizeObserver(scoreBoard, (entries) => {
-    const [entry] = entries;
-    const { height } = entry.contentRect;
-    scoreBoardHeight.value = height;
-});
-
-const leftDrawerOpen = ref(true);
-const userStore = useUserStore();
-
-const { toggleShowNumbers } = userStore;
 
 const editedShot = inject<Ref>("editedShot")!;
 
 const showScoreInput = ref(false);
-const scoreContainerHeight = `calc(100vh - 130px)`;
 const store = useSessionStore()!;
 const save = async () => {
     await store.saveShot(editedShot.value);
 };
-
-const currentColor = computed(() => store.getShotColor(store.shot));
-
-function mapNumber(inputNumber: number) {
-  const group1 = [1, 2, 5, 6];
-  const group2 = [3, 4, 7];
-  
-  if (typeof inputNumber !== 'number' || inputNumber < 1 || !Number.isInteger(inputNumber)) {
-    throw new Error("Invalid input. Please provide a positive integer.");
-  }
-
-  const adjustedInput = (inputNumber - 1) % 8 + 1;
-
-  if (group1.includes(adjustedInput)) {
-    return 1;
-  } else if (group2.includes(adjustedInput)) {
-    return 2;
-  }
-
-  throw new Error("Invalid input. The input number does not match any group.");
-}
-
-const { capitalizeFirstLetter, formatNumberWithSuffix } = useFormat();
-const footerText = computed(
-    () =>
-        `${currentThrowerName.value}'s ${formatNumberWithSuffix(
-            mapNumber(store.shot)
-        )}`
-);
 
 const shot = computed<number>(() => store.shot);
 const end = computed<number>(() => store.end);
@@ -345,7 +130,11 @@ const cleanShotForCheck = (shot: Shot | null) => {
 };
 
 const unsavedChanges = computed(
-    () => !objTheSame(cleanShotForCheck(editedShot.value), cleanShotForCheck(store.currentShot))
+    () =>
+        !objTheSame(
+            cleanShotForCheck(editedShot.value),
+            cleanShotForCheck(store.currentShot)
+        )
 );
 
 // Null if confirm dialog is not present
@@ -378,41 +167,28 @@ const goPrev = async (force = false) => {
     prevShot();
 };
 
-const headerEl = ref(null);
-const { direction } = useSwipe(headerEl, {
-    onSwipe: () => {
-        if (direction.value === "up") {
-            showScoreInput.value = true;
-        } else if (direction.value === "down") {
-            showScoreInput.value = false;
-        }
-    },
-});
-
 // Manually go to shot/end
 const dialogNavigationOpen = ref(false);
 
 const goToCustomShot = (data: { shot: number; end: number }, force = false) => {
     dialogNavigationOpen.value = false;
     if (unsavedChanges.value && !force) {
-        confirmUnsaved.value = () => goToCustomShot(data, true);
+        confirmUnsaved.value = async () => {
+             await save();
+            goToCustomShot(data, true);
+        }
+        onDiscardChanges.value = () => goToCustomShot(data, true);
         return;
     }
     const { shot: shotNo, end: endNo } = data;
     goToShot(shotNo, endNo);
 };
 
-const currentThrower = computed(() => store.getCurrentThrower);
-const playerStore = usePlayerStore();
-const currentThrowerName = computed(
-    () =>
-        playerStore.players.find((p) => p.id === currentThrower.value)?.name ??
-        "Unnamed player"
-);
+/**
+ * Show/unshow rock numbers
+ */
+const userStore = useUserStore();
 
+const { toggleShowNumbers } = userStore;
 
-const initialized = ref(false);
-onMounted(() => {
-    initialized.value = true;
-});
 </script>
