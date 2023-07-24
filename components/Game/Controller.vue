@@ -72,7 +72,7 @@
                 overflow: hidden;
                 transition: all 0.2s;
                 z-index: 150;
-                ; color:black
+                color: black;
             "
             :class="showScoreInput ? 'showScore' : 'hideScore'"
         >
@@ -275,6 +275,7 @@ import {
 import { useUserStore } from "@/store/user";
 import { useSessionStore } from "@/store/session";
 import { usePlayerStore } from "@/store/players";
+import type Shot from "@/types/shot";
 const $q = useQuasar();
 const tab = inject("tab");
 const overscroll = "contain";
@@ -320,8 +321,33 @@ const { globalLoading } = useLoading();
 
 const { objTheSame } = useValidation();
 const currentShot = computed(() => store.currentShot);
+
+const cleanShotForCheck = (shot: Shot | null) => {
+    if (!shot) return;
+    const cleaned: Partial<Shot> = {};
+    Object.keys({
+        id: null,
+        end_id: null,
+        player_id: null,
+        shot_no: null,
+        turn: null,
+        line: null,
+        score: null,
+        type_id: null,
+        notes: null,
+        rock_positions: {},
+    } as Partial<Shot>).forEach((key) => {
+        if (key === "rock_positions") {
+            cleaned.rock_positions = shot.rock_positions || {};
+        } else {
+            cleaned[key as keyof Shot] = shot[key as keyof Shot];
+        }
+    });
+    return cleaned;
+};
+
 const unsavedChanges = computed(
-    () => !objTheSame(editedShot.value, store.currentShot)
+    () => !objTheSame(cleanShotForCheck(editedShot.value), cleanShotForCheck(store.currentShot))
 );
 
 // Null if confirm dialog is not present

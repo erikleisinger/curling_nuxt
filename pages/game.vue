@@ -22,7 +22,8 @@ const {globalLoading} = useLoading()
 //  GameNavigation, InputScore, RockController
 
 const defaultShot = {
-   end_id: null,
+    id: null,
+    end_id: null,
     player_id: null,
     shot_no: null,
     turn: null,

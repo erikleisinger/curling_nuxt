@@ -204,6 +204,7 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id,
             points_scored,
             shots(
+                id,
                 end_id,
                 player_id,
                 shot_no,

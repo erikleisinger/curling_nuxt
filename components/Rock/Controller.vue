@@ -20,6 +20,12 @@
                     :color="showNumbers ? 'white' : 'primary'"
                     size="sm"
             /></q-btn>
+             <q-btn
+                @click="carryOverShots"
+                round
+                color="white"
+                name="edit"
+                ></q-btn>
             <slot name="buttons" />
         </div>
         <div style="position: relative" class="col-grow">
