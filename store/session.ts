@@ -3,6 +3,7 @@ import {TABLE_NAMES} from "@/constants/tables";
 import {useStorage} from "@vueuse/core";
 import {useBannerStore} from "@/store/banner";
 import {useTeamStore} from "@/store/teams";
+import {useGameStore} from '@/store/games'
 import {newShot} from "@/models/shot";
 import type End from "@/types/end";
 import type Shot from "@/types/shot";
@@ -187,11 +188,23 @@ export const useSessionStore = defineStore("session", {
       this.insertShot(shotToInsert);
       return shot;
     },
-    async initGame() {
+    async initGame(id:number) {
       this.setLoading(true);
-      this.end = 1;
-      this.shot = 1;
-      const {id: game_id,} = this.game;
+
+      const game = await useGameStore().getGame(id)
+      if (!game) {
+        const {setBanner} = useBanner()
+        setBanner(`Error initializing game: could not load game`, BannerColors.Negative);
+        return;
+      }
+      const oldId = {...(this.game || {})}.id
+      this.setGame(game)
+      const {id: game_id} = this.game || {};
+      if (oldId !== game_id) {
+        this.end = 1;
+        this.shot = 1;
+      }
+    
       const client = useSupabaseClient<Database>();
       const {data: gameData, error} = await client
         .from(TABLE_NAMES.ENDS)

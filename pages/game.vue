@@ -5,6 +5,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, provide, ref, watch, InjectionKey } from "vue";
+import {useRouteQuery} from '@vueuse/router';
 import { useSessionStore } from "@/store/session";
 import { useAuthStore } from "@/store/auth";
 import type Shot from "@/types/shot";
@@ -44,12 +45,14 @@ const shot = computed(() => store.currentShot);
 
 /* End edited shot */
 
+const gameId = useRouteQuery('id')
+
 const initialized = ref(false);
 onBeforeMount(async () => {
     if (!store.game?.id) {
         navigateTo("/select");
     } else {
-        await store.initGame();
+        await store.initGame(gameId.value || store.game?.id);
         nextTick(() => {
             initialized.value = true;
         });

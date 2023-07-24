@@ -16,7 +16,7 @@
           </div>
         </q-item-section>
       </q-item>
-      <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit"/>
+      <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit" class="q-mt-xl"/>
     </q-list>
   </q-scroll-area>
   <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
@@ -57,9 +57,7 @@ const loadGames = async (force:boolean) => {
 };
 
 const selectGame = async (game:Game) => {
-  store.setGame(game);
-
-  navigateTo("/game");
+  navigateTo(`/game?id=${game.id}`);
 };
 
 const edit = (game:Game) => {
