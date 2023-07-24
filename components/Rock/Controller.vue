@@ -11,52 +11,51 @@
             "
             class="column"
         >
-         <q-fab color="primary" flat round icon="build" direction="down" >
-             <q-btn
-                @click="toggleShowNumbers"
-                round
-                :color="showNumbers ? 'primary' : 'white'"
-                ><q-icon
-                    name="123"
-                    :color="showNumbers ? 'white' : 'primary'"
-                    size="sm"
-            /></q-btn>
-      <q-btn
-                @click="carryOverShots"
-                round
-                color="white"
-                class="q-mt-sm"
-                ><q-icon
-                    name="redo"
+         <div ref="toolbarButtons">
+                <q-fab
                     color="primary"
-                    size="sm"
-            /></q-btn>
-             <q-btn
-                @click="resetShots"
-                round
-                color="white"
-                class="q-mt-sm"
-                ><q-icon
-                    name="change_circle"
-                    color="primary"
-                    size="sm"
-            /></q-btn>
-            <!-- <slot name="buttons" /> -->
-             <q-btn
+                    flat
                     round
-                color="white"
-                class="q-mt-sm"
-                    @click="navigateTo('/')"
-                     >
-                     <q-icon
-                    name="arrow_back"
-                    color="primary"
-                    size="sm"
-            />
-             </q-btn>
-      </q-fab>
-
-           
+                    icon="build"
+                    direction="down"
+                    v-model="toolbarButtonsOpen"
+                >
+                   
+                    <q-btn
+                        @click="toggleShowNumbers"
+                        round
+                        :color="showNumbers ? 'primary' : 'white'"
+                        ><q-icon
+                            name="123"
+                            :color="showNumbers ? 'white' : 'primary'"
+                            size="sm"
+                    /></q-btn>
+                    <q-btn
+                        @click="carryOverShots"
+                        round
+                        color="white"
+                        class="q-mt-sm"
+                        ><q-icon name="redo" color="primary" size="sm"
+                    /></q-btn>
+                    <q-btn
+                        @click="resetShots"
+                        round
+                        color="white"
+                        class="q-mt-sm"
+                        ><q-icon name="change_circle" color="primary" size="sm"
+                    /></q-btn>
+                    <!-- <slot name="buttons" /> -->
+                    <q-btn
+                        round
+                        color="white"
+                        class="q-mt-sm"
+                        @click="navigateTo('/')"
+                    >
+                        <q-icon name="arrow_back" color="primary" size="sm" />
+                    </q-btn>     
+                    
+                </q-fab>
+       </div>
         </div>
         <div style="position: relative" class="col-grow">
             <GameRings ref="rink">
@@ -189,6 +188,7 @@ import {
     useElementSize,
     useDebounceFn,
     whenever,
+    onClickOutside,
 } from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
 import { ROCK_DIAMETER_PERCENT } from "@/constants/dimensions";
@@ -327,6 +327,9 @@ const rocksInPlay = computed(() => {
     return rockPositions.value.filter((s: RockPosition) => !s.removed);
 });
 
+/**
+ * Toolbar functions
+ */
 const carryOverShots = () => {
     if (!editedShot.value.shot_no || editedShot.value.shot_no === 1) return;
     const previousShot = store.getShotByNumberAndEnd(
@@ -344,7 +347,16 @@ const carryOverShots = () => {
 const resetShots = () => {
     editedShot.value.rock_positions = {};
     calcInitialPending();
-}
+};
+const toolbarButtonsOpen = ref(false);
+const toolbarButtons = ref(null);
+onClickOutside(toolbarButtons, () => {
+    toolbarButtonsOpen.value = false;
+});
+
+/**
+ * End toolbar functions
+ */
 
 const calcInitialPending = () => {
     const pending: RockPosition[] = [];
@@ -360,7 +372,6 @@ const calcInitialPending = () => {
     }
 
     if (editedShot.value) pendingRocks.value = pending;
-    
 };
 
 const pendingRocks = ref<RockPosition[]>([]);
