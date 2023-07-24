@@ -14,7 +14,7 @@ export const useShotTypeStore = defineStore("shotTypes", {
   },
   actions: {
     async deleteShotType(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {error} = await client
         .from(TABLE_NAMES.SHOT_TYPES)
         .delete()
@@ -31,7 +31,7 @@ export const useShotTypeStore = defineStore("shotTypes", {
     },
     async fetchShotTypes(force: boolean) {
         if (this.shotTypes.length && !force) return;
-        const client = useSupabaseAuthClient<Database>();
+        const client = useSupabaseClient<Database>();
         const {getUser} = useDatabase()
         const {id} = getUser() || {};
         const {data, error} = await client.from(TABLE_NAMES.SHOT_TYPES).select(`
@@ -50,7 +50,7 @@ export const useShotTypeStore = defineStore("shotTypes", {
         this.sortShotTypes();
       },
       async insertShotType(shotType: ShotType) {
-        const client = useSupabaseAuthClient<Database>();
+        const client = useSupabaseClient<Database>();
         const {getUser, getQuery} = useDatabase();
         const {id} = getUser() ?? {};
         const {data, error} = await client

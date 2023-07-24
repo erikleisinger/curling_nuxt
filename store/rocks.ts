@@ -13,7 +13,7 @@ export const useRockStore = defineStore("rockss", {
   },
   actions: {
     async deleteRock(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error} = await client
         .from(TABLE_NAMES.ROCKS)
         .delete()
@@ -30,7 +30,7 @@ export const useRockStore = defineStore("rockss", {
     },
     async insertRocks(force = false) {
       if (this.rocks.length && !force) return;
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {error, data}: SupabaseRockReturn = await client
         .from(TABLE_NAMES.ROCKS)
         .select("*")
@@ -44,7 +44,7 @@ export const useRockStore = defineStore("rockss", {
     },
 
     async insertRock(rock: any) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error}: SupabaseRockReturn = await client
         .from(TABLE_NAMES.ROCKS)
         .upsert(rock)

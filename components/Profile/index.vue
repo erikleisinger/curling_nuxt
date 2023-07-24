@@ -64,7 +64,7 @@
 }
 </style>
 <script setup>
-const client = useSupabaseAuthClient();
+const client = useSupabaseClient();
 const { data } = await client.rpc("get_profile");
 const {username, created_at, timezone} = data;
 const {toTimezone} = useTime();

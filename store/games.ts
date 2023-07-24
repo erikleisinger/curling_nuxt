@@ -15,7 +15,7 @@ export const useGameStore = defineStore("games", {
   },
   actions: {
     async deleteGame(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error} = await client
         .from(TABLE_NAMES.GAMES)
         .delete()
@@ -32,7 +32,7 @@ export const useGameStore = defineStore("games", {
     },
     async fetchGames(force:boolean) {
         if (this.games?.length && !force) return;
-        const client = useSupabaseAuthClient<Database>();
+        const client = useSupabaseClient<Database>();
         const {data, error} = await client.rpc('get_games')  as SupabaseGameReturn
           if (error) {
             const {setBanner} = useBanner();
@@ -42,7 +42,7 @@ export const useGameStore = defineStore("games", {
           }
       },
       async insertGame(game: Game) {
-        const client = useSupabaseAuthClient<Database>();
+        const client = useSupabaseClient<Database>();
         const {getQuery} = useDatabase();
         const {data, error} = await client
           .from(TABLE_NAMES.GAMES)

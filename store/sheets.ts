@@ -13,7 +13,7 @@ export const useSheetStore = defineStore("sheets", {
   },
   actions: {
     async deleteSheet(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error} = await client
         .from(TABLE_NAMES.SHEETS)
         .delete()
@@ -30,7 +30,7 @@ export const useSheetStore = defineStore("sheets", {
     },
     async fetchSheets(force = false) {
       if (this.sheets.length && !force) return;
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {error, data}: SupabaseSheetReturn = await client
         .from(TABLE_NAMES.SHEETS)
         .select("*")
@@ -44,7 +44,7 @@ export const useSheetStore = defineStore("sheets", {
     },
 
     async insertSheet(sheet: any) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error}: SupabaseSheetReturn = await client
         .from(TABLE_NAMES.SHEETS)
         .upsert(sheet)

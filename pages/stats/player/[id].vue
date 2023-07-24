@@ -241,7 +241,7 @@ import { usePlayerStore } from "@/store/players";
 const route = useRoute();
 const loading = ref(false);
 
-const client = useSupabaseAuthClient();
+const client = useSupabaseClient();
 const { data: d } = await client.rpc("get_shot_averages_player", {
     player_id_param: route.params.id,
 });

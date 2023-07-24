@@ -14,7 +14,7 @@ export const useDatabase = () => {
   }
 
   const getClient = () => {
-    const client = useSupabaseAuthClient();
+    const client = useSupabaseClient();
     return client;
   };
 

@@ -80,15 +80,8 @@
 }
 </style>
 <script setup>
-import { useAuthStore } from "@/store/auth";
 import { useSessionStore } from "@/store/session";
 const $q = useQuasar();
-const authStore = useAuthStore();
 const sessionStore = useSessionStore();
 const gameSelected = computed(() => sessionStore.game?.id);
-const logout = async () => {
-    const client = useSupabaseAuthClient();
-    await client.auth.signOut();
-    authStore.setLoggedIn(false);
-};
 </script>

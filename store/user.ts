@@ -10,7 +10,7 @@ export const useUserStore = defineStore("user", {
 
   actions: {
     async getCurrentUser() {
-        const client = useSupabaseAuthClient<Database>();
+        const client = useSupabaseClient<Database>();
         const {data} = await client.from('profiles').select()
         const [user] = data || [];
         const {timezone} = user || {};

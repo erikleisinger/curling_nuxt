@@ -20,7 +20,7 @@ export const usePlayerStore = defineStore("players", {
   },
   actions: {
     async deletePlayer(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error} = await client
         .from(TABLE_NAMES.PLAYERS)
         .delete()
@@ -37,7 +37,7 @@ export const usePlayerStore = defineStore("players", {
     },
     async fetchPlayers(force = false) {
       if (this.players.length && !force) return;
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {error, data}: SupabasePlayerReturn = await client
         .from(TABLE_NAMES.PLAYERS)
         .select("*")
@@ -51,7 +51,7 @@ export const usePlayerStore = defineStore("players", {
     },
 
     async insertPlayer(player: any) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {getUser} = useDatabase();
       const {id} = getUser() ?? {};
       const {data, error}: SupabasePlayerReturn = await client

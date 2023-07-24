@@ -44,14 +44,6 @@ const shot = computed(() => store.currentShot);
 
 /* End edited shot */
 
-// Logout
-const authStore = useAuthStore();
-const logout = async () => {
-    const client = useSupabaseAuthClient();
-    await client.auth.signOut();
-    authStore.setLoggedIn(false);
-};
-
 const initialized = ref(false);
 onBeforeMount(async () => {
     if (!store.game?.id) {

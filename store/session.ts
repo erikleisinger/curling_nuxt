@@ -104,7 +104,7 @@ export const useSessionStore = defineStore("session", {
   },
   actions: {
     async createEnd(gameId: number, endNo: number) {
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const {data, error} = await client
         .from(TABLE_NAMES.ENDS)
         .insert({game_id: Number(gameId), end_number: Number(endNo)})
@@ -132,7 +132,7 @@ export const useSessionStore = defineStore("session", {
         (e) => e.end_number === endNo && e.game_id === gameId
       );
       if (endInStore) return endInStore;
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       if (!gameId) return;
       let end;
       const {data, error} = await client
@@ -165,7 +165,7 @@ export const useSessionStore = defineStore("session", {
       );
       if (shotInStore) return shotInStore;
 
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       let shot;
       const {getQuery} = useDatabase();
       const {data} = await client
@@ -192,7 +192,7 @@ export const useSessionStore = defineStore("session", {
       this.end = 1;
       this.shot = 1;
       const {id: game_id,} = this.game;
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const {data: gameData, error} = await client
         .from(TABLE_NAMES.ENDS)
         .select(
@@ -290,7 +290,7 @@ export const useSessionStore = defineStore("session", {
       if (rockInStore && objTheSame(rockInStore, shot)) return;
       if (!shot.id) delete shot.id;
       this.setLoading(true);
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const {getQuery} = useDatabase();
       const {data, error} = await client
         .from(TABLE_NAMES.SHOTS)
@@ -324,7 +324,7 @@ export const useSessionStore = defineStore("session", {
       this.loading = bool;
     },
     async updateScore(points_scored: number, end_number:number, scoring_team_id:number, game_id:number) {
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const {data, error} = await client.from(TABLE_NAMES.ENDS).upsert(
         {
           end_number,

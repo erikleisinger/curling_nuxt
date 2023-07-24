@@ -13,7 +13,7 @@ export const useRinkStore = defineStore("rink", {
   },
   actions: {
     async deleteRink(id: number | null) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {data, error} = await client
         .from(TABLE_NAMES.RINKS)
         .delete()
@@ -30,7 +30,7 @@ export const useRinkStore = defineStore("rink", {
     },
     async fetchRinks(force = false) {
       if (this.rinks.length && !force) return;
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {error, data}: SupabaseRinkReturn = await client
         .from(TABLE_NAMES.RINKS)
         .select("*")
@@ -44,7 +44,7 @@ export const useRinkStore = defineStore("rink", {
     },
 
     async insertRink(rink: any) {
-      const client = useSupabaseAuthClient();
+      const client = useSupabaseClient();
       const {getUser} = useDatabase();
       const {id} = getUser() ?? {};
       const {data, error}: SupabaseRinkReturn = await client

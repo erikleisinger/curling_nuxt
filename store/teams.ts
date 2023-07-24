@@ -14,7 +14,7 @@ export const useTeamStore = defineStore("team", {
   },
   actions: {
     async deleteTeam(id: number | null) {
-        const client = useSupabaseAuthClient();
+        const client = useSupabaseClient();
         const {error} = await client
           .from(TABLE_NAMES.TEAMS)
           .delete()
@@ -32,7 +32,7 @@ export const useTeamStore = defineStore("team", {
     async fetchTeams(force = false) {
       if (this.teams.length && !force) return;
 
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const {getUser, getQuery} = useDatabase();
       const {id} = getUser() ?? {};
       const {data, error} = await client
@@ -43,7 +43,7 @@ export const useTeamStore = defineStore("team", {
       this.sortTeams();
     },
     async insertTeam(team: Team) {
-      const client = useSupabaseAuthClient<Database>();
+      const client = useSupabaseClient<Database>();
       const { getQuery} = useDatabase();
     //   const {id} = getUser() ?? {};
       const {data, error} = await client
