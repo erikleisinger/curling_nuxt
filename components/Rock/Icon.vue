@@ -1,4 +1,5 @@
 <template>
+
   <div
     class="rock__icon"
     :class="[
@@ -13,13 +14,14 @@
   </div>
 </template>
 <style lang="scss">
+
 .rock__icon {
     display: inline-block;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.4);
   color:black;
-  background-image: v-bind(bg);;
+  background-image: v-bind(bg);
  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
  aspect-ratio: 1/1;
    .number-label {

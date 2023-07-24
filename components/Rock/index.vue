@@ -42,7 +42,7 @@ import {
 } from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import type {OnClickOutsideHandler} from "@vueuse/core";
-import {ROCK_DIAMETER_PERCENT} from '@/constants/dimensions'
+import {ROCK_DIAMETER_PERCENT, ROCK_DIAMETER_PERCENT_X, ROCK_DIAMETER_PERCENT_Y} from '@/constants/dimensions'
 
 const props = defineProps({
   onDrag: Function,
@@ -68,14 +68,14 @@ const emit = defineEmits(["update", "remove", "outsideBounds"]);
 const getPercentWidth = (pos: number,parentWidth: number) => {
   try {
 
-    return (pos / parentWidth) * 100 - ROCK_DIAMETER_PERCENT;
+    return (pos / parentWidth) * 100 - ROCK_DIAMETER_PERCENT_X / 2;
   } catch {
     return 0;
   }
 };
 const getPercentHeight = (pos: number, parentHeight: number) => {
   try {
-    return (pos / parentHeight) * 100 - ROCK_DIAMETER_PERCENT;
+    return (pos / parentHeight) * 100 - ROCK_DIAMETER_PERCENT_Y / 2;
   } catch {
     return 0;
   }
@@ -94,7 +94,6 @@ onMounted(() => {
 
 const mouse = reactive(useMouseInElement(useParentElement()));
 
- 
 const enableDragging = ref(false);
 const isDragging = ref(false);
 
@@ -151,8 +150,6 @@ document.removeEventListener("touchmove", onDrag);
 document.removeEventListener("mouseup", endDrag);
 document.removeEventListener("touchend", endDrag);
 }
-
-
 
 const rockRef = ref(null);
 const rockId = `rock-${props.rock.shot_no}`;
