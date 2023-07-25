@@ -45,6 +45,14 @@
                         ><q-icon name="change_circle" color="primary" size="sm"
                     /></q-btn>
                     <slot name="buttons" />
+                     <q-btn
+                        round
+                        color="white"
+                        class="q-mt-sm"
+                        @click="rotated = !rotated"
+                    >
+                        <q-icon name="screen_rotation_alt" color="primary" size="sm" />
+                    </q-btn>    
                     <q-btn
                         round
                         color="white"
@@ -99,6 +107,7 @@
                     @outsideBounds="onOutsideBounds"
                     :scale="scale"
                     :showNumbers="showNumbers"
+                    :rotated="rotated"
                 />
             </GameRings>
         </div>
@@ -180,7 +189,12 @@
         </div>
     </div>
 </template>
-
+<style lang="scss">
+    .pinch-zoom-container {
+        transform: v-bind(rotation);
+        transition: transform 0.3s;
+    }
+</style>
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
 import {
@@ -216,6 +230,7 @@ function setScale(s: number) {
  * ZOOM IN / OUT
  */
 
+
 const onEnd = (e: PinchZoom) => {
     const { zoomFactor } = e;
     setScale(zoomFactor);
@@ -228,6 +243,10 @@ onMounted(() => {
         maxZoom: 6,
     });
 });
+
+const rotated = ref(false)
+
+const rotation = computed(() => rotated.value ? 'rotate(180deg)' : 'rotate(0deg)')
 
 const eventStore = useEventStore();
 const selectedRock = computed(() => eventStore.rockSelected);
