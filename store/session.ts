@@ -129,24 +129,6 @@ export const useSessionStore = defineStore("session", {
             const [end] = data;
             return end;
         },
-        async createShot(endId: number, endNumber: number, shotNo: number) {
-            const shotToCreate: Shot = {
-                ...newShot(),
-                end_id: Number(endId),
-                shot_no: Number(shotNo),
-                player_id: this.getCurrentThrower,
-            };
-            if (shotNo !== 1) {
-                const previousShot = await this.getShotByNumberAndEnd(
-                    shotNo - 1,
-                    endNumber
-                );
-                if (previousShot?.rock_positions)
-                    shotToCreate["rock_positions"] =
-                        previousShot.rock_positions;
-            }
-            return shotToCreate;
-        },
         async getEnd(
             endNo: number,
             gameId: number | undefined,
@@ -197,36 +179,6 @@ export const useSessionStore = defineStore("session", {
                 this.ends.splice(index, 1, endToInsert);
             }
             return end;
-        },
-        async getShot(shotNo: number, endNo: number): Promise<Shot> {
-            const end = this.currentEnd;
-            const { id: end_id, end_number } = end || {};
-            const shotInStore = this.shots.find(
-                (s) => s.end_id === end_id && s.shot_no === shotNo
-            );
-            if (shotInStore) return shotInStore;
-
-            const client = useSupabaseClient<Database>();
-            let shot;
-            const { getQuery } = useDatabase();
-            const { data } = (await client
-                .from(TABLE_NAMES.SHOTS)
-                .select(getQuery(TABLE_NAMES.SHOTS))
-                .eq("end_id", end_id)
-                .eq("shot_no", shotNo)) as SupabaseShotReturn;
-            if (!data?.length) {
-                shot = await this.createShot(end_id, end_number, shotNo);
-            } else {
-                const [fetchedShot] = data;
-                shot = fetchedShot;
-            }
-            const shotToInsert = {
-                ...shot,
-                end_id: shot.end_id,
-                player_id: shot.player_id,
-            };
-            this.insertShot(shotToInsert);
-            return shot;
         },
         async initEnd(end_number: number, gameId: number | undefined) {
             const end = await this.getEnd(end_number, gameId, true);
