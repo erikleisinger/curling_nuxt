@@ -41,9 +41,8 @@ export const useSessionStore = defineStore("session", {
         },
         getEndByNumber() {
             return (num: number) => {
-                return this.ends.find((e) => e.end_number === num)
-            }
-            
+                return this.ends.find((e) => e.end_number === num);
+            };
         },
         getShotByNumberAndEnd() {
             return (shot_no: number, end_id: number) =>
@@ -120,10 +119,12 @@ export const useSessionStore = defineStore("session", {
     actions: {
         async createEnd(gameId: number, endNo: number) {
             const client = useSupabaseClient<Database>();
-            const { data, error } = await client
+            const { data, error } = (await client
                 .from(TABLE_NAMES.ENDS)
                 .insert({ game_id: Number(gameId), end_number: Number(endNo) })
-                .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS) as SupabaseEndReturn;
+                .select(
+                    CUSTOM_QUERIES.GET_END_WITH_SHOTS
+                )) as SupabaseEndReturn;
             if (error) return null;
             const [end] = data;
             return end;
@@ -136,8 +137,13 @@ export const useSessionStore = defineStore("session", {
                 player_id: this.getCurrentThrower,
             };
             if (shotNo !== 1) {
-                const previousShot = await this.getShotByNumberAndEnd(shotNo - 1, endNumber);
-                if (previousShot?.rock_positions) shotToCreate["rock_positions"] = previousShot.rock_positions;
+                const previousShot = await this.getShotByNumberAndEnd(
+                    shotNo - 1,
+                    endNumber
+                );
+                if (previousShot?.rock_positions)
+                    shotToCreate["rock_positions"] =
+                        previousShot.rock_positions;
             }
             return shotToCreate;
         },
@@ -183,7 +189,7 @@ export const useSessionStore = defineStore("session", {
             const index = this.ends.findIndex(
                 (g) => g.game_id === gameId && g.end_number === endNo
             );
-            const endToInsert = {...end};
+            const endToInsert = { ...end };
             delete endToInsert.shots;
             if (index === -1) {
                 this.ends.push(endToInsert);
@@ -234,11 +240,13 @@ export const useSessionStore = defineStore("session", {
             }
             let endShots: Shot[];
 
-            const {shots, id} = end;
+            const { shots, id } = end;
             if (!shots.length) {
-                const client = useSupabaseClient()
-                const {data, error} = await client.from(TABLE_NAMES.ENDS).select(
-                    `
+                const client = useSupabaseClient();
+                const { data, error } = await client
+                    .from(TABLE_NAMES.ENDS)
+                    .select(
+                        `
                     shots(
                         id,
                         end_id,
@@ -252,11 +260,11 @@ export const useSessionStore = defineStore("session", {
                         rock_positions
                     )
                     `
-                ).eq('id', id)
+                    )
+                    .eq("id", id);
                 const [shotsData] = data || [];
-                const {shots}: {shots: Shot[]} = shotsData || {};
+                const { shots }: { shots: Shot[] } = shotsData || {};
                 endShots = shots;
-                
             } else {
                 endShots = shots;
             }
@@ -278,9 +286,9 @@ export const useSessionStore = defineStore("session", {
             }
             this.setGame(game);
             const { id: game_id } = this.game!;
-            
+
             if (game_id) {
-                const previousShotEndPosition = this.gameNavHistory[game_id]
+                const previousShotEndPosition = this.gameNavHistory[game_id];
                 if (previousShotEndPosition) {
                     this.shot = previousShotEndPosition.shot;
                     this.end = previousShotEndPosition.end;
@@ -302,37 +310,40 @@ export const useSessionStore = defineStore("session", {
         async prevShot() {
             this.setLoading(true);
 
-                if (this.shot === 1) {
-                    await this.goToShot(16, this.end - 1);
-                } else {
-                    await this.goToShot(this.shot - 1, this.end);
-                }
+            if (this.shot === 1) {
+                await this.goToShot(16, this.end - 1);
+            } else {
+                await this.goToShot(this.shot - 1, this.end);
+            }
             this.setLoading(false);
         },
         async nextShot() {
             this.setLoading(true);
 
             if (this.shot === 16) {
-    
-                await this.goToShot(1, this.end + 1)
+                await this.goToShot(1, this.end + 1);
             } else {
-                await this.goToShot(this.shot + 1, this.end)
+                await this.goToShot(this.shot + 1, this.end);
             }
             this.setLoading(false);
         },
         async goToShot(shotNo: number, endNo: number) {
             if (shotNo < 1 || shotNo > 16 || endNo < 1) {
-                console.error('CANNOT NAVIGATE TO SHOT: ', shotNo, ' END: ', endNo)
+                console.error(
+                    "CANNOT NAVIGATE TO SHOT: ",
+                    shotNo,
+                    " END: ",
+                    endNo
+                );
                 return;
             }
             this.setLoading(true);
-          
+
             if (endNo !== this.end) {
-                await this.initEnd(endNo, this.game?.id)
-            } 
+                await this.initEnd(endNo, this.game?.id);
+            }
             this.shot = shotNo;
             this.end = endNo;
-          
 
             this.setLoading(false);
         },
