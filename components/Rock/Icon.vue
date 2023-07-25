@@ -34,7 +34,7 @@
     top: 25%;
 border-radius: 4px;
     left: 45%;
-    transform: rotateZ(135deg);
+    transform: v-bind(rotation);
     background-color: v-bind(handleColor);
     position: absolute;
   }
@@ -80,6 +80,7 @@ const props = defineProps({
       return "red";
     },
   },
+  reverse: Boolean,
   overlay: Boolean,
   selected: Boolean,
 
@@ -100,5 +101,7 @@ const handleColor = computed(() => {
         red: '#640200'
     }[props.color] || 'unset'
 })
+
+const rotation = computed(() => `rotate(${props.reverse ? '225' : '135'}deg)`)
 
 </script>
