@@ -26,7 +26,7 @@
                         round
                         :color="showNumbers ? 'primary' : 'white'"
                         ><q-icon
-                            name="123"
+                            name="sym_o_counter_1"
                             :color="showNumbers ? 'white' : 'primary'"
                             size="sm"
                     /></q-btn>
@@ -43,6 +43,13 @@
                         color="white"
                         class="q-mt-sm"
                         ><q-icon name="change_circle" color="primary" size="sm"
+                    /></q-btn>
+                       <q-btn
+                        @click="showOop = !showOop"
+                        round
+                        :color="showOop ? 'primary' : 'white'"
+                        class="q-mt-sm"
+                        ><q-icon name="disabled_visible" :color="showOop ? 'white' : 'primary'" size="sm"
                     /></q-btn>
                     <slot name="buttons" />
                      <q-btn
@@ -195,7 +202,6 @@ import {
     useMounted,
     useElementSize,
     useDebounceFn,
-    whenever,
     onClickOutside,
 } from "@vueuse/core";
 import type RockPosition from "@/types/rockPosition";
@@ -240,6 +246,7 @@ onMounted(() => {
 });
 
 const rotated = ref(false)
+const showOop = ref(false)
 
 const eventStore = useEventStore();
 const selectedRock = computed(() => eventStore.rockSelected);
@@ -382,7 +389,6 @@ const calcInitialPending = () => {
                 color: store.getShotColor(x),
             });
     }
-
     if (editedShot.value) pendingRocks.value = pending;
 };
 
@@ -404,11 +410,13 @@ const awayTeamName = computed(
 const pendingHome = computed(() => {
     return pendingRocks.value
         .filter(({ color }) => sessionStore.game?.home_color === color)
+        .filter(({shot_no}) => showOop.value ? true : shot_no >= sessionStore.shot)
         .sort((a, b) => a.shot_no - b.shot_no);
 });
 const pendingAway = computed(() => {
     return pendingRocks.value
         .filter(({ color }) => sessionStore.game?.away_color === color)
+        .filter(({shot_no}) => showOop.value ? true : shot_no >= sessionStore.shot)
         .sort((a, b) => a.shot_no - b.shot_no);
 });
 
@@ -474,13 +482,10 @@ const { width } = useElementSize(curlingRockWrapper);
 const rockContainerWidth = computed(() => width.value / 3);
 
 const shotNo = computed(() => editedShot.value.shot_no);
-const loadingDone = computed(() => !store.loading);
 watch(
     shotNo,
     () => {
-        whenever(loadingDone, () => {
-            calcInitialPending();
-        });
+        calcInitialPending();
     },
     { flush: "post" }
 );

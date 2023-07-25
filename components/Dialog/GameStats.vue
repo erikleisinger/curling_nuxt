@@ -44,7 +44,7 @@
 </style>
 <script setup >
 const props = defineProps({
-    gameId: String,
+    gameId: Number,
 });
 const isOpen = ref(true);
 const emit = defineEmits(["close", "save"]);

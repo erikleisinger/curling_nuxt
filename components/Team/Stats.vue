@@ -43,7 +43,7 @@ interface Stats {
 }
 const props = defineProps<{
     color: string;
-    reverse: boolean;
+    reverse?: boolean;
     stats: Stats;
 }>();
 

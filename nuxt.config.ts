@@ -41,7 +41,7 @@ export default defineNuxtConfig({
                 "slideOutUp",
                 "slideOutDown",
             ],
-            fontIcons: ["material-icons-outlined"],
+            fontIcons: ["material-icons-outlined", "material-symbols-outlined"],
         },
         plugins: ["Dialog"],
         sassVariables: true,
