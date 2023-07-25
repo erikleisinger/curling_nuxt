@@ -136,8 +136,8 @@ export const useSessionStore = defineStore("session", {
                 player_id: this.getCurrentThrower,
             };
             if (shotNo !== 1) {
-                const previousShot = await this.getShot(shotNo - 1, endNumber);
-                shotToCreate["rock_positions"] = previousShot.rock_positions;
+                const previousShot = await this.getShotByNumberAndEnd(shotNo - 1, endNumber);
+                if (previousShot?.rock_positions) shotToCreate["rock_positions"] = previousShot.rock_positions;
             }
             return shotToCreate;
         },
@@ -301,34 +301,39 @@ export const useSessionStore = defineStore("session", {
         },
         async prevShot() {
             this.setLoading(true);
-            if (!(this.shot === 1 && this.end === 1)) {
-                if (this.shot === 1) {
-                    this.end -= 1;
-                    this.shot = 16;
-                } else {
-                    this.shot -= 1;
-                }
-            }
 
+                if (this.shot === 1) {
+                    await this.goToShot(16, this.end - 1);
+                } else {
+                    await this.goToShot(this.shot - 1, this.end);
+                }
             this.setLoading(false);
         },
         async nextShot() {
             this.setLoading(true);
+
             if (this.shot === 16) {
-                this.shot = 1;
-                this.end += 1;
-                await this.initEnd(this.end, this.game?.id);
+    
+                await this.goToShot(1, this.end + 1)
             } else {
-                this.shot += 1;
+                await this.goToShot(this.shot + 1, this.end)
             }
             this.setLoading(false);
         },
         async goToShot(shotNo: number, endNo: number) {
+            if (shotNo < 1 || shotNo > 16 || endNo < 1) {
+                console.error('CANNOT NAVIGATE TO SHOT: ', shotNo, ' END: ', endNo)
+                return;
+            }
             this.setLoading(true);
+          
+            if (endNo !== this.end) {
+                await this.initEnd(endNo, this.game?.id)
+            } 
             this.shot = shotNo;
-            
             this.end = endNo;
-            await this.getShot(shotNo, endNo);
+          
+
             this.setLoading(false);
         },
 

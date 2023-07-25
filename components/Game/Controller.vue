@@ -185,7 +185,7 @@ const goPrev = async (force = false) => {
 // Manually go to shot/end
 const dialogNavigationOpen = ref(false);
 
-const goToCustomShot = (data: { shot: number; end: number }, force = false) => {
+const goToCustomShot = async (data: { shot: number; end: number }, force = false) => {
     dialogNavigationOpen.value = false;
     if (unsavedChanges.value && !force) {
         confirmUnsaved.value = async () => {
@@ -196,7 +196,7 @@ const goToCustomShot = (data: { shot: number; end: number }, force = false) => {
         return;
     }
     const { shot: shotNo, end: endNo } = data;
-    goToShot(shotNo, endNo);
+    await goToShot(shotNo, endNo);
 };
 
 /**
