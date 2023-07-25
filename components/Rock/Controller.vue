@@ -1,5 +1,25 @@
 <template>
     <div class="column" style="position: relative; height: 100%; width: 100%">
+         <transition
+                        appear
+                        enter-active-class="animated fadeIn"
+                        leave-active-class="animated fadeOut"
+                    >
+                        <div
+                            style="
+                                height: 100%;
+                                width: 100%;
+                                position: absolute;
+                                background-color: rgba(0, 0, 0, 0.4);
+                                z-index: 1;
+                            "
+                            id="deleteOverlay"
+                      v-if="deleteOverlay" 
+                            class="row justify-center items-center"
+                        >
+                            <q-icon size="xl" name="delete" color="white" />
+                        </div>
+                        </transition>
         <div
             style="
                 position: absolute;
@@ -73,8 +93,9 @@
        </div>
         </div>
         <div style="position: relative" class="col-grow">
+        
             <GameRings ref="rink" :rotated="rotated">
-                <div
+                     <div
                     style="
                         height: 100%;
                         width: 100%;
@@ -85,25 +106,9 @@
                     id="curlingRockWrapper"
                     ref="curlingRockWrapper"
                 >
-                    <transition
-                        appear
-                        enter-active-class="animated fadeIn"
-                        leave-active-class="animated fadeOut"
-                    >
-                        <div
-                            style="
-                                height: 100%;
-                                width: 100%;
-                                position: absolute;
-                                background-color: rgba(0, 0, 0, 0.4);
-                            "
-                            v-if="deleteOverlay"
-                            class="row justify-center items-center"
-                        >
-                            <q-icon size="xl" name="delete" color="white" />
-                        </div>
-                    </transition>
+                  
                 </div>
+                    
                 <div ref="rockInsert"></div>
                 <Rock
                     v-for="rock in rocksInPlay"

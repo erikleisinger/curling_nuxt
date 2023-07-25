@@ -39,6 +39,7 @@ import {
   onClickOutside,
   useParentElement,
   toValue,
+  useElementVisibility,
 } from "@vueuse/core";
 import {useEventStore} from "@/store/event";
 import type {OnClickOutsideHandler} from "@vueuse/core";
@@ -60,6 +61,9 @@ const props = defineProps({
   },
   showNumbers: Boolean,
 });
+
+
+const rockRef = ref(null);
 
 const rockDiameterPercent = ref(`${ROCK_DIAMETER_PERCENT}%`)
 
@@ -96,6 +100,7 @@ const mouse = reactive(useMouseInElement(useParentElement()));
 
 const enableDragging = ref(false);
 const isDragging = ref(false);
+const rockVisible = useElementVisibility(rockRef)
 
 const startDrag = (e: Event) => {
   if (!isSelected.value) return;
@@ -116,7 +121,7 @@ const onDrag = (e: Event) => {
   const {elementY, elementX, isOutside, elementHeight, elementWidth} = mouse;
   positionX.value = getPercentWidth(elementX, elementWidth);
   positionY.value = getPercentHeight(elementY, elementHeight);
-  emit("outsideBounds", isOutside);
+  emit("outsideBounds", isOutside || !rockVisible.value);
   isDragging.value = false;
 };
 
@@ -125,7 +130,7 @@ const endDrag = (e: TouchEvent | PointerEvent | MouseEvent) => {
   
   enableDragging.value = false;
   const {isOutside} = mouse;
-  if (isOutside) {
+  if (isOutside || !rockVisible.value) {
     emit("remove");
   } else {
     emit("update", {
@@ -151,7 +156,6 @@ document.removeEventListener("mouseup", endDrag);
 document.removeEventListener("touchend", endDrag);
 }
 
-const rockRef = ref(null);
 const rockId = `rock-${props.rock.shot_no}`;
 
 const eventStore = useEventStore();
