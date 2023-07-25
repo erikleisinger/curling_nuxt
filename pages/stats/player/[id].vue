@@ -236,7 +236,7 @@
     }
 }
 </style>
-<script setup>
+<script setup lang="ts">
 import { usePlayerStore } from "@/store/players";
 const route = useRoute();
 const loading = ref(false);

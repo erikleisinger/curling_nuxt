@@ -22,6 +22,10 @@
 
                         <q-icon name="scoreboard" color="primary"/>
                     </q-btn>
+                    <q-btn round  color="white" @click="gameStatsDialog = true">
+
+                        <q-icon name="leaderboard" color="primary"/>
+                    </q-btn>
                 </template>
             </RockController>
         </div>
@@ -42,6 +46,7 @@
     >
         Save changes?
     </DialogConfirmation>
+    <DialogGameStats v-if="gameStatsDialog" @close="gameStatsDialog = false" :gameId="store.game.id"/>
     <DialogEnd v-if="endOfEndDialog" @close="endOfEndDialog = false" @save="goNext(true)"/>
     <DialogNavigation
         v-model="dialogNavigationOpen"
@@ -145,6 +150,7 @@ const unsavedChanges = computed(
 );
 
 const endOfEndDialog = ref(false)
+const gameStatsDialog = ref(false)
 
 // Null if confirm dialog is not present
 // When truthy, this ref is a function that will be executed on dialog @confirm event

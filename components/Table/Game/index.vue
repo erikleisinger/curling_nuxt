@@ -90,5 +90,9 @@ const {direction} = useSwipe(tableArea, {
   },
 });
 
+onMounted(() => {
+    loadGames(true)
+})
+
 
 </script>

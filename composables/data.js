@@ -18,7 +18,7 @@ export const useData = () => {
         fetchShotTypes,
         fetchTeams,
         fetchPlayers,
-        fetchGames,
+        () => fetchGames(true),
         getCurrentUser,
       ];
       const incrementValue = 1 / operations.length;

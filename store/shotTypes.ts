@@ -38,7 +38,7 @@ export const useShotTypeStore = defineStore("shotTypes", {
         id,
         name,
         shot_type
-        `).or(`profile_id.eq.${id},is_global.eq.true`)
+        `).eq('is_global', true)
   
         if (error || !data?.length) {
           const {code} = error || {};

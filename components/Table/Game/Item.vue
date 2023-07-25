@@ -78,77 +78,32 @@
                         {{ game.away.name }}
                     </div>
                 </div>
-                <div
-                    class="percent-container col-6"
+                <TeamStats class="percent-container col-6"
                     :style="{ maxHeight: showStats ? '1000px' : '0px' }"
-                >
-                    <percentage
-                        :percent="getPercent(game.home_percentage)"
-                        :color="game.home_color"
-                        label="Total"
+                    :color="game.home_color"
+                    :stats="{
+                        total: game.home_percentage,
+                        fourth: game.home_percentage_fourth,
+                        third: game.home_percentage_third,
+                        second: game.home_percentage_second,
+                        lead: game.home_percentage_lead
+                    }"
                     />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_fourth)"
-                        :color="game.home_color"
-                        label="Fourth"
-                    />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_third)"
-                        :color="game.home_color"
-                        label="Third"
-                    />
-                    <percentage
-                        :percent="getPercent(game.home_percentage_second)"
-                        :color="game.home_color"
-                        label="Second"
-                    />
-
-                    <percentage
-                        :percent="getPercent(game.home_percentage_lead)"
-                        :color="game.home_color"
-                        label="Lead"
-                    />
-                </div>
                 <div />
-                <div
-                    class="percent-container col-6"
+                   <TeamStats class="percent-container col-6"
                     :style="{ maxHeight: showStats ? '1000px' : '0px' }"
-                >
-                    <percentage
-                        :percent="getPercent(game.away_percentage)"
-                        :color="game.away_color"
-                        label="Total"
-                        reverse
-                    />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_fourth)"
-                        :color="game.away_color"
-                        label="Fourth"
-                        reverse
+                    :color="game.away_color"
+                    :stats="{
+                        total: game.away_percentage,
+                        fourth: game.away_percentage_fourth,
+                        third: game.away_percentage_third,
+                        second: game.away_percentage_second,
+                        lead: game.away_percentage_lead
+                    }"
+                    reverse
                     />
 
-                    <percentage
-                        :percent="getPercent(game.away_percentage_third)"
-                        :color="game.away_color"
-                        label="Third"
-                        reverse
-                    />
-
-                    <percentage
-                        :percent="getPercent(game.away_percentage_second)"
-                        :color="game.away_color"
-                        label="Second"
-                        reverse
-                    />
-                    <percentage
-                        :percent="getPercent(game.away_percentage_lead)"
-                        :color="game.away_color"
-                        label="Lead"
-                        reverse
-                    />
-                </div>
             </div>
-            <!-- <transition appear enter-active-class="animated slideInLeft" leave-active-class=" animated slideOutRight"> -->
             <div v-if="selected" class="row justify-center">
                 <q-btn
                     flat

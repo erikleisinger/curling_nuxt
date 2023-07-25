@@ -98,12 +98,8 @@ const turnOptions = enumToSelectionOptions(Turn);
 
 // Shot types
 const shotTypeStore = useShotTypeStore();
-const loadingShotTypes = ref(false);
-const getShotTypes = async (force: any) => {
-    loadingShotTypes.value = true;
-    await shotTypeStore.fetchShotTypes(force);
-    loadingShotTypes.value = false;
-};
+
+
 const shotTypeOptions = computed(() => {
     const { formatShotTypeForSelection } = useFormat();
     return [...shotTypeStore.shotTypes].map((st) =>
@@ -111,9 +107,6 @@ const shotTypeOptions = computed(() => {
     );
 });
 
-onMounted(() => {
-    shotTypeStore.fetchShotTypes(true);
-});
 
 // Disabled/loading state
 
