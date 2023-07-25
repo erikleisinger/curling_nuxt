@@ -32,13 +32,18 @@ export const useSessionStore = defineStore("session", {
                     s.shot_no === this.shot && s.end_id === this.currentEnd?.id
             );
             if (shot) return shot;
-            const { newShot } = useModel();
             return newShot({ end_id: this.currentEnd?.id, shot_no: this.shot });
         },
         currentEnd: (state): End | undefined => {
             return state.ends.find(
                 ({ end_number }) => end_number === state.end
             );
+        },
+        getEndByNumber() {
+            return (num: number) => {
+                return this.ends.find((e) => e.end_number === num)
+            }
+            
         },
         getShotByNumberAndEnd() {
             return (shot_no: number, end_id: number) =>
@@ -178,10 +183,12 @@ export const useSessionStore = defineStore("session", {
             const index = this.ends.findIndex(
                 (g) => g.game_id === gameId && g.end_number === endNo
             );
+            const endToInsert = {...end};
+            delete endToInsert.shots;
             if (index === -1) {
-                this.ends.push(end);
+                this.ends.push(endToInsert);
             } else {
-                this.ends.splice(index, 1, end);
+                this.ends.splice(index, 1, endToInsert);
             }
             return end;
         },
@@ -217,7 +224,14 @@ export const useSessionStore = defineStore("session", {
         },
         async initEnd(end_number: number, gameId: number | undefined) {
             const end = await this.getEnd(end_number, gameId, true);
-            if (!end) return null;
+            if (!end) {
+                const { setBanner } = useBanner();
+                setBanner(
+                    `Error initializing end: could not get end`,
+                    BannerColors.Negative
+                );
+                return;
+            }
             let endShots: Shot[];
 
             const {shots, id} = end;
@@ -272,36 +286,7 @@ export const useSessionStore = defineStore("session", {
                     this.end = previousShotEndPosition.end;
                 }
             }
-            
-
-            const client = useSupabaseClient<Database>();
-            const { data: gameData, error } = await client
-                .from(TABLE_NAMES.ENDS)
-                .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
-                .eq("game_id", game_id);
-            if (error) {
-                const { code } = error || {};
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error initializing game (code ${code})`,
-                    BannerColors.Negative
-                );
-
-                return;
-            }
-            const { shots, ends } = gameData.reduce(
-                (all, current: End) => {
-                    const { shots: incomingShots, ...end } = current;
-                    return {
-                        shots: [...all.shots, ...(incomingShots ?? [])],
-                        ends: [...all.ends, end],
-                    };
-                },
-                { shots: [], ends: [] } as { shots: Shot[]; ends: End[] }
-            );
-            this.ends = ends;
-            this.shots = shots;
-            await this.getShot(this.shot, this.end);
+            await this.initEnd(this.end, game_id);
             this.setLoading(false);
         },
         insertShot(shot: Shot) {
@@ -333,7 +318,6 @@ export const useSessionStore = defineStore("session", {
                 this.shot = 1;
                 this.end += 1;
                 await this.initEnd(this.end, this.game?.id);
-                // this.getEnd(this.end, this.game?.id, true)
             } else {
                 this.shot += 1;
             }
@@ -398,7 +382,15 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id: number,
             game_id: number
         ) {
-            const { hammer_team_id } = await this.getEnd(end_number, game_id);
+            const { hammer_team_id } = this.getEndByNumber(end_number) || {};
+            if (!hammer_team_id) {
+                const bannerStore = useBannerStore();
+                bannerStore.setText(
+                    `Error updating score: no team with hammer.`,
+                    BannerColors.Negative
+                );
+                return;
+            }
             const client = useSupabaseClient<Database>();
             const { data, error } = await client.from(TABLE_NAMES.ENDS).upsert(
                 {
