@@ -58,17 +58,12 @@ export const useGameStore = defineStore("games", {
         const {data, error} = await client.from(TABLE_NAMES.GAMES)
         .select(getQuery(TABLE_NAMES.GAMES))
         .eq('id', id) as SupabaseGameReturn
-        console.log('GET GAME: ', data)
         if (data) {
             const [game] = data || [];
             return game
         }
         return null
       },
-    //   async getPlayableGame(id) {
-    //     const client = useSupabaseClient<Database>();
-    //     const {data, error} = client.rpc()
-    //   },
       async insertGame(game: Game) {
         const client = useSupabaseClient<Database>();
         const {getQuery} = useDatabase();
