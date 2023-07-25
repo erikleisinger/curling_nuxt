@@ -74,7 +74,6 @@ const getPercentWidth = (pos: number,parentWidth: number) => {
   }
 };
 const getPercentHeight = (pos: number, parentHeight: number) => {
-    console.log(pos)
   try {
     return ((props.rotated ? parentHeight - pos : pos) / parentHeight) * 100 - ROCK_DIAMETER_PERCENT_Y / 2;
   } catch {
@@ -115,7 +114,6 @@ const onDrag = (e: Event) => {
   isDragging.value = true;
 
   const {elementY, elementX, isOutside, elementHeight, elementWidth} = mouse;
-  console.log(mouse)
   positionX.value = getPercentWidth(elementX, elementWidth);
   positionY.value = getPercentHeight(elementY, elementHeight);
   emit("outsideBounds", isOutside);
