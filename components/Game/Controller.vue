@@ -11,7 +11,7 @@
             height: 100%;
         "
     >
-
+    <q-inner-loading :showing="globalLoading"/>
         <div
             :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"

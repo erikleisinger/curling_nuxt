@@ -66,7 +66,7 @@
        </div>
         </div>
         <div style="position: relative" class="col-grow">
-            <GameRings ref="rink">
+            <GameRings ref="rink" :rotated="rotated">
                 <div
                     style="
                         height: 100%;
@@ -189,12 +189,6 @@
         </div>
     </div>
 </template>
-<style lang="scss">
-    .pinch-zoom-container {
-        transform: v-bind(rotation);
-        transition: transform 0.3s;
-    }
-</style>
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
 import {
@@ -237,16 +231,15 @@ const onEnd = (e: PinchZoom) => {
 };
 let pinch: PinchZoom;
 onMounted(() => {
-    const rink = document.querySelector("#rink") as HTMLElement;
+    const rink = document.querySelector("#rinkWrapper") as HTMLElement;
     pinch = new PinchZoom(rink, {
         onZoomUpdate: useDebounceFn(onEnd),
         maxZoom: 6,
+        useMouseWheel: true,
     });
 });
 
 const rotated = ref(false)
-
-const rotation = computed(() => rotated.value ? 'rotate(180deg)' : 'rotate(0deg)')
 
 const eventStore = useEventStore();
 const selectedRock = computed(() => eventStore.rockSelected);

@@ -224,6 +224,28 @@ export const useSessionStore = defineStore("session", {
                 this.insertShot(shot);
             });
         },
+        async initAllEnds(game_id: number) {
+            const client = useSupabaseClient();
+            const {data, error} = await client.from(TABLE_NAMES.ENDS).select(CUSTOM_QUERIES.GET_END_WITH_SHOTS).eq('game_id', game_id) as SupabaseEndReturn;
+            if (error) {
+                const {code} = error;
+                const { setBanner } = useBanner();
+                setBanner(
+                    `Error initializing game: could not init ends (code ${code})`,
+                    BannerColors.Negative
+                );
+                return;
+            }
+            const {ends = [], shots = []} = data?.reduce((all, current : End) => {
+                const {shots: endShots = [], ...rest}: End = current;
+                all.ends.push(rest)
+                all.shots = [...all.shots, ...endShots]
+                return all;
+            }, {ends: [], shots: []} as {ends: End[], shots: Shot[]}) || {}
+ 
+            this.ends = ends;
+            this.shots = shots;
+        },
         async initGame(id: number) {
             this.setLoading(true);
 
@@ -246,7 +268,11 @@ export const useSessionStore = defineStore("session", {
                     this.end = previousShotEndPosition.end;
                 }
             }
-            await this.initEnd(this.end, game_id);
+            await this.initAllEnds(game?.id);
+            if (!this.ends.find((e) => e.end_number === this.end && e.game_id === game?.id)) {
+                await this.initEnd(this.end, game_id);
+            }
+          
             this.setLoading(false);
         },
         insertShot(shot: Shot) {
@@ -260,24 +286,19 @@ export const useSessionStore = defineStore("session", {
             }
         },
         async prevShot() {
-            this.setLoading(true);
 
             if (this.shot === 1) {
                 await this.goToShot(16, this.end - 1);
             } else {
                 await this.goToShot(this.shot - 1, this.end);
             }
-            this.setLoading(false);
         },
         async nextShot() {
-            this.setLoading(true);
-
             if (this.shot === 16) {
                 await this.goToShot(1, this.end + 1);
             } else {
                 await this.goToShot(this.shot + 1, this.end);
             }
-            this.setLoading(false);
         },
         async goToShot(shotNo: number, endNo: number) {
             if (shotNo < 1 || shotNo > 16 || endNo < 1) {
@@ -296,7 +317,6 @@ export const useSessionStore = defineStore("session", {
             }
             this.shot = shotNo;
             this.end = endNo;
-
             this.setLoading(false);
         },
 
@@ -350,15 +370,6 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id: number,
             game_id: number
         ) {
-            const { hammer_team_id } = this.getEndByNumber(end_number) || {};
-            if (!hammer_team_id) {
-                const bannerStore = useBannerStore();
-                bannerStore.setText(
-                    `Error updating score: no team with hammer.`,
-                    BannerColors.Negative
-                );
-                return;
-            }
             const client = useSupabaseClient<Database>();
             const { data, error } = await client.from(TABLE_NAMES.ENDS).upsert(
                 {
@@ -366,7 +377,6 @@ export const useSessionStore = defineStore("session", {
                     scoring_team_id,
                     points_scored,
                     game_id,
-                    hammer_team_id,
                 },
                 { ignoreDuplicates: false, onConflict: "game_id, end_number" }
             ).select(`

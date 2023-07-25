@@ -1,4 +1,5 @@
 <template>
+<div id="rinkWrapper">
   <div class="rink" id="rink">
     <slot />
     <div class="rings__wrapper">
@@ -9,6 +10,7 @@
         <circle cx="50%" cy="50%" r="5%" style="fill: white" />
       </svg>
     </div>
+  </div>
   </div>
 </template>
 
@@ -25,6 +27,8 @@ margin:0;
     rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
   border-top: 2px solid rgba(0 0 0 / 20%);
+  transform: v-bind(rotation);
+  transition: transform 0.3s;
 //   transform: v-bind(computedScale);
   width: max-content;
   &:before {
@@ -65,6 +69,11 @@ margin:0;
 import {useEventStore} from "@/store/event";
 import {PLAYING_AREA_DIMENSIONS, RINGS_HEIGHT_PERCENT, RINGS_WIDTH_PERCENT, RINK_ASPECT_RATIO, TEE_LINE_PERCENT_FROM_TOP} from '@/constants/dimensions'
 
+const props = defineProps({
+    rotated: Boolean,
+})
+
+const rotation = computed(() => props.rotated ? 'rotate(180deg)' : 'rotate(0deg)')
 
 const emit = defineEmits(['update:modelValue'])
 
