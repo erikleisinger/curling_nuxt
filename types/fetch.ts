@@ -5,6 +5,7 @@ import type Game from '@/types/game'
 import type Rink from '@/types/rink'
 import type Sheet from '@/types/sheet'
 import type Rock from '@/types/rock'
+import type End from '@/types/end'
 interface SupabaseReturn {
   error: any;
 }
@@ -32,4 +33,7 @@ export interface SupabaseRinkReturn extends SupabaseReturn {
   }
   export interface SupabaseRockReturn extends SupabaseReturn {
     data: Rock[] | null;
+  }
+  export interface SupabaseEndReturn extends SupabaseReturn {
+    data: End[] | null;
   }

@@ -1,6 +1,6 @@
-import {TABLE_NAMES} from "./tables";
+import { TABLE_NAMES } from "./tables";
 export const TABLE_QUERIES = {
-  [TABLE_NAMES.GAMES]: `
+    [TABLE_NAMES.GAMES]: `
     id,
     start_time,
     home (
@@ -18,7 +18,7 @@ export const TABLE_QUERIES = {
     hammer_first_end,
     completed
     `,
-    [TABLE_NAMES.PLAYERS]: '*',
+    [TABLE_NAMES.PLAYERS]: "*",
     [TABLE_NAMES.SHOTS]: `
     id,
     end_id,
@@ -76,5 +76,28 @@ export const TABLE_QUERIES = {
     id,
     name,
     shot_type
-    `
+    `,
+};
+
+export const CUSTOM_QUERIES = {
+    GET_END_WITH_SHOTS: `
+    id,
+    game_id,
+    end_number,
+    scoring_team_id,
+    points_scored,
+    hammer_team_id,
+    shots(
+        id,
+        end_id,
+        player_id,
+        shot_no,
+        turn,
+        line,
+        score,
+        type_id,
+        notes,
+        rock_positions
+    )
+    `,
 };

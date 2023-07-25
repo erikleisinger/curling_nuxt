@@ -59,6 +59,10 @@ onBeforeMount(async () => {
     }
 });
 
+onBeforeUnmount(() => {
+    store.endSession();
+})
+
 const assignShot = (val: Shot | null) => {
     if (!val || !store.game?.id) return;
     Object.assign(editedShot.value, val);

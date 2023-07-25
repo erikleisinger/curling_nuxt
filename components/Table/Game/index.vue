@@ -57,7 +57,6 @@ const loadGames = async (force:boolean) => {
 };
 
 const selectGame = async (game:Game) => {
-    console.log('select game: ', game)
   navigateTo(`/game?id=${game.id}`);
 };
 

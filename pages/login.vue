@@ -1,4 +1,5 @@
 <template>
+<NuxtLayout>
   <div class="window-height window-width row justify-center items-center">
     <q-form class="login__form q-pa-lg" @submit="onSubmit" ref="loginForm">
       <q-card :flat="$q.screen.lt.sm" >
@@ -39,7 +40,9 @@
       </q-card>
     </q-form>
   </div>
+  </NuxtLayout>
 </template>
+
 <style lang="scss">
 .login__form {
   width: 400px;
@@ -58,6 +61,7 @@
 import {ref} from "vue";
 import {VALIDATION_RULES} from "@/constants/validation";
 import {useAuthStore} from '@/store/auth'
+import { BannerColors } from "@/types/color";
 
 const TAB_NAMES = ref({
   SIGN_IN: 'signin',
@@ -91,19 +95,19 @@ const onSubmit = async (e) => {
     const {error} = await client.auth.signInWithPassword(formData);
     if (!error) {
       authStore.setLoggedIn(true)
-    } else if(error?.message) {
-      setBanner(error.message)
+    } else if(error && error.message) {
+      setBanner(error.message, BannerColors.Negative)
     } else {
-      console.log('error logging in: ', error)
+      setBanner('Error logging in (Unknown error)', BannerColors.Negative)
     }
   } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
     const {error} = await client.auth.signUp(formData);
     if (error?.message) {
-        setBanner(error.message)
+        setBanner(error.message, BannerColors.Negative)
     }
     else if (!error) {
       
-      setBanner("Sign up successful. A verification email has been sent to your email address.");
+      setBanner("Sign up successful. A verification email has been sent to your email address.", BannerColors.Primary);
       password.value = null;
       email.value = null;
       loginForm.value.reset();
