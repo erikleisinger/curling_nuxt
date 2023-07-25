@@ -12,7 +12,7 @@ interface Game {
     ends: EndCount,
     home_color: string,
     away_color: string,
-    hammer_first_end: BasicTeam,
+    hammer_first_end: number,
     sheet_id?: number | null,
     rink_id?: number | null
     score_home?: number | null,

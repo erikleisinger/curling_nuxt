@@ -44,7 +44,7 @@
                         class="q-mt-sm"
                         ><q-icon name="change_circle" color="primary" size="sm"
                     /></q-btn>
-                    <!-- <slot name="buttons" /> -->
+                    <slot name="buttons" />
                     <q-btn
                         round
                         color="white"

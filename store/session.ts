@@ -127,12 +127,12 @@ export const useSessionStore = defineStore("session", {
       }
       return shotToCreate;
     },
-    async getEnd(endNo: number) {
+    async getEnd(endNo: number, force: boolean = false) {
       const {id: gameId} = this.game;
       const endInStore = this.ends.find(
         (e) => e.end_number === endNo && e.game_id === gameId
       );
-      if (endInStore) return endInStore;
+      if (endInStore && !force) return endInStore;
       const client = useSupabaseClient<Database>();
       if (!gameId) return;
       let end;
@@ -144,7 +144,8 @@ export const useSessionStore = defineStore("session", {
         game_id,
         end_number,
         scoring_team_id,
-        points_scored
+        points_scored,
+        hammer_team_id
         `
         )
         .eq("end_number", endNo)
@@ -155,12 +156,19 @@ export const useSessionStore = defineStore("session", {
         const [fetchedEnd] = data;
         end = fetchedEnd;
       }
-      this.ends.push(end);
+      const index = this.ends.findIndex(
+        (g) => g.game_id === gameId && g.end_number === endNo
+      );
+      if (index === -1) {
+        this.ends.push(end);
+      } else {
+        this.ends.splice(index, 1, end);
+      }
       return end;
     },
     async getShot(shotNo: number, endNo: number): Promise<Shot> {
-      const end = await this.getEnd(endNo);
-      const {id: end_id, end_number} = end;
+      const end = this.currentEnd;
+      const {id: end_id, end_number} = end || {};
       const shotInStore = this.shots.find(
         (s) => s.end_id === end_id && s.shot_no === shotNo
       );
@@ -281,6 +289,7 @@ export const useSessionStore = defineStore("session", {
       if (this.shot === 16) {
         this.shot = 1;
         this.end += 1;
+        this.getEnd(this.end, true)
       } else {
         this.shot += 1;
       }
@@ -337,6 +346,7 @@ export const useSessionStore = defineStore("session", {
       this.loading = bool;
     },
     async updateScore(points_scored: number, end_number:number, scoring_team_id:number, game_id:number) {
+        const {hammer_team_id} = await this.getEnd(end_number)
       const client = useSupabaseClient<Database>();
       const {data, error} = await client.from(TABLE_NAMES.ENDS).upsert(
         {
@@ -344,6 +354,7 @@ export const useSessionStore = defineStore("session", {
           scoring_team_id,
           points_scored,
           game_id,
+          hammer_team_id
         },
         {ignoreDuplicates: false, onConflict: "game_id, end_number"}
       ).select(`
@@ -351,7 +362,8 @@ export const useSessionStore = defineStore("session", {
             game_id,
             end_number,
             scoring_team_id,
-            points_scored
+            points_scored,
+            hammer_team_id
             `);
       if (error) {
         const {code} = error || {};

@@ -49,7 +49,7 @@ const gameId = useRouteQuery('id')
 
 const initialized = ref(false);
 onBeforeMount(async () => {
-    if (!store.game?.id) {
+    if (!gameId.value && !store.game?.id) {
         navigateTo("/select");
     } else {
         await store.initGame(gameId.value || store.game?.id);

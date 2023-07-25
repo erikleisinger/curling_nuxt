@@ -15,10 +15,7 @@ export const TABLE_QUERIES = {
     ends(count),
     home_color,
     away_color,
-    hammer_first_end (
-      id,
-      name
-    ),
+    hammer_first_end,
     completed
     `,
     [TABLE_NAMES.PLAYERS]: '*',

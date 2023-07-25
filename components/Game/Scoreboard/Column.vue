@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :style="{backgroundColor: props.highlight ? 'yellow' : 'white'}">
     {{score}}
     <q-popup-edit v-model="label" auto-save v-slot="scope">
         <q-input type="number" v-model.number="scope.value" dense autofocus @keyup.enter="scope.set" @blur="scope.set"></q-input>
@@ -8,6 +8,7 @@
 </template>
 <script setup lang="ts">
     const props = defineProps({
+        highlight: Boolean,
         score: Number,
     });
     const emit = defineEmits(['update-score'])

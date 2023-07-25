@@ -6,5 +6,6 @@ interface End {
   scoring_team_id?:number | null
   points_scored?:number | null
   shots?: Shot[]
+  hammer_team_id?: number | null
 }
 export default End

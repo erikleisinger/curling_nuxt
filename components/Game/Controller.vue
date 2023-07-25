@@ -16,7 +16,14 @@
             :style="`position:relative; width: 100%; margin-bottom: 100px`"
             class="col-grow curling-rings__wrap"
         >
-            <RockController/>
+            <RockController>
+                <template v-slot:buttons>
+                    <q-btn round  color="white" @click="endOfEndDialog = true">
+
+                        <q-icon name="scoreboard" color="primary"/>
+                    </q-btn>
+                </template>
+            </RockController>
         </div>
         <GameScoreSlider
             :onNext="() => goNext(false)"
@@ -35,6 +42,7 @@
     >
         Save changes?
     </DialogConfirmation>
+    <DialogEnd v-if="endOfEndDialog" @close="endOfEndDialog = false" @save="goNext(true)"/>
     <DialogNavigation
         v-model="dialogNavigationOpen"
         @go="goToCustomShot"
@@ -75,12 +83,7 @@
 </style>
 <script setup lang="ts">
 import { inject, ref } from "vue";
-import {
-    useElementSize,
-    useResizeObserver,
-    useSwipe,
-    onClickOutside,
-} from "@vueuse/core";
+
 import { useUserStore } from "@/store/user";
 import { useSessionStore } from "@/store/session";
 import { usePlayerStore } from "@/store/players";
@@ -96,6 +99,8 @@ const store = useSessionStore()!;
 const save = async () => {
     await store.saveShot(editedShot.value);
 };
+
+
 
 const shot = computed<number>(() => store.shot);
 const end = computed<number>(() => store.end);
@@ -139,6 +144,8 @@ const unsavedChanges = computed(
         )
 );
 
+const endOfEndDialog = ref(false)
+
 // Null if confirm dialog is not present
 // When truthy, this ref is a function that will be executed on dialog @confirm event
 // Either 'goNext' or 'goPrev'
@@ -154,6 +161,12 @@ const goNext = async (force = false) => {
         return;
     }
     confirmUnsaved.value = null;
+    //  && !store.currentEnd?.scoring_team_id
+    if (shot.value === 16 && !force) {
+        endOfEndDialog.value = true;
+        return;
+    }
+    // TODO: blank ends??
     nextShot();
 };
 const goPrev = async (force = false) => {

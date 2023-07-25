@@ -9,7 +9,6 @@ height:inherit;
 <script setup lang="ts">
 import {useSessionStore} from "@/store/session";
 import {useAuthStore} from "@/store/auth";
-screen.orientation.lock("portrait-primary");
 
 const sessionStore = useSessionStore();
 const authStore = useAuthStore();
