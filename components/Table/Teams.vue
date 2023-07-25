@@ -14,7 +14,7 @@
           </div>
         </q-item-section>
       </q-item>
-          <q-item  clickable v-ripple v-for="team in teams" :key="team.id">
+          <q-item  clickable v-ripple v-for="team in teams" :key="team.id" :to="`/stats/team/${team.id}`">
             <q-item-section>
          <q-item-label>{{team.name || 'Unnamed team'}}</q-item-label>
          <q-item-label caption>
