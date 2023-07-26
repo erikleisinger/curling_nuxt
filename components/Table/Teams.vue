@@ -1,11 +1,6 @@
 <template>
      <DialogTeamEditor/>
-  <q-scroll-area class="col-grow bg-white" ref="tableArea">
-    <q-inner-loading
-      :showing="loading"
-      label="Please wait..."
-      color="primary"
-    />
+  <q-scroll-area class="col-grow bg-white" ref="tableArea" v-if="!loading">
      <q-list bordered separator >
       <q-item clickable @click="toggleTeamDialog(null)">
         <q-item-section >
@@ -64,6 +59,7 @@
       </q-item>
      </q-list>
   </q-scroll-area>
+  <GlobalLoading infinite v-else/>
       <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteTeam(itemToDelete)">
     Are you sure you want to delete team "{{itemToDelete.name ?? 'Unnamed team'}}"
   </DialogConfirmation>
@@ -85,7 +81,7 @@ const loadTeams = async (force:boolean = false) => {
 await teamStore.fetchTeams(force);
 loading.value = false;
 }
-onMounted(async () => {
+onMounted(() => {
 loadTeams();
 });
 

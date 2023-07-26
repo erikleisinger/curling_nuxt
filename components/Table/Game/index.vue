@@ -1,11 +1,6 @@
 <template>
 
-  <q-scroll-area class="col-grow game-table__container " ref="tableArea" >
-    <q-inner-loading
-      :showing="loading"
-      label="Please wait..."
-      color="primary"
-    />
+  <q-scroll-area class="col-grow game-table__container " ref="tableArea" v-if="!loading">
 
     <q-list bordered separator>
       <q-item clickable @click="toggleGameDialog(null)">
@@ -19,6 +14,7 @@
       <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit" class="q-mt-xl"/>
     </q-list>
   </q-scroll-area>
+  <GlobalLoading infinite v-else/>
   <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
     Are you sure you want to delete the game "{{itemToDelete.name ?? 'Unnamed game'}}"
   </DialogConfirmation>
@@ -42,6 +38,7 @@ const props = defineProps({
   edited: Object,
 })
 const {toTimezone} = useTime();
+
 
 const loading = ref(false);
 const itemToDelete = ref(null)
@@ -90,8 +87,8 @@ const {direction} = useSwipe(tableArea, {
   },
 });
 
-onMounted(() => {
-    loadGames(true)
+onMounted(async () => {
+    await loadGames(true)
 })
 
 

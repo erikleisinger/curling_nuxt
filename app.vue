@@ -48,7 +48,10 @@ const handleLoggedInState = async (state: AuthState) => {
         } else {
             const {session} =data;
             if (!session) return;
+            const {access_token, refresh_token} = session;
             client.auth.setSession(session)
+            document.cookie=`sb-access-token=${access_token}`
+            document.cookie=`sb-refresh-token=${refresh_token}`
         }
         
            return;
