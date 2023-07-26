@@ -3,7 +3,7 @@
         <RockIcon
             ref="rock"
          class="row justify-center draggable"
-         :style="{position, top: positionY, left: positionX, width}"
+         :style="{position, top: positionY, left: positionX, width, height}"
          :selected="props.selected"
          :color="color"
          :disabled="disabled"
@@ -33,6 +33,7 @@ const props = defineProps({
     showNumbers: Boolean,
     shotNo: Number,
     width: String,
+    height: String,
 })
 const rock = ref(null);
 const isDraggable = ref(false)

@@ -158,6 +158,7 @@
                                 :showNumbers="showNumbers"
                                 :shotNo="Math.round(rock.shot_no / 2)"
                                 :width="`${rockContainerWidth / 4}px`"
+                                :height="`${rockContainerWidth / 4}px`"
                             />
                         </div>
                     </transition-group>
@@ -184,6 +185,7 @@
                             <RockDraggable
                                 @dragUp="endDrag(rock.shot_no, rock.color)"
                                 :width="`${rockContainerWidth / 4}px`"
+                                   :height="`${rockContainerWidth / 4}px`"
                                 :color="rock.color"
                                 :disabled="rock.shot_no > editedShot.shot_no"
                                 @dragging="setDragging(rock.shot_no)"
