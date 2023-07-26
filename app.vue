@@ -24,9 +24,9 @@ const handleLoggedInState = async (isLoggedIn: boolean) => {
   loading.value = true;
   if (isLoggedIn) {
      await initData();
-     navigateTo("/");
+    //  navigateTo("/");
   } else {
-    await navigateTo("/login");
+    // await navigateTo("/login");
     await resetData();
   
   }
