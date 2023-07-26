@@ -15,11 +15,11 @@ export const useData = () => {
       const {fetchGames} = useGameStore()
       const {getCurrentUser} = useUserStore();
       const operations = [
-        fetchShotTypes,
-        fetchTeams,
-        fetchPlayers,
+        () => fetchShotTypes(true),
+        () => fetchTeams(true),
+        () => fetchPlayers(true),
         () => fetchGames(true),
-        getCurrentUser,
+        () => getCurrentUser(),
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(
@@ -35,7 +35,13 @@ export const useData = () => {
   };
   const resetData = () => {
     const {resetSession} = useSessionStore();
+    const {resetPlayers} = usePlayerStore();
+    const {resetTeams} = useTeamStore();
+    const {resetGames} = useGameStore();
     resetSession();
+    resetPlayers();
+    resetTeams();
+    resetGames();
   }
   return {initData, resetData, progress};
 };

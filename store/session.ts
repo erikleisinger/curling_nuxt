@@ -94,6 +94,17 @@ export const useSessionStore = defineStore("session", {
                     : this.game.away_color;
             };
         },
+        lastPlayedGame() {
+            const gameStore = useGameStore();
+            const {games} = gameStore
+            const history = Object.entries(this.gameNavHistory)
+            .map(([key, value]) => {
+                return {id: key, ...value}
+            })
+            .filter(({id}) => games.some((g) => g.id === Number(id)))
+            .sort((a,b) => (b?.lastPlayed || 0) - (a?.lastPlayed || 0))
+            return Number(history[0]?.id)
+        },
         whoThrowsFirst(): string | null {
             if (!this.game?.id) return null;
             const { hammer_first_end } = this.game || {};
@@ -412,6 +423,7 @@ export const useSessionStore = defineStore("session", {
             this.gameNavHistory[this.game.id] = {
                 shot: this.shot,
                 end: this.end,
+                lastPlayed:  Math.floor(new Date().getTime() / 1000),
             };
             this.resetSession();
         },

@@ -65,6 +65,9 @@ export const useTeamStore = defineStore("team", {
         this.sortTeams();
       }
     },
+    resetTeams() {
+        this.teams = []
+    },
     sortTeams() {
       const {sortNameAlphabetically} = useSort();
       this.teams.sort(sortNameAlphabetically);

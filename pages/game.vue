@@ -15,9 +15,6 @@ provide("tab", tab);
 
 const $q = useQuasar();
 
-// Global loading
-const { globalLoading } = useLoading();
-
 /* Edited Shot */
 
 //  Edited shot provided to all children
@@ -49,10 +46,13 @@ const gameId = useRouteQuery('id')
 
 const initialized = ref(false);
 onBeforeMount(async () => {
-    if (!gameId.value && !store.game?.id) {
+    initialized.value = false;
+    const id = gameId.value || store.lastPlayedGame
+    console.log('id to initialize: ', id)
+    if (!id) {
         navigateTo("/select");
     } else {
-        await store.initGame(gameId.value || store.game?.id);
+        await store.initGame(id);
         nextTick(() => {
             initialized.value = true;
         });

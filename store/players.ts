@@ -78,12 +78,13 @@ export const usePlayerStore = defineStore("players", {
         return newPlayer
       }
     },
+    resetPlayers() {
+        this.players = []
+      },
     sortPlayers() {
       const {sortNameAlphabetically} = useSort();
       this.players.sort(sortNameAlphabetically);
     },
-    resetPlayers() {
-      this.players = []
-    }
+
   },
 });

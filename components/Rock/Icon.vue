@@ -22,7 +22,6 @@
                 fill="rgba(0, 0, 0, 0.4)"
                 x="45%"
                 y="22%"
-                :transform="`${translate}`"
                 class="handle"
                 stroke-linejoin="round"
                 ry="5%"
