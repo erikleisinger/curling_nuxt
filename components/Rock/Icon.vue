@@ -57,7 +57,7 @@
         color: rgb(206, 206, 206);
         background-color: rgb(206, 206, 206, 0.4);
         .number-label {
-            color: black;
+            color: white
         }
     }
     &.selected {
@@ -102,7 +102,7 @@ const props = defineProps({
     size: Number,
 });
 const bg = computed(() => {
-    if (props.disabled) return "unset";
+    if (props.disabled) return "linear-gradient(to top, #b0b0b0 0%, #b0b0b0 100%)";
 
     return (
         {
