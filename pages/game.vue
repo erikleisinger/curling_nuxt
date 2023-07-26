@@ -48,7 +48,6 @@ const initialized = ref(false);
 onBeforeMount(async () => {
     initialized.value = false;
     const id = gameId.value || store.lastPlayedGame
-    console.log('id to initialize: ', id)
     if (!id) {
         navigateTo("/select");
     } else {
