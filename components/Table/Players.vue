@@ -28,7 +28,7 @@
               dense
               round
               icon="edit"
-              @click.stop="edit(player)"
+              @click.stop.prevent="edit(player)"
             ></q-btn>
             <q-btn
               size="12px"
@@ -36,7 +36,7 @@
               dense
               round
               icon="delete"
-              @click.stop="itemToDelete = player"
+              @click.stop.prevent="itemToDelete = player"
             ></q-btn>
           </div>
         </q-item-section>

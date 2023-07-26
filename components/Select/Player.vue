@@ -1,9 +1,9 @@
 <template>
-<div class="row justify-between">
+<!-- <div class="row justify-between">
     <div v-for="player in playerOptions" :key="player.id" class="player__wrap" >
     </div>
-</div>
-  <!-- <q-select
+</div> -->
+  <q-select
     outlined
     rounded
     label="Player"
@@ -39,7 +39,7 @@
         <q-icon name="refresh" />
       </q-btn>
     </template>
-  </q-select> -->
+  </q-select>
 </template>
 <style lang="scss">
     .player__wrap {
@@ -84,7 +84,7 @@ const playerOptions = computed(() => {
   if (props.filter) {
     players = players.filter(props.filter);
   }
-  return players
+  return players.map(formatPlayerForSelection)
 });
 const {globalLoading} = useLoading();
 

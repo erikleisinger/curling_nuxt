@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, watch, InjectionKey } from "vue";
+import { computed, onMounted, provide, ref, watch} from "vue";
 import {useRouteQuery} from '@vueuse/router';
 import { useSessionStore } from "@/store/session";
 import { useAuthStore } from "@/store/auth";
@@ -62,9 +62,11 @@ onBeforeUnmount(() => {
     store.endSession();
 })
 
+const currentThrower = computed(() => store.getCurrentThrower);
 const assignShot = (val: Shot | null) => {
     if (!val || !store.game?.id) return;
     Object.assign(editedShot.value, val);
+    if (!editedShot.value.player_id && currentThrower.value) editedShot.value.player_id = currentThrower.value;
 };
 
 // TODO: MAKE SURE EDITED SHOT IS INIT ON INITIAL

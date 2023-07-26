@@ -22,6 +22,7 @@ const initialized = ref(false);
 const route = useRoute();
 const { initData, resetData } = useData();
 onBeforeMount(async () => {
+    console.log(useSupabaseClient())
     client.auth.onAuthStateChange((s) => {
         handleLoggedInState(s as AuthState);
     });
@@ -41,18 +42,20 @@ const handleLoggedInState = async (state: AuthState) => {
     loading.value = true;
 
     if (state === AuthState.INITIAL_SESSION) {
-        const { data, error } = await client.auth.refreshSession();
-        if (error) {
-            await client.auth.signOut();
+        const data = await client.auth.reauthenticate();
+        console.log('reauth: ', data, )
+        // if (error) {
+        //     await client.auth.signOut();
          
-        } else {
-            const {session} =data;
-            if (!session) return;
-            const {access_token, refresh_token} = session;
-            client.auth.setSession(session)
-            document.cookie=`sb-access-token=${access_token}`
-            document.cookie=`sb-refresh-token=${refresh_token}`
-        }
+        // } 
+        // else {
+        //     const {session} =data;
+        //     if (!session) return;
+        //     const {access_token, refresh_token} = session;
+        //     client.auth.setSession(session)
+        //     document.cookie=`sb-access-token=${access_token}`
+        //     document.cookie=`sb-refresh-token=${refresh_token}`
+        // }
         
            return;
     } else if (state === AuthState.TOKEN_REFRESHED) {
