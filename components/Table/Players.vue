@@ -21,7 +21,7 @@
           <q-item-label caption> </q-item-label>
         </q-item-section>
         <q-item-section side>
-          <div class="text-grey-8">
+          <div class="text-grey-8" v-if="player.profile_id === userId">
             <q-btn
               size="12px"
               flat
@@ -39,6 +39,7 @@
               @click.stop.prevent="itemToDelete = player"
             ></q-btn>
           </div>
+          <ProfileAvatar v-else :path="getFriendAvatar(player.profile_id)" size="2"/>
         </q-item-section>
       </q-item>
     </q-list>
@@ -58,7 +59,15 @@ import {usePlayerStore} from "@/store/players";
 import {useSwipe} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Player from "@/types/player";
+import {useUserStore} from '@/store/user'
+import { useFriendStore } from "@/store/friends";
 const store = usePlayerStore();
+const userStore = useUserStore();
+
+const friendStore = useFriendStore();
+const {getFriendAvatar} = friendStore;
+
+const userId = computed(() => userStore.id)
 
 const players = computed<Player[]>(() => store.players);
 const loading = ref<boolean>(false);

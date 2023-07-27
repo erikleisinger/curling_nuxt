@@ -20,7 +20,7 @@
              Second: {{team.second_player_id.name}}
             </div>
             <div class="row" v-if="team.third_player_id">
-             Third: {{team.second_player_id.name}}
+             Third: {{team.third_player_id.name}}
             </div>
             <div class="row" v-if="team.fourth_player_id">
              Fourth: {{team.fourth_player_id.name}}
@@ -37,7 +37,7 @@
           </q-item-label>
             </q-item-section> 
              <q-item-section side>
-          <div class="text-grey-8">
+          <div class="text-grey-8" v-if="team.profile_id === userId">
             <q-btn
               size="12px"
               flat
@@ -55,6 +55,7 @@
               @click.stop.prevent="itemToDelete = team"
             ></q-btn>
           </div>
+           <ProfileAvatar v-else :path="getFriendAvatar(team.profile_id)" size="2"/>
         </q-item-section>
       </q-item>
      </q-list>
@@ -70,6 +71,10 @@ import {useTeamStore} from '@/store/teams'
 import {useEditorStore} from '@/store/editor'
 import {useSwipe} from '@vueuse/core'
 import {TABLE_NAMES} from '@/constants/tables'
+import {useUserStore} from '@/store/user'
+import { useFriendStore } from "@/store/friends";
+
+
 import type Team from '@/types/team'
   const teamStore = useTeamStore();
 
@@ -113,4 +118,10 @@ const deleteTeam = async (team:Team) => {
   itemToDelete.value = null
 }
 
+const userStore = useUserStore();
+
+const friendStore = useFriendStore();
+const {getFriendAvatar} = friendStore;
+
+const userId = computed(() => userStore.id)
 </script>

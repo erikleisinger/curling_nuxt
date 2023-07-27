@@ -8,7 +8,9 @@
 }
 </style>
 <script setup lang="ts">
+import {useRouteQuery} from '@vueuse/router'
 import { useDebounceFn } from "@vueuse/core";
+import { BannerColors } from "@/types/color";
 enum AuthState {
     INITIAL_SESSION = "INITIAL_SESSION",
     SIGNED_IN = "SIGNED_IN",
@@ -19,31 +21,47 @@ enum AuthState {
 }
 const loading = ref(true);
 const initialized = ref(false);
-const route = useRoute();
+
 const { initData, resetData } = useData();
 onBeforeMount(async () => {
-    console.log(useSupabaseClient())
-    client.auth.onAuthStateChange((s) => {
+    const isNewUser = useRouteQuery('newuser')
+    if(isNewUser.value) {
+        await resetData();
+        reloadNuxtApp({path: '/login?authenticated=true'})
+        return;
+    } else {
+   client.auth.onAuthStateChange((s) => {
         handleLoggedInState(s as AuthState);
     });
+    }
+ 
 });
+
+onMounted(() => {
+    const newlyAuthed = useRouteQuery('authenticated')
+    if (newlyAuthed.value) {
+const {setBanner} = useBanner()
+        setBanner('Email authenticated. You may now log in.', BannerColors.Primary)
+        // loading.value = false;
+    }
+})
 
 const handleInitData = useDebounceFn(async () => initData(), 2000);
 const client = useSupabaseAuthClient();
-const destroySession = async () => {
+const destroySession = async (query?:string) => {
     await resetData();
-    await navigateTo("/login");
+    await navigateTo(`/login${query || ''}`);
 };
 const lastState = ref();
 
 const handleLoggedInState = async (state: AuthState) => {
     if (state === lastState.value) return;
+    console.log('state: ', state)
     lastState.value = state;
     loading.value = true;
 
     if (state === AuthState.INITIAL_SESSION) {
-        const data = await client.auth.reauthenticate();
-        console.log('reauth: ', data, )
+       await client.auth.getSession();
         // if (error) {
         //     await client.auth.signOut();
          
@@ -56,14 +74,17 @@ const handleLoggedInState = async (state: AuthState) => {
         //     document.cookie=`sb-access-token=${access_token}`
         //     document.cookie=`sb-refresh-token=${refresh_token}`
         // }
-        
+        loading.value = false;
            return;
     } else if (state === AuthState.TOKEN_REFRESHED) {
+          loading.value = false;
         return;
     } else if (state === AuthState.SIGNED_OUT) {
         await destroySession();
     } else if (state === AuthState.SIGNED_IN) {
         await handleInitData();
+        const route = useRoute();
+        console.log(route)
         if (route.fullPath === "/login") {
             await navigateTo("/");
         }

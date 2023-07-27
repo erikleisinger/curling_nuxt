@@ -70,7 +70,8 @@ export const TABLE_QUERIES = {
         seventh_player_id (
           id,
           name
-        )
+        ),
+        profile_id
     `,
     [TABLE_NAMES.SHOT_TYPES]: `
     id,

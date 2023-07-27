@@ -24,7 +24,8 @@ export const usePlayerStore = defineStore("players", {
       const {data, error} = await client
         .from(TABLE_NAMES.PLAYERS)
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .select();
       if (error) {
         const {code} = error || {};
         const {setBanner} = useBanner();

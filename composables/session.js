@@ -5,6 +5,7 @@ export const useSession = () => {
     const logout = async () => {
         const client = useSupabaseAuthClient();
         await client.auth.signOut();
+        reloadNuxtApp()
         authStore.setLoggedIn(false);
     };
     return { logout };
