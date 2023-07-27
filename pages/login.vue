@@ -164,6 +164,15 @@ const onSubmit = async (e) => {
         });
         if (!error) {
             authStore.setLoggedIn(true);
+            const {setLoading} = useLoading();
+            setLoading(true)
+            const {initData} = useData();
+            await initData();
+            navigateTo('/')
+            setTimeout(() => {
+ setLoading(false)
+            }, 1000)
+           
         } else if (error && error.message) {
             setBanner(error.message, BannerColors.Negative);
         } else {

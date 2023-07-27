@@ -33,7 +33,7 @@ export const useGameStore = defineStore("games", {
     async fetchGames(force:boolean) {
         if (this.games?.length && !force) return;
         const client = useSupabaseClient<Database>();
-        const {data, error} = await client.rpc('get_games')  as SupabaseGameReturn
+        const {data, error} = await client.rpc('get_games').  as SupabaseGameReturn
           if (error) {
             const {setBanner} = useBanner();
             setBanner("Error getting games.", BannerColors.Negative);

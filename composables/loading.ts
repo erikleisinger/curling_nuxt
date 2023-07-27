@@ -3,5 +3,7 @@ import {useSessionStore} from '@/store/session'
 export const useLoading = () => {
     const store = useSessionStore()
     const globalLoading = computed<boolean>(() => store.loading)
-    return {globalLoading}
+
+    const {setLoading} = store;
+    return {globalLoading, setLoading}
 };
