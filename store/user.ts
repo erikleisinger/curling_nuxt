@@ -24,7 +24,7 @@ export const useUserStore = defineStore("user", {
     async getCurrentUser() {
         const {client, fetchHandler} = useSupabaseFetch();
         const sesh = await client.auth.getUser();
-        console.log('sesh: ', sesh)
+
         const {id: profileId, email = null} = sesh.data.user || {};
         this.setEmail(email)
         const {data} = await fetchHandler(() => client.from('profiles').select('*').eq('id', profileId), {onError: 'Error getting current user'})

@@ -1,66 +1,75 @@
 <template>
-<NuxtLayout>
-    <div class="profile__container items-center">
-        <header class="q-pa-lg column justify-center items-center">
-            <ProfileAvatar :path="user.avatarUrl" :loading="uploading" :size="8" />
-            <input
-                type="file"
-                name="file"
-                id="file"
-                class="upload__input"
-                accept="image/*"
-                @change="uploadAvatar"
-                :disabled="uploading"
-            />
-            <label for="file" class="upload__input--label" />
-            <h1 class="q-mt-xs text-black">My Profile</h1>
-            <h2>#{{ username }}</h2>
-        </header>
-        <main class="main-content__wrap">
-            <section name="profile information" class="profile__section">
-                <!-- <label for="memberSince">Member since</label> -->
-                <!-- <div id="memberSince" class="q-mb-sm">
+    <NuxtLayout>
+        <div class="profile__container items-center">
+            <header class="q-pa-lg column justify-center items-center">
+                <ProfileAvatar
+                    :path="user.avatarUrl"
+                    :loading="uploading"
+                    :size="8"
+                />
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    class="upload__input"
+                    accept="image/*"
+                    @change="uploadAvatar"
+                    :disabled="uploading"
+                    ref="fileUpload"
+                />
+                <label for="file" class="upload__input--label" />
+                <h1 class="q-mt-xs text-black">My Profile</h1>
+                <h2>#{{ username }}</h2>
+            </header>
+            <main class="main-content__wrap">
+                <section name="profile information" class="profile__section">
+                    <!-- <label for="memberSince">Member since</label> -->
+                    <!-- <div id="memberSince" class="q-mb-sm">
                     {{ toTimezone(created_at) }}
                 </div> -->
-                <label for="timezone">Timezone</label>
-                <div id="timezone" class="q-mb-sm">{{ user.timezone }}</div>
-                <label for="friendId">Friend ID</label>
-                <div id="friendId" class="q-mb-sm">
-                    {{ user.friendId }}
-                    <q-btn
-                        flat
-                        round
-                        icon="content_copy"
-                        color="primary"
-                        @click="copyFriendId"
-                    />
-                </div>
-                <label class="label" for="friendId">Friend ID</label>
-                <label class="label sub"
-                    >Paste your friend's ID here to add them as a friend</label
-                >
-                <div>
-                    <q-input
-                        v-model="friendToAdd"
-                        rounded
-                        outlined
-                        class="q-mt-sm"
+                    <label for="timezone" class="label">Timezone</label>
+                    <div id="timezone" class="q-mb-sm">{{ user.timezone }}</div>
+                    <label for="friendId" class="label">Friend ID</label>
+                    <div class="q-mb-sm row no-wrap items-center">
+                        <div id="friendId" class="q-mr-sm">
+                            {{ user.friendId }}
+                        </div>
+                        <q-icon
+                            flat
+                            round
+                            name="content_copy"
+                            color="primary"
+                            @click="copyFriendId"
+                            size="1em"
+                        />
+                    </div>
+                    <label class="label" for="friendId">Add a friend</label>
+                    <label class="label sub"
+                        >Paste your friend's ID here to add them as a
+                        friend</label
                     >
-                        <template v-slot:after>
-                            <q-btn
-                                color="primary"
-                                round
-                                icon="person_add"
-                                :disable="!friendToAdd"
-                                @click="addFriend"
-                            />
-                        </template>
-                    </q-input>
-                </div>
-            </section>
-        </main>
-    </div>
-</NuxtLayout>
+                    <div>
+                        <q-input
+                            v-model="friendToAdd"
+                            rounded
+                            outlined
+                            class="q-mt-sm"
+                        >
+                            <template v-slot:after>
+                                <q-btn
+                                    color="primary"
+                                    round
+                                    icon="person_add"
+                                    :disable="!friendToAdd"
+                                    @click="addFriend"
+                                />
+                            </template>
+                        </q-input>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .profile__container {
@@ -116,8 +125,10 @@
 }
 </style>
 <script setup>
+import imageCompression from 'browser-image-compression'
 import { useUserStore } from "@/store/user";
 import { BannerColors } from "@/types/color";
+import {MAX_AVATAR_FILE_SIZE} from '@/constants/supabase'
 const store = useUserStore();
 
 const user = computed(() => {
@@ -176,8 +187,27 @@ const uploading = ref(false);
 const src = ref("");
 const files = ref();
 const path = ref("");
+const fileUpload = ref(null)
+
+const compressFile = async (file) =>  {
+  const options = {
+    maxSizeMB: 0.029,
+    maxWidthOrHeight: 300,
+    useWebWorker: true,
+  }
+  try {
+    return await imageCompression(file, options);
+
+  } catch (error) {
+    console.log(error);
+  }
+
+}
 
 const uploadAvatar = async (evt) => {
+    if (!user.value.id) return;
+      const { clearBanner } = useBanner();
+      clearBanner();
     files.value = evt.target.files;
     uploading.value = true;
     if (!files.value || files.value.length === 0) {
@@ -185,7 +215,15 @@ const uploadAvatar = async (evt) => {
         setBanner("You must select an image to upload.", BannerColors.Negative);
     }
 
-    const file = files.value[0];
+    let file = files.value[0];
+    file = await compressFile(file)
+    if (file.size > MAX_AVATAR_FILE_SIZE) {
+        const {setBanner} = useBanner();
+        setBanner('Image is too large.', BannerColors.Negative)
+        uploading.value = false;
+        fileUpload.value.value = ''
+        return;
+    }
     const fileExt = file.name.split(".").pop();
     path.value = `${Math.random()}.${fileExt}`;
     const { client, fetchHandler } = useSupabaseFetch();
@@ -194,14 +232,13 @@ const uploadAvatar = async (evt) => {
         { onError: "Error uploading file." }
     );
 
-    console.log("uploaded: ", data);
     if (data) {
         const { data: addAvatarData } = await fetchHandler(
             () =>
                 client
                     .from("profiles")
                     .update({ avatar_url: path.value })
-                    .eq("id", user.id),
+                    .eq("id", user.value.id),
             { onError: "Error setting avatar for profile" }
         );
         if (addAvatarData) {

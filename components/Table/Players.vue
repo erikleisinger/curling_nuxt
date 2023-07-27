@@ -82,6 +82,7 @@ const loadPlayers = async (force: boolean = false) => {
 onBeforeMount(async () => {
     const {setLoading} = useLoading();
     setLoading(true)
+    await friendStore.getFriends();
   await loadPlayers();
   setLoading(false)
 });

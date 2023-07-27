@@ -1,7 +1,7 @@
 <template>
     <div
         class="profile-picture row justify-center items-center"
-        :style="{ height: `${size || 1}em`, width: `${size || 1}em` }"
+        :style="{ height: dimensions, width: dimensions }"
     >
         <q-circular-progress
             indeterminate
@@ -27,7 +27,6 @@
             :src="src"
             alt="Avatar"
             class="avatar"
-            :style="{ height: size + 'em', width: size + 'em' }"
         />
     </div>
 </template>
@@ -39,7 +38,9 @@
     position: relative;
     overflow: hidden;
     .avatar {
-        border-radius: 50%;
+        height: unset;
+        width: unset;
+        max-height: v-bind(dimensions);
     }
 }
 </style>
@@ -57,15 +58,15 @@ const downloadImage = async () => {
     downloading.value = true;
     const { client, fetchHandler } = useSupabaseFetch();
 
-    const { data } = await fetchHandler(
-        () => client.storage.from("Avatars").download(props.path),
-        { onError: "Error getting avatar." }
-    );
-    if (data) {
-        src.value = URL.createObjectURL(data);
+    const { data } = await fetchHandler(() => client.storage.from("Avatars").download(props.path));
+    try {
+  src.value = URL.createObjectURL(data);    
+    } catch {
+ downloading.value = false;
     }
-
-    downloading.value = false;
+       downloading.value = false;
+    
+   
 };
 
 const propsPath = computed(() => props.path);
@@ -73,9 +74,9 @@ watch(
     propsPath,
     (v) => {
         if (!v) return;
-        console.log("PROPS PATH CHANGED: ", v);
         downloadImage();
     },
     { immediate: true }
 );
+const dimensions = computed(() => `${props.size}em`)
 </script>

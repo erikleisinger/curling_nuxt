@@ -79,6 +79,7 @@ import { useFriendStore } from "@/store/friends";
 
 import type Team from '@/types/team'
   const teamStore = useTeamStore();
+  const friendStore = useFriendStore();
 
   const teams = computed(() => [...teamStore.teams])
   const loading = ref(false)
@@ -91,6 +92,7 @@ loading.value = false;
 onBeforeMount(async () => {
     const {setLoading} = useLoading();
     setLoading(true)
+     await friendStore.getFriends();
 await loadTeams();
 setLoading(false)
 });
@@ -125,7 +127,6 @@ const deleteTeam = async (team:Team) => {
 
 const userStore = useUserStore();
 
-const friendStore = useFriendStore();
 const {getFriendAvatar} = friendStore;
 
 const userId = computed(() => userStore.id)

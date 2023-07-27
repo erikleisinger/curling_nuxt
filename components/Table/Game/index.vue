@@ -26,12 +26,14 @@ import {useGameStore} from "@/store/games";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useSwipe} from "@vueuse/core";
 import type Game from '@/types/game'
+import { useFriendStore } from "@/store/friends";
 
 const props = defineProps({
   edited: Object,
 })
 const {toTimezone} = useTime();
 
+    const friendStore = useFriendStore();
 
 const loading = ref(false);
 const itemToDelete = ref(null)
@@ -82,10 +84,11 @@ const {direction} = useSwipe(tableArea, {
 });
 
 onBeforeMount(async () => {
+
     const {setLoading} = useLoading();
     setLoading(true)
-    await loadGames(true)
-    console.log(games.value)
+    await friendStore.getFriends();
+    await loadGames(false)
     setLoading(false)
 })
 

@@ -27,6 +27,7 @@
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
     "@vueuse/router": "^10.2.1",
+    "browser-image-compression": "^2.0.2",
     "nuxt-quasar-ui": "^2.0.2",
     "pattern.css": "^1.0.0",
     "pinch-zoom-js": "2.3.4",

@@ -18,7 +18,8 @@ export const useFriendStore = defineStore("friends", {
         }
     },
     actions: {
-        async getFriends() {
+        async getFriends(force = false) {
+            if (Object.keys(this.friends)?.length && !force) return;
             const userStore = useUserStore();
             const { id } = userStore;
             const {client, fetchHandler} = useSupabaseFetch();
