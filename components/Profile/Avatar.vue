@@ -1,6 +1,6 @@
 <template>
     <div
-        class="profile-picture row justify-center items-center"
+        class="profile-picture row justify-center items-center box-shadow--dark"
         :style="{ height: dimensions, width: dimensions }"
     >
         <q-circular-progress
@@ -22,12 +22,14 @@
             color="grey"
         />
 
-        <img
+        <nuxt-img
             v-else
             :src="src"
             alt="Avatar"
+            quality="1"
             class="avatar"
         />
+        <slot/>
     </div>
 </template>
 <style lang="scss" scoped>

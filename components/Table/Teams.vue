@@ -37,8 +37,8 @@
             </div>
           </q-item-label>
             </q-item-section> 
-             <q-item-section side>
-          <div class="text-grey-8" v-if="team.profile_id === userId">
+             <q-item-section side @click.stop.prevent>
+          <div class="text-grey-8" v-if="team.profile_id === userId" >
             <q-btn
               size="12px"
               flat
@@ -56,7 +56,9 @@
               @click.stop.prevent="itemToDelete = team"
             ></q-btn>
           </div>
-           <ProfileAvatar v-else :path="getFriendPath(team.profile_id)" size="2"/>
+           <ProfileAvatar v-else :path="getFriendPath(team.profile_id)" size="2"  >
+            <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Team belongs to <span class="text-bold">{{friendStore.getFriendUsername(team.profile_id)}}</span></q-tooltip>
+           </ProfileAvatar>
         </q-item-section>
       </q-item>
      </q-list>

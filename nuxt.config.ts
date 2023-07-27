@@ -26,6 +26,9 @@ export default defineNuxtConfig({
         defaultLocale: "en",
     },
     devtools: { enabled: false },
+    esbuild: {
+        pure: ['console.log'],
+      },
     quasar: {
         cssAddon: true,
         extras: {
@@ -57,6 +60,7 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "dayjs-nuxt",
         "@vite-pwa/nuxt",
+        '@nuxt/image',
     ],
     pwa: {
         registerType: 'autoUpdate',
@@ -78,7 +82,7 @@ export default defineNuxtConfig({
             ],
         },
         devOptions: {
-            enabled: true,
+            enabled: false,
             suppressWarnings: true,
             navigateFallbackAllowlist: [/^\/$/],
             type: 'module',

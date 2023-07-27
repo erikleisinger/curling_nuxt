@@ -16,13 +16,13 @@
           </div>
         </q-item-section>
       </q-item>
-      <q-item clickable v-ripple v-for="player in players" :key="player.id" :to="`/stats/player/${player.id}`">
+      <q-item  :to="`/stats/player/${player.id}`" v-ripple v-for="player in players" :key="player.id" class="items-center row">
         <q-item-section>
-          <q-item-label>{{ player.name }}</q-item-label>
+          <q-item-label class=" row items-center">{{ player.name }}</q-item-label>
           <q-item-label caption> </q-item-label>
         </q-item-section>
-        <q-item-section side>
-          <div class="text-grey-8" v-if="player.profile_id === userId">
+        <q-item-section side @click.stop.prevent>
+          <div class="text-grey-8 row no-wrap" >
             <q-btn
               size="12px"
               flat
@@ -30,6 +30,7 @@
               round
               icon="edit"
               @click.stop.prevent="edit(player)"
+              v-if="player.profile_id === userId"
             ></q-btn>
             <q-btn
               size="12px"
@@ -38,9 +39,15 @@
               round
               icon="delete"
               @click.stop.prevent="itemToDelete = player"
+              v-if="player.profile_id === userId"
             ></q-btn>
+            <ProfileAvatar v-if="player.profile_id !== userId" :path="getFriendAvatar(player.profile_id)" size="2">
+             <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Player belongs to <span class="text-bold">{{friendStore.getFriendUsername(player.profile_id)}}</span></q-tooltip>
+          </ProfileAvatar>
           </div>
-          <ProfileAvatar v-else :path="getFriendAvatar(player.profile_id)" size="2"/>
+          
+       
+              
         </q-item-section>
       </q-item>
     </q-list>

@@ -10,7 +10,7 @@ export const useFriendStore = defineStore("friends", {
     getters: {
         getFriend() {
             return (id) => {
-                return state.friends[id];
+                return this.friends[id];
             }
         },
         getFriendAvatar() {
@@ -20,7 +20,7 @@ export const useFriendStore = defineStore("friends", {
         },
         getFriendUsername()  {
             return (id) => {
-                return state.friends[id]?.username;
+                return this.friends[id]?.username;
             }
         }
     },

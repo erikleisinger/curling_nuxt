@@ -1,6 +1,6 @@
 <template>
     <NuxtLayout>
-        <div class="profile__container items-center">
+        <div class="profile__container items-center" ref="profileContainer">
             <header class="q-pa-lg column justify-center items-center">
                 <ProfileAvatar
                     :path="user.avatarUrl"
@@ -48,7 +48,7 @@
                         >Paste your friend's ID here to add them as a
                         friend</label
                     >
-                    <div>
+                    <div class="q-mb-lg">
                         <q-input
                             v-model="friendToAdd"
                             rounded
@@ -74,7 +74,7 @@
 <style lang="scss" scoped>
 .profile__container {
     display: grid;
-    grid-template-rows: 40vh 1fr;
+    grid-template-rows: 40vh minmax(400px, 1fr);
     grid-template-columns: 1fr;
     background-color: rgba(246, 247, 252, 0.1);
     color: rgba(246, 247, 252, 1);
@@ -129,6 +129,7 @@ import imageCompression from 'browser-image-compression'
 import { useUserStore } from "@/store/user";
 import { BannerColors } from "@/types/color";
 import {MAX_AVATAR_FILE_SIZE} from '@/constants/supabase'
+import {useScroll, useElementVisibility} from '@vueuse/core'
 const store = useUserStore();
 
 const user = computed(() => {
@@ -248,13 +249,12 @@ const uploadAvatar = async (evt) => {
     uploading.value = false;
 };
 
+const profileContainer = ref(null);
+const visible = useElementVisibility(profileContainer);
+const {y} = useScroll(profileContainer)
 
-
-onBeforeMount(async () => {
-    const {setLoading} = useLoading();
-    setLoading(true);
-    const {getCurrentUser} = store;
-    await getCurrentUser();
-    setLoading(false)
+watch(visible, () => {
+    y.value = 0;
 })
+
 </script>

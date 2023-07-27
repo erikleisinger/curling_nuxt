@@ -1,6 +1,7 @@
 <template>
   <NuxtLayout name="main" v-if="!editing">
     <template v-slot:header>
+        <ProfileExpandable/>
       <q-toolbar
         class="bg-primary text-white q-px-none"
         v-if="$q.screen.lt.md"
@@ -28,14 +29,14 @@
       }`"
     >
       <section class="column" v-if="tab === TAB_VALUES.GAMES" key="games" name="games">
-        <TableGame />
+        <LazyTableGame />
       </section>
       <section class="column" v-else-if="tab === TAB_VALUES.TEAMS" key="teams" name="teams">
-             <TableTeams />
+             <LazyTableTeams />
       </section>
       <section class="column" v-else-if="tab === TAB_VALUES.PLAYERS" key="players">
 
-           <TablePlayers />
+           <LazyTablePlayers />
       </section>
        <!-- <section class="column" v-else-if="tab === TAB_VALUES.SHOT_TYPES" key="shotTypes">
 

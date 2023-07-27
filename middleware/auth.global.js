@@ -4,6 +4,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         return navigateTo('/login')
     }
     if (user && to.fullPath === '/login') {
-        return navigateTo('/')
+        return navigateTo('/gateway')
     }
 })
