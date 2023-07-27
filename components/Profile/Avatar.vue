@@ -38,9 +38,10 @@
     position: relative;
     overflow: hidden;
     .avatar {
-        height: unset;
-        width: unset;
-        max-height: v-bind(dimensions);
+         width:100%;
+    height:100%;
+    object-fit: cover;
+    overflow: hidden;
     }
 }
 </style>

@@ -11,8 +11,8 @@ export const useFriendStore = defineStore("friends", {
         getFriend: (state) => {
             return (id) => state.friends[id];
         },
-        getFriendAvatar: (state) => {
-            return (id) => state.friends[id]?.avatar;
+        getFriendAvatar() {
+            return (id) => this.friends[id]?.avatar;
         },
         getFriendUsername: (state) => {
             return (id) => state.friends[id]?.username;
