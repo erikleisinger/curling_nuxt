@@ -73,10 +73,10 @@ label {
     const forceWithout = ref(null)
     const avgPointsConceded = ref(null);
     const getGameStats = async () => {
-         const client = useSupabaseClient();
-        const {data} = await client.rpc('get_team_stats', {
+         const {client, fetchHandler} = useSupabaseFetch();
+        const {data} = await fetchHandler(() => client.rpc('get_team_stats', {
             team_id_param: route.params.id
-        })
+        }), {onError: 'Error fetching game stats.'})
         const [s] =data;
         stats.value = s
         const {
@@ -112,10 +112,10 @@ label {
     }
 
     const getWinsLossess = async () => {
-         const client = useSupabaseClient();
-        const {data} = await client.rpc('get_team_wins', {
+         const {client, fetchHandler} = useSupabaseFetch();
+        const {data} = await fetchHandler(() => client.rpc('get_team_wins', {
             team_id_param: route.params.id
-        })
+        }), {onError: 'Error fetching data'})
         wins.value = data.wins;
         losses.value = data.losses
         ties.value = data.ties;

@@ -21,8 +21,8 @@ export const useFriendStore = defineStore("friends", {
         async getFriends() {
             const userStore = useUserStore();
             const { id } = userStore;
-            const client = useSupabaseClient();
-            const { data, error } = await client.from("friends").select(`
+            const {client, fetchHandler} = useSupabaseFetch();
+            const { data } = await fetchHandler(() => client.from("friends").select(`
                 profile_id_1 (
                     id,
                     avatar_url,
@@ -33,13 +33,9 @@ export const useFriendStore = defineStore("friends", {
                     avatar_url,
                     username
                 )
-            `);
+            `), {onError: 'Error deleting game'})
          
-            if (error) {
-                const { code } = error;
-                const { setBanner } = useBanner();
-                setBanner(`Error deleting game (code ${code})`, "negative");
-            } else {
+            if (data) {
                 data.forEach((relation) => {
                     const {profile_id_1: profile1, profile_id_2: profile2} = relation;
                     if (profile1.id !== id) {

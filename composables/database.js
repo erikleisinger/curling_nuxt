@@ -13,10 +13,6 @@ export const useDatabase = () => {
     return getUser()?.id;
   }
 
-  const getClient = () => {
-    const client = useSupabaseClient();
-    return client;
-  };
 
   const enumToSelectionOptions = (e) => {
     return Object.entries(e).reduce((all, [key, value]) => {
@@ -30,5 +26,5 @@ export const useDatabase = () => {
       ];
     }, []);
   };
-  return {enumToSelectionOptions, getClient, getQuery, getUser, getUserId};
+  return {enumToSelectionOptions, getQuery, getUser, getUserId};
 };

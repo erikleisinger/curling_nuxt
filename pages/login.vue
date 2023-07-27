@@ -15,11 +15,16 @@
                         <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
                     </q-tabs>
                     <q-card-section class="q-px-lg">
-                         <q-input
+                        <q-input
                             name="first name"
                             label="First name"
                             v-model.trim="firstName"
-                            :rules="[VALIDATION_RULES.REQUIRED, VALIDATION_RULES.MIN_LENGTH(2), VALIDATION_RULES.MAX_LENGTH(25), VALIDATION_RULES.ALPHA_ONLY]"
+                            :rules="[
+                                VALIDATION_RULES.REQUIRED,
+                                VALIDATION_RULES.MIN_LENGTH(2),
+                                VALIDATION_RULES.MAX_LENGTH(25),
+                                VALIDATION_RULES.ALPHA_ONLY,
+                            ]"
                             lazy-rules
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
@@ -30,7 +35,12 @@
                             name="last name"
                             label="Last name"
                             v-model.trim="lastName"
-                            :rules="[VALIDATION_RULES.REQUIRED, VALIDATION_RULES.MIN_LENGTH(2), VALIDATION_RULES.MAX_LENGTH(25), VALIDATION_RULES.ALPHA_ONLY]"
+                            :rules="[
+                                VALIDATION_RULES.REQUIRED,
+                                VALIDATION_RULES.MIN_LENGTH(2),
+                                VALIDATION_RULES.MAX_LENGTH(25),
+                                VALIDATION_RULES.ALPHA_ONLY,
+                            ]"
                             lazy-rules
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
@@ -41,7 +51,12 @@
                             name="username"
                             label="Username"
                             v-model.trim="username"
-                            :rules="[VALIDATION_RULES.REQUIRED, VALIDATION_RULES.MIN_LENGTH(6), VALIDATION_RULES.MAX_LENGTH(16), VALIDATION_RULES.NO_SPECIAL]"
+                            :rules="[
+                                VALIDATION_RULES.REQUIRED,
+                                VALIDATION_RULES.MIN_LENGTH(6),
+                                VALIDATION_RULES.MAX_LENGTH(16),
+                                VALIDATION_RULES.NO_SPECIAL,
+                            ]"
                             lazy-rules
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
@@ -75,7 +90,7 @@
                         <q-input
                             name="password verification"
                             label="Verify your password"
-                               class="q-mt-md"
+                            class="q-mt-md"
                             type="password"
                             v-model="passwordCheck"
                             :rules="[
@@ -164,15 +179,14 @@ const onSubmit = async (e) => {
         });
         if (!error) {
             authStore.setLoggedIn(true);
-            const {setLoading} = useLoading();
-            setLoading(true)
-            const {initData} = useData();
+            const { setLoading } = useLoading();
+            setLoading(true);
+            const { initData } = useData();
             await initData();
-            navigateTo('/')
+            navigateTo("/");
             setTimeout(() => {
- setLoading(false)
-            }, 1000)
-           
+                setLoading(false);
+            }, 1000);
         } else if (error && error.message) {
             setBanner(error.message, BannerColors.Negative);
         } else {
@@ -186,11 +200,11 @@ const onSubmit = async (e) => {
             email: email.value,
             password: password.value,
             options: {
-                emailRedirectTo: 'http://localhost:3000/?newuser=true',
+                emailRedirectTo: "http://localhost:3000/?newuser=true",
                 data: {
                     username: username.value,
                     first_name: firstName.value,
-                    last_name: lastName.value
+                    last_name: lastName.value,
                 },
             },
         });
@@ -207,7 +221,7 @@ const onSubmit = async (e) => {
             passwordCheck.value = null;
             firstName.value = null;
             lastName.value = null;
-            tab.value = TAB_NAMES.SIGN_IN
+            tab.value = TAB_NAMES.SIGN_IN;
             loginForm.value.reset();
         }
     }

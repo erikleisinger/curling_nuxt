@@ -1,0 +1,1 @@
+export const SUPABASE_AUTH_STORAGE_KEY = 'sb-sdiuhlaefpidsreqoknj-auth-token'

@@ -14,16 +14,12 @@ export const useTeamStore = defineStore("team", {
   },
   actions: {
     async deleteTeam(id: number | null) {
-        const client = useSupabaseClient();
-        const {error} = await client
+        const {client, fetchHandler} = useSupabaseFetch();
+        const {data} = await fetchHandler(() => client
           .from(TABLE_NAMES.TEAMS)
           .delete()
-          .eq("id", id);
-        if (error) {
-          const {code} = error || {};
-          const {setBanner} = useBanner();
-          setBanner(`Error deleting team (code ${code})`, "negative");
-        } else {
+          .eq("id", id), {onError: 'Error deleting team'})
+        if (data) {
           const index = this.teams.findIndex((g) => g.id === id);
           if (index === -1) return;
           this.teams.splice(index, 1);
@@ -32,30 +28,26 @@ export const useTeamStore = defineStore("team", {
     async fetchTeams(force = false) {
       if (this.teams.length && !force) return;
 
-      const client = useSupabaseClient<Database>();
-      const {getUser, getQuery} = useDatabase();
-      const {id} = getUser() ?? {};
-      const {data, error} = await client
+      const {client, fetchHandler} = useSupabaseFetch();
+      const { getQuery} = useDatabase();
+    
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.TEAMS)
-        .select(getQuery(TABLE_NAMES.TEAMS))as SupabaseTeamReturn
-        if (!data || error) return;
+        .select(getQuery(TABLE_NAMES.TEAMS)), {onError: 'Error fetching teams'})
+        if (!data) return;
       this.teams = data
       this.sortTeams();
     },
     async insertTeam(team: Team) {
-      const client = useSupabaseClient<Database>();
+        const {client, fetchHandler} = useSupabaseFetch();
       const { getQuery} = useDatabase();
     //   const {id} = getUser() ?? {};
-      const {data, error} = await client
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.TEAMS)
         .upsert(team)
-        .select(getQuery(TABLE_NAMES.TEAMS)) as SupabaseTeamReturn
+        .select(getQuery(TABLE_NAMES.TEAMS)), {onError: 'Error creating team'})
       const [newTeam] = data || [];
-      if (error || !newTeam) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error creating team (code ${code})`, BannerColors.Negative);
-      } else {
+      if (newTeam) {
         const index = this.teams.findIndex((g) => g.id === newTeam.id);
         if (index === -1) {
           this.teams.push(newTeam);

@@ -1,31 +1,32 @@
 <template>
+<NuxtLayout>
     <div class="profile__container items-center">
         <header class="q-pa-lg column justify-center items-center">
-            <ProfileAvatar :path="avatarUrl" :loading="uploading" :size="8"/>
-                <input
-                    type="file"
-                    name="file"
-                    id="file"
-                    class="upload__input"
-                    accept="image/*"
-                    @change="uploadAvatar"
-                    :disabled="uploading"
-                />
-                <label for="file" class="upload__input--label" />
+            <ProfileAvatar :path="user.avatarUrl" :loading="uploading" :size="8" />
+            <input
+                type="file"
+                name="file"
+                id="file"
+                class="upload__input"
+                accept="image/*"
+                @change="uploadAvatar"
+                :disabled="uploading"
+            />
+            <label for="file" class="upload__input--label" />
             <h1 class="q-mt-xs text-black">My Profile</h1>
             <h2>#{{ username }}</h2>
         </header>
         <main class="main-content__wrap">
             <section name="profile information" class="profile__section">
-                <label for="memberSince">Member since</label>
-                <div id="memberSince" class="q-mb-sm">
+                <!-- <label for="memberSince">Member since</label> -->
+                <!-- <div id="memberSince" class="q-mb-sm">
                     {{ toTimezone(created_at) }}
-                </div>
+                </div> -->
                 <label for="timezone">Timezone</label>
-                <div id="timezone" class="q-mb-sm">{{ timezone }}</div>
+                <div id="timezone" class="q-mb-sm">{{ user.timezone }}</div>
                 <label for="friendId">Friend ID</label>
                 <div id="friendId" class="q-mb-sm">
-                    {{ friendId }}
+                    {{ user.friendId }}
                     <q-btn
                         flat
                         round
@@ -59,6 +60,7 @@
             </section>
         </main>
     </div>
+</NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .profile__container {
@@ -115,10 +117,14 @@
 </style>
 <script setup>
 import { useUserStore } from "@/store/user";
+import { BannerColors } from "@/types/color";
 const store = useUserStore();
-const { id, timezone, friendId, username } = store;
 
-const avatarUrl = computed(() => store.avatarUrl)
+const user = computed(() => {
+   const { id, timezone, friendId, username, avatarUrl } = store;
+   return {id, timezone, friendId, username, avatarUrl}
+})
+
 const { toTimezone } = useTime();
 
 const copyFriendId = () => {
@@ -148,14 +154,16 @@ const getError = (msg) => {
 };
 
 const addFriend = async () => {
-    const client = useSupabaseClient();
-    const { error } = await client
-        .from("friends")
-        .insert({ profile_id_1: id, profile_id_2: friendToAdd.value });
+    const { client, fetchHandler } = useSupabaseFetch();
+    const { data } = await fetchHandler(
+        () =>
+            client
+                .from("friends")
+                .insert({ profile_id_1: id, profile_id_2: friendToAdd.value }),
+        { onError: (error) => getError(error.details || error.message) }
+    );
     const { setBanner } = useBanner();
-    if (error) {
-        setBanner(getError(error.details || error.message), "negative");
-    } else {
+    if (data) {
         setBanner("Friend added successfully!", "positive");
         friendToAdd.value = null;
         const { initData } = useData();
@@ -169,36 +177,47 @@ const src = ref("");
 const files = ref();
 const path = ref("");
 
-
-
 const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
-    try {
-        uploading.value = true;
-        if (!files.value || files.value.length === 0) {
-            throw new Error("You must select an image to upload.");
-        }
-
-        const file = files.value[0];
-        const fileExt = file.name.split(".").pop();
-        path.value = `${Math.random()}.${fileExt}`;
-        const client = useSupabaseClient();
-        let { error: uploadError } = await client.storage
-            .from("Avatars")
-            .upload(path.value, file);
-
-        if (uploadError) throw uploadError;
-        await client
-            .from("profiles")
-            .update({ avatar_url: path.value })
-            .eq("id", id);
-
-        store.setAvatar(path.value)
-        
-    } catch (error) {
-        alert(error.message);
-    } finally {
-        uploading.value = false;
+    uploading.value = true;
+    if (!files.value || files.value.length === 0) {
+        const { setBanner } = useBanner();
+        setBanner("You must select an image to upload.", BannerColors.Negative);
     }
+
+    const file = files.value[0];
+    const fileExt = file.name.split(".").pop();
+    path.value = `${Math.random()}.${fileExt}`;
+    const { client, fetchHandler } = useSupabaseFetch();
+    let { data } = await fetchHandler(
+        () => client.storage.from("Avatars").upload(path.value, file),
+        { onError: "Error uploading file." }
+    );
+
+    console.log("uploaded: ", data);
+    if (data) {
+        const { data: addAvatarData } = await fetchHandler(
+            () =>
+                client
+                    .from("profiles")
+                    .update({ avatar_url: path.value })
+                    .eq("id", user.id),
+            { onError: "Error setting avatar for profile" }
+        );
+        if (addAvatarData) {
+            store.setAvatar(path.value);
+        }
+    }
+    uploading.value = false;
 };
+
+
+
+onBeforeMount(async () => {
+    const {setLoading} = useLoading();
+    setLoading(true);
+    const {getCurrentUser} = store;
+    await getCurrentUser();
+    setLoading(false)
+})
 </script>

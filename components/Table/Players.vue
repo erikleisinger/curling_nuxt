@@ -1,4 +1,5 @@
 <template>
+<NuxtLayout>
   <DialogPlayerEditor />
   <q-scroll-area class="col-grow bg-white" ref="tableArea">
     <q-inner-loading
@@ -51,6 +52,7 @@
   >
     Are you sure you want to delete player "{{ itemToDelete.name ?? "N/A" }}"
   </DialogConfirmation>
+</NuxtLayout>
 </template>
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
@@ -77,8 +79,11 @@ const loadPlayers = async (force: boolean = false) => {
   await store.fetchPlayers(force);
   loading.value = false;
 };
-onMounted(async () => {
-  loadPlayers();
+onBeforeMount(async () => {
+    const {setLoading} = useLoading();
+    setLoading(true)
+  await loadPlayers();
+  setLoading(false)
 });
 
 const {togglePlayerDialog} = useEditorStore();

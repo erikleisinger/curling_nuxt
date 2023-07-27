@@ -1,6 +1,5 @@
 <template>
-    <NuxtPage v-if="!globalLoading" />
-    <GlobalLoading infinite v-else />
+    <NuxtPage  />
 </template>
 <style lang="scss">
 #__nuxt {
@@ -8,13 +7,14 @@
 }
 </style>
 <script setup lang="ts">
-import {useRouteQuery} from '@vueuse/router'
-import { useDebounceFn } from "@vueuse/core";
-import { BannerColors } from "@/types/color";
-
-const {globalLoading} = useLoading();
-const initialized = ref(false);
-
+import {useUserStore } from '@/store/user'
+import {PUBLIC_ROUTES} from '@/constants/routes'
+onBeforeMount(async () => {
+    const route = useRoute();
+    if (PUBLIC_ROUTES.includes(route.fullPath)) return;
+    const store = useUserStore();
+    await store.getCurrentUser();
+})
 const client = useSupabaseAuthClient();
 client.auth.onAuthStateChange((_, _session) => {
       if(_session?.access_token) {

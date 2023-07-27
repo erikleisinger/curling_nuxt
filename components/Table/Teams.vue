@@ -1,4 +1,5 @@
 <template>
+<NuxtLayout>
      <DialogTeamEditor/>
   <q-scroll-area class="col-grow bg-white" ref="tableArea" v-if="!loading">
      <q-list bordered separator >
@@ -64,6 +65,7 @@
       <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteTeam(itemToDelete)">
     Are you sure you want to delete team "{{itemToDelete.name ?? 'Unnamed team'}}"
   </DialogConfirmation>
+</NuxtLayout>
 </template>
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
@@ -86,8 +88,11 @@ const loadTeams = async (force:boolean = false) => {
 await teamStore.fetchTeams(force);
 loading.value = false;
 }
-onMounted(() => {
-loadTeams();
+onBeforeMount(async () => {
+    const {setLoading} = useLoading();
+    setLoading(true)
+await loadTeams();
+setLoading(false)
 });
 
 const {toggleTeamDialog} = useEditorStore();

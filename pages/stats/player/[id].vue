@@ -241,10 +241,10 @@ import { usePlayerStore } from "@/store/players";
 const route = useRoute();
 const loading = ref(false);
 
-const client = useSupabaseClient();
-const { data: d } = await client.rpc("get_shot_averages_player", {
+const {client, fetchHandler} = useSupabaseFetch();
+const { data: d } = await fetchHandler(() => client.rpc("get_shot_averages_player", {
     player_id_param: route.params.id,
-});
+}), {onError: 'Error fetching player stats.'})
 const [data] = d || [{}];
 
 const dataMap = {

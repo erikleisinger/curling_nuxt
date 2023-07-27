@@ -129,14 +129,14 @@ export const useSessionStore = defineStore("session", {
     },
     actions: {
         async createEnd(gameId: number, endNo: number) {
-            const client = useSupabaseClient<Database>();
-            const { data, error } = (await client
+            const {client, fetchHandler} = useSupabaseFetch();;
+            const { data} = await fetchHandler(() => client
                 .from(TABLE_NAMES.ENDS)
                 .insert({ game_id: Number(gameId), end_number: Number(endNo) })
                 .select(
                     CUSTOM_QUERIES.GET_END_WITH_SHOTS
-                )) as SupabaseEndReturn;
-            if (error) return null;
+                ), {onError: 'Error creating end'})
+
             const [end] = data;
             return end;
         },
@@ -157,15 +157,15 @@ export const useSessionStore = defineStore("session", {
                 (e) => e.end_number === endNo && e.game_id === gameId
             );
             if (endInStore && !force) return endInStore;
-            const client = useSupabaseClient<Database>();
+            const {client, fetchHandler} = useSupabaseFetch();;
             if (!gameId) return;
             let end;
-            const { data, error } = await client
+            const { data} = await fetchHandler(() => client
                 .from(TABLE_NAMES.ENDS)
                 .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
                 .eq("end_number", endNo)
-                .eq("game_id", gameId);
-            if (!data?.length || error) {
+                .eq("game_id", gameId), {onError: 'Error fetching end'})
+            if (!data?.length) {
                 end = await this.createEnd(gameId, endNo);
             } else {
                 const [fetchedEnd] = data;
@@ -205,8 +205,8 @@ export const useSessionStore = defineStore("session", {
 
             const { shots, id } = end;
             if (!shots.length) {
-                const client = useSupabaseClient();
-                const { data, error } = await client
+                const {client, fetchHandler} = useSupabaseFetch();;
+                const { data} = await fetchHandler(() => client
                     .from(TABLE_NAMES.ENDS)
                     .select(
                         `
@@ -224,7 +224,7 @@ export const useSessionStore = defineStore("session", {
                     )
                     `
                     )
-                    .eq("id", id);
+                    .eq("id", id), {onError: 'Error selecting end'})
                 const [shotsData] = data || [];
                 const { shots }: { shots: Shot[] } = shotsData || {};
                 endShots = shots;
@@ -236,17 +236,9 @@ export const useSessionStore = defineStore("session", {
             });
         },
         async initAllEnds(game_id: number) {
-            const client = useSupabaseClient();
-            const {data, error} = await client.from(TABLE_NAMES.ENDS).select(CUSTOM_QUERIES.GET_END_WITH_SHOTS).eq('game_id', game_id) as SupabaseEndReturn;
-            if (error) {
-                const {code} = error;
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error initializing game: could not init ends (code ${code})`,
-                    BannerColors.Negative
-                );
-                return;
-            }
+            const {client, fetchHandler} = useSupabaseFetch();
+            const {data} = await fetchHandler(() => client.from(TABLE_NAMES.ENDS).select(CUSTOM_QUERIES.GET_END_WITH_SHOTS).eq('game_id', game_id), {onError: 'Error initializing game: could not init ends'})
+            if (!data)return;
             const {ends = [], shots = []} = data?.reduce((all, current : End) => {
                 const {shots: endShots = [], ...rest}: End = current;
                 all.ends.push(rest)
@@ -339,9 +331,9 @@ export const useSessionStore = defineStore("session", {
             if (rockInStore && objTheSame(rockInStore, shot)) return;
             if (!shot.id) delete shot.id;
             this.setLoading(true);
-            const client = useSupabaseClient<Database>();
+            const {client, fetchHandler} = useSupabaseFetch();
             const { getQuery } = useDatabase();
-            const { data, error } = (await client
+            const { data} = await fetchHandler(() => client
                 .from(TABLE_NAMES.SHOTS)
                 .upsert(
                     {
@@ -351,17 +343,8 @@ export const useSessionStore = defineStore("session", {
                     },
                     { onConflict: "end_id, shot_no" }
                 )
-                .select(getQuery(TABLE_NAMES.SHOTS))) as SupabaseShotReturn;
-            if (!data?.length || error) {
-                const { code } = error || {};
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error saving game (code ${code})`,
-                    BannerColors.Negative
-                );
-
-                return;
-            }
+                .select(getQuery(TABLE_NAMES.SHOTS)), {onError: 'Error saving game'})
+            if (!data?.length) return;
             const [savedShot] = data;
             if (!savedShot) return;
             this.insertShot(savedShot);
@@ -381,8 +364,8 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id: number,
             game_id: number
         ) {
-            const client = useSupabaseClient<Database>();
-            const { data, error } = await client.from(TABLE_NAMES.ENDS).upsert(
+            const {client, fetchHandler} = useSupabaseFetch();
+            const { data} = await fetchHandler(() => client.from(TABLE_NAMES.ENDS).upsert(
                 {
                     end_number,
                     scoring_team_id,
@@ -397,16 +380,8 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id,
             points_scored,
             hammer_team_id
-            `);
-            if (error) {
-                const { code } = error || {};
-                const bannerStore = useBannerStore();
-                bannerStore.setText(
-                    `Error updating score (code ${code})`,
-                    BannerColors.Negative
-                );
-                return;
-            }
+            `), {onError: 'Error updating score'})
+            if (!data) return;
             const [end] = data;
             if (!end) return;
             const index = this.ends.findIndex(

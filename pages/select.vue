@@ -17,6 +17,7 @@
         </q-tabs>
       </q-toolbar>
     </template>
+
     <transition-group
       appear
       :enter-active-class="`animated ${

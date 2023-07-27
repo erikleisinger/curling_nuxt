@@ -20,17 +20,13 @@ export const usePlayerStore = defineStore("players", {
   },
   actions: {
     async deletePlayer(id: number | null) {
-      const client = useSupabaseClient();
-      const {data, error} = await client
+      const {client, fetchHandler} = useSupabaseFetch();
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.PLAYERS)
         .delete()
         .eq("id", id)
-        .select();
-      if (error) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error deleting player (code ${code})`, BannerColors.Negative);
-      } else {
+        .select(), {onError: 'Error deleting player.'});
+      if (data) {
         const index = this.players.findIndex((g) => g.id === id);
         if (index === -1) return;
         this.players.splice(index, 1);
@@ -38,37 +34,30 @@ export const usePlayerStore = defineStore("players", {
     },
     async fetchPlayers(force = false) {
       if (this.players.length && !force) return;
-      const client = useSupabaseClient();
-      const {error, data}: SupabasePlayerReturn = await client
+      const {client, fetchHandler} = useSupabaseFetch();
+      const {data} = await fetchHandler(()=> client
         .from(TABLE_NAMES.PLAYERS)
-        .select("*")
-      if (error) {
-        const {setBanner} = useBanner();
-        setBanner("Error getting players.", BannerColors.Negative);
-      } else if (data) {
+        .select("*"), {onError: 'Error getting players'})
+     if (data) {
         this.players = data;
         this.sortPlayers();
       }
     },
 
     async insertPlayer(player: any) {
-      const client = useSupabaseClient();
       const {getUser} = useDatabase();
+      // TODO: Do I need the profile_id here? 
       const {id} = getUser() ?? {};
-      const {data, error}: SupabasePlayerReturn = await client
+      const {client, fetchHandler} = useSupabaseFetch();
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.PLAYERS)
         .upsert({
           ...player,
           profile_id: id,
         })
-        .select();
+        .select(), {onError: 'Error creating player.'});
       const [newPlayer] = data || [];
-      if (error || !newPlayer) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error creating player (code ${code})`, BannerColors.Negative);
-        return null;
-      } else {
+      if (newPlayer) {
         const index = this.players.findIndex((g) => g.id === newPlayer.id);
         if (index === -1) {
           this.players.push(newPlayer);
@@ -77,7 +66,8 @@ export const usePlayerStore = defineStore("players", {
         }
         this.sortPlayers();
         return newPlayer
-      }
+      } 
+      return null;
     },
     resetPlayers() {
         this.players = []

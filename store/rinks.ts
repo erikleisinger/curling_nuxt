@@ -13,16 +13,12 @@ export const useRinkStore = defineStore("rink", {
   },
   actions: {
     async deleteRink(id: number | null) {
-      const client = useSupabaseClient();
-      const {data, error} = await client
+        const {client, fetchHandler} = useSupabaseFetch();;
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.RINKS)
         .delete()
-        .eq("id", id);
-      if (error) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error deleting rink (code ${code})`, BannerColors.Negative);
-      } else {
+        .eq("id", id), {onError: 'Error deleting rink'})
+      if (data) {
         const index = this.rinks.findIndex((g) => g.id === id);
         if (index === -1) return;
         this.rinks.splice(index, 1);
@@ -30,34 +26,24 @@ export const useRinkStore = defineStore("rink", {
     },
     async fetchRinks(force = false) {
       if (this.rinks.length && !force) return;
-      const client = useSupabaseClient();
-      const {error, data}: SupabaseRinkReturn = await client
+      const {client, fetchHandler} = useSupabaseFetch();;
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.RINKS)
-        .select("*")
-      if (error) {
-        const {setBanner} = useBanner();
-        setBanner("Error getting rink.", BannerColors.Negative);
-      } else if (data) {
+        .select("*"), {onError: 'Error getting rink'})
+     if (data) {
         this.rinks = data;
         this.sortRinks();
       }
     },
 
     async insertRink(rink: any) {
-      const client = useSupabaseClient();
-      const {getUser} = useDatabase();
-      const {id} = getUser() ?? {};
-      const {data, error}: SupabaseRinkReturn = await client
+        const {client, fetchHandler} = useSupabaseFetch();;
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.RINKS)
         .upsert(rink)
-        .select();
+        .select(), {onError: 'Error creating rink'})
       const [newRink] = data || [];
-      if (error || !newRink) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error creating rink (code ${code})`, BannerColors.Negative);
-        return null;
-      } else {
+      if (data) {
         const index = this.rinks.findIndex((g) => g.id === newRink.id);
         if (index === -1) {
           this.rinks.push(newRink);

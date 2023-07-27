@@ -51,10 +51,10 @@ const emit = defineEmits(["close", "save"]);
 const stats = ref(null)
 onMounted(async () => {
     if (!props.gameId) return;
-    const client = useSupabaseClient();
-    const {data} = await client.rpc("get_game_stats", {
+    const {client, fetchHandler} = useSupabaseFetch();
+    const {data} = await fetchHandler( () => client.rpc("get_game_stats", {
         game_id_param: props.gameId,
-    });
+    }), {onError: 'Error getting game stats.'})
     stats.value = data[0];
 });
 </script>

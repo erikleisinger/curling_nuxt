@@ -13,16 +13,12 @@ export const useSheetStore = defineStore("sheets", {
   },
   actions: {
     async deleteSheet(id: number | null) {
-      const client = useSupabaseClient();
-      const {data, error} = await client
+        const {client, fetchHandler} = useSupabaseFetch();
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.SHEETS)
         .delete()
-        .eq("id", id);
-      if (error) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error deleting sheet (code ${code})`, BannerColors.Negative);
-      } else {
+        .eq("id", id), {onError: 'Error deleting sheet'})
+      if (data)  {
         const index = this.sheets.findIndex((g) => g.id === id);
         if (index === -1) return;
         this.sheets.splice(index, 1);
@@ -30,32 +26,24 @@ export const useSheetStore = defineStore("sheets", {
     },
     async fetchSheets(force = false) {
       if (this.sheets.length && !force) return;
-      const client = useSupabaseClient();
-      const {error, data}: SupabaseSheetReturn = await client
+      const {client, fetchHandler} = useSupabaseFetch();
+      const { data} = await fetchHandler(() => client
         .from(TABLE_NAMES.SHEETS)
-        .select("*")
-      if (error) {
-        const {setBanner} = useBanner();
-        setBanner("Error getting sheet.", BannerColors.Negative);
-      } else if (data) {
+        .select("*"), {onError: 'Error getting sheets'})
+     if (data) {
         this.sheets = data;
         this.sortSheets();
       }
     },
 
     async insertSheet(sheet: any) {
-      const client = useSupabaseClient();
-      const {data, error}: SupabaseSheetReturn = await client
+        const {client, fetchHandler} = useSupabaseFetch();
+      const {data} = await fetchHandler(() => client
         .from(TABLE_NAMES.SHEETS)
         .upsert(sheet)
-        .select();
+        .select(), {onError: 'Error creating sheet'})
       const [newSheet] = data || [];
-      if (error || !newSheet) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error creating sheet (code ${code})`, BannerColors.Negative);
-        return null;
-      } else {
+      if (newSheet) {
         const index = this.sheets.findIndex((g) => g.id === newSheet.id);
         if (index === -1) {
           this.sheets.push(newSheet);

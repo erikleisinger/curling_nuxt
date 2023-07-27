@@ -23,7 +23,7 @@
     "vue-tsc": "^1.8.3"
   },
   "dependencies": {
-    "@nuxtjs/supabase": "^0.3.7",
+    "@nuxtjs/supabase": "^0.3.8",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
     "@vueuse/router": "^10.2.1",

@@ -1,7 +1,6 @@
 <template>
-
-  <q-scroll-area class="col-grow game-table__container " ref="tableArea" v-if="!loading">
-
+<NuxtLayout>
+  <q-scroll-area class="col-grow game-table__container" ref="tableArea" >
     <q-list bordered separator>
       <q-item clickable @click="toggleGameDialog(null)">
         <q-item-section>
@@ -14,17 +13,11 @@
       <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit" class="q-mt-xl"/>
     </q-list>
   </q-scroll-area>
-  <GlobalLoading infinite v-else/>
   <DialogConfirmation v-if="itemToDelete" @close="itemToDelete = null" @confirm="deleteGame(itemToDelete)">
     Are you sure you want to delete the game "{{itemToDelete.name ?? 'Unnamed game'}}"
   </DialogConfirmation>
+</NuxtLayout>
 </template>
-<style lang="scss">
-    .game-table__container {
-    //     background-color:rgba(246, 247, 252, 0.1);
-    // color:rgba(246, 247, 252, 1);
-    }
-</style>
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
 import {useSessionStore} from "@/store/session";
@@ -49,7 +42,8 @@ const games = computed(() => gameStore.games);
 
 const loadGames = async (force:boolean) => {
   loading.value = true;
-  await gameStore.fetchGames(force);
+
+  await useGameStore().fetchGames(force);
   loading.value = false;
 };
 
@@ -87,8 +81,12 @@ const {direction} = useSwipe(tableArea, {
   },
 });
 
-onMounted(async () => {
+onBeforeMount(async () => {
+    const {setLoading} = useLoading();
+    setLoading(true)
     await loadGames(true)
+    console.log(games.value)
+    setLoading(false)
 })
 
 
