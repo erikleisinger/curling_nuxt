@@ -8,14 +8,20 @@ export const useFriendStore = defineStore("friends", {
         };
     },
     getters: {
-        getFriend: (state) => {
-            return (id) => state.friends[id];
+        getFriend() {
+            return (id) => {
+                return state.friends[id];
+            }
         },
         getFriendAvatar() {
-            return (id) => this.friends[id]?.avatar;
+            return (id) => {
+                return this.friends[id]?.avatar;
+            }
         },
-        getFriendUsername: (state) => {
-            return (id) => state.friends[id]?.username;
+        getFriendUsername()  {
+            return (id) => {
+                return state.friends[id]?.username;
+            }
         }
     },
     actions: {

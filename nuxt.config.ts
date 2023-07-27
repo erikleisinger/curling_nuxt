@@ -1,8 +1,12 @@
+import { VitePWA } from "vite-plugin-pwa";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     app: {
         head: {
-            link: [{ rel: 'stylesheet', href: 'https://unpkg.com/pattern.css' }],
+            link: [
+                { rel: "stylesheet", href: "https://unpkg.com/pattern.css" },
+            ],
             meta: [
                 {
                     name: "viewport",
@@ -52,7 +56,34 @@ export default defineNuxtConfig({
         "nuxt-quasar-ui",
         "@vueuse/nuxt",
         "dayjs-nuxt",
+        "@vite-pwa/nuxt",
     ],
+    pwa: {
+        registerType: 'autoUpdate',
+        manifest: {
+            name: 'Nuxt Vite PWA',
+            short_name: 'NuxtVitePWA',
+          },
+        workbox: {
+            globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+            runtimeCaching: [
+                {
+                    urlPattern: /^https:\/\/(.+)\.supabase\.co\/storage\/v1\/object\/Avatars\/(.+)$/,
+                    // urlPattern: /^https:\/\/(cdn.jsdelivr.net|patak.dev|github.com|avatars.githubusercontent.com)\/.*/i,
+                    handler: 'CacheFirst',
+                    options: {
+                        cacheName: 'avatars'
+                    }
+                },
+            ],
+        },
+        devOptions: {
+            enabled: true,
+            suppressWarnings: true,
+            navigateFallbackAllowlist: [/^\/$/],
+            type: 'module',
+          },
+    },
     ssr: false,
     supabase: {
         url: process.env.SUPABASE_URL,
@@ -60,8 +91,8 @@ export default defineNuxtConfig({
         client: {
             auth: {
                 debug: true,
-            }
-        }
+            },
+        },
     },
     typescript: {
         typeCheck: false,

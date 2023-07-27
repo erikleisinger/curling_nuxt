@@ -56,7 +56,7 @@
               @click.stop.prevent="itemToDelete = team"
             ></q-btn>
           </div>
-           <ProfileAvatar v-else-if="team.profile_id" :path="friendStore.getFriendAvatar(team.profile_id)" size="2"/>
+           <ProfileAvatar v-else :path="getFriendPath(team.profile_id)" size="2"/>
         </q-item-section>
       </q-item>
      </q-list>
@@ -75,11 +75,15 @@ import {useSwipe} from '@vueuse/core'
 import {TABLE_NAMES} from '@/constants/tables'
 import {useUserStore} from '@/store/user'
 import { useFriendStore } from "@/store/friends";
-
-
 import type Team from '@/types/team'
   const teamStore = useTeamStore();
   const friendStore = useFriendStore();
+
+  const getFriendPath = (profile_id:string) => {
+    return friendStore.getFriendAvatar(profile_id)
+
+
+  }
 
   const teams = computed(() => [...teamStore.teams])
   const loading = ref(false)
