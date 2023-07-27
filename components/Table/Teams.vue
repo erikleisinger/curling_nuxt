@@ -56,7 +56,7 @@
               @click.stop.prevent="itemToDelete = team"
             ></q-btn>
           </div>
-           <ProfileAvatar v-else :path="getFriendAvatar(team.profile_id)" size="2"/>
+           <ProfileAvatar v-else-if="team.profile_id" :path="friendStore.getFriendAvatar(team.profile_id)" size="2"/>
         </q-item-section>
       </q-item>
      </q-list>
@@ -93,8 +93,8 @@ onBeforeMount(async () => {
     const {setLoading} = useLoading();
     setLoading(true)
      await friendStore.getFriends();
-await loadTeams();
-setLoading(false)
+     await loadTeams();
+    setLoading(false)
 });
 
 const {toggleTeamDialog} = useEditorStore();
@@ -126,8 +126,6 @@ const deleteTeam = async (team:Team) => {
 }
 
 const userStore = useUserStore();
-
-const {getFriendAvatar} = friendStore;
 
 const userId = computed(() => userStore.id)
 </script>

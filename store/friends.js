@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import { useUserStore } from "@/store/user";
+import {useStorage} from '@vueuse/core'
 export const useFriendStore = defineStore("friends", {
     state: () => {
         return {
-            friends: {},
+            friends: useStorage('friends', {}),
         };
     },
     getters: {
@@ -20,6 +21,7 @@ export const useFriendStore = defineStore("friends", {
     actions: {
         async getFriends(force = false) {
             if (Object.keys(this.friends)?.length && !force) return;
+
             const userStore = useUserStore();
             const { id } = userStore;
             const {client, fetchHandler} = useSupabaseFetch();

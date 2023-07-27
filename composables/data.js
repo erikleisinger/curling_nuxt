@@ -22,7 +22,7 @@ export const useData = () => {
         () => fetchPlayers(true),
         () => fetchGames(true),
         () => getCurrentUser(),
-        () => getFriends(),
+        () => getFriends(true),
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(
