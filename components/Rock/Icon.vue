@@ -5,7 +5,7 @@
             props.disabled ? 'rock-disabled' : '',
             props.selected ? 'selected' : '',
         ]"
-        :style="{ position: draggable ? 'absolute' : 'relative', height: size, width: size}"
+        :style="{ position: draggable ? 'absolute' : 'relative'}"
     >
         <svg width="100%" height="100%" :transform="`${rotation}`">
             <circle
