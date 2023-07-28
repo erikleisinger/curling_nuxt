@@ -43,7 +43,7 @@ const props = defineProps({
 });
 const val = ref(0);
 const { upTick } = useAnimate();
-const { getColor } = useColorr();
+const { getColor } = useColor();
 
 
 const barColor = computed(() => {

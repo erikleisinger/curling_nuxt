@@ -2,14 +2,13 @@
 <NuxtLayout>
   <q-scroll-area class="col-grow game-table__container" ref="tableArea" >
     <q-list bordered separator>
-      <q-item clickable @click="toggleGameDialog(null)">
+      <!-- <q-item clickable to="/creategame" class="bg-amber-7 text-white">
         <q-item-section>
-          <div class="row items-center">
-            <q-icon name="add" size="sm" class="q-mr-xs" />
-            <div>Add new game</div>
+          <div class="row items-center justify-center">
+            <h2 class="text-bold">New game</h2>
           </div>
         </q-item-section>
-      </q-item>
+      </q-item> -->
       <TableGameItem  v-for="game in games" :key="game.id" :game="game" @select="selectGame" @delete="itemToDelete = $event" @edit="edit" class="q-mt-xl"/>
     </q-list>
   </q-scroll-area>

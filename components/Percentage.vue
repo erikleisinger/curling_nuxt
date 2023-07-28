@@ -64,7 +64,7 @@ const right = computed(() => (props.reverse ? "unset" : 0));
 const el = ref(null)
 const targetVisible = useElementVisibility(el)
  const {upTick} = useAnimate();
-     const {getColor} = useColorr();
+     const {getColor} = useColor();
 
 const rendered = ref(false)
 

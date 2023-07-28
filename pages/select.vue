@@ -3,7 +3,7 @@
         <div ref="header" style="z-index:10">
             <ProfileExpandable v-model="expanded" />
             <q-toolbar
-                class="bg-primary text-white q-px-none"
+                class="bg-deep-purple text-white q-px-none"
                 v-if="$q.screen.lt.md"
                 role="navigation"
             >
