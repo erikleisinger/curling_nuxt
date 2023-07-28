@@ -56,9 +56,9 @@
               @click.stop.prevent="itemToDelete = team"
             ></q-btn>
           </div>
-           <ProfileAvatar v-else :path="getFriendPath(team.profile_id)" size="2"  >
+           <LazyProfileAvatar v-else :path="getFriendPath(team.profile_id)" size="2"  delay>
             <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Team belongs to <span class="text-bold">{{friendStore.getFriendUsername(team.profile_id)}}</span></q-tooltip>
-           </ProfileAvatar>
+           </LazyProfileAvatar>
         </q-item-section>
       </q-item>
      </q-list>
@@ -95,13 +95,6 @@ const loadTeams = async (force:boolean = false) => {
 await teamStore.fetchTeams(force);
 loading.value = false;
 }
-onBeforeMount(async () => {
-    const {setLoading} = useLoading();
-    setLoading(true)
-     await friendStore.getFriends();
-     await loadTeams();
-    setLoading(false)
-});
 
 const {toggleTeamDialog} = useEditorStore();
 

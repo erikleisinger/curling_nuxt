@@ -28,6 +28,7 @@
             alt="Avatar"
             quality="1"
             class="avatar"
+            loading="lazy"
         />
         <slot/>
     </div>
@@ -49,6 +50,7 @@
 </style>
 <script setup>
 const props = defineProps({
+    delay: Boolean,
     path: String,
     loading: Boolean,
     size: String,
@@ -75,9 +77,19 @@ const downloadImage = async () => {
 const propsPath = computed(() => props.path);
 watch(
     propsPath,
-    (v) => {
+    async (v) => {
         if (!v) return;
-        downloadImage();
+        // await new Promise(resolve => setTimeout(resolve, 300));
+        if (props.delay) {
+            downloading.value = true;
+ setTimeout(() => {
+  downloadImage();
+        }, 300)
+        } else {
+            downloadImage();
+        }
+       
+      
     },
     { immediate: true }
 );

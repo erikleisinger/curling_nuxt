@@ -58,7 +58,6 @@ import { useUserStore } from "@/store/user";
 const store = useUserStore();
 const avatarUrl = ref("");
 const username = ref("");
-const expanded = ref(false);
 onMounted(() => {
     avatarUrl.value = store.avatarUrl;
     username.value = store.username;
@@ -87,5 +86,20 @@ const {direction} = useSwipe(profileContainer, {
     },
     threshold: 150
     })
+
+const props = defineProps({
+    modelValue: Boolean,
+})
+const emit = defineEmits(['update:model-value'])
+const expanded = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:model-value', val)
+    }
+})
+
+
 
 </script>

@@ -41,9 +41,9 @@
               @click.stop.prevent="itemToDelete = player"
               v-if="player.profile_id === userId"
             ></q-btn>
-            <ProfileAvatar v-if="player.profile_id !== userId" :path="getFriendAvatar(player.profile_id)" size="2">
+            <LazyProfileAvatar v-if="player.profile_id !== userId" :path="getFriendAvatar(player.profile_id)" size="2" delay>
              <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Player belongs to <span class="text-bold">{{friendStore.getFriendUsername(player.profile_id)}}</span></q-tooltip>
-          </ProfileAvatar>
+          </LazyProfileAvatar>
           </div>
           
        
@@ -86,13 +86,6 @@ const loadPlayers = async (force: boolean = false) => {
   await store.fetchPlayers(force);
   loading.value = false;
 };
-onBeforeMount(async () => {
-    const {setLoading} = useLoading();
-    setLoading(true)
-    await friendStore.getFriends();
-  await loadPlayers();
-  setLoading(false)
-});
 
 const {togglePlayerDialog} = useEditorStore();
 
