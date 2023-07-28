@@ -18,5 +18,10 @@ export const useTime = () => {
             return parsed.format(format)
         }
     }
-    return {toTimezone, toUTC}
+
+    const format = (date:string, format:string = 'MMMM D, YYYY h:mm A') => {
+        const dayjs = useDayjs()
+        return dayjs(date).format(format)
+    }
+    return {format, toTimezone, toUTC}
 }

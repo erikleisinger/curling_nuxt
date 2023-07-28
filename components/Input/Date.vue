@@ -1,31 +1,19 @@
 <template>
-    <q-input rounded outlined v-model="val" readonly :name="name" :label="name">
-        <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                    v-model="showDate"
-                >
-                    <q-date
-                        v-model="date"
-                        @update:model-value="selectDate(date)"
-                    />
-                </q-popup-proxy>
-            </q-icon>
-        </template>
-        <q-popup-proxy
-            cover
-            transition-show="scale"
-            transition-hide="scale"
-            v-model="showTime"
-        >
-            <q-time v-model="time" @update:model-value="selectTime" />
+<div>
+    <q-chip clickable icon-right="edit">
+        <div>{{formatted}}</div>
+        <q-popup-proxy cover transition-show="scale" transition-hide="scale" ref="popup">
+            <q-date v-model="val" mask="YYYY-MM-DD HH:mm" @update:model-value="selectDate = false" v-show="selectDate" />
+            <q-time v-model="val" mask="YYYY-MM-DD HH:mm" @update:model-value="endSelection" v-show="!selectDate" :minute-options="[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"/>
         </q-popup-proxy>
-    </q-input>
+    </q-chip>
+    </div>
 </template>
-
+<style lang="scss" scoped>
+.q-chip {
+    margin: unset;
+}
+</style>
 <script setup lang="ts">
 import { ref } from "vue";
 const props = defineProps({
@@ -35,47 +23,32 @@ const props = defineProps({
 
 const val = computed({
     get() {
-        if (props.modelValue) {
-            const split = props.modelValue.split(" ");
-            return `${split[0]} ${split[1]}`;
-        }
-        return null;
+        return props.modelValue;
     },
     set(val) {
-        return `${dateTime.value.date} ${dateTime.value.time}`;
+        return emit("update:modelValue", val);
     },
 });
-const emit = defineEmits(["update:modelValue"]);
-const dateTime = computed(() => ({ time: time.value, date: date.value }));
-const time = ref("");
-const date = ref("");
-const showTime = ref(false);
-const showDate = ref(false);
-const selectDate = (d: string) => {
-    showDate.value = false;
-    showTime.value = true;
-   
-    nextTick(() => {
-          date.value = d;
-    })
-   
-};
-const selectTime = () => {
-    showTime.value = false;
-};
-onMounted(() => {
-    if (props.modelValue) {
-        const split = props.modelValue.split(" ");
-        date.value = split[0];
-        time.value = split[1];
+const selectDate = ref(true)
+const popup = ref(null)
+const formatted = computed(() => {
+    if (!props.modelValue) return 'Select a time';
+    const {format} = useTime();
+    return format(props.modelValue, 'MMM D, YYYY [at] h:mm A')
+});
+
+const selectedMinute = ref(false)
+
+const endSelection = (value: string | null, details:object) => {
+    if (popup.value && selectedMinute.value) {
+        popup.value.hide();
+         selectDate.value = true;
+         selectedMinute.value = false;
+    } else {
+ selectedMinute.value = true;
     }
-    return null;
-});
-watch(
-    dateTime,
-    ({ time, date }) => {
-        emit("update:modelValue", `${date} ${time}`);
-    },
-    { deep: true }
-);
+   
+   
+}
+const emit = defineEmits(["update:modelValue"]);
 </script>

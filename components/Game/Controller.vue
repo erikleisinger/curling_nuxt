@@ -13,7 +13,7 @@
     >
     <q-inner-loading :showing="globalLoading"/>
         <div
-            :style="`position:relative; width: 100%; margin-bottom: 100px`"
+            :style="`position:relative; width: 100%; margin-bottom: 7em`"
             class="col-grow curling-rings__wrap"
         >
             <RockController>
@@ -123,7 +123,8 @@ const cleanShotForCheck = (shot: Shot | null) => {
     Object.keys({
         id: null,
         end_id: null,
-        player_id: null,
+        // TODO: fix this
+        // player_id: null,
         shot_no: null,
         turn: null,
         line: null,
@@ -142,11 +143,13 @@ const cleanShotForCheck = (shot: Shot | null) => {
 };
 
 const unsavedChanges = computed(
-    () =>
-        !objTheSame(
+    () => {
+        return  !objTheSame(
             cleanShotForCheck(editedShot.value),
             cleanShotForCheck(store.currentShot)
         )
+    }
+       
 );
 
 const endOfEndDialog = ref(false)

@@ -29,10 +29,9 @@ export const useTeamStore = defineStore("team", {
       if (this.teams.length && !force) return;
 
       const {client, fetchHandler} = useSupabaseFetch();
-      const { getQuery} = useDatabase();
-    
       const {data} = await fetchHandler(() => client
         .rpc('get_teams_detailed'), {onError: 'Error fetching teams'})
+        console.log('GOT TEAMS: ', data)
         if (!data) return;
       this.teams = data
       this.sortTeams();

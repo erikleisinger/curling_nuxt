@@ -5,6 +5,8 @@ import {usePlayerStore} from "@/store/players";
 import {useShotTypeStore} from "@/store/shotTypes";
 import {useUserStore} from '@/store/user'
 import { useFriendStore } from "@/store/friends";
+import {useRinkStore} from '@/store/rinks'
+import {useSheetStore} from '@/store/sheets'
 
 export const useData = () => {
     const shotTypeStore = useShotTypeStore();
@@ -13,6 +15,8 @@ export const useData = () => {
     const gameStore = useGameStore();
     const friendStore = useFriendStore();
     const userStore = useUserStore();
+    const rinkStore = useRinkStore();
+    const sheetStore = useSheetStore()
   const progress = ref(0)
   const initData = async () => {
       progress.value = 0
@@ -22,6 +26,8 @@ export const useData = () => {
       const {fetchGames} = gameStore
       const {getFriends} = friendStore;
       const {getCurrentUser} = userStore;
+      const {fetchRinks} = rinkStore;
+      const {fetchSheets} = sheetStore;
       const operations = [
         () => fetchShotTypes(true),
         () => fetchTeams(true),
@@ -29,6 +35,8 @@ export const useData = () => {
         () => fetchGames(true),
         () => getCurrentUser(),
         () => getFriends(true),
+        () => fetchRinks(true),
+        () => fetchSheets(true)
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(
@@ -65,7 +73,6 @@ export const useData = () => {
     
         userChecks.forEach((key) => {
             if (!userStore[key]) throw new Error(`Key does not exist on user: ${key}`)
-            console.log('EXISTS: ', userStore[key])
         })
 
         /**
@@ -90,7 +97,6 @@ export const useData = () => {
         }
         if (friendId) {
             if (!friendStore.friends[friendId] || !friendStore.friends[friendId].username) {
-                console.error(friendId)
                 throw new Error('FRIENDS not populated');
             }
             

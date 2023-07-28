@@ -5,7 +5,7 @@
             props.disabled ? 'rock-disabled' : '',
             props.selected ? 'selected' : '',
         ]"
-        :style="{ position: draggable ? 'absolute' : 'relative' }"
+        :style="{ position: draggable ? 'absolute' : 'relative', height: size, width: size}"
     >
         <svg width="100%" height="100%" :transform="`${rotation}`">
             <circle
@@ -99,7 +99,7 @@ const props = defineProps({
     reverse: Boolean,
     overlay: Boolean,
     selected: Boolean,
-    size: Number,
+    size: [Number, String],
 });
 const bg = computed(() => {
     if (props.disabled) return "linear-gradient(to top, #b0b0b0 0%, #b0b0b0 100%)";

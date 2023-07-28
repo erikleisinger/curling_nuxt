@@ -1,4 +1,4 @@
-export const useColorr = () => {
+export const useColor = () => {
     const getColor = (key: string) => {
         return {
             yellow: '#fbc02d',

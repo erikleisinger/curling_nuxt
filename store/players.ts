@@ -2,8 +2,6 @@ import {defineStore} from "pinia";
 import {useStorage} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Player from "@/types/player";
-import type {SupabasePlayerReturn} from "types/fetch";
-import { BannerColors } from "@/types/color";
 
 export const usePlayerStore = defineStore("players", {
   state: () => {
@@ -12,6 +10,11 @@ export const usePlayerStore = defineStore("players", {
     };
   },
   getters: {
+    getPlayer() {
+        return (playerId: number) => {
+            return this.players.find(({id}) => playerId === id)
+        }
+    },
     getPlayerName() {
         return (playerId: number) => {
             return this.players.find(({id}) => playerId === id)?.name || 'Unnamed player'

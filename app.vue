@@ -1,4 +1,5 @@
 <template>
+<VitePwaManifest/>
     <NuxtPage />
 </template>
 <style lang="scss">

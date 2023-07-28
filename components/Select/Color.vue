@@ -1,5 +1,5 @@
 <template>
-  <q-select
+    <!-- <q-select
     rounded
     outlined
     v-model="editedValue"
@@ -22,39 +22,56 @@
     <template v-slot:selected-item="{opt}">
       <RockIcon :color="opt.value" size="sm" style="height:20px; width:20px" :draggable="false" />
     </template>
-  </q-select>
+  </q-select> -->
+    <RockIcon :color="editedValue" :draggable="false" @click="changeColor" />
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import { computed, ref } from "vue";
 const props = defineProps({
+    prevent: {
+        type: Array,
+        default() {
+            return []
+        }
+    },
     modelValue: {
         type: String,
-        default: ''
-    }
+        default: "yellow",
+    },
 });
 const emit = defineEmits(["update:modelValue"]);
 
 const editedValue = computed({
-  get() {
-    return props.modelValue;
-  },
-  set(val) {
-    emit("update:modelValue", val);
-  },
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit("update:modelValue", val);
+    },
 });
 const colorOptions = ref([
-  {
-    value: "red",
-    label: "Red",
-  },
-  {
-    value: "yellow",
-    label: "Yellow",
-  },
     {
-    value: "blue",
-    label: "Blue",
-  },
+        value: "red",
+        label: "Red",
+    },
+    {
+        value: "yellow",
+        label: "Yellow",
+    },
+    {
+        value: "blue",
+        label: "Blue",
+    },
 ]);
+
+const changeColor = () => {
+    const currentColorIndex = colorOptions.value.findIndex(
+        ({ value }) => value === editedValue.value
+    );
+    const next = colorOptions.value.find(({ value }, index) => {
+        return index !== currentColorIndex && !props.prevent.includes(value);
+    });
+    editedValue.value = next?.value || 'red';
+};
 </script>

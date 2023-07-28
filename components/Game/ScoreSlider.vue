@@ -7,11 +7,11 @@
                 transition: all 0.2s;
                 z-index: 150;
                 color: black;
-                height: ${showScoreInput ? '100%' : '100px'}
+                height: ${showScoreInput ? '100%' : '7em'}
             `"
     >
         <div
-            class="player__header box-shadow--dark column"
+            class="player__header box-shadow--dark column no-wrap"
             :class="{
                 [`${currentColor}--background`]: true,
                 showing: showScoreInput,
@@ -57,7 +57,7 @@
         </div>
         <div
             :style="{
-                maxHeight: showScoreInput ? 'calc(100% - 100px)' : '0px',
+                maxHeight: showScoreInput ? 'calc(100% - 7em)' : '0px',
                 height: showScoreInput ? '100%' : '0px',
             }"
             style="transition: all 0.2s; overflow: auto"
@@ -79,7 +79,7 @@
         padding: 8px 16px;
         width: inherit;
         border-radius: inherit;
-        height: 100px;
+        height: 7em;
         top: 0px;
         z-index: 10;
         width: 100%;

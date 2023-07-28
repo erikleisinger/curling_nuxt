@@ -69,14 +69,15 @@ export const useSessionStore = defineStore("session", {
             const currentTeam = teamStore.teams.find(
                 (t) => t.id === this.getThrowingTeamId(shotNo)
             );
+            console.log('CURRENT TEAM: ', currentTeam)
             if (shotNo <= 4) {
-                return currentTeam?.lead_player_id?.id ?? null;
+                return currentTeam?.lead_player_id ?? null;
             } else if (shotNo <= 8) {
-                return currentTeam?.second_player_id?.id ?? null;
+                return currentTeam?.second_player_id ?? null;
             } else if (shotNo <= 12) {
-                return currentTeam?.third_player_id?.id ?? null;
+                return currentTeam?.third_player_id ?? null;
             } else if (shotNo <= 16) {
-                return currentTeam?.fourth_player_id?.id ?? null;
+                return currentTeam?.fourth_player_id ?? null;
             }
             return null;
         },

@@ -48,7 +48,7 @@ export default defineNuxtConfig({
                 "slideOutUp",
                 "slideOutDown",
             ],
-            fontIcons: ["material-icons-outlined", "material-symbols-outlined"],
+            fontIcons: ["material-icons-outlined", "material-symbols-outlined", "material-icons"],
         },
         plugins: ["Dialog"],
         sassVariables: true,
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
         "nuxt-quasar-ui",
         "@vueuse/nuxt",
         "dayjs-nuxt",
-        "@vite-pwa/nuxt",
+        // "@vite-pwa/nuxt",
         '@nuxt/image',
     ],
     pwa: {
@@ -81,6 +81,10 @@ export default defineNuxtConfig({
                 },
             ],
         },
+        client: {
+            installPrompt: true,
+        
+          },
         devOptions: {
             enabled: false,
             suppressWarnings: true,
