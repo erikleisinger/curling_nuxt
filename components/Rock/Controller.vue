@@ -248,7 +248,6 @@ onMounted(() => {
     pinch = new PinchZoom(rink, {
         onZoomUpdate: useDebounceFn(onEnd),
         maxZoom: 6,
-        useMouseWheel: true,
     });
 });
 

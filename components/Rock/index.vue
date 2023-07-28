@@ -14,7 +14,7 @@
     :overlay="showNumbers"
     :size="rockDiameter"
   >
-    <div v-if="showNumbers" :style="{transform: `rotate(${props.rotated ? '180' : '0'}deg)`}">{{Math.round(rock.shot_no / 2)}}</div>
+    <div v-if="showNumbers" :style="{transform: `rotate(${props.rotated ? '180' : '0'}deg)`, lineHeight: '0px'}">{{Math.round(rock.shot_no / 2)}}</div>
   </RockIcon>
 </template>
 <style lang="scss">

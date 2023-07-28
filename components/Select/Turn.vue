@@ -63,7 +63,7 @@ const props = defineProps({
     size: {
         type: String,
         default() {
-            return "90px";
+            return "4em";
         },
     },
 });
@@ -79,5 +79,5 @@ const model = computed({
     }
 })
 
-const height = computed(() => props.size || '90px')
+const height = computed(() => props.size || '4em')
 </script>

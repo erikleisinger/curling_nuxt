@@ -5,7 +5,8 @@
 
         :options="drawOptions"
         color="#ba68c8"
-        size="90px"
+        size="4em"
+
     />
     <SelectWheel
         :modelValue="typeHit"
@@ -13,7 +14,7 @@
 
         :options="hitOptions"
         color="#ff4081"
-        size="90px"
+        size="4em"
     />
 </template>
 <script setup>
@@ -41,7 +42,7 @@ const hitOptions = [
     { value: 2, label: "Hit" },
     { value: 15, label: "Roll" },
     { value: 16, label: "Peel" },
-    { value: 17, label: "Runback" },
+    { value: 17, label: "Run" },
 ];
 const drawOptions = [
     { value: 1, label: "Draw" },

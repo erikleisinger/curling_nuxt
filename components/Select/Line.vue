@@ -6,7 +6,7 @@
             @click="model = 0"
             :class="{ selected: model === 0 }"
         >
-            <div class="column items-center justify-center no-wrap">
+            <div class="column items-center justify-center no-wrap text-center">
                 Tight
             </div>
         </div>
@@ -16,7 +16,7 @@
             @click="model = 1"
             :class="{ selected: model === 1 }"
         >
-            <div class="column items-center justify-center no-wrap">
+            <div class="column items-center justify-center no-wrap text-center">
                 On line
             </div>
         </div>
@@ -25,7 +25,7 @@
             @click="model = 2"
             :class="{ selected: model === 2 }"
         >
-            <div class="column items-center justify-center no-wrap">
+            <div class="column items-center justify-center no-wrap text-center">
                 Wide
             </div>
         </div>
@@ -72,7 +72,7 @@
     size: {
         type: String,
         default() {
-            return "90px";
+            return "4em";
         },
     },
 

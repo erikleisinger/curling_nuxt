@@ -69,14 +69,12 @@
         height: inherit;
         width: inherit;
         position: absolute;
-        left: -1px;
+        left: 0px;
         top: 0;
         right: 0;
         margin: auto;
         z-index: 1;
         border-radius: 50%;
-        font-size: 90%;
-        text-align: center;
         font-weight: 600;
     }
 }

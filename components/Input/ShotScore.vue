@@ -35,7 +35,7 @@ const emit = defineEmits(['update:modelValue'])
             emit('update:modelValue', val)
         }
     })
-    const ratingColors = [ 'blue-5', 'blue-5', 'blue-5', 'amber-5',   ]
+    const ratingColors = [ 'blue-5', 'blue-5', 'blue-5', 'blue-5',   ]
     const label = computed(() => {
         if (ratingModel.value == null) return ''
         return {

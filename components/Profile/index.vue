@@ -2,7 +2,9 @@
     <NuxtLayout>
         <div class="profile__container items-center" ref="profileContainer">
             <!-- <div class="profile--wrap"> -->
-            <header class="column justify-center items-center profile__header col-grow">
+            <header
+                class="column justify-center items-center profile__header col-grow"
+            >
                 <ProfileAvatar
                     :path="user.avatarUrl"
                     :loading="uploading"
@@ -18,9 +20,12 @@
                         :disabled="uploading"
                         ref="fileUpload"
                     />
-                    <label for="file" class="upload__input--label row justify-center items-center" >
-                        <q-icon name="edit"  class="icon"/>
-                    </label>    
+                    <label
+                        for="file"
+                        class="upload__input--label row justify-center items-center"
+                    >
+                        <q-icon name="edit" class="icon" />
+                    </label>
                 </ProfileAvatar>
 
                 <h1 class="text-black text-bold">My Profile</h1>
@@ -31,7 +36,7 @@
             <main class="main-content__wrap">
                 <section name="timezone" class="section">
                     <label for="timezone" class="label">Timezone</label>
-                    <div id="timezone" >{{ user.timezone }}</div>
+                    <div id="timezone">{{ user.timezone }}</div>
                 </section>
                 <section name="timezone" class="section">
                     <label for="friendId" class="label">Friend ID</label>
@@ -81,18 +86,14 @@
 </template>
 <style lang="scss" scoped>
 .profile__container {
-  
-    // height: calc(100vh - 50px);
     height: calc(100vh - (64px + 0.75 * 1em * 2));
     height: calc(var(--vh, 1vh) * 100 - (64px + 0.75 * 1em * 2));
     overflow: auto;
-    // .profile--wrap  {
-        // min-height: calc(618px + 250px);
-     .profile__header {
+    .profile__header {
         position: relative;
         z-index: 1;
-        padding: var(--space-xl)!important;
-    
+        padding: var(--space-xl) !important;
+
         h1 {
             margin-top: var(--space-sm);
         }
@@ -111,12 +112,11 @@
             width: 100%;
             border-radius: 50%;
             .icon {
-                font-size: var(--text-lg)
+                font-size: var(--text-lg);
             }
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
-    // }
-    }   
+    }
     .main-content__wrap {
         background-color: white;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -130,7 +130,10 @@
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
-            margin-bottom: var(--space-md);
+
+            &:not(:last-child) {
+                margin-bottom: var(--space-md);
+            }
             .label {
                 font-weight: bold;
                 margin-bottom: var(--space-xxxxs);
@@ -167,8 +170,8 @@ const { toTimezone } = useTime();
 
 const copyFriendId = () => {
     navigator.clipboard.writeText(friendId);
-    const {setBanner} = useBanner();
-    setBanner('ID copied', BannerColors.Primary)
+    const { setBanner } = useBanner();
+    setBanner("ID copied", BannerColors.Primary);
 };
 
 const friendToAdd = ref(null);

@@ -1,6 +1,6 @@
 <template>
     <div
-        style="position: relative; width: fit-content"
+        style="position: relative; font-size: 1.5em"
         class="row justify-center items-center"
         :style="{ height: size, width: size }"
     >
@@ -30,6 +30,7 @@
                     <div
                         :style="{
                             fontWeight: modelValue === 0 ? 'bold' : '300',
+                           
                         }"
                     >
                         {{ options[0] && options[0].label }}
@@ -86,6 +87,7 @@
     transition: all 0.1s;
     z-index: 3;
     touch-action: none;
+   
 
     .option__center {
         height: 50%;
@@ -104,6 +106,8 @@
         color: v-bind(color);
         background-color: white;
         border-width: 3px;
+           font-size: 0.9em;
+
 
         &.selected {
             color: white !important;
@@ -137,15 +141,17 @@
         border: 1px solid;
         overflow: hidden;
         z-index: 0;
-        transition: all 0.1s linear;
+        transition: all 0.05s linear;
         height: 100%;
         width: 100%;
+      
         .option {
             z-index: 2;
             border: 0px solid;
             border-color: inherit;
             color: v-bind(color);
-            font-size: 100%;
+
+               font-size: 0.7em;
             display: flex;
             justify-content: center;
             align-items: center;

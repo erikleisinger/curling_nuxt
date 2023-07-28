@@ -1,31 +1,31 @@
 <template>
-    <section class="score-container__wrap q-mb-lg">
+    <section class="score-container__wrap" >
         <section class="row justify-start items-center score__container">
-            <div class="column col-12 no-wrap q-px-lg">
-                <label><h1>Turn</h1></label>
+            <div class="column col-12 no-wrap input__section">
+                <label class="type__label">Turn</label>
                 <SelectTurn class="justify-around" v-model="editedShot.turn" />
             </div>
-            <div class="column col-12 no-wrap q-px-lg">
-                <label><h1>Type</h1></label>
+            <div class="column col-12 no-wrap input__section">
+                <label class="type__label">Type</label>
                 <div class="row justify-around items-center">
                     <SelectShotType v-model="editedShot.type_id" />
                 </div>
             </div>
 
-            <div class="column col-12 no-wrap q-px-lg">
-                <label><h1>Score </h1></label>
+            <div class="column col-12 no-wrap input__section score" >
+                <label class="type__label">Score </label>
                 <InputShotScore v-model="editedShot.score" class="justify-around" />
             </div>
         </section>
-        <section class="q-px-lg row justify-start items-start">
-            <div class="column col-12 no-wrap">
-                <label><h1>Line</h1></label>
+        <section class="row justify-start items-start line">
+            <div class="column col-12 no-wrap input__section">
+                <label class="type__label">Line</label>
                 <div class="row justify-around col-grow items-center">
                     <SelectLine v-model="editedShot.line" />
                 </div>
             </div>
-             <div class="column col-12 no-wrap q-mt-lg">
-                <label><h1>Notes</h1></label>
+             <div class="column col-12 no-wrap input__section">
+                <label class="type__label">Notes</label>
                  <q-input
                 class="col-12"
                 type="textarea"
@@ -49,8 +49,24 @@
     font-family: "Montserrat", sans-serif;
     display: grid;
     grid-template-rows: minmax(100% ,100%) auto;
+    padding-bottom: var(--space-lg);
+    .input__section {
+        padding: 0px var(--space-lg);
+        margin-top: var(--space-lg);
+        &.score {
+            margin-bottom: var(--space-md);
+        }
+        .type__label {
+            font-weight: bold;
+            font-size: var(--text-lg);
+            margin-bottom: var(--space-sm);
+        }
+    }
     h1 {
         font-size: 1.5em;
+    }
+    .line {
+        margin-top: var(--space-xl);
     }
     .score__container {
         height: 100%;
