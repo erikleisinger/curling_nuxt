@@ -1,6 +1,6 @@
 <template>
-    <NuxtLayout name="main" v-if="!editing">
-        <template v-slot:header>
+    <NuxtLayout v-if="!editing">
+        <div ref="header" style="z-index:10">
             <ProfileExpandable v-model="expanded" />
             <q-toolbar
                 class="bg-primary text-white q-px-none"
@@ -24,7 +24,7 @@
                     />
                 </q-tabs>
             </q-toolbar>
-        </template>
+        </div>
 
         <transition-group
             appear
@@ -36,36 +36,29 @@
                 v-if="tab === TAB_VALUES.GAMES"
                 key="games"
                 name="games"
+                :style="{ height: sectionHeight }"
             >
                 <TableGame />
             </section>
+
             <section
                 class="column"
                 v-else-if="tab === TAB_VALUES.TEAMS"
                 key="teams"
                 name="teams"
+                :style="{ height: sectionHeight }"
             >
                 <TableTeams />
             </section>
+
             <section
                 class="column"
                 v-else-if="tab === TAB_VALUES.PLAYERS"
                 key="players"
+                :style="{ height: sectionHeight }"
             >
                 <TablePlayers />
             </section>
-            <!-- <section class="column" v-else-if="tab === TAB_VALUES.SHOT_TYPES" key="shotTypes">
-
-           <TableShotTypes />
-      </section> -->
-            <!-- <section class="column" v-else-if="tab === TAB_VALUES.RINKS" key="rinks">
-
-           <TableRinks />
-      </section>
-       <section class="column" v-else-if="tab === TAB_VALUES.SHEETS" key="sheets">
-
-           <TableSheets />
-      </section> -->
         </transition-group>
     </NuxtLayout>
     <GameEditor v-else />
@@ -137,7 +130,10 @@ onBeforeRouteLeave((to, from, next) => {
             undo();
         }
     } else {
-        next()
+        next();
     }
 });
+const header = ref(null);
+const { height } = useElementSize(header);
+const sectionHeight = computed(() => `calc(100% - ${height.value}px)`);
 </script>

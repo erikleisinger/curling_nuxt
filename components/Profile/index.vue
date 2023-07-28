@@ -30,7 +30,7 @@
             <main class="main-content__wrap">
                 <section name="timezone" class="section">
                     <label for="timezone" class="label">Timezone</label>
-                    <div id="timezone" class="q-mb-sm">{{ user.timezone }}</div>
+                    <div id="timezone" >{{ user.timezone }}</div>
                 </section>
                 <section name="timezone" class="section">
                     <label for="friendId" class="label">Friend ID</label>
@@ -117,9 +117,9 @@
         background-color: white;
         min-height: calc(60vh - 50px);
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        margin: 0 var(--space-sm) 0 var(--space-sm);
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
-        margin: 0px 8px 0px 8px;
         padding: var(--space-lg);
         color: black;
         .section {

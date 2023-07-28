@@ -1,5 +1,5 @@
 <template>
-    <div class="row bg-white full-width q-pa-md row profile--container pretty-shadow" ref="header">
+    <div class="row bg-white full-width q-pa-md row profile--container box-shadow--dark" ref="header">
         <ProfileAvatar
             :path="avatarUrl"
             size="4"
@@ -16,7 +16,7 @@
        
     </div>
      <div
-            class="profile--expandable box-shadow--dark"
+            class="profile--expandable pretty-shadow"
             ref="profileContainer"
             :class="expanded ? 'grow' : 'shrink'"
         >
@@ -26,7 +26,8 @@
 <style lang="scss" scoped>
 .profile--container {
     padding: var(--space-sm);
-    z-index: 10;
+    z-index: 3;
+    position: relative;
 }
 h1.username {
         margin-left: var(--space-sm)!important;

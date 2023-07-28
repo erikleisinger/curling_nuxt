@@ -1,24 +1,24 @@
 <template>
 <NuxtLayout>
   <DialogPlayerEditor />
-  <q-scroll-area class="col-grow bg-white" ref="tableArea">
+  <q-virtual-scroll class="col-grow bg-white" ref="tableArea" :items="players"  v-slot="{ item }" separator virtual-scroll-slice-size="10" virtual-scroll-item-size="48">
     <q-inner-loading
       :showing="loading"
       label="Please wait..."
       color="primary"
     />
-    <q-list bordered separator>
-      <q-item clickable @click="togglePlayerDialog(null)">
+    <!-- <q-list bordered separator> -->
+      <!-- <q-item clickable @click="togglePlayerDialog(null)">
         <q-item-section>
           <div class="row items-center">
             <q-icon name="add" size="sm" class="q-mr-xs" />
             <div>Add new player</div>
           </div>
         </q-item-section>
-      </q-item>
-      <q-item  :to="`/stats/player/${player.id}`" v-ripple v-for="player in players" :key="player.id" class="items-center row">
+      </q-item> -->
+      <q-item  :to="`/stats/player/${item.id}`" v-ripple :key="item.id" class="items-center row">
         <q-item-section>
-          <q-item-label class=" row items-center">{{ player.name }}</q-item-label>
+          <q-item-label class=" row items-center">{{ item.name }}</q-item-label>
           <q-item-label caption> </q-item-label>
         </q-item-section>
         <q-item-section side @click.stop.prevent>
@@ -29,8 +29,8 @@
               dense
               round
               icon="edit"
-              @click.stop.prevent="edit(player)"
-              v-if="player.profile_id === userId"
+              @click.stop.prevent="edit(item)"
+              v-if="item.profile_id === userId"
             ></q-btn>
             <q-btn
               size="12px"
@@ -38,11 +38,11 @@
               dense
               round
               icon="delete"
-              @click.stop.prevent="itemToDelete = player"
-              v-if="player.profile_id === userId"
+              @click.stop.prevent="itemToDelete = item"
+              v-if="item.profile_id === userId"
             ></q-btn>
-            <LazyProfileAvatar v-if="player.profile_id !== userId" :path="getFriendAvatar(player.profile_id)" size="2" delay>
-             <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Player belongs to <span class="text-bold">{{friendStore.getFriendUsername(player.profile_id)}}</span></q-tooltip>
+            <LazyProfileAvatar v-if="item.profile_id !== userId" :path="getFriendAvatar(item.profile_id)" size="2" delay>
+             <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Player belongs to <span class="text-bold">{{friendStore.getFriendUsername(item.profile_id)}}</span></q-tooltip>
           </LazyProfileAvatar>
           </div>
           
@@ -50,8 +50,7 @@
               
         </q-item-section>
       </q-item>
-    </q-list>
-  </q-scroll-area>
+  </q-virtual-scroll>
   <DialogConfirmation
     v-if="itemToDelete"
     @close="itemToDelete = null"
