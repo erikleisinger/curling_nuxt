@@ -1,39 +1,36 @@
 <template>
-    <div class="row header" ref="header">
-        <div class="header q-pa-md row" style="z-index: 3">
-            <ProfileAvatar
-                :path="avatarUrl"
-                size="4"
-                @click="expand"
-                style="z-index: 3"
-            />
-            <div
-                class="col-grow row items-center q-ml-md text-bold"
-                style="font-size: 1.5em; color: black; z-index: 2"
-            >
-                {{ username }}
-            </div>
-        </div>
-        <div class="profile--expandable" ref="profileContainer" :class="expanded ? 'grow' : 'shrink'">
-            <LazyProfile  />
-        </div>
-        <div class="blind" />
+    <div class="row bg-white full-width q-pa-md row profile--container pretty-shadow" ref="header">
+        <ProfileAvatar
+            :path="avatarUrl"
+            size="4"
+            @click="expand"
+            style="z-index: 3"
+        />
+        <h1
+            class="col-grow row items-center text-bold text-black text-lg username"
+            style="z-index: 2"
+        >
+            {{ username }}
+        </h1>
+
+       
     </div>
+     <div
+            class="profile--expandable box-shadow--dark"
+            ref="profileContainer"
+            :class="expanded ? 'grow' : 'shrink'"
+        >
+            <LazyProfile />
+        </div>
 </template>
 <style lang="scss" scoped>
-.header {
-    width: 100%;
-    background-color: white;
+.profile--container {
+    padding: var(--space-sm);
+    z-index: 10;
 }
-.blind {
-    height: 6em;
-    width: 50%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background-color: white;
-}
+h1.username {
+        margin-left: var(--space-sm)!important;
+    }
 .profile--expandable {
     background-color: white;
     transition: all 0.2s;
@@ -41,14 +38,14 @@
     left: 0;
     position: absolute;
     z-index: 2;
-    // overflow:auto;
     &.grow {
-        // transform: v-bind(grow);
-        transform: translateX(0)
+        transform: translateX(0);
+      
     }
     &.shrink {
         transform: translateX(-100vw);
     }
+    
     z-index: 1;
 }
 </style>
@@ -65,41 +62,34 @@ onMounted(() => {
 
 const expand = () => {
     expanded.value = !expanded.value;
-    // navigateTo('/profile')
 };
 
 const header = ref(null);
 const { height } = useElementSize(header);
 
-// const grow = computed(
-//     () => `translateY(100vh) translate(-${height.value / 2 +10}px)`
-// );
-//
-const top = computed(() => `${height.value}px`)
+// 0.75 * 1em is --var(space-sm), *2 for top and bottom padding
+const top = computed(() => `calc(${height.value}px + 0.75 * 1em * 2)`);
 
-const profileContainer = ref(null)
-const {direction} = useSwipe(profileContainer, {
+const profileContainer = ref(null);
+const { direction } = useSwipe(profileContainer, {
     onSwipe: () => {
-        if (direction.value === 'left') {
+        if (direction.value === "left") {
             expanded.value = false;
         }
     },
-    threshold: 150
-    })
+    threshold: 150,
+});
 
 const props = defineProps({
     modelValue: Boolean,
-})
-const emit = defineEmits(['update:model-value'])
+});
+const emit = defineEmits(["update:model-value"]);
 const expanded = computed({
     get() {
-        return props.modelValue
+        return props.modelValue;
     },
     set(val) {
-        emit('update:model-value', val)
-    }
-})
-
-
-
+        emit("update:model-value", val);
+    },
+});
 </script>

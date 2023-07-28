@@ -1,37 +1,41 @@
 <template>
     <NuxtLayout>
         <div class="profile__container items-center" ref="profileContainer">
-            <header class="q-pa-lg column justify-center items-center">
+            <header class="column justify-center items-center profile__header">
                 <ProfileAvatar
                     :path="user.avatarUrl"
                     :loading="uploading"
                     :size="8"
-                />
-                <input
-                    type="file"
-                    name="file"
-                    id="file"
-                    class="upload__input"
-                    accept="image/*"
-                    @change="uploadAvatar"
-                    :disabled="uploading"
-                    ref="fileUpload"
-                />
-                <label for="file" class="upload__input--label" />
-                <h1 class="q-mt-xs text-black">My Profile</h1>
-                <h2>#{{ username }}</h2>
+                >
+                    <input
+                        type="file"
+                        name="file"
+                        id="file"
+                        class="upload__input"
+                        accept="image/*"
+                        @change="uploadAvatar"
+                        :disabled="uploading"
+                        ref="fileUpload"
+                    />
+                    <label for="file" class="upload__input--label row justify-center items-center" >
+                        <q-icon name="edit"  class="icon"/>
+                    </label>    
+                </ProfileAvatar>
+
+                <h1 class="text-black text-bold">My Profile</h1>
+                <h2 class="text-muted text-lg" aria-roledescription="user name">
+                    #{{ user.username }}
+                </h2>
             </header>
             <main class="main-content__wrap">
-                <section name="profile information" class="profile__section">
-                    <!-- <label for="memberSince">Member since</label> -->
-                    <!-- <div id="memberSince" class="q-mb-sm">
-                    {{ toTimezone(created_at) }}
-                </div> -->
+                <section name="timezone" class="section">
                     <label for="timezone" class="label">Timezone</label>
                     <div id="timezone" class="q-mb-sm">{{ user.timezone }}</div>
+                </section>
+                <section name="timezone" class="section">
                     <label for="friendId" class="label">Friend ID</label>
-                    <div class="q-mb-sm row no-wrap items-center">
-                        <div id="friendId" class="q-mr-sm">
+                    <div class="row no-wrap items-center">
+                        <div id="friendId" class="friend__id">
                             {{ user.friendId }}
                         </div>
                         <q-icon
@@ -43,12 +47,14 @@
                             size="1em"
                         />
                     </div>
+                </section>
+                <section name="timezone" class="section">
                     <label class="label" for="friendId">Add a friend</label>
                     <label class="label sub"
                         >Paste your friend's ID here to add them as a
                         friend</label
                     >
-                    <div class="q-mb-lg">
+                    <div>
                         <q-input
                             v-model="friendToAdd"
                             rounded
@@ -74,15 +80,19 @@
 <style lang="scss" scoped>
 .profile__container {
     display: grid;
-    grid-template-rows: 40vh minmax(400px, 1fr);
+    grid-template-rows: 1fr auto;
     grid-template-columns: 1fr;
     background-color: rgba(246, 247, 252, 0.1);
     color: rgba(246, 247, 252, 1);
     height: calc(100vh - 50px);
-    overflow: scroll;
-    header {
+    overflow-y: scroll;
+    .profile__header {
         position: relative;
         z-index: 1;
+        padding: var(--space-xl);
+        h1 {
+            margin-top: var(--space-sm);
+        }
         .upload__input {
             width: 0.1px;
             height: 0.1px;
@@ -93,10 +103,14 @@
         }
         .upload__input--label {
             position: absolute;
-            // background-color:red;
+            background-color: var(--transparent-light);
             height: 100%;
             width: 100%;
             border-radius: 50%;
+            .icon {
+                font-size: var(--text-lg)
+            }
+            color: rgba(255,255,255,0.8);
         }
     }
     .main-content__wrap {
@@ -106,41 +120,51 @@
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
         margin: 0px 8px 0px 8px;
-
-        .profile__section {
-            padding: 32px;
-            color: black;
+        padding: var(--space-lg);
+        color: black;
+        .section {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            margin-bottom: var(--space-md);
             .label {
                 font-weight: bold;
-                // width: 100%;
+                margin-bottom: var(--space-xxxxs);
                 display: block;
+                font-size: var(--text-md);
                 &.sub {
                     font-size: 0.9em;
                     font-style: italic;
                     font-weight: unset;
+                    margin-bottom: var(--space-sm);
                 }
+            }
+            .friend__id {
+                margin-right: var(--space-sm);
             }
         }
     }
 }
 </style>
 <script setup>
-import imageCompression from 'browser-image-compression'
+import imageCompression from "browser-image-compression";
 import { useUserStore } from "@/store/user";
 import { BannerColors } from "@/types/color";
-import {MAX_AVATAR_FILE_SIZE} from '@/constants/supabase'
-import {useScroll, useElementVisibility} from '@vueuse/core'
+import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
+import { useScroll, useElementVisibility } from "@vueuse/core";
 const store = useUserStore();
 
 const user = computed(() => {
-   const { id, timezone, friendId, username, avatarUrl } = store;
-   return {id, timezone, friendId, username, avatarUrl}
-})
+    const { id, timezone, friendId, username, avatarUrl } = store;
+    return { id, timezone, friendId, username, avatarUrl };
+});
 
 const { toTimezone } = useTime();
 
 const copyFriendId = () => {
     navigator.clipboard.writeText(friendId);
+    const {setBanner} = useBanner();
+    setBanner('ID copied', BannerColors.Primary)
 };
 
 const friendToAdd = ref(null);
@@ -188,27 +212,25 @@ const uploading = ref(false);
 const src = ref("");
 const files = ref();
 const path = ref("");
-const fileUpload = ref(null)
+const fileUpload = ref(null);
 
-const compressFile = async (file) =>  {
-  const options = {
-    maxSizeMB: 0.029,
-    maxWidthOrHeight: 300,
-    useWebWorker: true,
-  }
-  try {
-    return await imageCompression(file, options);
-
-  } catch (error) {
-    console.log(error);
-  }
-
-}
+const compressFile = async (file) => {
+    const options = {
+        maxSizeMB: 0.029,
+        maxWidthOrHeight: 300,
+        useWebWorker: true,
+    };
+    try {
+        return await imageCompression(file, options);
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 const uploadAvatar = async (evt) => {
     if (!user.value.id) return;
-      const { clearBanner } = useBanner();
-      clearBanner();
+    const { clearBanner } = useBanner();
+    clearBanner();
     files.value = evt.target.files;
     uploading.value = true;
     if (!files.value || files.value.length === 0) {
@@ -217,12 +239,12 @@ const uploadAvatar = async (evt) => {
     }
 
     let file = files.value[0];
-    file = await compressFile(file)
+    file = await compressFile(file);
     if (file.size > MAX_AVATAR_FILE_SIZE) {
-        const {setBanner} = useBanner();
-        setBanner('Image is too large.', BannerColors.Negative)
+        const { setBanner } = useBanner();
+        setBanner("Image is too large.", BannerColors.Negative);
         uploading.value = false;
-        fileUpload.value.value = ''
+        fileUpload.value.value = "";
         return;
     }
     const fileExt = file.name.split(".").pop();
@@ -251,10 +273,9 @@ const uploadAvatar = async (evt) => {
 
 const profileContainer = ref(null);
 const visible = useElementVisibility(profileContainer);
-const {y} = useScroll(profileContainer)
+const { y } = useScroll(profileContainer);
 
 watch(visible, () => {
     y.value = 0;
-})
-
+});
 </script>

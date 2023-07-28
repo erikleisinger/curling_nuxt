@@ -1,5 +1,7 @@
 
 
+// Utility classes
+
 .blue--background {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='600' height='500' preserveAspectRatio='none' viewBox='0 0 600 500'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1343%26quot%3b)' fill='none'%3e%3crect width='600' height='500' x='0' y='0' fill='rgba(17%2c 101%2c 189%2c 1)'%3e%3c/rect%3e%3cpath d='M0 0L118.36 0L0 240.33z' fill='rgba(255%2c 255%2c 255%2c .1)'%3e%3c/path%3e%3cpath d='M0 240.33L118.36 0L167.57999999999998 0L0 317.61z' fill='rgba(255%2c 255%2c 255%2c .075)'%3e%3c/path%3e%3cpath d='M0 317.61L167.57999999999998 0L307.15 0L0 431.25z' fill='rgba(255%2c 255%2c 255%2c .05)'%3e%3c/path%3e%3cpath d='M0 431.25L307.15 0L480.80999999999995 0L0 467.92z' fill='rgba(255%2c 255%2c 255%2c .025)'%3e%3c/path%3e%3cpath d='M600 500L530.62 500L600 282.1z' fill='rgba(0%2c 0%2c 0%2c .1)'%3e%3c/path%3e%3cpath d='M600 282.1L530.62 500L247.23000000000002 500L600 185.31z' fill='rgba(0%2c 0%2c 0%2c .075)'%3e%3c/path%3e%3cpath d='M600 185.31L247.23000000000002 500L129.97000000000003 500L600 174.05z' fill='rgba(0%2c 0%2c 0%2c .05)'%3e%3c/path%3e%3cpath d='M600 174.05L129.97000000000003 500L110.87000000000003 500L600 97.68z' fill='rgba(0%2c 0%2c 0%2c .025)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1343'%3e%3crect width='600' height='500' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
 }
@@ -22,11 +24,9 @@
 }
 
 
-$rock-red: red;
-$rock-yellow: #ffeb3b;
-$rock-blue: blue;
-$rings-red: #f44336;
+// Colors
 
+$rings-red: #f44336;
 $primary: #1976d2!default;
 $red : #f44336 !default;
 $red-1 : #ffebee !default;
