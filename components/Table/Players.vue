@@ -41,9 +41,9 @@
               @click.stop.prevent="itemToDelete = item"
               v-if="item.profile_id === userId"
             ></q-btn>
-            <!-- <LazyProfileAvatar v-if="item.profile_id !== userId" :path="getFriendAvatar(item.profile_id)" size="2" delay>
+            <LazyProfileAvatar v-if="item.profile_id !== userId" :path="getFriendAvatar(item.profile_id)" size="2" delay>
              <q-tooltip :hide-delay="5000" anchor="center left" self="center right" :offset="[10, 10]">Player belongs to <span class="text-bold">{{friendStore.getFriendUsername(item.profile_id)}}</span></q-tooltip>
-          </LazyProfileAvatar> -->
+          </LazyProfileAvatar>
           </div>
           
        
