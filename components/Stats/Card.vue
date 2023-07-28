@@ -1,5 +1,5 @@
 <template>
-    <div class="stats__card pretty-shadow column justify-center items-center simple-border" :style="{height: size, width: size}">
+    <div class="stats__card pretty-shadow column justify-center items-center simple-border no-wrap" :style="{height: size, width: size}">
         <div class="content">
             <h1>{{props.value}}</h1>
         </div>

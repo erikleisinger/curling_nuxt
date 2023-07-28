@@ -20,7 +20,8 @@
         </q-item-section>
       </q-item> -->
             <!-- <q-item  clickable v-ripple v-for="team in teams" :key="team.id" :to="`/stats/team/${team.id}`"> -->
-            <q-item :key="item.id">
+            <TableTeamItem :key="item.id" :team="item"/>
+            <!-- <q-item :key="item.id">
                 <q-item-section>
                     <q-item-label>{{
                         item.name || "Unnamed item"
@@ -86,7 +87,7 @@
                         >
                     </LazyProfileAvatar>
                 </q-item-section>
-            </q-item>
+            </q-item> -->
             <!-- </q-list> -->
         </q-virtual-scroll>
         <GlobalLoading infinite v-else />

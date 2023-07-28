@@ -1,4 +1,5 @@
 <template>
+
     <q-knob
         show-value
         class="percent-wheel"
@@ -17,6 +18,7 @@
             <div>{{ val.toFixed() }}%</div>
         </div>
     </q-knob>
+
 </template>
 <style lang="scss">
 .percent-wheel {
@@ -42,11 +44,15 @@ const props = defineProps({
 const val = ref(0);
 const { upTick } = useAnimate();
 const { getColor } = useColorr();
-onMounted(() => {
-    upTick(val, props.value, 7);
-});
+
 
 const barColor = computed(() => {
     return getColor(props.color);
 });
+
+const percent = computed(() => props.value)
+watch(percent, (v) => {
+    if (!v) return;
+    upTick(val, v, 7)
+}, {immediate:true})
 </script>

@@ -32,8 +32,7 @@ export const useTeamStore = defineStore("team", {
       const { getQuery} = useDatabase();
     
       const {data} = await fetchHandler(() => client
-        .from(TABLE_NAMES.TEAMS)
-        .select(getQuery(TABLE_NAMES.TEAMS)), {onError: 'Error fetching teams'})
+        .rpc('get_teams_detailed'), {onError: 'Error fetching teams'})
         if (!data) return;
       this.teams = data
       this.sortTeams();
