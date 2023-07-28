@@ -1,7 +1,8 @@
 <template>
     <NuxtLayout>
         <div class="profile__container items-center" ref="profileContainer">
-            <header class="column justify-center items-center profile__header">
+            <!-- <div class="profile--wrap"> -->
+            <header class="column justify-center items-center profile__header col-grow">
                 <ProfileAvatar
                     :path="user.avatarUrl"
                     :loading="uploading"
@@ -74,22 +75,24 @@
                     </div>
                 </section>
             </main>
+            <!-- </div> -->
         </div>
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .profile__container {
-    display: grid;
-    grid-template-rows: 1fr auto;
-    grid-template-columns: 1fr;
-    background-color: rgba(246, 247, 252, 0.1);
-    color: rgba(246, 247, 252, 1);
-    height: calc(100vh - 50px);
-    overflow-y: scroll;
-    .profile__header {
+  
+    // height: calc(100vh - 50px);
+    height: calc(100vh - (64px + 0.75 * 1em * 2));
+    height: calc(var(--vh, 1vh) * 100 - (64px + 0.75 * 1em * 2));
+    overflow: auto;
+    // .profile--wrap  {
+        // min-height: calc(618px + 250px);
+     .profile__header {
         position: relative;
         z-index: 1;
-        padding: var(--space-xl);
+        padding: var(--space-xl)!important;
+    
         h1 {
             margin-top: var(--space-sm);
         }
@@ -112,15 +115,16 @@
             }
             color: rgba(255,255,255,0.8);
         }
-    }
+    // }
+    }   
     .main-content__wrap {
         background-color: white;
-        min-height: calc(60vh - 50px);
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
         margin: 0 var(--space-sm) 0 var(--space-sm);
         border-top-left-radius: 32px;
         border-top-right-radius: 32px;
         padding: var(--space-lg);
+
         color: black;
         .section {
             display: flex;
