@@ -20,7 +20,7 @@
         </q-item-section>
       </q-item> -->
             <!-- <q-item  clickable v-ripple v-for="team in teams" :key="team.id" :to="`/stats/team/${team.id}`"> -->
-            <TableTeamItem :key="item.id" :team="item"/>
+            <TableTeamItem :key="item.id" :team="item" @click="goToStats(item.id)"/>
             <!-- <q-item :key="item.id">
                 <q-item-section>
                     <q-item-label>{{
@@ -161,4 +161,8 @@ const deleteTeam = async (team: Team) => {
 const userStore = useUserStore();
 
 const userId = computed(() => userStore.id);
+
+const goToStats = (id) => {
+    navigateTo(`/stats/team/${id}`)
+}
 </script>
