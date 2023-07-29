@@ -5,7 +5,7 @@
             props.disabled ? 'rock-disabled' : '',
             props.selected ? 'selected' : '',
         ]"
-        :style="{ position: draggable ? 'absolute' : 'relative'}"
+        :style="{ position: draggable ? 'absolute' : 'relative' }"
     >
         <svg width="100%" height="100%" :transform="`${rotation}`">
             <circle
@@ -50,14 +50,14 @@
     aspect-ratio: 1/1;
     overflow: hidden;
     .number-label {
-        color: white;
+        color: v-bind(textColor);
     }
 
     &.rock-disabled {
         color: rgb(206, 206, 206);
         background-color: rgb(206, 206, 206, 0.4);
         .number-label {
-            color: white
+            color: white;
         }
     }
     &.selected {
@@ -81,6 +81,12 @@
 </style>
 <script setup lang="ts">
 const props = defineProps({
+    color: {
+        type: String,
+        default() {
+            return "red";
+        },
+    },
     disabled: Boolean,
     draggable: {
         type: Boolean,
@@ -88,46 +94,51 @@ const props = defineProps({
             return true;
         },
     },
-    color: {
-        type: String,
-        default() {
-            return "red";
-        },
-    },
-    reverse: Boolean,
+    highlight: Boolean,
     overlay: Boolean,
+    reverse: Boolean,
     selected: Boolean,
     size: [Number, String],
 });
 const bg = computed(() => {
-    if (props.disabled) return "linear-gradient(to top, #b0b0b0 0%, #b0b0b0 100%)";
+    if (props.disabled)
+        return "linear-gradient(to top, #b0b0b0 0%, #b0b0b0 100%)";
 
     return (
-        {
+         {
             blue: `${
-                props.overlay
-                    ? "linear-gradient(to top, #2664a3 0%, #2664a3 100%)"
-                    : "linear-gradient(to top, #3790e9 0%, #2e8be9 100%)"
+                props.highlight 
+                ? "linear-gradient(to top, #0ab4fc 0%, #34bffa 100%)"
+                : "linear-gradient(to top, #3790e9 0%, #2e8be9 100%)"
             }`,
             yellow: `${
-                props.overlay
-                    ? "linear-gradient(to top,#b1a326 0%, #b1a326 100%)"
-                    : "linear-gradient(to top, #ffec3d 0%, #f3dc0f 100%)"
+                props.highlight
+                  ? "linear-gradient(to top, #ffec3d 0%, #f3dc0f 100%)"
+                    : "linear-gradient(to top, #deb521 0%, #ffc803 100%)"
             }`,
             red: `${
-                props.overlay
-                    ? "linear-gradient(to top, #9e2624 0%, #9e2624 100%)"
-                    : "linear-gradient(to top, #e53734 0%, #d33131 100%)"
+                props.highlight
+                    // ? "linear-gradient(to top, #ff172a 0%, #ff0318 100%)"
+                    ? "linear-gradient(to top, #fc0505 0%, #fc0505 100%)"
+                    : "linear-gradient(to top, #d91c1c 0%, #c91a1a 100%)"
             }`,
         }[props.color] || "unset"
     );
+});
+
+const textColor = computed(() => {
+    return {
+        blue: "white",
+        yellow: "#570064",
+        red: "white",
+    }[props.color];
 });
 const handleColor = computed(() => {
     if (props.disabled) return "gray";
     return (
         {
             blue: "#003060",
-            yellow: "#837600",
+            yellow: "#19021c",
             red: "#640200",
         }[props.color] || "unset"
     );

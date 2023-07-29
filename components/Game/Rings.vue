@@ -26,7 +26,7 @@ margin:0;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   overscroll-behavior: contain;
-  border-top: 2px solid rgba(0 0 0 / 20%);
+//   border-top: 2px solid rgba(0 0 0 / 20%);
   transform: v-bind(rotation);
   transition: transform 0.3s;
 //   transform: v-bind(computedScale);

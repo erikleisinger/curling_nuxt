@@ -13,9 +13,10 @@
     :selected="isSelected"
     :overlay="showNumbers"
     :size="rockDiameter"
+    :highlight="rock.lying"
   >
     <div v-if="showNumbers" :style="{transform: `rotate(${props.rotated ? '180' : '0'}deg)`, lineHeight: '0px'}">{{Math.round(rock.shot_no / 2)}}</div>
-  </RockIcon>
+   </RockIcon>
 </template>
 <style lang="scss">
 .rock {
@@ -136,9 +137,11 @@ const onDrag = (e: Event) => {
   }
   if (!enableDragging.value) return;
   isDragging.value = true;
-  const {isOutside} = mouse;
+  const {isOutside, elementHeight, elementWidth} = mouse;
+
   frameId = window.requestAnimationFrame(changeRockPosition)
-  emit("outsideBounds", isOutside || !rockVisible.value);
+//   emit("outsideBounds", isOutside || !rockVisible.value);
+ emit("outsideBounds", isOutside);
   isDragging.value = false;
 };
 
@@ -147,7 +150,8 @@ const endDrag = (e: TouchEvent | PointerEvent | MouseEvent) => {
 window.cancelAnimationFrame(frameId)
   enableDragging.value = false;
   const {isOutside} = mouse;
-  if (isOutside || !rockVisible.value) {
+//   if (isOutside || !rockVisible.value) {
+    if (isOutside) {
     emit("remove");
   } else {
     emit("update", {

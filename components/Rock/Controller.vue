@@ -93,8 +93,8 @@
        </div>
         </div>
         <div style="position: relative" class="col-grow">
-        
             <GameRings ref="rink" :rotated="rotated">
+              
                      <div
                     style="
                         height: 100%;
@@ -218,6 +218,7 @@ import PinchZoom from "pinch-zoom-js";
 import { useSessionStore } from "@/store/session";
 import { useUserStore } from "@/store/user";
 import { useEventStore } from "@/store/event";
+import {calculateDistanceToCenter, isRockInRings} from '@/utils/rings'
 
 const userStore = useUserStore();
 
@@ -342,14 +343,35 @@ const save = () => {
 // Raw value of rock_positions, converted from JSON --> Array
 const rockPositions = computed<RockPosition[]>(() => {
     try {
-        return JSON.parse(`${editedShot?.value?.rock_positions}`)?.rocks ?? [];
+       return JSON.parse(`${editedShot?.value?.rock_positions}`)?.rocks ?? [];
     } catch {
         return [];
     }
+    
 });
+
 const rocksInPlay = computed(() => {
     if (!isMounted.value) return [];
-    return rockPositions.value.filter((s: RockPosition) => !s.removed);
+    // return rockPositions.value.filter((s: RockPosition) => !s.removed);
+    let currentlyLying:string | null;
+    let closestLyingIndex = 0
+    let closestNonLyingIndex:number | null; 
+    return rockPositions.value
+    .sort((a,b) => calculateDistanceToCenter(a.x, a.y, height.value, width.value) - calculateDistanceToCenter(b.x, b.y, height.value, width.value))
+    .reduce((all, current, currentIndex, array) => {
+        if (closestNonLyingIndex) return [...all, current]
+        if (!isRockInRings(current.x, current.y, height.value, width.value)) return [...all, current]
+        if (currentIndex === 0) {
+            currentlyLying = current.color;
+            return [...all, {...current, lying: true}]
+        }
+        if (current.color !== currentlyLying && !closestNonLyingIndex) {
+            closestNonLyingIndex = currentIndex;
+            return [...all, current]
+        }
+
+        return [...all, {...current, lying: true}]
+    }, [])
 });
 
 /**
@@ -483,7 +505,7 @@ const onOutsideBounds = (bool: boolean) => {
 };
 
 const curlingRockWrapper = ref(null);
-const { width } = useElementSize(curlingRockWrapper);
+const { width, height } = useElementSize(curlingRockWrapper);
 
 const rockContainerWidth = computed(() => width.value / 3);
 
