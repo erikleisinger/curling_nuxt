@@ -142,11 +142,6 @@ const store = useSessionStore();
 const playerStore = usePlayerStore();
 
 const currentThrower = computed(() => store.getCurrentThrower);
-const currentThrowerName = computed(
-    () =>
-        playerStore.players.find((p) => p.id === currentThrower.value)?.name ??
-        "Unnamed player"
-);
 
 function mapNumber(inputNumber: number) {
     if (
@@ -165,7 +160,7 @@ const end = computed<number>(() => store.end);
 const { capitalizeFirstLetter, formatNumberWithSuffix } = useFormat();
 const footerText = computed(
     () =>
-        `${currentThrowerName.value}'s ${formatNumberWithSuffix(
+        `${currentThrower.value.name}'s ${formatNumberWithSuffix(
             mapNumber(store.shot)
         )}`
 );

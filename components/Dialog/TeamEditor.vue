@@ -69,7 +69,7 @@ import {VALIDATION_RULES} from "@/constants/validation";
 import {TABLE_NAMES} from "@/constants/tables";
 import {useTeamStore} from "@/store/teams";
 import type Team from '@/types/team'
-import type {TeamPlayers} from '@/types/team'
+import type {TeamPlayerPosition} from '@/types/team'
 import type PlayerId from '@/types/player'
 const store = useTeamStore();
 
@@ -80,14 +80,14 @@ const props = defineProps({
 /**
  * BEGIN VALIDATION
  */
-const checkForExistingPlayer = (val:PlayerId, field:TeamPlayers) => {
+const checkForExistingPlayer = (val:PlayerId, field:TeamPlayerPosition) => {
   if (!val) return true;
   return !Object.entries(editedTeam.value).some(([key, value]) => {
     if (key === "id" || key === "name" || key === field) return false;
     return `${value}` === `${val}`;
   });
 };
-const playerRules = (field:TeamPlayers) => {
+const playerRules = (field:TeamPlayerPosition) => {
   return (val:PlayerId) =>
     checkForExistingPlayer(val, field) || "Player already selected";
 };

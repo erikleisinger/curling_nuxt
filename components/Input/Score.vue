@@ -134,41 +134,4 @@ const sessionStore = useSessionStore();
 const save = () => {
     sessionStore.saveShot(editedShot.value);
 };
-
-/**
- * FILTER PLAYERS BY THOSE ON THE CURRENTLY THROWING TEAM
- * IF: props.onlyThrowing = true;
- */
-
-const throwingTeam: any = computed(() =>
-    sessionStore.getThrowingTeamId(sessionStore.shot)
-);
-
-const teamStore = useTeamStore();
-const isPlayerOnCurrentTeam = (player: any) => {
-    const { id } = player;
-    const currentThrowingTeam: any = teamStore.teams.find(
-        (t: any) => t.id === throwingTeam.value
-    );
-    const {
-        lead_player_id,
-        second_player_id,
-        third_player_id,
-        fourth_player_id,
-        fifth_player_id,
-        sixth_player_id,
-        seventh_player_id,
-    } = currentThrowingTeam;
-    return [
-        lead_player_id,
-        second_player_id,
-        third_player_id,
-        fourth_player_id,
-        fifth_player_id,
-        sixth_player_id,
-        seventh_player_id,
-    ].some((p) => p?.id === id);
-};
-
-
 </script>

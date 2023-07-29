@@ -1,15 +1,14 @@
 import { defineStore } from "pinia";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useStorage } from "@vueuse/core";
-import { useBannerStore } from "@/store/banner";
+
 import { useTeamStore } from "@/store/teams";
 import { useGameStore } from "@/store/games";
 import { newShot } from "@/models/shot";
 import type End from "@/types/end";
 import type Shot from "@/types/shot";
 import type Game from "@/types/game";
-import type { Database } from "@/types/supabase";
-import type { SupabaseShotReturn, SupabaseEndReturn } from "types/fetch";
+import type { GamePlayerJunction } from "@/types/game";
 import { BannerColors } from "@/types/color";
 import { CUSTOM_QUERIES } from "@/constants/query";
 
@@ -18,6 +17,7 @@ export const useSessionStore = defineStore("session", {
         end: 1,
         ends: useStorage("ends", [] as End[]),
         game: useStorage("game", {} as Game | null),
+        gamePlayerPositions: useStorage("gamePlayerPositions", {} as GamePlayerJunction),
         loading: false,
         promptScore: false,
         shot: 1,
@@ -32,7 +32,7 @@ export const useSessionStore = defineStore("session", {
                     s.shot_no === this.shot && s.end_id === this.currentEnd?.id
             );
             if (shot) return shot;
-            return newShot({ end_id: this.currentEnd?.id, shot_no: this.shot });
+            return newShot({ end_id: this.currentEnd?.id, shot_no: this.shot, player_id: this.getCurrentThrower.id });
         },
         currentEnd: (state): End | undefined => {
             return state.ends.find(
@@ -50,36 +50,33 @@ export const useSessionStore = defineStore("session", {
                     (s) => s.shot_no === shot_no && s.end_id === end_id
                 );
         },
-        getThrowingTeamId(): (arg: number) => number | null {
+        getThrowingTeam(): (arg: number) => number | null {
             return (shot_no: number) => {
                 if (!this.whoThrowsFirst) return null;
                 if (shot_no % 2 === 0) {
                     return this.whoThrowsFirst === "home"
-                        ? this.game?.away?.id
-                        : this.game?.home?.id;
+                        ? 'away'
+                        : 'home';
                 }
                 return this.whoThrowsFirst === "home"
-                    ? this.game?.home?.id
-                    : this.game?.away?.id;
+                    ? 'home'
+                    : 'away';
             };
         },
-        getCurrentThrower(): number | null {
-            const teamStore = useTeamStore();
+        getCurrentThrower(): {id: number, name: string} {
             const shotNo: number = this.shot;
-            const currentTeam = teamStore.teams.find(
-                (t) => t.id === this.getThrowingTeamId(shotNo)
-            );
-            console.log('CURRENT TEAM: ', currentTeam)
+            const currentTeam = this.getThrowingTeam(shotNo)
+            
             if (shotNo <= 4) {
-                return currentTeam?.lead_player_id ?? null;
+                return this.gamePlayerPositions[`${currentTeam}_lead_id`]
             } else if (shotNo <= 8) {
-                return currentTeam?.second_player_id ?? null;
+                return this.gamePlayerPositions[`${currentTeam}_second_id`]
             } else if (shotNo <= 12) {
-                return currentTeam?.third_player_id ?? null;
+                return this.gamePlayerPositions[`${currentTeam}_third_id`]
             } else if (shotNo <= 16) {
-                return currentTeam?.fourth_player_id ?? null;
+                return this.gamePlayerPositions[`${currentTeam}_fourth_id`]
             }
-            return null;
+            return {id: null, name: null};
         },
         getShotColor() {
             return (shot_no: number) => {
@@ -141,6 +138,15 @@ export const useSessionStore = defineStore("session", {
             const [end] = data;
             return end;
         },
+        endSession() {
+            if (!this.game?.id) return;
+            this.gameNavHistory[this.game.id] = {
+                shot: this.shot,
+                end: this.end,
+                lastPlayed:  Math.floor(new Date().getTime() / 1000),
+            };
+            this.resetSession();
+        },
         async getEnd(
             endNo: number,
             gameId: number | undefined,
@@ -191,6 +197,47 @@ export const useSessionStore = defineStore("session", {
                 this.ends.splice(index, 1, endToInsert);
             }
             return end;
+        },
+        async initGameJunction(game_id: number) {
+            const client = useSupabaseClient();
+            const {data, error} = await client.from(TABLE_NAMES.PLAYER_GAME_JUNCTION).select(`
+            away_lead_id (
+                id,
+                name
+            ),
+            away_second_id (
+                id,
+                name
+            ),
+            away_third_id (
+                id, 
+                name
+            ),
+            away_fourth_id (
+                id, name
+            ),
+            home_lead_id (
+                id,
+                name
+            ),
+            home_second_id (
+                id,
+                name
+            ),
+            home_third_id (
+                id, 
+                name
+            ),
+            home_fourth_id (
+                id,
+                name
+            ),
+            game_id
+            `).eq('game_id', game_id);
+            if (!error) {
+                const [junction] = data;
+                this.gamePlayerPositions = junction;
+            }
         },
         async initEnd(end_number: number, gameId: number | undefined) {
             const end = await this.getEnd(end_number, gameId, true);
@@ -264,6 +311,9 @@ export const useSessionStore = defineStore("session", {
             }
             this.setGame(game);
             const { id: game_id } = this.game!;
+            if (!game_id) throw new Error('no game id')
+
+            await this.initGameJunction(game_id)
 
             if (game_id) {
                 const previousShotEndPosition = this.gameNavHistory[game_id];
@@ -394,15 +444,7 @@ export const useSessionStore = defineStore("session", {
                 this.ends.splice(index, 1, end);
             }
         },
-        endSession() {
-            if (!this.game?.id) return;
-            this.gameNavHistory[this.game.id] = {
-                shot: this.shot,
-                end: this.end,
-                lastPlayed:  Math.floor(new Date().getTime() / 1000),
-            };
-            this.resetSession();
-        },
+
         resetSession() {
             this.game = null;
             this.shots = [];

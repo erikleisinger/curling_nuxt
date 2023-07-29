@@ -1,5 +1,6 @@
 <template>
-    <div class="game-editor__wrap" ref="gameEditor">
+  <GlobalLoading :value="progress - 0.1" :label="message" v-if="loading"/>
+    <div class="game-editor__wrap" ref="gameEditor" v-else>
         <nav
             class="registration__steps row items-center justify-center"
             v-if="!showGameOptions"
@@ -271,8 +272,8 @@
             v-if="showGameOptions"
             class="column justify-center items-center game-options__wrapper"
         >
-            <q-btn @click="initGame('score')" disable>Linescore</q-btn>
-            <q-btn @click="initGame('rock')">Rock chart</q-btn>
+            <q-btn @click="beginGame('score')" disable>Linescore</q-btn>
+            <q-btn @click="beginGame('rock')">Rock chart</q-btn>
         </section>
         <div class="next__container">
             <q-btn
@@ -382,6 +383,7 @@ import { useRinkStore } from "@/store/rinks";
 import { useUserStore } from "@/store/user";
 import { useSheetStore } from "@/store/sheets";
 import { useSwipe, useDebounceFn } from "@vueuse/core";
+import {findTeamPosition } from '@/utils/create-game'
 const dayjs = useDayjs();
 const home_color = ref("yellow");
 const home = ref(null);
@@ -495,209 +497,29 @@ const confirm = () => {
     showGameOptions.value = true;
 };
 
-const findTeamPosition = (position, team) => {
-    const { fifth_player_id, sixth_player_id, seventh_player_id } = team;
-    const preferredPosition = `${position}_player_id`;
+const loading = ref(false)
+const {initGame, progress, message} = useCreateGame();
+const beginGame = async (goTo) =>  {
+    loading.value = true;
+    const gameId = await  initGame({
+        home: home.value,
+        away: away.value,
+        away_color: away_color.value,
+        home_color: home_color.value,
+        awayHammer: awayHammer.value,
+        homeHammer: homeHammer.value,
+        awayPlayers: awayPlayers.value,
+        homePlayers: homePlayers.value,
+        name: name.value,
+        rink: rink.value,
+        sheet: sheet.value,
+        time: time.value
+    })
 
-    let newPosition;
-    if (!team[preferredPosition]) {
-        newPosition = preferredPosition;
-    } else if (!fifth_player_id) {
-        newPosition = "fifth_player_id";
-    } else if (!sixth_player_id) {
-        newPosition = "sixth_player_id";
-    } else if (!seventh_player_id) {
-        newPosition = "seventh_player_id";
-    }
-    return newPosition;
-};
-
-const userStore = useUserStore();
-const createPlayer = async (player, position, team) => {
-    console.log("create player: ", player, "for team: ", team);
-
-    const client = useSupabaseClient();
-    const { label } = player;
-    const { data, error } = await client
-        .from(TABLE_NAMES.PLAYERS)
-        .insert({
-            name: label,
-        })
-        .select("id, name");
-    if (error) throw new Error(`Error creating player '${label}'`);
-    const [newPlayer] = data || [];
-    const { id: playerId } = newPlayer || {};
-    if (!playerId)
-        throw new Error(
-            `Error creating player '${label}': no information from database`
-        );
-
-    return playerId;
-};
-
-const insertPlayerIntoTeam = async (playerId, position, team) => {
-    const newPosition = findTeamPosition(position, team);
-    if (!newPosition) {
-        console.log("CANNOT ADD PLAYER TO TEAM: TEAM FULL");
-        return;
+    if (goTo === "rock") {
+            navigateTo(`/game?id=${gameId}`);
     }
 
-    const client = useSupabaseClient();
-    const { data, error } = await client
-        .from(TABLE_NAMES.TEAMS)
-        .update({ [newPosition]: playerId })
-        .select(
-            `
-    ${newPosition}
-    `
-        )
-        .eq("id", team.id);
-
-    if (error)
-        throw new Error(`Error inserting player into team: ${error.code}`);
-
-    const [newTeam] = data || [];
-    const player = newTeam[newPosition];
-
-    console.log('PLAYER INSERTED: ', player)
-};
-
-
-const initPlayers = async (players, team) => {
-    const { lead, second, third, fourth } = players;
-    let leadId;
-    if (!lead.value) {
-        console.log("CREATE LEAD");
-        leadId = await createPlayer(lead, "lead", team);
-    } else {
-        leadId = lead.value;
-    }
-
-    if (team.lead_player_id !== leadId) {
-        await insertPlayerIntoTeam(leadId, "lead", team);
-    }
-
-    let secondId;
-    if (!second.value) {
-        console.log("CREATE second");
-        secondId = await createPlayer(second, "second", team);
-    } else {
-        secondId = second.value;
-    }
-
-    if (team.second_player_id !== secondId) {
-        await insertPlayerIntoTeam(secondId, "second", team);
-    }
-
-    let thirdId;
-    if (!third.value) {
-        console.log("CREATE THIRD");
-        thirdId = await createPlayer(third, "third", team);
-    } else {
-        thirdId = third.value;
-    }
-
-    if (team.third_player_id !== thirdId) {
-        await insertPlayerIntoTeam(thirdId, "third", team);
-    }
-
-    let fourthId;
-    if (!fourth.value) {
-        console.log("CREATE FOURTH");
-        fourthId = await createPlayer(fourth, "fourth", team);
-    } else {
-        fourthId = fourth.value;
-    }
-
-    if (team.fourth_player_id !== fourthId) {
-        await insertPlayerIntoTeam(fourthId, "fourth", team);
-    }
-};
-
-const createTeam = async (team) => {
-    const { label } = team;
-    const client = useSupabaseClient();
-    const { data, error } = await client
-        .from(TABLE_NAMES.TEAMS)
-        .insert({
-            name: label,
-        })
-        .select(
-            "id, name, lead_player_id, second_player_id, third_player_id, fourth_player_id, fifth_player_id, sixth_player_id, seventh_player_id"
-        );
-    if (error) throw new Error(`Error creating team '${label}'`);
-    const [newTeam] = data || [];
-    if (!newTeam?.id)
-        throw new Error(
-            `Error creating team '${label}': no information from database`
-        );
-    return newTeam;
-};
-
-const createGame = async (newGame) => {
-    const client = useSupabaseClient();
-    const {data, error} = await client.from(TABLE_NAMES.GAMES).insert(newGame).select('id')
-    if (error) throw new Error(`Error creating game: (code ${code})`)
-    const [game] = data || [];
-    const {id} = game;
-    if (!id) throw new Error('Error creating game: no return value')
-    return id;
 }
 
-const initGame = async (goTo) => {
-    //Init players
-
-    // Init teams
-    let homeTeam;
-    if (!home.value.value) {
-        homeTeam = await createTeam(home.value);
-    } else {
-        homeTeam = teamStore.teams.find(({ id }) => id === home.value.value);
-    }
-
-    let awayTeam;
-    if (!away.value.value) {
-        awayTeam = await createTeam(away.value);
-    } else {
-        awayTeam = teamStore.teams.find(({ id }) => id === away.value.value);
-    }
-
-    console.log("HOME TEAM: ", homeTeam);
-
-    console.log("AWAY TEAM: ", awayTeam);
-
-    initPlayers(homePlayers.value, homeTeam);
-    initPlayers(awayPlayers.value, awayTeam);
-    if (!rink.value.value) {
-        console.log("INIT RINK");
-    }
-    if (!sheet.value.value) {
-        console.log("INIT SHEET");
-    }
-    if (!name.value) {
-        console.log("INIT NAME");
-    }
-    const {toUTC, toTimezone} = useTime();
-   
-    const newGame = {
-        home: homeTeam.id,
-        away: awayTeam.id,
-        start_time: toUTC( toTimezone(time.value, null, true)),
-        name: name.value,
-        home_color: home_color.value,
-        away_color: away_color.value,
-        hammer_first_end: awayHammer.value ? awayTeam.id : homeTeam.id,
-
-    }
-
-    const gameId = await createGame(newGame)
-
-    console.log('CREATED GAME: ', gameId)
-
-    if (goTo === 'rock') {
-        navigateTo(`/game?id=${gameId}`)
-    }
-
-    // console.log(rink.value, sheet.value);
-};
 </script>

@@ -1,28 +1,35 @@
-import {BasicPlayer} from '@/types/player'
+import { BasicPlayer } from "@/types/player";
 export interface BasicTeam {
-  id?: number;
-  name: string | null;
+    id?: number;
+    name: string | null;
 }
+export type TeamPosition =
+    | "lead"
+    | "second"
+    | "third"
+    | "fourth"
+    | "fifth"
+    | "sixth"
+    | "seventh";
 
-export enum TeamPlayers {
-  LEAD = "lead_player_id",
-  SECOND = "second_player_id",
-  THIRD = "third_player_id",
-  FOURTH = "fourth_player_id",
-  FIFTH = "fifth_player_id",
-  SIXTH = "sixth_player_id",
-  SEVENTH = "seventh_player_id"
+export type TeamPlayerPosition =
+    | "lead_player_id"
+    | "second_player_id"
+    | "third_player_id"
+    | "fourth_player_id"
+    | "fifth_player_id"
+    | "sixth_player_id"
+    | "seventh_player_id";
 
-}
 interface Team extends BasicTeam {
-  created_at?: string | null;
-  [TeamPlayers.FIFTH]: BasicPlayer | null
-  [TeamPlayers.FOURTH]: BasicPlayer | null
-  [TeamPlayers.LEAD]: BasicPlayer | null
-  profile_id?: string | null;
-  [TeamPlayers.SECOND]: BasicPlayer | null
-  [TeamPlayers.SEVENTH]: BasicPlayer | null
-  [TeamPlayers.SIXTH]: BasicPlayer | null
-  [TeamPlayers.THIRD]: BasicPlayer | null
+    created_at?: string | null;
+    fifth_player_id: BasicPlayer | null;
+    fourth_player_id: BasicPlayer | null;
+    lead_player_id: BasicPlayer | null;
+    profile_id?: string | null;
+    second_player_id: BasicPlayer | null;
+    seventh_player_id: BasicPlayer | null;
+    sixth_player_id: BasicPlayer | null;
+    third_player_id: BasicPlayer | null;
 }
-export default Team
+export default Team;
