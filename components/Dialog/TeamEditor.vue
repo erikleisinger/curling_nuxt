@@ -1,57 +1,14 @@
 <template>
-  <Dialog v-slot="{onDialogOK, onDialogCancel}">
-    <q-form @submit="onSave(onDialogOK)" ref="form">
-      <q-card>
+  <Dialog v-slot="{onDialogOK, onDialogCancel}" style="width: 90vw">
+    <q-form @submit="onSave(onDialogOK)" ref="form" style="width: 90vw">
+      <q-card style="width: 90vw">
+        <q-card-section>
+            <q-card-label>
+                <h1>{{teamName}}</h1>
+            </q-card-label>
+        </q-card-section>
         <q-card-section class="row wrap flex-break">
-            <SelectSearch/>
-          <q-input
-            class="col-12 q-field--with-bottom"
-            v-model="editedTeam.name"
-            label="Team name (optional)"
-            outlined
-            rounded
-            name="name"
-          />
-          <SelectPlayer
-            v-model.number="editedTeam.lead_player_id"
-            label="Lead"
-            name="lead_player_id"
-            :rules="[playerRules('lead_player_id')]"
-            reactive-rules
-            class="col-12"
-          />
-          <SelectPlayer
-            v-model.number="editedTeam.second_player_id"
-            label="Second"
-            name="second_player_id"
-            :rules="[playerRules('second_player_id')]"
-            reactive-rules
-            class="col-12"
-          />
-          <SelectPlayer
-            v-model.number="editedTeam.third_player_id"
-            label="Third"
-            name="third_player_id"
-            :rules="[playerRules('third_player_id')]"
-            reactive-rules
-            class="col-12"
-          />
-          <SelectPlayer
-            v-model.number="editedTeam.fourth_player_id"
-            label="Fourth"
-            name="fourth_player_id"
-            :rules="[playerRules('fourth_player_id')]"
-            reactive-rules
-            class="col-12"
-          />
-          <SelectPlayer
-            v-model.number="editedTeam.fifth_player_id"
-            label="Fifth"
-            name="fifth_player_id"
-            :rules="[playerRules('fifth_player_id')]"
-            reactive-rules
-            class="col-12"
-          />
+           <SelectTeamPlayers v-model="players" color="deepPurple"/>
           
           <!-- <SelectPlayer v-model.number="editedTeam.sixth_player_id" label="Sixth" name="sixth_player_id"/>
               <SelectPlayer v-model.number="editedTeam.seventh_player_id" label="Seventh" name="seventh_player_id"/> -->
@@ -115,10 +72,24 @@ const teamOptions = computed(() => {
     };
   });
 });
+const teamName = ref('')
+
+const setName = (isEdited) => {
+    if (isEdited && editedTeam.value.name) {
+        teamName.value = editedTeam.value.name
+    } else if (isEdited) {
+        teamName.value = 'Edit team'
+    } else {
+        teamName.value = 'New team'
+    }
+}
+
+
 onMounted(() => {
   store.fetchTeams();
   if (props.edited) {
     Object.assign(editedTeam.value, props.edited);
+    setName(true)
   }
 });
 
@@ -130,4 +101,6 @@ const onSave = async (callback: Function) => {
   store.insertTeam(newTeam);
   callback();
 };
+
+const players = ref({})
 </script>

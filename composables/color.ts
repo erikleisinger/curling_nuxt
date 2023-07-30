@@ -6,7 +6,7 @@ export const useColor = () => {
             red: '#e53734',
             purple: '#ab47bc',
             pink: '#f06292',
-            deepPurple: '#7e57c2',
+            deepPurple: '#673ab7',
             green: '#2e7d32',
             lightGreen: '#66bb6a',
             deepGreen: '#1b5e20',

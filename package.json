@@ -30,6 +30,7 @@
     "@nuxtjs/supabase": "^0.3.8",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
+    "@vueuse/components": "^10.2.1",
     "@vueuse/router": "^10.2.1",
     "browser-image-compression": "^2.0.2",
     "nuxt-quasar-ui": "^2.0.2",

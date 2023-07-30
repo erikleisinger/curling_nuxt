@@ -61,6 +61,7 @@ export default defineNuxtConfig({
         "dayjs-nuxt",
         // "@vite-pwa/nuxt",
         '@nuxt/image',
+        // '@vueuse/components'
     ],
     pwa: {
         registerType: 'autoUpdate',

@@ -1,5 +1,5 @@
 <template>
-    <div class="column wrap" style="position: relative">
+    <div class="column wrap" style="position: relative; min-height: 40px" ref="resourceSelect">
         <q-chip
             v-if="selectedItem"
             clickable
@@ -24,11 +24,11 @@
             v-else
         />
         <div
-            class="results__container text-black"  v-if="searchResults.length && !selectedItem" 
+            class="results__container text-black"   v-if="searchResults.length && !selectedItem"
            
         >
 
-            <q-list class="results" separator bordered>
+            <q-list class="results" separator bordered dark>
                 <q-item
                     v-for="(item, index) in searchResults"
                     :key="item.value"
@@ -49,20 +49,28 @@
 </template>
 <style lang="scss" scoped>
 .results__container {
-    position: relative;
+    position: fixed;
     width: 100%;
+    top: v-bind(menuPosY);
+    left: v-bind(menuPosX);
+    max-width: v-bind(maxWidth);
+ 
+    z-index: 50;
+ 
     .results {
         position: absolute;
         top: 0;
         width: 100%;
         overflow: auto;
         z-index: 100;
-        background-color: white;
+        background-color: var(--transparent-heavy);
+           height: v-bind(maxHeight);
+    overflow: auto;
     }
 }
 </style>
 <script setup>
-import { useFocus } from "@vueuse/core";
+import { useFocus, useElementBounding, useWindowSize } from "@vueuse/core";
 import { VALIDATION_RULES } from "@/constants/validation";
 import { useEditorStore } from "@/store/editor";
 
@@ -166,4 +174,11 @@ const computedColor = computed(() => {
 
     return getColor(props.color) || props.color;
 })
+const resourceSelect = ref(null)
+const {x, y, height, width} = useElementBounding(resourceSelect)
+const {height: windowHeight} = useWindowSize();
+const menuPosX = computed(() => `${x.value}px`)
+const menuPosY = computed(() => `${y.value + height.value}px`)
+const maxWidth = computed(() => `${width.value}px`)
+const maxHeight = computed(() => `${windowHeight.value - y.value - height.value - 16}px`)
 </script>

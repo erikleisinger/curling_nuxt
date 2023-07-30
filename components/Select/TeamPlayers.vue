@@ -184,6 +184,13 @@ const options = ref([]);
 
 
 const getOptions = () => {
+    if (!props.teamId) {
+        const playerStore = usePlayerStore();
+        const {formatPlayerForSelection} = useFormat();
+        options.value = playerStore.players.map(formatPlayerForSelection)
+    } else {
+
+    
     const currentTeam = teamStore.teams.find((t) => t.id === props.teamId);
     if (!currentTeam) {
         options.value = [];
@@ -279,6 +286,7 @@ const getOptions = () => {
             value: seventh_player_id,
         },
     ].filter(({ value }) => !!value);
+    }
 }
 
 const id = computed(() => props.teamId);

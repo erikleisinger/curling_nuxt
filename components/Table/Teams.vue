@@ -100,6 +100,7 @@
                 itemToDelete.name ?? "Unnamed team"
             }}"
         </DialogConfirmation>
+        <ButtonBottomDraggable :onClick="toggleTeamDialog" />
     </NuxtLayout>
 </template>
 <script setup lang="ts">
@@ -165,4 +166,12 @@ const userId = computed(() => userStore.id);
 const goToStats = (id) => {
     navigateTo(`/stats/team/${id}`)
 }
+
+const addButton = ref(null);
+const { x, y, style } = useDraggable(addButton, {
+    initialValue: {
+        x: window.innerWidth - 75,
+        y: window.innerHeight - 75,
+    },
+});
 </script>
