@@ -33,6 +33,8 @@
         value: Number
     })
     const goBack = () => {
-        reloadNuxtApp('/')
+        reloadNuxtApp({
+            path: '/'
+        })
     }
 </script>

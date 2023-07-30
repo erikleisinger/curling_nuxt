@@ -70,16 +70,20 @@ export const useSessionStore = defineStore("session", {
         getCurrentThrower(): { id: number; name: string } {
             const shotNo: number = this.shot;
             const currentTeam = this.getThrowingTeam(shotNo);
-
-            if (shotNo <= 4) {
-                return this.gamePlayerPositions[`${currentTeam}_lead_id`];
-            } else if (shotNo <= 8) {
-                return this.gamePlayerPositions[`${currentTeam}_second_id`];
-            } else if (shotNo <= 12) {
-                return this.gamePlayerPositions[`${currentTeam}_third_id`];
-            } else if (shotNo <= 16) {
-                return this.gamePlayerPositions[`${currentTeam}_fourth_id`];
+            try {
+                if (shotNo <= 4) {
+                    return this.gamePlayerPositions[`${currentTeam}_lead_id`];
+                } else if (shotNo <= 8) {
+                    return this.gamePlayerPositions[`${currentTeam}_second_id`];
+                } else if (shotNo <= 12) {
+                    return this.gamePlayerPositions[`${currentTeam}_third_id`];
+                } else if (shotNo <= 16) {
+                    return this.gamePlayerPositions[`${currentTeam}_fourth_id`];
+                }
+            } catch {
+                return { id: null, name: null };
             }
+           
             return { id: null, name: null };
         },
         getShotColor() {
@@ -273,11 +277,11 @@ export const useSessionStore = defineStore("session", {
                     cause: error,
                     fatal: true,
                 });
-            } else if (!data && !data?.length) {
+            } else if (!data || !data?.length) {
                 throw new ValidationError({
                     name: ErrorName.VALIDATION_FAILED,
                     message:
-                        "Could not initialize game: no game to initialize!",
+                        "Could not initialize game: there are no players!",
                     fatal: true,
                 });
             } else {

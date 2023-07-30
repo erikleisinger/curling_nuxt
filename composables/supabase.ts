@@ -30,7 +30,9 @@ export const useSupabaseFetch = () => {
     const handleError = async (code) => {
         if (code === "PGRST301") {
             const route = useRoute();
-            reloadNuxtApp(route.fullPath);
+            reloadNuxtApp({
+                path: route.fullPath
+            });
         }
     };
 
@@ -44,7 +46,9 @@ export const useSupabaseFetch = () => {
         const { Authorization } = outgoingHeaders;
         const token = Authorization.split(" ")[1];
         if (email !== parseJwt(token).email) {
-            reloadNuxtApp(route.fullPath);
+            reloadNuxtApp({
+                path: route.fullPath
+            });
         }
     };
 
