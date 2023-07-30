@@ -11,13 +11,17 @@ import type Game from "@/types/game";
 import type { GamePlayerJunction } from "@/types/game";
 import { BannerColors } from "@/types/color";
 import { CUSTOM_QUERIES } from "@/constants/query";
+import { DatabaseError, ErrorName, ValidationError } from "@/types/error";
 
 export const useSessionStore = defineStore("session", {
     state: () => ({
         end: 1,
         ends: useStorage("ends", [] as End[]),
         game: useStorage("game", {} as Game | null),
-        gamePlayerPositions: useStorage("gamePlayerPositions", {} as GamePlayerJunction),
+        gamePlayerPositions: useStorage(
+            "gamePlayerPositions",
+            {} as GamePlayerJunction
+        ),
         loading: false,
         promptScore: false,
         shot: 1,
@@ -32,7 +36,11 @@ export const useSessionStore = defineStore("session", {
                     s.shot_no === this.shot && s.end_id === this.currentEnd?.id
             );
             if (shot) return shot;
-            return newShot({ end_id: this.currentEnd?.id, shot_no: this.shot, player_id: this.getCurrentThrower.id });
+            return newShot({
+                end_id: this.currentEnd?.id,
+                shot_no: this.shot,
+                player_id: this.getCurrentThrower?.id,
+            });
         },
         currentEnd: (state): End | undefined => {
             return state.ends.find(
@@ -54,29 +62,25 @@ export const useSessionStore = defineStore("session", {
             return (shot_no: number) => {
                 if (!this.whoThrowsFirst) return null;
                 if (shot_no % 2 === 0) {
-                    return this.whoThrowsFirst === "home"
-                        ? 'away'
-                        : 'home';
+                    return this.whoThrowsFirst === "home" ? "away" : "home";
                 }
-                return this.whoThrowsFirst === "home"
-                    ? 'home'
-                    : 'away';
+                return this.whoThrowsFirst === "home" ? "home" : "away";
             };
         },
-        getCurrentThrower(): {id: number, name: string} {
+        getCurrentThrower(): { id: number; name: string } {
             const shotNo: number = this.shot;
-            const currentTeam = this.getThrowingTeam(shotNo)
-            
+            const currentTeam = this.getThrowingTeam(shotNo);
+
             if (shotNo <= 4) {
-                return this.gamePlayerPositions[`${currentTeam}_lead_id`]
+                return this.gamePlayerPositions[`${currentTeam}_lead_id`];
             } else if (shotNo <= 8) {
-                return this.gamePlayerPositions[`${currentTeam}_second_id`]
+                return this.gamePlayerPositions[`${currentTeam}_second_id`];
             } else if (shotNo <= 12) {
-                return this.gamePlayerPositions[`${currentTeam}_third_id`]
+                return this.gamePlayerPositions[`${currentTeam}_third_id`];
             } else if (shotNo <= 16) {
-                return this.gamePlayerPositions[`${currentTeam}_fourth_id`]
+                return this.gamePlayerPositions[`${currentTeam}_fourth_id`];
             }
-            return {id: null, name: null};
+            return { id: null, name: null };
         },
         getShotColor() {
             return (shot_no: number) => {
@@ -94,14 +98,14 @@ export const useSessionStore = defineStore("session", {
         },
         lastPlayedGame() {
             const gameStore = useGameStore();
-            const {games} = gameStore
+            const { games } = gameStore;
             const history = Object.entries(this.gameNavHistory)
-            .map(([key, value]) => {
-                return {id: key, ...value}
-            })
-            .filter(({id}) => games.some((g) => g.id === Number(id)))
-            .sort((a,b) => (b?.lastPlayed || 0) - (a?.lastPlayed || 0))
-            return Number(history[0]?.id)
+                .map(([key, value]) => {
+                    return { id: key, ...value };
+                })
+                .filter(({ id }) => games.some((g) => g.id === Number(id)))
+                .sort((a, b) => (b?.lastPlayed || 0) - (a?.lastPlayed || 0));
+            return Number(history[0]?.id);
         },
         whoThrowsFirst(): string | null {
             if (!this.game?.id) return null;
@@ -127,14 +131,24 @@ export const useSessionStore = defineStore("session", {
     },
     actions: {
         async createEnd(gameId: number, endNo: number) {
-            const {client, fetchHandler} = useSupabaseFetch();;
-            const { data} = await fetchHandler(() => client
-                .from(TABLE_NAMES.ENDS)
-                .insert({ game_id: Number(gameId), end_number: Number(endNo) })
-                .select(
-                    CUSTOM_QUERIES.GET_END_WITH_SHOTS
-                ), {onError: 'Error creating end'})
-
+            const { client, fetchHandler } = useSupabaseFetch();
+            const { data, errors } = await fetchHandler(() =>
+                client
+                    .from(TABLE_NAMES.ENDS)
+                    .insert({
+                        game_id: Number(gameId),
+                        end_number: Number(endNo),
+                    })
+                    .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
+            );
+            if (errors)
+                throw new DatabaseError({
+                    name: ErrorName.INSERT_ERROR,
+                    message: "Error creating end. Database error occured",
+                    cause: errors,
+                    table: TABLE_NAMES.ENDS,
+                    fatal: true,
+                });
             const [end] = data;
             return end;
         },
@@ -143,7 +157,7 @@ export const useSessionStore = defineStore("session", {
             this.gameNavHistory[this.game.id] = {
                 shot: this.shot,
                 end: this.end,
-                lastPlayed:  Math.floor(new Date().getTime() / 1000),
+                lastPlayed: Math.floor(new Date().getTime() / 1000),
             };
             this.resetSession();
         },
@@ -153,25 +167,37 @@ export const useSessionStore = defineStore("session", {
             force: boolean = false
         ) {
             if (!gameId) {
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error fetching end: no game id provided.`,
-                    BannerColors.Negative
-                );
-                return;
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message: "Could not fetch end: no game id provided.",
+                    fatal: true,
+                });
             }
             const endInStore = this.ends.find(
                 (e) => e.end_number === endNo && e.game_id === gameId
             );
             if (endInStore && !force) return endInStore;
-            const {client, fetchHandler} = useSupabaseFetch();;
+            const { client, fetchHandler } = useSupabaseFetch();
             if (!gameId) return;
             let end;
-            const { data} = await fetchHandler(() => client
-                .from(TABLE_NAMES.ENDS)
-                .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
-                .eq("end_number", endNo)
-                .eq("game_id", gameId), {onError: 'Error fetching end'})
+            const { data, error } = await fetchHandler(
+                () =>
+                    client
+                        .from(TABLE_NAMES.ENDS)
+                        .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
+                        .eq("end_number", endNo)
+                        .eq("game_id", gameId),
+                { onError: "Error fetching end" }
+            );
+
+            if (error)
+                throw new DatabaseError({
+                    name: ErrorName.SELECT_ERROR,
+                    table: TABLE_NAMES.ENDS,
+                    message: "Could not fetch end. Database error occured.",
+                    fatal: false,
+                });
+
             if (!data?.length) {
                 end = await this.createEnd(gameId, endNo);
             } else {
@@ -179,12 +205,12 @@ export const useSessionStore = defineStore("session", {
                 end = fetchedEnd;
             }
             if (!end?.id) {
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error initializing game: could not load game`,
-                    BannerColors.Negative
-                );
-                return;
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message:
+                        "Could not fetch end: database returned no results.",
+                    fatal: true,
+                });
             }
             const index = this.ends.findIndex(
                 (g) => g.game_id === gameId && g.end_number === endNo
@@ -200,7 +226,10 @@ export const useSessionStore = defineStore("session", {
         },
         async initGameJunction(game_id: number) {
             const client = useSupabaseClient();
-            const {data, error} = await client.from(TABLE_NAMES.PLAYER_GAME_JUNCTION).select(`
+            const { data, error } = await client
+                .from(TABLE_NAMES.PLAYER_GAME_JUNCTION)
+                .select(
+                    `
             away_lead_id (
                 id,
                 name
@@ -233,8 +262,25 @@ export const useSessionStore = defineStore("session", {
                 name
             ),
             game_id
-            `).eq('game_id', game_id);
-            if (!error) {
+            `
+                )
+                .eq("game_id", game_id);
+            if (error) {
+                throw new DatabaseError({
+                    name: ErrorName.SELECT_ERROR,
+                    message: "Could not initialize game: no game/player info.",
+                    table: TABLE_NAMES.PLAYER_GAME_JUNCTION,
+                    cause: error,
+                    fatal: true,
+                });
+            } else if (!data && !data?.length) {
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message:
+                        "Could not initialize game: no game to initialize!",
+                    fatal: true,
+                });
+            } else {
                 const [junction] = data;
                 this.gamePlayerPositions = junction;
             }
@@ -242,22 +288,23 @@ export const useSessionStore = defineStore("session", {
         async initEnd(end_number: number, gameId: number | undefined) {
             const end = await this.getEnd(end_number, gameId, true);
             if (!end) {
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error initializing end: could not get end`,
-                    BannerColors.Negative
-                );
-                return;
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message: 'Could not initialize end. No end to initialize!',
+                    fatal: true,
+                })
             }
             let endShots: Shot[];
 
             const { shots, id } = end;
             if (!shots.length) {
-                const {client, fetchHandler} = useSupabaseFetch();;
-                const { data} = await fetchHandler(() => client
-                    .from(TABLE_NAMES.ENDS)
-                    .select(
-                        `
+                const { client, fetchHandler } = useSupabaseFetch();
+                const { data, error } = await fetchHandler(
+                    () =>
+                        client
+                            .from(TABLE_NAMES.ENDS)
+                            .select(
+                                `
                     shots(
                         id,
                         end_id,
@@ -271,8 +318,16 @@ export const useSessionStore = defineStore("session", {
                         rock_positions
                     )
                     `
-                    )
-                    .eq("id", id), {onError: 'Error selecting end'})
+                            )
+                            .eq("id", id)
+                );
+                if (error) throw new DatabaseError({
+                    name: ErrorName.SELECT_ERROR,
+                    message: 'Error fetching end: database error occured.',
+                    cause: error,
+                    fatal: true,
+                    table: TABLE_NAMES.ENDS
+                })
                 const [shotsData] = data || [];
                 const { shots }: { shots: Shot[] } = shotsData || {};
                 endShots = shots;
@@ -284,36 +339,61 @@ export const useSessionStore = defineStore("session", {
             });
         },
         async initAllEnds(game_id: number) {
-            const {client, fetchHandler} = useSupabaseFetch();
-            const {data} = await fetchHandler(() => client.from(TABLE_NAMES.ENDS).select(CUSTOM_QUERIES.GET_END_WITH_SHOTS).eq('game_id', game_id), {onError: 'Error initializing game: could not init ends'})
-            if (!data)return;
-            const {ends = [], shots = []} = data?.reduce((all, current : End) => {
-                const {shots: endShots = [], ...rest}: End = current;
-                all.ends.push(rest)
-                all.shots = [...all.shots, ...endShots]
-                return all;
-            }, {ends: [], shots: []} as {ends: End[], shots: Shot[]}) || {}
- 
+            const { client, fetchHandler } = useSupabaseFetch();
+            const { data, error } = await fetchHandler(
+                () =>
+                    client
+                        .from(TABLE_NAMES.ENDS)
+                        .select(CUSTOM_QUERIES.GET_END_WITH_SHOTS)
+                        .eq("game_id", game_id),
+                { onError: "Error initializing game: could not init ends" }
+            );
+            if (!data) {
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message:
+                        "Could not initialize ends. No ends to initialize!",
+                    fatal: true,
+                });
+            } else if (error) {
+                throw new DatabaseError({
+                    name: ErrorName.SELECT_ERROR,
+                    message:
+                        "Could not initialize ends. Database error occured.",
+                    cause: error,
+                    fatal: true,
+                    table: TABLE_NAMES.ENDS,
+                });
+            }
+            const { ends = [], shots = [] } =
+                data?.reduce(
+                    (all, current: End) => {
+                        const { shots: endShots = [], ...rest }: End = current;
+                        all.ends.push(rest);
+                        all.shots = [...all.shots, ...endShots];
+                        return all;
+                    },
+                    { ends: [], shots: [] } as { ends: End[]; shots: Shot[] }
+                ) || {};
+
             this.ends = ends;
             this.shots = shots;
         },
         async initGame(id: number) {
-            this.setLoading(true);
-
             const game = await useGameStore().getGame(id);
             if (!game?.id) {
-                const { setBanner } = useBanner();
-                setBanner(
-                    `Error initializing game: could not load game`,
-                    BannerColors.Negative
-                );
-                return;
+                throw new ValidationError({
+                    name: ErrorName.VALIDATION_FAILED,
+                    message:
+                        "Could not initialized game: no game to initialize!",
+                    fatal: true,
+                });
             }
             this.setGame(game);
             const { id: game_id } = this.game!;
-            if (!game_id) throw new Error('no game id')
+            if (!game_id) throw new Error("no game id");
 
-            await this.initGameJunction(game_id)
+            await this.initGameJunction(game_id);
 
             if (game_id) {
                 const previousShotEndPosition = this.gameNavHistory[game_id];
@@ -323,11 +403,6 @@ export const useSessionStore = defineStore("session", {
                 }
             }
             await this.initAllEnds(game?.id);
-            if (!this.ends.find((e) => e.end_number === this.end && e.game_id === game?.id)) {
-                await this.initEnd(this.end, game_id);
-            }
-          
-            this.setLoading(false);
         },
         insertShot(shot: Shot) {
             const index = this.shots.findIndex(
@@ -340,7 +415,6 @@ export const useSessionStore = defineStore("session", {
             }
         },
         async prevShot() {
-
             if (this.shot === 1) {
                 await this.goToShot(16, this.end - 1);
             } else {
@@ -382,19 +456,23 @@ export const useSessionStore = defineStore("session", {
             if (rockInStore && objTheSame(rockInStore, shot)) return;
             if (!shot.id) delete shot.id;
             this.setLoading(true);
-            const {client, fetchHandler} = useSupabaseFetch();
+            const { client, fetchHandler } = useSupabaseFetch();
             const { getQuery } = useDatabase();
-            const { data} = await fetchHandler(() => client
-                .from(TABLE_NAMES.SHOTS)
-                .upsert(
-                    {
-                        ...shot,
-                        end_id: shot.end_id,
-                        player_id: shot.player_id,
-                    },
-                    { onConflict: "end_id, shot_no" }
-                )
-                .select(getQuery(TABLE_NAMES.SHOTS)), {onError: 'Error saving game'})
+            const { data } = await fetchHandler(
+                () =>
+                    client
+                        .from(TABLE_NAMES.SHOTS)
+                        .upsert(
+                            {
+                                ...shot,
+                                end_id: shot.end_id,
+                                player_id: shot.player_id,
+                            },
+                            { onConflict: "end_id, shot_no" }
+                        )
+                        .select(getQuery(TABLE_NAMES.SHOTS)),
+                { onError: "Error saving game" }
+            );
             if (!data?.length) return;
             const [savedShot] = data;
             if (!savedShot) return;
@@ -415,23 +493,30 @@ export const useSessionStore = defineStore("session", {
             scoring_team_id: number,
             game_id: number
         ) {
-            const {client, fetchHandler} = useSupabaseFetch();
-            const { data} = await fetchHandler(() => client.from(TABLE_NAMES.ENDS).upsert(
-                {
-                    end_number,
-                    scoring_team_id,
-                    points_scored,
-                    game_id,
-                },
-                { ignoreDuplicates: false, onConflict: "game_id, end_number" }
-            ).select(`
+            const { client, fetchHandler } = useSupabaseFetch();
+            const { data } = await fetchHandler(
+                () =>
+                    client.from(TABLE_NAMES.ENDS).upsert(
+                        {
+                            end_number,
+                            scoring_team_id,
+                            points_scored,
+                            game_id,
+                        },
+                        {
+                            ignoreDuplicates: false,
+                            onConflict: "game_id, end_number",
+                        }
+                    ).select(`
         id,
             game_id,
             end_number,
             scoring_team_id,
             points_scored,
             hammer_team_id
-            `), {onError: 'Error updating score'})
+            `),
+                { onError: "Error updating score" }
+            );
             if (!data) return;
             const [end] = data;
             if (!end) return;

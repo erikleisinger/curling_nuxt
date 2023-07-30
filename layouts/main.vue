@@ -1,8 +1,5 @@
 <template>
     <q-layout class="column main__wrap pattern-diagonal-stripes-sm slategray h-5">
-        <!-- <q-header elevated class="bg-primary text-white" height-hint="98">
-            <slot name="header" />
-        </q-header> -->
         <slot name="header"/>
         <q-page-container
             class="col-grow wrapper "
@@ -11,30 +8,6 @@
         >
             <slot />
         </q-page-container>
-        <!-- <q-footer elevated v-if="$q.screen.lt.md">
-            <slot name="footer" />
-            <q-toolbar
-                class="bg-primary text-white q-px-none"
-                v-if="$q.screen.lt.md"
-            >
-                <q-btn-group
-                    spread
-                    flat
-                    class="col-grow"
-                    role="navigation"
-                    aria-label="pages"
-                >
-                    <q-btn flat to="/" :disable="!gameSelected"
-                        ><q-icon name="adjust"
-                    /></q-btn>
-                    <q-btn flat to="/select"
-                        ><q-icon name="table_view"
-                    /></q-btn>
-                    <q-btn flat to="/profile"><q-icon name="person" /></q-btn>
-                    <q-btn flat @click="logout"><q-icon name="logout" /></q-btn>
-                </q-btn-group>
-            </q-toolbar>
-        </q-footer> -->
         <Banner />
     </q-layout>
 </template>

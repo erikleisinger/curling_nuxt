@@ -50,7 +50,7 @@ export const useSupabaseFetch = () => {
 
     const fetchHandler = async (
         promise: Function,
-        callbacks: { onError?: string | Function; onSuccess?: string }
+        callbacks?: { onError?: string | Function; onSuccess?: string }
     ) => {
         await checkHeaders();
         const { data, error } = await promise();
@@ -71,7 +71,7 @@ export const useSupabaseFetch = () => {
                 setBanner(callbacks.onSuccess, BannerColors.Primary);
             }
         }
-        return { data: data || true };
+        return { data: data || true, error };
     };
     return { client, fetchHandler };
 };

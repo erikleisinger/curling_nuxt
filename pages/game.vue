@@ -1,6 +1,6 @@
 <template>
     <GameController v-if="initialized" />
-    <GlobalLoading infinite v-else />
+    <GlobalLoading infinite v-else :error="error" :errorMessage="errorMessage" />
 </template>
 
 <script setup lang="ts">
@@ -45,16 +45,25 @@ const shot = computed(() => store.currentShot);
 const gameId = useRouteQuery('id')
 
 const initialized = ref(false);
+const error = ref(false);
+const errorMessage = ref(null)
 onBeforeMount(async () => {
     initialized.value = false;
     const id = gameId.value || store.lastPlayedGame
     if (!id) {
         navigateTo("/select");
     } else {
-        await store.initGame(id);
+        try {
+    await store.initGame(id);
         nextTick(() => {
             initialized.value = true;
         });
+        } catch(e: any) {
+            error.value = true;
+            if (e?.message) errorMessage.value = e.message;
+            console.error(e)
+        }
+    
     }
 });
 
