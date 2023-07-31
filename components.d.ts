@@ -48,6 +48,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Scoreboard: typeof import('./components/Scoreboard.vue')['default']
     'Scoreboard.story': typeof import('./components/Scoreboard.story.vue')['default']
+    ScoreboardRow: typeof import('./components/ScoreboardRow.vue')['default']
     SelectColor: typeof import('./components/Select/Color.vue')['default']
     SelectLine: typeof import('./components/Select/Line.vue')['default']
     SelectPlayer: typeof import('./components/Select/Player.vue')['default']
