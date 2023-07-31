@@ -1,7 +1,7 @@
 <template>
     <div
         class="column"
-        :class="{ 'column-reverse': reverse }"
+            :class="{ 'column-reverse': reverse }"
         style="width: 100%; padding-bottom: 16px"
         ref="el"
     >
@@ -44,6 +44,7 @@
 }
 </style>
 <script setup>
+import {defineProps, ref, watch, computed} from 'vue'
 import {useElementVisibility} from '@vueuse/core'
 const props = defineProps({
     color: String,
@@ -59,8 +60,8 @@ const props = defineProps({
 });
 const width = ref(0)
 const widthComputed = computed(() => `${width.value}%`);
-const left = computed(() => (props.reverse ? 0 : "unset"));
-const right = computed(() => (props.reverse ? "unset" : 0));
+const left = computed(() => (props.reverse ? "unset" : 0));
+const right = computed(() => (props.reverse ? 0 : "unset"));
 const el = ref(null)
 const targetVisible = useElementVisibility(el)
  const {upTick} = useAnimate();

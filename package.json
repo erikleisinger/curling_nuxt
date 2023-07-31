@@ -6,14 +6,24 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "vitebook:dev": "vitebook dev",
+    "vitebook:build": "vitebook build",
+    "vitebook:preview": "vitebook preview"
   },
   "devDependencies": {
     "@nuxt/devtools": "^0.6.6",
     "@nuxt/image": "^1.0.0-rc.1",
     "@nuxt/test-utils": "^3.6.5",
+    "@quasar/vite-plugin": "^1.4.1",
     "@types/node": "^18",
     "@vite-pwa/nuxt": "^0.1.0",
+    "@vitebook/client": "^0.100.5",
+    "@vitebook/core": "^0.100.5",
+    "@vitebook/theme-default": "^0.100.5",
+    "@vitebook/vue": "^0.100.5",
+    "@vitejs/plugin-vue": "^3.0.0",
+    "@vue/compiler-sfc": "^3.2.26",
     "@vueuse/core": "^10.2.1",
     "@vueuse/nuxt": "^10.2.1",
     "dayjs-nuxt": "^1.1.2",
@@ -22,7 +32,11 @@
     "react-dom": "18.2.0",
     "sass": "^1.63.6",
     "supabase": "^1.77.9",
+    "svelte": "^3.49.0",
     "typescript": "^5.1.6",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.1",
+    "vite": "^3.0.0",
     "vitest": "^0.33.0",
     "vue-tsc": "^1.8.3"
   },
@@ -33,10 +47,12 @@
     "@vueuse/components": "^10.2.1",
     "@vueuse/router": "^10.2.1",
     "browser-image-compression": "^2.0.2",
+    "matter-js": "^0.19.0",
     "nuxt-quasar-ui": "^2.0.2",
     "pattern.css": "^1.0.0",
     "pinch-zoom-js": "2.3.4",
     "pinia": "^2.1.4",
-    "quasar": "^2.12.1"
+    "quasar": "^2.12.1",
+    "vue": "^3.0.0"
   }
 }
