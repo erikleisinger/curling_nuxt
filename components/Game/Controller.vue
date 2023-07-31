@@ -163,6 +163,7 @@ const onDiscardChanges = ref<null | Function>(null);
 const goNext = async (force = false) => {
     if (unsavedChanges.value && !force) {
         confirmUnsaved.value = async () => {
+        
             await save();
             goNext(true);
         };
@@ -180,7 +181,7 @@ const goNext = async (force = false) => {
 };
 const goPrev = async (force = false) => {
     if (unsavedChanges.value && !force) {
-        confirmUnsaved.value = () => async () => {
+        confirmUnsaved.value = async () => {
             await save();
             goPrev(true);
         };
