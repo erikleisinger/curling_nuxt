@@ -75,7 +75,7 @@ const currentThrower = computed(() => store.getCurrentThrower);
 const assignShot = (val: Shot | null) => {
     if (!val || !store.game?.id) return;
     Object.assign(editedShot.value, val);
-    if (!editedShot.value.player_id && currentThrower.value) editedShot.value.player_id = currentThrower.value;
+    if (!editedShot.value.player_id && currentThrower.value?.id) editedShot.value.player_id = currentThrower.value?.id;
 };
 
 // TODO: MAKE SURE EDITED SHOT IS INIT ON INITIAL
