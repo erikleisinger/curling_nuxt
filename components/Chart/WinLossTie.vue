@@ -44,9 +44,9 @@ onMounted(() => {
                 return color;
             },
             plugins: {
-                legend: {
-                    position: "left",
-                },
+                    legend: {
+                        position: "left",
+                    },
                 tooltip: {
                     usePointStyle: true,
                     callbacks: {
