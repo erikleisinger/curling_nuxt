@@ -47,6 +47,7 @@
     "@vueuse/components": "^10.2.1",
     "@vueuse/router": "^10.2.1",
     "browser-image-compression": "^2.0.2",
+    "chart.js": "^4.3.3",
     "matter-js": "^0.19.0",
     "nuxt-quasar-ui": "^2.0.2",
     "pattern.css": "^1.0.0",

@@ -20,38 +20,43 @@
         </q-item-section>
       </q-item> -->
             <!-- <q-item  clickable v-ripple v-for="team in teams" :key="team.id" :to="`/stats/team/${team.id}`"> -->
-            <TableTeamItem :key="item.id" :team="item" @click="goToStats(item.id)"/>
-            <!-- <q-item :key="item.id">
+            <!-- <TableTeamItem :key="item.id" :team="item" @click="goToStats(item.id)"/> -->
+            <q-item :key="item.id" clickable :to="`/stats/team/${item.id}`">
+                 <!-- <q-item-section avatar>
+          <q-avatar color="teal" text-color="white" icon="favorite_border"></q-avatar>
+        </q-item-section> -->
                 <q-item-section>
                     <q-item-label>{{
                         item.name || "Unnamed item"
                     }}</q-item-label>
                     <q-item-label caption>
                         <div class="row" v-if="item.lead_player_id">
-                            Lead: {{ item.lead_player_id.name }}
+                            Lead: {{ item.lead_player_name }}
                         </div>
                         <div class="row" v-if="item.second_player_id">
-                            Second: {{ item.second_player_id.name }}
+                            Second: {{ item.second_player_name }}
                         </div>
                         <div class="row" v-if="item.third_player_id">
-                            Third: {{ item.third_player_id.name }}
+                            Third: {{ item.third_player_name }}
                         </div>
                         <div class="row" v-if="item.fourth_player_id">
-                            Fourth: {{ item.fourth_player_id.name }}
+                            Fourth: {{ item.fourth_player_name }}
                         </div>
                         <div class="row" v-if="item.fifth_player_id">
-                            Fifth: {{ item.fifth_player_id.name }}
+                            Fifth: {{ item.fifth_player_name }}
                         </div>
                         <div class="row" v-if="item.sixth_player_id">
-                            Sixth: {{ item.sixth_player_id.name }}
+                            Sixth: {{ item.sixth_player_name }}
                         </div>
                         <div class="row" v-if="item.seventh_player_id">
-                            Seventh: {{ item.seventh_player_id.name }}
+                            Seventh: {{ item.seventh_player_name }}
                         </div>
                     </q-item-label>
                 </q-item-section>
-                <q-item-section side @click.stop.prevent>
-                    <div class="text-grey-8" v-if="item.profile_id === userId">
+                <q-item-section side top class="column">
+          <q-badge color="positive" label="My team" v-if="item.isMine" rounded></q-badge>
+           <q-badge  outline rounded  color="grey" label="+ My team" v-else></q-badge>
+           <div class="text-grey-8 col-grow row items-center" v-if="item.profile_id === userId">
                         <q-btn
                             size="12px"
                             flat
@@ -86,8 +91,11 @@
                             }}</span></q-tooltip
                         >
                     </LazyProfileAvatar>
-                </q-item-section>
-            </q-item> -->
+        </q-item-section>
+                <!-- <q-item-section side @click.stop.prevent>
+                   
+                </q-item-section> -->
+            </q-item>
             <!-- </q-list> -->
         </q-virtual-scroll>
         <GlobalLoading infinite v-else />
@@ -119,7 +127,10 @@ const getFriendPath = (profile_id: string) => {
     return friendStore.getFriendAvatar(profile_id);
 };
 
-const teams = computed(() => [...teamStore.teams]);
+const teams = computed(() => [...teamStore.teams].map((t) => {
+    if (userStore.userTeams.includes(t.id)) return {...t, isMine: true}
+    return t; 
+}));
 const loading = ref(false);
 
 const loadTeams = async (force: boolean = false) => {

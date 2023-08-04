@@ -1,6 +1,5 @@
 <template>
-    <NuxtLayout v-if="!editing">
-        <div ref="header" style="z-index:10">
+    <div ref="header" style="z-index:10"  class="full-width">
             <!-- <ProfileExpandable v-model="expanded" /> -->
             <q-toolbar
                 class="bg-deep-purple text-white q-px-none"
@@ -25,40 +24,37 @@
                 </q-tabs>
             </q-toolbar>
         </div>
-
-        <transition-group
+        <!-- <transition-group
             appear
             :enter-active-class="`animated ${enterAnimation}`"
             :leave-active-class="`animated ${leaveAnimation}`"
-        >
-            <section
+        > -->
+            <!-- <section
                 class="column select__section"
                 v-if="tab === TAB_VALUES.GAMES"
                 key="games"
                 name="games"
             >
                 <TableGame />
-            </section>
+            </section> -->
 
             <section
-                class="column select__section"
-                v-else-if="tab === TAB_VALUES.TEAMS"
+                class="column select__section full-width"
+                v-if="tab === TAB_VALUES.TEAMS"
                 key="teams"
                 name="teams"
             >
                 <TableTeams />
             </section>
-
+   <!-- v-else-if="tab === TAB_VALUES.PLAYERS" -->
             <section
-                class="column select__section"
-                v-else-if="tab === TAB_VALUES.PLAYERS"
+                class="column select__section full-width"
+                v-else
                 key="players"
             >
                 <TablePlayers />
             </section>
-        </transition-group>
-    </NuxtLayout>
-    <GameEditor v-else />
+        <!-- </transition-group> -->
 </template>
 <style lang="scss" scoped>
     .select__section {
@@ -72,10 +68,6 @@ import { useRouteQuery } from "@vueuse/router";
 
 const TABS = [
     {
-        label: "Games",
-        value: 0,
-    },
-    {
         label: "Teams",
         value: 1,
     },
@@ -86,15 +78,13 @@ const TABS = [
 ];
 
 const TAB_VALUES = {
-    GAMES: 0,
     TEAMS: 1,
     PLAYERS: 2,
-    //   SHOT_TYPES: 3,
     RINKS: 4,
     SHEETS: 5,
 };
 
-const tab = ref(0);
+const tab = ref(1);
 const { history: tabHistory, undo } = useRefHistory(tab);
 
 const enterAnimation = ref("slideInLeft");

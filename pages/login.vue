@@ -177,6 +177,7 @@ const onSubmit = async (e) => {
             email: email.value,
             password: password.value,
         });
+        console.log('error logging in: ', error)
         if (!error) {
             authStore.setLoggedIn(true);
             reloadNuxtApp({

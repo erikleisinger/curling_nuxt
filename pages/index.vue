@@ -1,10 +1,13 @@
 <template>
 <NuxtLayout>
-<main class="main column items-center justify-center">
-      <q-btn to="/creategame" class="q-mb-md" rounded color="primary">New Game</q-btn>
+
+    <AreaManage v-if="view === VIEWS.MANAGE"/>
+    <Profile v-else-if="view === VIEWS.SETTINGS"/>
+    <MySeason v-else-if="view === VIEWS.SEASON"/>
+      <!-- <q-btn to="/creategame" class="q-mb-md" rounded color="primary">New Game</q-btn>
     <q-btn to="/select" class="q-mb-md" rounded>Select a game</q-btn>
-     <q-btn @click="handleLogout" rounded>Logout</q-btn>
-</main> 
+     <q-btn @click="handleLogout" rounded>Logout</q-btn> -->
+
 </NuxtLayout>
 
 </template>
@@ -15,6 +18,10 @@
     }
 </style>
 <script setup>
+import {useNavigationStore} from '@/store/navigation';
+import {VIEWS } from '@/constants/navigation'
+const navStore = useNavigationStore();
+const view = computed(() => navStore.view)
 const handleLogout = () => {
 const {logout} = useSession()
 logout();

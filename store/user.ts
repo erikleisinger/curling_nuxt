@@ -9,6 +9,7 @@ export const useUserStore = defineStore("user", {
       showNumbers: false,
       timezone: 'America/Toronto',
       username: null,
+      userTeams: [],
     } as {
         avatarUrl: string | null,
         email: string | null,
@@ -17,6 +18,7 @@ export const useUserStore = defineStore("user", {
         showNumbers: boolean,
         timezone: string,
         username: string | null
+        userTeams: number[]
     };
   },
 
@@ -32,6 +34,18 @@ export const useUserStore = defineStore("user", {
         const [user] = data || [];
         const {timezone, id, friend_id:friendId, username, avatar_url: avatarUrl} = user || {};
         this.setData({timezone, id, friendId, username, avatarUrl, email})
+        await this.getUserTeams();
+    },
+    async getUserTeams() {
+        const {client, fetchHandler} = useSupabaseFetch();
+        const {id: profileId} = this;
+        const {data} = await fetchHandler(() => client.from('team_profile_junction').select('team_id').eq('profile_id', profileId), {onError: 'Error getting user teams'})
+        if (!data) return;
+        const teams = data.map(({team_id}) => team_id)
+        this.setUserTeams(teams)
+        // const [user] = data || [];
+        // const {timezone, id, friend_id:friendId, username, avatar_url: avatarUrl} = user || {};
+        // this.setData({timezone, id, friendId, username, avatarUrl, email})
     },
     setAvatar(path:string) {
         this.avatarUrl = path;
@@ -51,6 +65,9 @@ export const useUserStore = defineStore("user", {
     setTimezone(timezone: string | null | undefined) {
         if (!timezone) return;
       this.timezone = timezone;
+    },
+    setUserTeams(teams: number[]) {
+        this.userTeams = teams;
     },
     toggleShowNumbers() {
         this.showNumbers = !this.showNumbers

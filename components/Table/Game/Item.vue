@@ -137,7 +137,7 @@
             <!-- </transition> -->
 </TableGameItemContainer>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 
    
           
