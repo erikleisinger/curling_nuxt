@@ -3044,6 +3044,11 @@ chart.js@^4.3.3:
   dependencies:
     "@kurkle/color" "^0.3.0"
 
+chartjs-plugin-datalabels@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-datalabels/-/chartjs-plugin-datalabels-2.2.0.tgz#369578e131d743c2e34b5fbe2d3f9335f6639b8f"
+  integrity sha512-14ZU30lH7n89oq+A4bWaJPnAG8a7ZTk7dKf48YAzMvJjQtjrgg5Dpk9f+LbjCF6bpx3RAGTeL13IXpKQYyRvlw==
+
 check-error@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
@@ -6400,6 +6405,11 @@ pattern.css@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/pattern.css/-/pattern.css-1.0.0.tgz#91ee9e4ca99300c8ab1a47348e325333840d9f4b"
   integrity sha512-2bW2rCCdLGgvJPpiSJGrg44onxRWTMQpn6tooAayomsCHiso3nehlp5OugNYHSXxYuFfQ1vtDXtGbq6H206qLw==
+
+patternomaly@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/patternomaly/-/patternomaly-1.3.2.tgz#70b8db17d7318ab1471cc43f94011bb866c54d09"
+  integrity sha512-70UhA5+ZrnNgdfDBKXIGbMHpP+naTzfx9vPT4KwIdhtWWs0x6FWZRJQMXXhV2jcK0mxl28FA/2LPAKArNG058Q==
 
 pend@~1.2.0:
   version "1.2.0"

@@ -1,31 +1,35 @@
 <template>
     <NuxtLayout>
-        <DialogPlayerEditor />
+
         <q-virtual-scroll
             class="col-grow bg-white"
             ref="tableArea"
             :items="players"
             v-slot="{ item }"
             separator
-            virtual-scroll-slice-size="1"
-            virtual-scroll-item-size="48"
         >
             <q-inner-loading
                 :showing="loading"
                 label="Please wait..."
                 color="primary"
             />
+            <!-- :to="`/stats/player/${item.id}`" -->
             <q-item
-                :to="`/stats/player/${item.id}`"
+                
                 v-ripple
                 :key="item.id"
                 class="items-center row"
             >
+            <q-item-section avatar>
+       
+                <Avataaar  v-bind="parseAvatar(item.avatar)"/>
+               
+            </q-item-section>
                 <q-item-section>
-                    <q-item-label class="row items-center">{{
+                    <q-item-label class="row items-center" style="line-height: 1em!important">{{
                         item.name
                     }}</q-item-label>
-                    <q-item-label caption> </q-item-label>
+                
                 </q-item-section>
                 <q-item-section side @click.stop.prevent>
                     <div class="text-grey-8 row no-wrap">
@@ -35,7 +39,7 @@
                             dense
                             round
                             icon="edit"
-                            @click.stop.prevent="edit(item)"
+                            @click.stop.prevent="togglePlayerEditor(item)"
                             v-if="item.profile_id === userId"
                         ></q-btn>
                         <q-btn
@@ -47,31 +51,12 @@
                             @click.stop.prevent="itemToDelete = item"
                             v-if="item.profile_id === userId"
                         ></q-btn>
-                        <LazyProfileAvatar
-                            v-if="item.profile_id !== userId"
-                            :path="getFriendAvatar(item.profile_id)"
-                            size="2"
-                            delay
-                        >
-                            <q-tooltip
-                                :hide-delay="5000"
-                                anchor="center left"
-                                self="center right"
-                                :offset="[10, 10]"
-                                >Player belongs to
-                                <span class="text-bold">{{
-                                    friendStore.getFriendUsername(
-                                        item.profile_id
-                                    )
-                                }}</span></q-tooltip
-                            >
-                        </LazyProfileAvatar>
                     </div>
                 </q-item-section>
             </q-item>
         </q-virtual-scroll>
-       <ButtonBottomDraggable :onClick="togglePlayerDialog" />
-        <DialogConfirmation
+
+    <DialogConfirmation
             v-if="itemToDelete"
             @close="itemToDelete = null"
             @confirm="deletePlayer(itemToDelete)"
@@ -80,8 +65,25 @@
                 itemToDelete.name ?? "N/A"
             }}"
         </DialogConfirmation>
+<Teleport to="body">
+    <div class="avatar__container" v-if="showPlayerEditor">
+                        <div  class="pretty-shadow" style="background-color: white; pointer-events: all; border-radius: 16px; height: calc(100% - 32px); margin: 16px">
+                <AvatarGenerator style="height: 100%" :player="editedPlayer" @close="closePlayerEditor" />
+             
+        </div>
+    </div>
+</Teleport>
     </NuxtLayout>
 </template>
+<style lang="scss" scoped>
+    .avatar__container {
+        height: calc(100 * var(--vh, 1vh)); 
+        width: 100vw; 
+        z-index: 100000; 
+        position: absolute; 
+        top: 0;
+    }
+</style>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useEditorStore } from "@/store/editor";
@@ -91,6 +93,23 @@ import { TABLE_NAMES } from "@/constants/tables";
 import type Player from "@/types/player";
 import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
+import Json from "@/types/json";
+import {parseAvatar} from '@/utils/avatar'
+
+const showPlayerEditor = ref(false)
+
+const editedPlayer = ref<Player | null>(null)
+
+const togglePlayerEditor = (player: Player) => {
+    showPlayerEditor.value = true;
+    editedPlayer.value = player;
+}
+
+const closePlayerEditor = () => {
+     showPlayerEditor.value = false;
+    editedPlayer.value = null
+}
+
 
 const store = usePlayerStore();
 const userStore = useUserStore();

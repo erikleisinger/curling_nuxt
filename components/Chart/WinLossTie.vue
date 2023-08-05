@@ -4,19 +4,18 @@
 
 <script setup>
 import Chart from "chart.js/auto";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 const chart = ref(null)
 
 const props = defineProps({
     data: {
         type: Array,
         default() {
-            return [10, 20, 30]
+            return [0, 100, 100]
         }
     },
 })
-onActivated(() => {
-    console.log('ACTIVATED')
-})
+
 onMounted(() => {
     const data = {
         datasets: [
@@ -31,8 +30,9 @@ onMounted(() => {
     new Chart(chart.value, {
         type: "doughnut",
         data,
+         plugins: [ChartDataLabels],
         options: {
-            borderColor: "rgba(0,0,0,0.5)",
+            // borderColor: "rgba(0,0,0,0.5)",
             borderJoinStyle: "round",
             backgroundColor: (val) => {
                 const color = {
@@ -45,6 +45,11 @@ onMounted(() => {
             },
             plugins: {
                     legend: {
+                        labels: {
+                            boxWidth: 10,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                        },
                         position: "left",
                     },
                 tooltip: {

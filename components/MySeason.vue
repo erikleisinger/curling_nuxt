@@ -1,6 +1,7 @@
 <template>
-    <div class="full-height full-width container purple__background--small">
+    <div class="full-width container">
         <h1 class="q-pa-sm text-lg text-bold text-italic">My season</h1>
+
         <div class="row justify-center">
             <q-btn-toggle
                 style=""
@@ -26,54 +27,64 @@
                 <!-- <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight"> -->
                 <StatsContainer v-if="view === 'gameResults'" key="gameResults">
                     <template v-slot:title>
-                        <div class="row justify-between items-center q-mx-md">
-                            <q-btn
-                                flat
-                                round
-                                icon="chevron_left"
-                                dark
-                                @click="goToView(-1)"
-                            />
-                            <div>Game Results</div>
-                            <q-btn
-                                flat
-                                round
-                                icon="chevron_right"
-                                dark
-                                @click="goToView(+1)"
-                            />
-                        </div>
+                        Season summary
                     </template>
                     <ChartWinLossTie style="max-height: 250px" />
                 </StatsContainer>
-                <StatsContainer v-if="view === 'overtime'" key="overtime">
-                    <template v-slot:title>
-                        <div class="row justify-between items-center q-mx-md">
-                            <q-btn
-                                flat
-                                round
-                                icon="chevron_left"
-                                dark
-                                @click="goToView(-1)"
-                            />
-                            <div>History</div>
-                            <q-btn
-                                flat
-                                round
-                                icon="chevron_right"
-                                dark
-                                @click="goToView(+1)"
+                <StatsContainer>
+                    <template v-slot:title> Game averages </template>
+                    <div class="row no-wrap items-center q-mt-md">
+                        <div
+                            class="q-mr-sm col-shrink"
+                            style="max-width: 15vw; width: fit-content"
+                        >
+                            Points scored
+                        </div>
+                        <div class="col-grow"><ChartEitherOr /></div>
+                    </div>
+                    <div
+                        class="row no-wrap items-center q-mt-md"
+                        v-if="!loading"
+                    >
+                        <div
+                            class="q-mr-sm col-shrink"
+                            style="max-width: 15vw; width: fit-content"
+                        >
+                            hammer first end
+                        </div>
+                        <div class="col-grow">
+                            <ChartEitherOr :datasets="datasets" />
+                        </div>
+                    </div>
+                    <div class="row no-wrap items-center q-mt-md">
+                        <div
+                            class="q-mr-sm col-shrink"
+                            style="max-width: 15vw; width: fit-content"
+                        >
+                            Hammer 1st end
+                        </div>
+                        <div class="col-grow">
+                            <ChartEitherOr
+                                :datasets="datasetsTwo"
+                                :tooltipCallback="dataCallback"
                             />
                         </div>
-                    </template>
-                    <ChartWinLossTie />
+                    </div>
+                    <div class="row no-wrap items-center q-mt-md">
+                        <div
+                            class="q-mr-sm col-shrink"
+                            style="max-width: 15vw; width: fit-content"
+                        >
+                            Hammer pos
+                        </div>
+                        <div class="col-grow">
+                            <ChartEitherOr
+                                :datasets="datasetsThree"
+                                :tooltipCallback="dataCallback"
+                            />
+                        </div>
+                    </div>
                 </StatsContainer>
-                <StatsContainer>
-                    <ChartEitherOr/>
-                       <ChartEitherOr :datasets="datasets"/>
-                </StatsContainer>
-
-                <!-- </transition-group> -->
             </div>
         </div>
     </div>
@@ -85,10 +96,9 @@
     border: 1px solid $deep-purple;
 }
 .container {
-    background-color: purple;
     min-height: inherit;
     overflow: auto;
-    max-height: calc((100 * var(--1vh, 1vh) - 50px));
+    max-height: calc((100 * var(--vh, 1vh) - 50px));
 }
 :deep(.slider) {
     .q-slider__selection {
@@ -128,18 +138,96 @@ const VIEWS = ["gameResults", "overtime"];
 
 const statsController = ref(null);
 
+const stats = ref({
+    total_ends_played: 0,
+    hammer_ends_count: 0,
+    hammer_steal_count: 0,
+    hammer_blank_count: 0,
+    hammer_1_point_count: 0,
+    hammer_2_point_count: 0,
+    hammer_3_point_count: 0,
+    hammer_4_point_count: 0,
+    hammer_5_point_count: 0,
+    hammer_6_point_count: 0,
+    hammer_7_point_count: 0,
+    hammer_8_point_count: 0,
+    stolen_end_count: 0,
+    forced_end_count: 1,
+    avg_points_conceded: 2.75,
+});
+
+// const datasets = ref([]);
+const loading = ref(true);
+onMounted(async () => {
+    // const { client, fetchHandler } = useSupabaseFetch();
+    // const { data } = await fetchHandler(
+    //     () =>
+    //         client.rpc("get_team_stats", {
+    //             team_id_param: 22,
+    //         }),
+    //     { onError: "Error fetching game stats." }
+    // );
+
+    // const [s] = data || [];
+    // stats.value = s;
+
+    datasets.value = [
+        {
+            label: "Avg for",
+            backgroundColor: "#f06292",
+            barThickness: 15,
+            data: [2.2],
+        },
+    ];
+    loading.value = false;
+});
+
 const datasets = [              {
-                    label: "Avg stolen ends",
+                    label: "Avg for",
                     backgroundColor: "#f06292",
                     barThickness: 15,
-                    data: [50],
+                    data: [2.2],
                 },
                 {
-                    label: "Avg steals conceded",
-                    backgroundColor: "#4db6ac",
+                    label: "Avg against",
+                    backgroundColor: "#ab47bc",
                        barThickness: 15,
-                    data: [100],
+                    data: [1],
                 }]
+
+const datasetsTwo = [
+    {
+        label: "Won",
+        backgroundColor: "#1b5e20",
+        barThickness: 15,
+        data: [55],
+    },
+    {
+        label: "Lost",
+        backgroundColor: "#66bb6a",
+        barThickness: 15,
+        data: [45],
+    },
+];
+
+const datasetsThree = [
+    {
+        label: "Won",
+        backgroundColor: "#1b5e20",
+        barThickness: 15,
+        data: [55],
+    },
+    {
+        label: "Lost",
+        backgroundColor: "#66bb6a",
+        barThickness: 15,
+        data: [45],
+    },
+];
+
+const dataCallback = (data) => {
+    return `32/54 games - ${data.formattedValue}%`;
+};
 
 const sliderModel = ref(6);
 const goToView = (inc) => {

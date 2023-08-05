@@ -30,26 +30,26 @@
                         item.name || "Unnamed item"
                     }}</q-item-label>
                     <q-item-label caption>
-                        <div class="row" v-if="item.lead_player_id">
-                            Lead: {{ item.lead_player_name }}
+                        <div class="row items-center" v-if="item.lead_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.lead_player_avatar)"/></div><div>{{ item.lead_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.second_player_id">
-                            Second: {{ item.second_player_name }}
+                        <div class="row items-center  q-mt-xs" v-if="item.second_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.second_player_avatar)"/></div><div>{{ item.second_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.third_player_id">
-                            Third: {{ item.third_player_name }}
+                       <div class="row items-center q-mt-xs" v-if="item.third_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.third_player_avatar)"/></div><div>{{ item.third_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.fourth_player_id">
-                            Fourth: {{ item.fourth_player_name }}
+                         <div class="row items-center q-mt-xs" v-if="item.fourth_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.fourth_player_avatar)"/></div><div>{{ item.fourth_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.fifth_player_id">
-                            Fifth: {{ item.fifth_player_name }}
+                       <div class="row items-center q-mt-xs" v-if="item.fifth_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.fifth_player_avatar)"/></div><div>{{ item.fifth_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.sixth_player_id">
-                            Sixth: {{ item.sixth_player_name }}
+                       <div class="row items-center q-mt-xs" v-if="item.sixth_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.sixth_player_avatar)"/></div><div>{{ item.sixth_player_name }}</div>
                         </div>
-                        <div class="row" v-if="item.seventh_player_id">
-                            Seventh: {{ item.seventh_player_name }}
+                        <div class="row items-center q-mt-xs" v-if="item.seventh_player_id">
+                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.seventh_player_avatar)"/></div><div>{{ item.seventh_player_name }}</div>
                         </div>
                     </q-item-label>
                 </q-item-section>
@@ -74,23 +74,6 @@
                             @click.stop.prevent="itemToDelete = item"
                         ></q-btn>
                     </div>
-                    <LazyProfileAvatar
-                        v-else
-                        :path="getFriendPath(item.profile_id)"
-                        size="2"
-                        delay
-                    >
-                        <q-tooltip
-                            :hide-delay="5000"
-                            anchor="center left"
-                            self="center right"
-                            :offset="[10, 10]"
-                            >Team belongs to
-                            <span class="text-bold">{{
-                                friendStore.getFriendUsername(item.profile_id)
-                            }}</span></q-tooltip
-                        >
-                    </LazyProfileAvatar>
         </q-item-section>
                 <!-- <q-item-section side @click.stop.prevent>
                    
@@ -108,7 +91,6 @@
                 itemToDelete.name ?? "Unnamed team"
             }}"
         </DialogConfirmation>
-        <ButtonBottomDraggable :onClick="toggleTeamDialog" />
     </NuxtLayout>
 </template>
 <script setup lang="ts">
@@ -119,6 +101,7 @@ import { useSwipe } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
+import {parseAvatar} from '@/utils/avatar'
 import type Team from "@/types/team";
 const teamStore = useTeamStore();
 const friendStore = useFriendStore();

@@ -4,7 +4,7 @@
             <q-btn
                 fab
                 color="deep-purple"
-                icon="add"
+                :icon="icon"
                 @click="onClick"
                 :style="{opacity: isDragging ? '60%' : '100%'}"
                 style="transition: opacity 0.2s"
@@ -17,6 +17,12 @@
 import {UseDraggable} from '@vueuse/components'
 
     const props = defineProps({
+        icon: {
+            type: String,
+            default() {
+                return 'add'
+            }
+        },
         onClick: Function,
     })
 const initialValue = ref(null)
