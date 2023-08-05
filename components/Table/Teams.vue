@@ -11,70 +11,239 @@
             virtual-scroll-slice-size="10"
             virtual-scroll-item-size="100"
         >
-            <!-- <q-list bordered separator > -->
-            <!-- <q-item clickable @click="toggleTeamDialog(null)">
-        <q-item-section >
-          <div class="row items-center">
-          <q-icon name="add" size="sm" class="q-mr-xs"/><div>Add new team</div>
-          </div>
-        </q-item-section>
-      </q-item> -->
-            <!-- <q-item  clickable v-ripple v-for="team in teams" :key="team.id" :to="`/stats/team/${team.id}`"> -->
-            <!-- <TableTeamItem :key="item.id" :team="item" @click="goToStats(item.id)"/> -->
-            <q-item :key="item.id" clickable :to="`/stats/team/${item.id}`">
-                 <!-- <q-item-section avatar>
-          <q-avatar color="teal" text-color="white" icon="favorite_border"></q-avatar>
-        </q-item-section> -->
+            <q-item :key="item.id">
                 <q-item-section>
-                    <q-item-label>{{
-                        item.name || "Unnamed item"
-                    }}</q-item-label>
-                    <q-item-label caption>
-                        <div class="row items-center" v-if="item.lead_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.lead_player_avatar)"/></div><div>{{ item.lead_player_name }}</div>
+                    <q-item-label class="row items-center no-wrap">
+                        <div class="flex-shrink truncate-text">
+                            {{ item.name || "Unnamed item" }}
                         </div>
-                        <div class="row items-center  q-mt-xs" v-if="item.second_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.second_player_avatar)"/></div><div>{{ item.second_player_name }}</div>
+                        <div
+                            class="text-grey-8 col-grow row items-center"
+                            v-if="item.profile_id === userId"
+                        >
+                            <!-- <q-btn
+                                size="12px"
+                                flat
+                                dense
+                                round
+                                icon="person"
+                                @click.stop.prevent="playerSelectOpen = item.id"
+                            ></q-btn> -->
+                            <q-btn
+                                size="12px"
+                                flat
+                                dense
+                                round
+                                icon="edit"
+                                @click.stop.prevent="edit(item)"
+                            ></q-btn>
+
+                            <q-btn
+                                size="12px"
+                                flat
+                                dense
+                                round
+                                icon="delete"
+                                @click.stop.prevent="itemToDelete = item"
+                            ></q-btn></div
+                    ></q-item-label>
+
+                    <q-item-label caption class="row" style="max-height: 115px">
+                        <div class="col-6">
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.lead_player_avatar)
+                                "
+                                :player="{
+                                    id: item.lead_player_id,
+                                    name: item.lead_player_name,
+                                    avatar: item.lead_player_avatar,
+                                }"
+                                position="lead"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'lead',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.lead_player_id,
+                                        item.id,
+                                        'lead'
+                                    )
+                                "
+                            />
+
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.second_player_avatar)
+                                "
+                                :player="{
+                                    id: item.second_player_id,
+                                    name: item.second_player_name,
+                                    avatar: item.second_player_avatar,
+                                }"
+                                position="second"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'second',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.second_player_id,
+                                        item.id,
+                                        'second'
+                                    )
+                                "
+                            />
+
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.third_player_avatar)
+                                "
+                                :player="{
+                                    id: item.third_player_id,
+                                    name: item.third_player_name,
+                                    avatar: item.third_player_avatar,
+                                }"
+                                position="third"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'third',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.third_player_id,
+                                        item.id,
+                                        'third'
+                                    )
+                                "
+                            />
+
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.fourth_player_avatar)
+                                "
+                                :player="{
+                                    id: item.fourth_player_id,
+                                    name: item.fourth_player_name,
+                                    avatar: item.fourth_player_avatar,
+                                }"
+                                position="fourth"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'fourth',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.fourth_player_id,
+                                        item.id,
+                                        'fourth'
+                                    )
+                                "
+                            />
                         </div>
-                       <div class="row items-center q-mt-xs" v-if="item.third_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.third_player_avatar)"/></div><div>{{ item.third_player_name }}</div>
-                        </div>
-                         <div class="row items-center q-mt-xs" v-if="item.fourth_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.fourth_player_avatar)"/></div><div>{{ item.fourth_player_name }}</div>
-                        </div>
-                       <div class="row items-center q-mt-xs" v-if="item.fifth_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.fifth_player_avatar)"/></div><div>{{ item.fifth_player_name }}</div>
-                        </div>
-                       <div class="row items-center q-mt-xs" v-if="item.sixth_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.sixth_player_avatar)"/></div><div>{{ item.sixth_player_name }}</div>
-                        </div>
-                        <div class="row items-center q-mt-xs" v-if="item.seventh_player_id">
-                            <div style="max-height: 40px; height: 2em; width: 2em" class="q-mr-sm"><Avataaar v-bind="parseAvatar(item.seventh_player_avatar)"/></div><div>{{ item.seventh_player_name }}</div>
+                        <div class="col-6">
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.fifth_player_avatar)
+                                "
+                                :player="{
+                                    id: item.fifth_player_id,
+                                    name: item.fifth_player_name,
+                                    avatar: item.fifth_player_avatar,
+                                }"
+                                position="fifth"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'fifth',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.fifth_player_id,
+                                        item.id,
+                                        'fifth'
+                                    )
+                                "
+                            />
+
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.sixth_player_avatar)
+                                "
+                                :player="{
+                                    id: item.sixth_player_id,
+                                    name: item.sixth_player_name,
+                                    avatar: item.sixth_player_avatar,
+                                }"
+                                v-if="item.fifth_player_id"
+                                position="sixth"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'sixth',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.sixth_player_id,
+                                        item.id,
+                                        'sixth'
+                                    )
+                                "
+                            />
+                            <TableTeamPlayer
+                                :parsedAvatar="
+                                    parseAvatar(item.seventh_player_avatar)
+                                "
+                                :player="{
+                                    id: item.seventh_player_id,
+                                    name: item.seventh_player_name,
+                                    avatar: item.seventh_player_avatar,
+                                }"
+                                v-if="item.sixth_player_id"
+                                position="seventh"
+                                @add="
+                                    playerSelectOpen = {
+                                        teamId: item.id,
+                                        position: 'seventh',
+                                    }
+                                "
+                                @remove="
+                                    removePlayerFromTeam(
+                                        item.seventh_player_id,
+                                        item.id,
+                                        'seventh'
+                                    )
+                                "
+                            />
                         </div>
                     </q-item-label>
                 </q-item-section>
-                <q-item-section side top class="column">
-          <q-badge color="positive" label="My team" v-if="item.isMine" rounded></q-badge>
-           <q-badge  outline rounded  color="grey" label="+ My team" v-else></q-badge>
-           <div class="text-grey-8 col-grow row items-center" v-if="item.profile_id === userId">
-                        <q-btn
-                            size="12px"
-                            flat
-                            dense
-                            round
-                            icon="edit"
-                            @click.stop.prevent="edit(item)"
-                        ></q-btn>
-                        <q-btn
-                            size="12px"
-                            flat
-                            dense
-                            round
-                            icon="delete"
-                            @click.stop.prevent="itemToDelete = item"
-                        ></q-btn>
-                    </div>
-        </q-item-section>
+                <!-- <q-item-section side top class="column q-mt-xs">
+                    <q-badge
+                        color="positive"
+                        label="My team"
+                        v-if="item.isMine"
+                        rounded
+                    ></q-badge>
+                    <q-badge
+                        outline
+                        rounded
+                        color="grey"
+                        label="+ My team"
+                        v-else
+                    ></q-badge>
+                </q-item-section> -->
                 <!-- <q-item-section side @click.stop.prevent>
                    
                 </q-item-section> -->
@@ -91,18 +260,24 @@
                 itemToDelete.name ?? "Unnamed team"
             }}"
         </DialogConfirmation>
+        <DialogPlayerSelect
+            v-if="!!playerSelectOpen"
+            @select="addPlayerToTeam"
+            @close="playerSelectOpen = null"
+        />
     </NuxtLayout>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTeamStore } from "@/store/teams";
 import { useEditorStore } from "@/store/editor";
-import { useSwipe } from "@vueuse/core";
+import { useSwipe, useThrottleFn } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
-import {parseAvatar} from '@/utils/avatar'
+import { parseAvatar } from "@/utils/avatar";
 import type Team from "@/types/team";
+import type Player from "@/types/player";
 const teamStore = useTeamStore();
 const friendStore = useFriendStore();
 
@@ -110,10 +285,12 @@ const getFriendPath = (profile_id: string) => {
     return friendStore.getFriendAvatar(profile_id);
 };
 
-const teams = computed(() => [...teamStore.teams].map((t) => {
-    if (userStore.userTeams.includes(t.id)) return {...t, isMine: true}
-    return t; 
-}));
+const teams = computed(() =>
+    [...teamStore.teams].map((t) => {
+        if (userStore.userTeams.includes(t.id)) return { ...t, isMine: true };
+        return t;
+    })
+);
 const loading = ref(false);
 
 const loadTeams = async (force: boolean = false) => {
@@ -158,8 +335,8 @@ const userStore = useUserStore();
 const userId = computed(() => userStore.id);
 
 const goToStats = (id) => {
-    navigateTo(`/stats/team/${id}`)
-}
+    navigateTo(`/stats/team/${id}`);
+};
 
 const addButton = ref(null);
 const { x, y, style } = useDraggable(addButton, {
@@ -168,4 +345,52 @@ const { x, y, style } = useDraggable(addButton, {
         y: window.innerHeight - 75,
     },
 });
+
+const playerSelectOpen = ref(null);
+
+const addPlayer =
+    async (playerId: number, teamId: number, position) => {
+        loading.value = true;
+        const { client, fetchHandler } = useSupabaseFetch();
+        const { error } = await fetchHandler(() =>
+            client
+                .from(TABLE_NAMES.TEAMS)
+                .update({ [`${position}_player_id`]: playerId })
+                .eq("id", teamId)
+        );
+        if (error) {
+            console.error(error);
+                  loading.value = false;
+            return;
+        }
+        loadTeams(true);
+
+    }
+
+
+
+const removePlayerFromTeam =  async (playerId: number, teamId: number, position: string) => {
+loading.value = true;
+        const { client, fetchHandler } = useSupabaseFetch();
+        const { error, data } = await fetchHandler(() =>
+            client
+                .from(TABLE_NAMES.TEAMS)
+                .update({ [`${position}_player_id`]: null })
+                .eq("id", teamId)
+        );
+        console.log(error, data)
+        if (error) {
+            console.error(error);
+            loading.value = false;
+            return;
+        }
+        loadTeams(true);
+    
+};
+
+const addPlayerToTeam = (playerId: number) => {
+    const { teamId, position } = playerSelectOpen.value || {};
+    playerSelectOpen.value = null;
+    addPlayer(playerId, teamId, position);
+};
 </script>

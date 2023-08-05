@@ -1,7 +1,7 @@
 <template>
     <div ref="header" style="z-index:10"  class="full-width">
             <!-- <ProfileExpandable v-model="expanded" /> -->
-            <q-toolbar
+            <!-- <q-toolbar
                 class="bg-deep-purple text-white q-px-none"
                 v-if="$q.screen.lt.md"
                 role="navigation"
@@ -22,7 +22,7 @@
                         :label="tab.label"
                     />
                 </q-tabs>
-            </q-toolbar>
+            </q-toolbar> -->
         </div>
         <!-- <transition-group
             appear
@@ -40,25 +40,26 @@
 
             <section
                 class="column select__section full-width"
-                v-if="tab === TAB_VALUES.TEAMS"
+            
                 key="teams"
                 name="teams"
             >
                 <TableTeams />
             </section>
    <!-- v-else-if="tab === TAB_VALUES.PLAYERS" -->
-            <section
+            <!-- <section
                 class="column select__section full-width"
                 v-else
                 key="players"
             >
                 <TablePlayers />
-            </section>
+            </section> -->
         <!-- </transition-group> -->
+        
 </template>
 <style lang="scss" scoped>
     .select__section {
-        height: calc((var(--vh) * 100) - 50px);
+        height: calc((var(--vh) * 100));
         overflow: auto;
     }
 </style>
@@ -71,10 +72,10 @@ const TABS = [
         label: "Teams",
         value: 1,
     },
-    {
-        label: "Players",
-        value: 2,
-    },
+    // {
+    //     label: "Players",
+    //     value: 2,
+    // },
 ];
 
 const TAB_VALUES = {

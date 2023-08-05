@@ -1,5 +1,5 @@
 <template>
-    <NuxtLayout>
+    <!-- <NuxtLayout> -->
 
         <q-virtual-scroll
             class="col-grow bg-white"
@@ -7,6 +7,7 @@
             :items="players"
             v-slot="{ item }"
             separator
+         
         >
             <q-inner-loading
                 :showing="loading"
@@ -15,14 +16,12 @@
             />
             <!-- :to="`/stats/player/${item.id}`" -->
             <q-item
-                
-                v-ripple
                 :key="item.id"
                 class="items-center row"
             >
             <q-item-section avatar>
        
-                <Avataaar  v-bind="parseAvatar(item.avatar)"/>
+                <PlayerAvatar  :parsedAvatar="parseAvatar(item.avatar)" :player="item"/>
                
             </q-item-section>
                 <q-item-section>
@@ -33,47 +32,11 @@
                 </q-item-section>
                 <q-item-section side @click.stop.prevent>
                     <div class="text-grey-8 row no-wrap">
-                        <q-btn
-                            size="12px"
-                            flat
-                            dense
-                            round
-                            icon="edit"
-                            @click.stop.prevent="togglePlayerEditor(item)"
-                            v-if="item.profile_id === userId"
-                        ></q-btn>
-                        <q-btn
-                            size="12px"
-                            flat
-                            dense
-                            round
-                            icon="delete"
-                            @click.stop.prevent="itemToDelete = item"
-                            v-if="item.profile_id === userId"
-                        ></q-btn>
+                        <slot name="actions" v-bind:playerId="item.id"/>
                     </div>
                 </q-item-section>
             </q-item>
         </q-virtual-scroll>
-
-    <DialogConfirmation
-            v-if="itemToDelete"
-            @close="itemToDelete = null"
-            @confirm="deletePlayer(itemToDelete)"
-        >
-            Are you sure you want to delete player "{{
-                itemToDelete.name ?? "N/A"
-            }}"
-        </DialogConfirmation>
-<Teleport to="body">
-    <div class="avatar__container" v-if="showPlayerEditor">
-                        <div  class="pretty-shadow" style="background-color: white; pointer-events: all; border-radius: 16px; height: calc(100% - 32px); margin: 16px">
-                <AvatarGenerator style="height: 100%" :player="editedPlayer" @close="closePlayerEditor" />
-             
-        </div>
-    </div>
-</Teleport>
-    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
     .avatar__container {
@@ -95,21 +58,6 @@ import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
 import Json from "@/types/json";
 import {parseAvatar} from '@/utils/avatar'
-
-const showPlayerEditor = ref(false)
-
-const editedPlayer = ref<Player | null>(null)
-
-const togglePlayerEditor = (player: Player) => {
-    showPlayerEditor.value = true;
-    editedPlayer.value = player;
-}
-
-const closePlayerEditor = () => {
-     showPlayerEditor.value = false;
-    editedPlayer.value = null
-}
-
 
 const store = usePlayerStore();
 const userStore = useUserStore();
@@ -139,16 +87,5 @@ const { direction } = useSwipe(tableArea, {
     },
 });
 
-const edit = (player: Player) => {
-    togglePlayerDialog(player);
-};
-
-const itemToDelete = ref<Player | null>(null);
-const deletePlayer = async (player: Player) => {
-    const { id = null } = player;
-
-    await store.deletePlayer(id);
-    itemToDelete.value = null;
-};
 
 </script>
