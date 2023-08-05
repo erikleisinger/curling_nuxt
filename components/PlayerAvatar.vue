@@ -1,6 +1,6 @@
 <template>
-    <Avataaar v-bind="props.parsedAvatar" @click.stop.prevent="openMenu" @hide="menuOpen =false"/>
-    <q-menu :model-value="menuOpen" style="background-color: unset; box-shadow: unset" class="q-pa-xs" ref="menu">
+    <Avataaar v-bind="props.parsedAvatar" @click.stop.prevent="openMenu"/>
+    <q-menu :model-value="menuOpen" style="background-color: unset; box-shadow: unset; z-index: 100000" class="q-pa-xs" ref="menu" auto-close  @hide="menuOpen = false">
         <div class="row">
                <q-btn color="deep-purple"  round size="sm" class="q-mr-sm" @click="goToStats" > <q-icon color="white" name="equalizer" size="xs" /></q-btn>
             <q-btn color="deep-purple"  round size="sm" class="q-mr-sm" @click="openPlayerEditor"> <q-icon color="white" name="edit" size="xs" /></q-btn>
@@ -58,10 +58,11 @@ import {onClickOutside} from '@vueuse/core'
     loading.value = false;
 };
 
+const menu = ref(null);
 const openMenu = () => {
     if (loading.value) return;
     nextTick(() => {
-   menuOpen.value = true;
+   menu.value.show();
     })
  
 }
@@ -87,8 +88,6 @@ const goToStats = () => {
     return navigateTo(`/stats/player/${props.player.id}`)
 }
 
-const menu = ref(null);
-onClickOutside(menu, () => {
 
-})
+
 </script>

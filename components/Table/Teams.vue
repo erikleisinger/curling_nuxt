@@ -17,36 +17,7 @@
                         <div class="flex-shrink truncate-text">
                             {{ item.name || "Unnamed item" }}
                         </div>
-                        <div
-                            class="text-grey-8 col-grow row items-center"
-                            v-if="item.profile_id === userId"
-                        >
-                            <!-- <q-btn
-                                size="12px"
-                                flat
-                                dense
-                                round
-                                icon="person"
-                                @click.stop.prevent="playerSelectOpen = item.id"
-                            ></q-btn> -->
-                            <q-btn
-                                size="12px"
-                                flat
-                                dense
-                                round
-                                icon="edit"
-                                @click.stop.prevent="edit(item)"
-                            ></q-btn>
-
-                            <q-btn
-                                size="12px"
-                                flat
-                                dense
-                                round
-                                icon="delete"
-                                @click.stop.prevent="itemToDelete = item"
-                            ></q-btn></div
-                    ></q-item-label>
+                    </q-item-label>
 
                     <q-item-label caption class="row" style="max-height: 115px">
                         <div class="col-6">
@@ -348,44 +319,43 @@ const { x, y, style } = useDraggable(addButton, {
 
 const playerSelectOpen = ref(null);
 
-const addPlayer =
-    async (playerId: number, teamId: number, position) => {
-        loading.value = true;
-        const { client, fetchHandler } = useSupabaseFetch();
-        const { error } = await fetchHandler(() =>
-            client
-                .from(TABLE_NAMES.TEAMS)
-                .update({ [`${position}_player_id`]: playerId })
-                .eq("id", teamId)
-        );
-        if (error) {
-            console.error(error);
-                  loading.value = false;
-            return;
-        }
-        loadTeams(true);
-
+const addPlayer = async (playerId: number, teamId: number, position) => {
+    loading.value = true;
+    const { client, fetchHandler } = useSupabaseFetch();
+    const { error } = await fetchHandler(() =>
+        client
+            .from(TABLE_NAMES.TEAMS)
+            .update({ [`${position}_player_id`]: playerId })
+            .eq("id", teamId)
+    );
+    if (error) {
+        console.error(error);
+        loading.value = false;
+        return;
     }
+    loadTeams(true);
+};
 
-
-
-const removePlayerFromTeam =  async (playerId: number, teamId: number, position: string) => {
-loading.value = true;
-        const { client, fetchHandler } = useSupabaseFetch();
-        const { error, data } = await fetchHandler(() =>
-            client
-                .from(TABLE_NAMES.TEAMS)
-                .update({ [`${position}_player_id`]: null })
-                .eq("id", teamId)
-        );
-        console.log(error, data)
-        if (error) {
-            console.error(error);
-            loading.value = false;
-            return;
-        }
-        loadTeams(true);
-    
+const removePlayerFromTeam = async (
+    playerId: number,
+    teamId: number,
+    position: string
+) => {
+    loading.value = true;
+    const { client, fetchHandler } = useSupabaseFetch();
+    const { error, data } = await fetchHandler(() =>
+        client
+            .from(TABLE_NAMES.TEAMS)
+            .update({ [`${position}_player_id`]: null })
+            .eq("id", teamId)
+    );
+    console.log(error, data);
+    if (error) {
+        console.error(error);
+        loading.value = false;
+        return;
+    }
+    loadTeams(true);
 };
 
 const addPlayerToTeam = (playerId: number) => {
