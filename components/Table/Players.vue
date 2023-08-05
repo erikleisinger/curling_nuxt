@@ -1,20 +1,14 @@
 <template>
     <!-- <NuxtLayout> -->
 
-    <q-virtual-scroll
-        class="col-grow bg-white"
-        ref="tableArea"
-        :items="players"
-        v-slot="{ item }"
-        separator
-    >
+    
         <q-inner-loading
             :showing="loading"
             label="Please wait..."
             color="primary"
         />
         <!-- :to="`/stats/player/${item.id}`" -->
-        <q-item :key="item.id" class="items-center row">
+        <q-item v-for="item in players" :key="item.id" class="items-center row" v-memo="[item.avatar, item.name]">
             <q-item-section avatar>
                 <PlayerAvatar
                     :parsedAvatar="parseAvatar(item.avatar)"
@@ -35,7 +29,6 @@
                 </div>
             </q-item-section>
         </q-item>
-    </q-virtual-scroll>
 </template>
 <script setup lang="ts">
 import { usePlayerStore } from "@/store/players";

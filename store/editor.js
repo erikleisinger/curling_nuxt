@@ -2,7 +2,6 @@ import {defineStore} from "pinia";
 import {Dialog} from "quasar";
 
 import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
-import DialogPlayerEditor from "@/components/Dialog/PlayerEditor.vue";
 import DialogRinkEditor from '@/components/Dialog/RinkEditor.vue'
 import  DialogSheetEditor  from "@/components/Dialog/SheetEditor.vue";
 
@@ -11,6 +10,14 @@ import  DialogShotTypeEditor  from "@/components/Dialog/ShotTypeEditor.vue";
 
 export const useEditorStore = defineStore("editor", {
     state: () => ({
+        mousePos: {
+            x: 0,
+            y: 0,
+        },
+        playerSelect: {
+            open: false,
+            onSelect: null,
+        },
         playerEditor: {
             open: false,
             editedPlayer: null,
@@ -22,7 +29,9 @@ export const useEditorStore = defineStore("editor", {
         
     }),
   actions: {
-    
+    setMousePos(e) {
+        console.log('set mouse pos: ', e)
+    },
     toggleGameDialog(edited) {
       Dialog.create({
         component: DialogGameEditor,
@@ -38,6 +47,19 @@ export const useEditorStore = defineStore("editor", {
         } else {
             this.playerEditor.open = true;
             this.playerEditor.editedPlayer = editedPlayer
+        }
+    },
+    togglePlayerSelect({onSelect = null, open}) {
+        if (open === false) {
+            this.playerSelect.open = false;
+            this.playerSelect.onSelect = false
+        } else {
+            if (!onSelect) {
+                console.error('cant open player select: no onSelect callback provided');
+                return;
+            }
+            this.playerSelect.open = true;
+            this.playerSelect.onSelect = onSelect
         }
     },
     toggleRinkDialog(edited) {

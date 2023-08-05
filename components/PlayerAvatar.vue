@@ -11,7 +11,7 @@
                 top: unset;
                 bottom: 0px;
             "
-            v-if="isCurrentUserPlayer"
+            v-if="isCurrentUserPlayer && !hidePlayerIcon"
         >
             <q-icon size="1em" name="person" />
         </q-badge>
@@ -26,7 +26,7 @@
                 top: unset;
                 bottom: 0px;
             "
-            v-if="!!isOtherUserPlayer"
+            v-if="!!isOtherUserPlayer && !hidePlayerIcon"
         >
             <q-icon size="1em" name="person" />
         </q-badge>
@@ -39,19 +39,21 @@
         @hide="menuOpen = false"
         transition-show="scale"
         cover
-        anchor="center left"
+        :anchor="popoutPosition"
+        max-height="10px"
     >
-        <div class="row items-center" style="overflow: hidden">
+        <div class="row items-center no-wrap" style="overflow: hidden">
             <div
-                :style="{ height, width, marginLeft: `-${width * 0.1}em` }"
+                :style="{ height, width, minWidth: width, marginLeft: `-${width * 0.1}em` }"
                 class="q-mr-sm q-mb-sm"
+
             >
                 <Avataaar
                     v-bind="props.parsedAvatar"
                     @click.stop.prevent="openMenu"
                 />
             </div>
-            <div class="column justify-center q-pa-xs">
+            <div class="column justify-center q-pa-xs col-shrink">
                 <div class="truncate-text q-mb-xs">
                     {{ player.name ?? "Unnamed player" }}
                 </div>
@@ -119,7 +121,7 @@
                             size="sm"
                             round
                             @click="openDeleteDialog"
-                            v-if="canEdit"
+                            v-if="canEdit && canDelete"
                             ><q-icon color="white" name="delete" size="xs"
                         /></q-btn>
                     </slot>
@@ -161,10 +163,12 @@
 .player-avatar__menu {
     background-color: unset;
     z-index: 1000000;
-    max-width: unset;
     background-color: white;
     border-radius: 8px;
     padding-bottom: 8px;
+    min-width: 100px!important;
+    min-height: 6.7em!important;
+
 }
 .avatar-editor__container {
     height: calc(100 * var(--vh, 1vh));
@@ -185,8 +189,13 @@ const props = defineProps({
         type: String,
         default: "4em",
     },
+    hidePlayerIcon: Boolean,
     player: Object,
     parsedAvatar: Object,
+    popoutPosition: {
+        type: String,
+        default: "center left"
+    },
     showStats: {
         type: Boolean,
         default() {
@@ -243,6 +252,7 @@ const goToStats = () => {
 };
 const userStore = useUserStore();
 const canEdit = computed(() => userStore.id === props.player.profile_id);
+const canDelete =  computed(() => !props.player.profile_id_for_player);
 const isCurrentUserPlayer = computed(
     () => userStore.id === props.player.profile_id_for_player?.id
 );

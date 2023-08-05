@@ -31,13 +31,19 @@
                 />
             </div>
         </div>
-        <div
-            style="height: 10%"
+
+        <InputName :name="player.name" @save="saveName" class="q-mb-lg justify-center">
+    <template v-slot:text>
+        <h2 class="text-md text-bold truncate-text">{{ name }}</h2>
+    </template>
+        </InputName>
+        <!-- <div
+           
             class="row justify-center text-md items-center"
         >
             <h2 class="text-md text-bold">{{ name }}</h2>
             <q-btn round size="sm" flat icon="edit" />
-        </div>
+        </div> -->
         <div
             class="row q-py-md"
             style="height: 50%; overflow: auto; border-top: 1px solid gray"
@@ -194,8 +200,6 @@ const skinColor = ref("Pale");
 const topColor = ref("Black");
 const topType = ref("LongHairFrida");
 
-const name = ref<string | null>(undefined);
-
 const avatarContainer = ref(null);
 
 const { height } = useElementSize(avatarContainer);
@@ -239,10 +243,14 @@ const parseAvatarInfo = (avatar: Json) => {
 
 const loading = ref(false)
 
+    const playerStore = usePlayerStore();
+const name = computed(() => {
+    return playerStore.players.find((p) => p.id === props.player?.id)?.name || 'Unnamed player'
+})
+
 onMounted(() => {
     loading.value = true;
-    const { name: playerName = 'Unnamed Player', avatar = null } = props.player || {};
-    name.value = playerName;
+    const { avatar = null } = props.player || {};
 
     if (avatar) {
         parseAvatarInfo(avatar);
@@ -269,16 +277,20 @@ const savePlayer = () => {
         topType: topType.value,
     };
 
-    const playerStore = usePlayerStore();
+
     const updatedPlayer = {
         id: props.player?.id,
         name: name.value,
         avatar: JSON.stringify(newAvatar),
     }
-    playerStore.insertPlayer(updatedPlayer);
+    playerStore.insertPlayer(updatedPlayer);    
 
     emit("close");
 };
 
 const emit = defineEmits(["close"]);
+
+const saveName = (name: string) => {
+     playerStore.insertPlayer({id: props.player?.id, name});   
+}
 </script>

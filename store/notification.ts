@@ -15,7 +15,7 @@ export const useNotificationStore = defineStore("notification", {
     actions: {
         addNotification({
             text,
-            timeout = 10000,
+            timeout = 5000,
             state = 'completed',
         }: {
             text: string;

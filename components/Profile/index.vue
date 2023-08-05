@@ -1,34 +1,22 @@
 <template>
     <NuxtLayout>
-        <div class="profile__container items-center" ref="profileContainer">
-            <!-- <div class="profile--wrap"> -->
+        <div class="profile__container items-center">
             <header
-                class="column justify-center items-center profile__header col-grow"
-            >
-                <ProfileAvatar
-                    :path="user.avatarUrl"
-                    :loading="uploading"
-                    :size="8"
-                >
-                    <input
-                        type="file"
-                        name="file"
-                        id="file"
-                        class="upload__input"
-                        accept="image/*"
-                        @change="uploadAvatar"
-                        :disabled="uploading"
-                        ref="fileUpload"
-                    />
-                    <label
-                        for="file"
-                        class="upload__input--label row justify-center items-center"
-                    >
-                        <q-icon name="edit" class="icon" />
-                    </label>
-                </ProfileAvatar>
-
-                <h1 class="text-black text-bold">My Profile</h1>
+                class="column justify-center items-center profile__header col-grow">
+                <div style="width: 50vw">
+                <PlayerAvatar :parsedAvatar="parseAvatar(player.avatar)" :player="player" popoutPosition="bottom right" hidePlayerIcon showStats>
+                    <template v-slot:deleteButton>
+                        <q-btn
+                            color="deep-purple"
+                            size="sm"
+                            round
+                            @click="openPlayerSelector"
+                            ><q-icon color="white" name="swap_horiz" size="xs"
+                        /></q-btn>
+                    </template>
+                </PlayerAvatar> 
+                </div>
+                <h1 class="text-black text-bold">{{`${user.firstName} ${user.lastName}`}}</h1>
                 <h2 class="text-muted text-lg" aria-roledescription="user name">
                     #{{ user.username }}
                 </h2>
@@ -80,7 +68,6 @@
                     </div>
                 </section>
             </main>
-            <!-- </div> -->
         </div>
     </NuxtLayout>
 </template>
@@ -156,15 +143,27 @@
 <script setup>
 import imageCompression from "browser-image-compression";
 import { useUserStore } from "@/store/user";
+import {usePlayerStore} from '@/store/players'
+import {useEditorStore} from '@/store/editor'
 import { BannerColors } from "@/types/color";
+import {useNotificationStore} from '@/store/notification'
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
-import { useScroll, useElementVisibility } from "@vueuse/core";
+
+import {parseAvatar} from '@/utils/avatar'
 const store = useUserStore();
 
 const user = computed(() => {
-    const { id, timezone, friendId, username, avatarUrl } = store;
-    return { id, timezone, friendId, username, avatarUrl };
+    const { id, timezone, friendId, username, player, firstName, lastName } = store;
+    return { id, timezone, friendId, username,  player, firstName, lastName};
 });
+ 
+
+const playerStore = usePlayerStore();
+
+const player = computed(() => {
+       const player = playerStore.players.find((p) => user.value.player.id === p.id)
+return {...player, profile_id_for_player: {id: user.value.id}}
+})
 
 const { toTimezone } = useTime();
 
@@ -214,75 +213,40 @@ const addFriend = async () => {
     }
 };
 
-const avatar = ref(null);
-const uploading = ref(false);
-const src = ref("");
-const files = ref();
-const path = ref("");
-const fileUpload = ref(null);
+const openPlayerSelector = () => {
+    const editorStore = useEditorStore();
+  
+    editorStore.togglePlayerSelect({open: true, onSelect: async (playerId) => {
+  const notificationStore = useNotificationStore();
+  const notId = notificationStore.addNotification({
+    state: 'pending',
+    text: 'Updating...'
+  })
+  try {
+ await playerStore.updatePlayerLink({
+            playerId: player.value.id,
+            profileId: null
+        })
+        await playerStore.updatePlayerLink({
+            playerId: playerId,
+            profileId: user.value.id
+        })
+        await store.getCurrentUser();
+         notificationStore.updateNotification(notId, {
+            state: 'completed',
+            text: 'Player linked!',
 
-const compressFile = async (file) => {
-    const options = {
-        maxSizeMB: 0.029,
-        maxWidthOrHeight: 300,
-        useWebWorker: true,
-    };
-    try {
-        return await imageCompression(file, options);
-    } catch (error) {
-        console.log(error);
-    }
+        })
+  } catch(e) {
+     notificationStore.updateNotification(notId, {
+            state: 'failed',
+            text: `Issue linking player: ${e}`,
+
+        })
+  }
+       
+
+       
+    }})
 };
-
-const uploadAvatar = async (evt) => {
-    if (!user.value.id) return;
-    const { clearBanner } = useBanner();
-    clearBanner();
-    files.value = evt.target.files;
-    uploading.value = true;
-    if (!files.value || files.value.length === 0) {
-        const { setBanner } = useBanner();
-        setBanner("You must select an image to upload.", BannerColors.Negative);
-    }
-
-    let file = files.value[0];
-    file = await compressFile(file);
-    if (file.size > MAX_AVATAR_FILE_SIZE) {
-        const { setBanner } = useBanner();
-        setBanner("Image is too large.", BannerColors.Negative);
-        uploading.value = false;
-        fileUpload.value.value = "";
-        return;
-    }
-    const fileExt = file.name.split(".").pop();
-    path.value = `${Math.random()}.${fileExt}`;
-    const { client, fetchHandler } = useSupabaseFetch();
-    let { data } = await fetchHandler(
-        () => client.storage.from("Avatars").upload(path.value, file),
-        { onError: "Error uploading file." }
-    );
-
-    if (data) {
-        const { data: addAvatarData } = await fetchHandler(
-            () =>
-                client
-                    .from("profiles")
-                    .update({ avatar_url: path.value })
-                    .eq("id", user.value.id),
-            { onError: "Error setting avatar for profile" }
-        );
-        if (addAvatarData) {
-            store.setAvatar(path.value);
-        }
-    }
-    uploading.value = false;
-};
-
-const profileContainer = ref(null);
-const visible = useElementVisibility(profileContainer);
-const { y } = useScroll(profileContainer);
-
-watch(visible, () => {
-    y.value = 0;
-});
 </script>

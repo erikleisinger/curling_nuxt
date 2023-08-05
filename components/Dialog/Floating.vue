@@ -15,7 +15,7 @@
                     <q-btn flat round icon="close" @click="close"/>
                 </div>
                 </div>
-                <div class="content__container">
+                <div class="content__container" v-cloak>
                     <slot @close="close" />
                 </div>
             </div>
@@ -23,13 +23,17 @@
     </Teleport>
 </template>
 <style lang="scss" scoped>
+[v-cloak] {
+  display: none;
+}
 .outer__container {
     height: calc(100 * var(--vh, 1vh));
     width: 100vw;
     z-index: 100000;
     position: absolute;
     top: 0;
-    transform-origin:0% 50%;
+    // transform-origin:0% 50%;
+    transform-origin: bottom left;
     .inner__container {
         background-color: white;
         pointer-events: all;
@@ -68,4 +72,6 @@ const timeout = () => {
     await timeout();
     emit('close')
 }
+
+
 </script>

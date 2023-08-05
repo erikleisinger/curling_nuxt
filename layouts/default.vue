@@ -112,10 +112,10 @@
                 </div>
                 <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Settings"
+                        label="Profile"
                         :selected="view === VIEWS.SETTINGS"
                         :onClick="() => setView(VIEWS.SETTINGS)"
-                        icon="settings"
+                        icon="person"
                         size="3em"
                         class="col-grow"
                     />

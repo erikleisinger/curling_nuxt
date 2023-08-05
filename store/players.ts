@@ -72,12 +72,54 @@ export const usePlayerStore = defineStore("players", {
       } 
       return null;
     },
+    async refreshPlayer(playerId: number, shouldSort = false) {
+        const { client, fetchHandler } = useSupabaseFetch();
+        //   const {data} = await fetchHandler(() => client
+        //     .rpc('get_team_detailed', {team_id_param: teamId}), {onError: 'Error refreshing team'})
+        const { getQuery } = useDatabase();
+        const { data } = await fetchHandler(
+            () =>
+                client
+                    .from(TABLE_NAMES.PLAYERS)
+                    .select('*')
+                    .eq('id', playerId),
+
+            { onError: "Error fetching teams" }
+        );
+        const [refreshedPlayer] = data || [];
+
+        if (refreshedPlayer) {
+            const index = this.players.findIndex(
+                (g) => g.id === refreshedPlayer.id
+            );
+            if (index === -1) {
+                this.players.push(refreshedPlayer);
+            } else {
+                this.players.splice(index, 1, refreshedPlayer);
+            }
+            if (shouldSort) this.sortPlayers();
+        }
+    },
     resetPlayers() {
         this.players = []
       },
     sortPlayers() {
       const {sortNameAlphabetically} = useSort();
       this.players.sort(sortNameAlphabetically);
+    },
+    async updatePlayerLink({playerId, profileId} : {playerId: number, profileId: string}) {
+        const { client, fetchHandler } = useSupabaseFetch();
+        const { error } = await fetchHandler(() =>
+            client
+                .from(TABLE_NAMES.PLAYERS)
+                .update({profile_id_for_player: profileId})
+                .eq("id", playerId)
+        );
+
+        if (error) {
+            throw new Error(error)
+        }
+        this.refreshPlayer(playerId);
     },
 
   },
