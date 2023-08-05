@@ -4,6 +4,6 @@ export const parseAvatar = (avatar) => {
         return parsedAvatar
         
     } catch  {
-        return "{}"
+        return {}
     }
 };

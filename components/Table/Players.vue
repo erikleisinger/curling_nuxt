@@ -21,7 +21,7 @@
             >
             <q-item-section avatar>
        
-                <PlayerAvatar  :parsedAvatar="parseAvatar(item.avatar)" :player="item"/>
+                <PlayerAvatar  :parsedAvatar="parseAvatar(item.avatar)" :player="item" :showStats="false"/>
                
             </q-item-section>
                 <q-item-section>
@@ -38,15 +38,6 @@
             </q-item>
         </q-virtual-scroll>
 </template>
-<style lang="scss" scoped>
-    .avatar__container {
-        height: calc(100 * var(--vh, 1vh)); 
-        width: 100vw; 
-        z-index: 100000; 
-        position: absolute; 
-        top: 0;
-    }
-</style>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useEditorStore } from "@/store/editor";

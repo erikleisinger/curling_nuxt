@@ -35,12 +35,14 @@ export const useFriendStore = defineStore("friends", {
                 profile_id_1 (
                     id,
                     avatar_url,
-                    username
+                    username,
+                    player_id
                 ),
                 profile_id_2 (
                     id,
                     avatar_url,
-                    username
+                    username,
+                    player_id
                 )
             `), {onError: 'Error deleting game'})
          
@@ -50,12 +52,14 @@ export const useFriendStore = defineStore("friends", {
                     if (profile1.id !== id) {
                         this.friends[profile1.id] = {
                             avatar: profile1.avatar_url,
-                            username: profile1.username
+                            username: profile1.username,
+                            playerId: profile1.player_id,
                         }
                     } else if (profile2.id !== id) {
                         this.friends[profile2.id] = {
                             avatar: profile2.avatar_url,
-                            username: profile2.username
+                            username: profile2.username,
+                            playerId: profile2.player_id,
                         }
                     } 
                 })

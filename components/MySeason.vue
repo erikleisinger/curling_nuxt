@@ -129,6 +129,7 @@
 </style>
 <script setup>
 import { useSwipe } from "@vueuse/core";
+import {useNotificationStore} from '@/store/notification'
 import Chart from "chart.js/auto";
 const model = ref("stats");
 
@@ -246,4 +247,5 @@ const { direction } = useSwipe(statsController, {
         }
     },
 });
+
 </script>

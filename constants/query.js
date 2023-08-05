@@ -41,37 +41,79 @@ export const TABLE_QUERIES = {
     points_scored
     `,
     [TABLE_NAMES.TEAMS]: `
+    id,
+    name,
+    profile_id,
+    lead_player_id (
         id,
         name,
-        lead_player_id (
-          id,
-          name
-        ),
-        second_player_id (
-          id,
-          name
-        ),
-        third_player_id (
-          id,
-          name
-        ),
-        fourth_player_id (
-          id,
-          name
-        ),
-        fifth_player_id (
-          id,
-          name
-        ),
-        sixth_player_id (
-          id,
-          name
-        ),
-        seventh_player_id (
-          id,
-          name
-        ),
-        profile_id
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    second_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    third_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    fourth_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    fifth_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    sixth_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    ),
+    seventh_player_id (
+        id,
+        name,
+        avatar,
+        profile_id,
+        profile_id_for_player (
+            id,
+            username
+        )
+    )
     `,
     [TABLE_NAMES.SHOT_TYPES]: `
     id,

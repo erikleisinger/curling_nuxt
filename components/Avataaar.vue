@@ -1,4 +1,5 @@
 <template>
+<div style="position:relative; height: 100%; width: 100%">
 <svg
     viewBox='0 0 264 280'
     version='1.1'
@@ -93,7 +94,11 @@
         </g>
       </g>
     </g>
+    
 </svg>
+    <slot/>
+</div>
+
 </template>
 <script>
 function 

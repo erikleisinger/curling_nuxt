@@ -3,7 +3,6 @@ import {Dialog} from "quasar";
 
 import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
 import DialogPlayerEditor from "@/components/Dialog/PlayerEditor.vue";
-import DialogTeamEditor from "@/components/Dialog/TeamEditor.vue";
 import DialogRinkEditor from '@/components/Dialog/RinkEditor.vue'
 import  DialogSheetEditor  from "@/components/Dialog/SheetEditor.vue";
 
@@ -11,7 +10,15 @@ import  DialogShotTypeEditor  from "@/components/Dialog/ShotTypeEditor.vue";
 
 
 export const useEditorStore = defineStore("editor", {
+    state: () => ({
+        teamEditor: {
+            open: false,
+            editedTeam: null
+        }
+        
+    }),
   actions: {
+    
     toggleGameDialog(edited) {
       Dialog.create({
         component: DialogGameEditor,
@@ -23,14 +30,6 @@ export const useEditorStore = defineStore("editor", {
     togglePlayerDialog(edited) {
       Dialog.create({
         component: DialogPlayerEditor,
-        componentProps: {
-          edited,
-        }
-      });
-    },
-    toggleTeamDialog(edited) {
-      Dialog.create({
-        component: DialogTeamEditor,
         componentProps: {
           edited,
         }
@@ -59,6 +58,15 @@ export const useEditorStore = defineStore("editor", {
           edited,
         }
       });
+    },
+    toggleTeamEditor({editedTeam, open}) {
+        if (open === false) {
+            this.teamEditor.open = false;
+            this.teamEditor.editedTeam = null
+        } else {
+            this.teamEditor.open = true;
+            this.teamEditor.editedTeam = editedTeam
+        }
     }
   },
 });

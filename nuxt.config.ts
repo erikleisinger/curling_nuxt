@@ -53,7 +53,7 @@ export default defineNuxtConfig({
             ],
             fontIcons: ["material-icons-outlined", "material-symbols-outlined", "material-icons"],
         },
-        plugins: ["Dialog"],
+        plugins: ["Dialog", "Notify"],
         sassVariables: true,
     },
     modules: [

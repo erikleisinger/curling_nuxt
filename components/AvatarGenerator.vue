@@ -7,6 +7,13 @@
         >
             <q-btn flat round icon="close" />
         </div>
+         <div
+            style="position: absolute; top: 0; left: 0; z-index: 1"
+            class="q-ma-sm"
+            @click="savePlayer"
+        >
+            <q-btn flat round icon="save" size="md" color="deep-purple"/>
+        </div>
         <div class="row justify-center" style="height: 40%; position: relative">
             <div
                 style="height: 90%"
@@ -128,7 +135,6 @@
             <q-btn @click="randomize" color="deep-purple">Random</q-btn>
             </div>
         </div>
-        <ButtonBottomDraggable icon="save" :onClick="savePlayer" />
     </div>
 </template>
 <script setup lang="ts">
@@ -264,11 +270,12 @@ const savePlayer = () => {
     };
 
     const playerStore = usePlayerStore();
-    playerStore.insertPlayer({
+    const updatedPlayer = {
         id: props.player?.id,
         name: name.value,
         avatar: JSON.stringify(newAvatar),
-    });
+    }
+    playerStore.insertPlayer(updatedPlayer);
 
     emit("close");
 };

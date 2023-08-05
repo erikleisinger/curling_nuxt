@@ -73,18 +73,23 @@
                             size="2em"
                             direction="up"
                             class="action__button"
+                            v-model="actionOpen"
                         >
                             <q-fab-action
                                 color="deep-purple-10"
-                                @click="onClick"
                                 icon="scoreboard"
                                 label="Line score"
                             ></q-fab-action>
                             <q-fab-action
                                 color="deep-purple-10"
-                                @click="onClick"
                                 icon="radio_button_checked"
                                 label="Shot by shot"
+                            />
+                            <q-fab-action
+                                color="deep-purple-10"
+                                icon="group_add"
+                                label="New team"
+                                @click="createNewTeam"
                             />
                         </q-fab>
                     </div>
@@ -128,6 +133,9 @@
 <script setup>
 import { useNavigationStore } from "@/store/navigation";
 import { VIEWS } from "@/constants/navigation";
+import { useEditorStore } from "@/store/editor";
+import { TABLE_NAMES } from "@/constants/tables";
+import { useTeamStore } from "@/store/teams";
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
@@ -142,4 +150,15 @@ const toggleRightDrawer = () => {
 const navStore = useNavigationStore();
 const { setView } = navStore;
 const view = computed(() => navStore.view);
+
+const actionOpen = ref(false);
+const createNewTeam = async () => {
+    const teamStore = useTeamStore();
+    actionOpen.value = false;
+    const id = await teamStore.createBlankTeam();
+    navStore.setTeamFocus(id);
+    nextTick(() => {
+        setView(VIEWS.MANAGE);
+    });
+};
 </script>

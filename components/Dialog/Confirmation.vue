@@ -1,5 +1,5 @@
 <template>
-    <q-dialog v-model="isOpen" persistent>
+    <q-dialog v-model="isOpen" persistent style="z-index: 100000">
         <q-card style="max-width: 90vw; width: 90vw">
             <q-card-section>
                 <slot/>

@@ -1,6 +1,7 @@
 <template>
-<VitePwaManifest/>
+<!-- <VitePwaManifest/> -->
     <NuxtPage />
+    <NotificationHandler/>
 </template>
 <style lang="scss">
 #__nuxt {

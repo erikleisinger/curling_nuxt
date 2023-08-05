@@ -4,6 +4,7 @@ export const useNavigationStore = defineStore('navigation', {
     state: () => {
         return {
           editGame: false,
+          focusTeam: null,
           view: VIEWS.SEASON
         };
       },
@@ -11,6 +12,9 @@ export const useNavigationStore = defineStore('navigation', {
        setEditGame(bool:boolean) {
         this.editGame = bool;
        },   
+       setTeamFocus(id: number) {
+        this.focusTeam = id;
+       },
        setView(view: string) {
         this.view = view;
        }

@@ -6,6 +6,7 @@ export const useUserStore = defineStore("user", {
         email: null,
         friendId: null,
       id: null,
+      player_id: null,
       showNumbers: false,
       timezone: 'America/Toronto',
       username: null,
@@ -15,6 +16,7 @@ export const useUserStore = defineStore("user", {
         email: string | null,
         friendId: string | null,
         id: string | null,
+        player_id: number | null,
         showNumbers: boolean,
         timezone: string,
         username: string | null
@@ -32,8 +34,8 @@ export const useUserStore = defineStore("user", {
         const {data} = await fetchHandler(() => client.from('profiles').select('*').eq('id', profileId), {onError: 'Error getting current user'})
         if (!data) return;
         const [user] = data || [];
-        const {timezone, id, friend_id:friendId, username, avatar_url: avatarUrl} = user || {};
-        this.setData({timezone, id, friendId, username, avatarUrl, email})
+        const {timezone, id, friend_id:friendId, username, avatar_url: avatarUrl, player_id} = user || {};
+        this.setData({timezone, id, friendId, username, avatarUrl, email, player_id})
         await this.getUserTeams();
     },
     async getUserTeams() {
@@ -53,7 +55,7 @@ export const useUserStore = defineStore("user", {
     setEmail(email:string | null) {
         this.email = email;
     },
-    setData(data: {timezone: string | null, id: string | null, friendId: string | null, username: string | null, avatar_url: string | null, email: string | null }) {
+    setData(data: {timezone: string | null, id: string | null, friendId: string | null, username: string | null, avatar_url: string | null, email: string | null, player_id: null | number }) {
         Object.assign(this, data)
     },
     setFriendId(id: string) {

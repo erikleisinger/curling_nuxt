@@ -3,21 +3,18 @@
         <div class="outer__container">
             <div class="pretty-shadow inner__container">
                 <div
-                    class="row bg-deep-purple text-white pretty-shadow justify-between items-center q-px-sm"
+                    class="row bg-deep-purple text-white pretty-shadow justify-end items-center"
                     style="
                         height: 3em;
                         border-top-right-radius: inherit;
                         border-top-left-radius: inherit;
                     "
                 >
-                 <q-btn flat round icon="person_add_alt" @click="emit('close')"/>
                     <q-btn flat round icon="close" @click="emit('close')"/>
                 </div>
-                <TablePlayers    style="height: calc(100% - 3em); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px">
-                    <template v-slot:actions="{playerId}">
-                        <q-btn @click="emit('select', playerId)"  flat color="deep-purple">Select</q-btn>
-                    </template>
-                </TablePlayers>
+                <slot>
+                    Content
+                </slot>
             </div>
         </div>
     </Teleport>
@@ -38,6 +35,3 @@
     }
 }
 </style>
-<script setup>
-const emit = defineEmits(["close", "select"]);
-</script>
