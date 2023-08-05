@@ -87,9 +87,15 @@
                             />
                             <q-fab-action
                                 color="deep-purple-10"
-                                icon="group_add"
+                                icon="groups_2"
                                 label="New team"
                                 @click="createNewTeam"
+                            />
+                               <q-fab-action
+                                color="deep-purple-10"
+                                icon="person"
+                                label="New Player"
+                                @click="createNewPlayer"
                             />
                         </q-fab>
                     </div>
@@ -160,5 +166,10 @@ const createNewTeam = async () => {
     nextTick(() => {
         setView(VIEWS.MANAGE);
     });
+};
+
+const createNewPlayer = async () => {
+    const editorStore = useEditorStore();
+    editorStore.togglePlayerEditor({open: true})
 };
 </script>

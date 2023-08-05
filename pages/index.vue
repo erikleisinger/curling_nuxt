@@ -5,7 +5,7 @@
     <Profile v-else-if="view === VIEWS.SETTINGS"/>
     <MySeason v-else-if="view === VIEWS.SEASON"/>
     <DialogTeamEditor v-if="isTeamEditorOpen"/>
-    
+     <DialogPlayerEditor v-if="isPlayerEditorOpen"/>
       <!-- <q-btn to="/creategame" class="q-mb-md" rounded color="primary">New Game</q-btn>
     <q-btn to="/select" class="q-mb-md" rounded>Select a game</q-btn>
      <q-btn @click="handleLogout" rounded>Logout</q-btn> -->
@@ -31,6 +31,7 @@ logout();
 }
 
 const editorStore = useEditorStore();
+const isPlayerEditorOpen = computed(() => editorStore.playerEditor.open)
 const isTeamEditorOpen = computed(() => editorStore.teamEditor.open)
     
 </script>

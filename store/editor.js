@@ -11,6 +11,10 @@ import  DialogShotTypeEditor  from "@/components/Dialog/ShotTypeEditor.vue";
 
 export const useEditorStore = defineStore("editor", {
     state: () => ({
+        playerEditor: {
+            open: false,
+            editedPlayer: null,
+        },
         teamEditor: {
             open: false,
             editedTeam: null
@@ -27,13 +31,14 @@ export const useEditorStore = defineStore("editor", {
         }
       });
     },
-    togglePlayerDialog(edited) {
-      Dialog.create({
-        component: DialogPlayerEditor,
-        componentProps: {
-          edited,
+    togglePlayerEditor({editedPlayer = null, open}) {
+        if (open === false) {
+            this.playerEditor.open = false;
+            this.playerEditor.editedPlayer = null
+        } else {
+            this.playerEditor.open = true;
+            this.playerEditor.editedPlayer = editedPlayer
         }
-      });
     },
     toggleRinkDialog(edited) {
         Dialog.create({

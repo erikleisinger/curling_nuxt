@@ -135,7 +135,8 @@
     >
         Are you sure you want to delete player "{{ player.name ?? "N/A" }}"
     </DialogConfirmation>
-    <Teleport to="body">
+
+    <!-- <Teleport to="body">
         <div class="avatar-editor__container" v-if="showPlayerEditor">
             <div
                 class="pretty-shadow"
@@ -154,7 +155,7 @@
                 />
             </div>
         </div>
-    </Teleport>
+    </Teleport> -->
 </template>
 <style lang="scss">
 .player-avatar__menu {
@@ -175,6 +176,7 @@
 </style>
 <script setup>
 import { usePlayerStore } from "@/store/players";
+import {useEditorStore} from '@/store/editor'
 import { onClickOutside } from "@vueuse/core";
 import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
@@ -196,6 +198,8 @@ const props = defineProps({
         default: "3.5em",
     },
 });
+
+
 
 const menuOpen = ref(false);
 const deleteConfirmationOpen = ref(false);
@@ -222,10 +226,10 @@ const openDeleteDialog = () => {
     menuOpen.value = false;
 };
 
-const showPlayerEditor = ref(false);
 
 const openPlayerEditor = () => {
-    showPlayerEditor.value = true;
+    const editorStore = useEditorStore();
+    editorStore.togglePlayerEditor({open: true, editedPlayer: props.player})
     menuOpen.value = false;
 };
 

@@ -1,12 +1,5 @@
 <template>
-    <div style="position: relative">
-        <div
-            style="position: absolute; top: 0; right: 0; z-index: 1"
-            class="q-ma-sm"
-            @click="emit('close')"
-        >
-            <q-btn flat round icon="close" />
-        </div>
+    <div style="position: relative" class="floating-dialog__container">
          <div
             style="position: absolute; top: 0; left: 0; z-index: 1"
             class="q-ma-sm"
@@ -137,6 +130,10 @@
         </div>
     </div>
 </template>
+<style lang="scss" scoped>
+    .floating-dialog__container {
+    }
+</style>
 <script setup lang="ts">
 import { mouthTypes } from "@/assets/avataaars/mouth";
 import { eyeTypes } from "@/assets/avataaars/eyes";
@@ -244,11 +241,14 @@ const loading = ref(false)
 
 onMounted(() => {
     loading.value = true;
-    const { name: playerName = null, avatar = null } = props.player || {};
-    if (!playerName && !avatar) return;
+    const { name: playerName = 'Unnamed Player', avatar = null } = props.player || {};
     name.value = playerName;
 
-    if (avatar) parseAvatarInfo(avatar);
+    if (avatar) {
+        parseAvatarInfo(avatar);
+    } else {
+        randomize();
+    }
      loading.value = false;
 });
 
