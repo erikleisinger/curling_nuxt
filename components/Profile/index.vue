@@ -1,5 +1,6 @@
 <template>
     <NuxtLayout>
+        <q-btn icon="logout" @click="logout"/>
         <div class="profile__container items-center">
             <header
                 class="column justify-center items-center profile__header col-grow">
@@ -150,6 +151,9 @@ import {useNotificationStore} from '@/store/notification'
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 
 import {parseAvatar} from '@/utils/avatar'
+
+const {logout} = useSession();
+
 const store = useUserStore();
 
 const user = computed(() => {

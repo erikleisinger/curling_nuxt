@@ -40,7 +40,7 @@ export const useUserStore = defineStore("user", {
             const { id: profileId, email = null } = sesh.data.user || {};
             this.setEmail(email);
             const { data: user } = await fetchHandler(
-                () => client.rpc("get_profile"),
+                () => client.rpc("get_profile", {profile_id_param: profileId}),
                 { onError: "Error getting current user" }
             );
             if (!user) return;

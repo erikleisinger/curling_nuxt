@@ -4,12 +4,60 @@
         ref="teamItem"
         style="transition: transform 0.3s"
     >
-    <div style="max-height: 2em" class="q-my-sm">
-    <InputName :name="item.name" @save="saveName">
+    <div style="max-height: 2em; position: relative" class="q-my-sm">
+    <InputName :name="item.name" @save="saveName" :disabled="readOnly">
         <template v-slot:text>
         <h2 class="text-md text-bold truncate-text">{{ item.name }}</h2>
     </template>
     </InputName>
+      <div style="position: absolute; top: 0; right: 0; height: 10px; height: 100%" class="row items-center" >
+        <q-badge
+        v-if="item.subject === 'requester' && item.status === 'pending'"
+            outline
+            rounded
+            click
+            color="orange"
+            :label="`Pending`"
+            @click="cancelRequest({team_id: item.id, requestee_profile_id: item.profile_id})"
+        ></q-badge>
+        <q-badge
+        v-else-if="item.subject === 'requestee' && item.status !== 'accepted' && item.status !== 'rejected'"
+            outline
+            rounded
+            click
+            color="pink"
+            :label="`Incoming request`"
+        >
+
+        <q-btn flat round size="sm" @click="confirmRequest({team_id: item.id, requester_profile_id: item.requester_id})">Y</q-btn>
+        <q-btn flat round size="sm" @click="denyRequest({team_id: item.id, requester_profile_id: item.requester_id})">N</q-btn>
+        </q-badge>
+         <q-badge
+        v-else-if="item.status === 'accepted' && item.subject !== 'requestee'"
+            outline
+            rounded
+            click
+            color="positive"
+            :label="'Request accepted'"
+        ></q-badge>
+          <q-badge
+        v-else-if="item.status === 'rejected' && item.subject !== 'requestee'"
+            outline
+            rounded
+            click
+            color="negative"
+            :label="'Request rejected'"
+        ></q-badge>
+        <q-badge
+        v-else-if="readOnly"
+            outline
+            rounded
+            click
+            color="grey-8"
+            :label="'Request access'"
+            @click="requestAccess({team_id: item.id, requestee_profile_id: item.profile_id})"
+        ></q-badge>
+      </div>
     </div>
 
         <q-item-label caption class="row" style="max-height: 143px">
@@ -20,6 +68,7 @@
                     position="lead"
                     @add="openPlayerSelector('lead')"
                     @remove="removePlayer(item.id, 'lead')"
+                       :readOnly="readOnly"
                 />
 
                 <TableTeamPlayer
@@ -28,6 +77,7 @@
                     position="second"
                     @add="openPlayerSelector('second')"
                     @remove="removePlayer(item.id, 'second')"
+                       :readOnly="readOnly"
                 />
 
                 <TableTeamPlayer
@@ -36,6 +86,7 @@
                     position="third"
                     @add="openPlayerSelector('third')"
                     @remove="removePlayer(item.id, 'third')"
+                       :readOnly="readOnly"
                 />
 
                 <TableTeamPlayer
@@ -44,6 +95,7 @@
                     position="fourth"
                     @add="openPlayerSelector('fourth')"
                     @remove="removePlayer(item.id, 'fourth')"
+                       :readOnly="readOnly"
                 />
             </div>
             <div class="col-6">
@@ -53,6 +105,7 @@
                     position="fifth"
                     @add="openPlayerSelector('fifth')"
                     @remove="removePlayer(item.id, 'fifth')"
+                       :readOnly="readOnly"
                 />
 
                 <TableTeamPlayer
@@ -62,6 +115,7 @@
                     position="sixth"
                     @add="openPlayerSelector('sixth')"
                     @remove="removePlayer(item.id, 'sixth')"
+                       :readOnly="readOnly"
                 />
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.seventh_player_id?.avatar)"
@@ -70,6 +124,7 @@
                     position="seventh"
                     @add="openPlayerSelector('seventh')"
                     @remove="removePlayer(item.id, 'seventh')"
+                    :readOnly="readOnly"
                 />
             </div>
         </q-item-label>
@@ -101,12 +156,13 @@
 }
 </style>
 <script setup lang="ts">
-import { useSwipe } from "@vueuse/core";
+import { useSwipe, useThrottleFn } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import {useEditorStore} from '@/store/editor'
 const props = defineProps({
     item: Object,
+    readOnly: Boolean,
 });
 
 const loading = ref(false);
@@ -133,7 +189,7 @@ const { direction } = useSwipe(teamItem, {
     },
 });
 
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(["delete", "update", ]);
 
 const deleteItem = () => {
     emit("delete");
@@ -167,4 +223,50 @@ const savingName = ref(false);
 const saveName = async (name:string) => {
     teamStore.updateTeamName(name, props.item?.id);
 };
+
+const requestAccess = useThrottleFn(async ({team_id, requestee_profile_id} : {team_id: number, requestee_profile_id: string}) => {
+    await teamStore.sendTeamRequest({team_id, requestee_profile_id})
+    emit('update', {
+        teamId: team_id,
+        updates: {
+        status: 'pending',
+        subject: 'requester'
+        }
+       
+    })
+}, 10000)
+const cancelRequest = useThrottleFn(async ({team_id, requestee_profile_id} : {team_id: number, requestee_profile_id: string}) => {
+    await teamStore.cancelTeamRequest({team_id, requestee_profile_id})
+    emit('update', {
+        teamId: team_id,
+        updates: {
+        status: null,
+        subject: null
+        }
+       
+    })
+}, 10000)
+const confirmRequest = useThrottleFn(async ({team_id, requester_profile_id} : {team_id: number, requester_profile_id: string}) => {
+    console.log('conf: ', requester_profile_id)
+    await teamStore.confirmTeamRequest({team_id, requester_profile_id})
+    emit('update', {
+        teamId: team_id,
+        updates: {
+        status: 'accepted',
+        subject: null
+        }
+       
+    })
+}, 10000)
+const denyRequest = useThrottleFn(async ({team_id, requester_profile_id} : {team_id: number, requester_profile_id: string}) => {
+    await teamStore.denyTeamRequest({team_id, requester_profile_id})
+    emit('update', {
+        teamId: team_id,
+        updates: {
+        status: 'denied',
+        subject: null
+        }
+       
+    })
+}, 10000)
 </script>

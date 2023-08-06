@@ -1,5 +1,6 @@
 <template>
     <NuxtLayout>
+         <!-- <LazyButtonBottomDraggable icon="search" :position="position"/> -->
         <div
             class="col-grow bg-white team-table__item"
             ref="tableArea"
@@ -14,7 +15,7 @@
                     @click="unsetFocus(item.id)"
                     clickable
                 >
-                    <TableTeamItem :item="item" @delete="itemToDelete = item" />
+                    <TableTeamItem :item="item" @delete="itemToDelete = item" :readOnly="item.profile_id !== userStore.id" @update="emit('update', $event)"/>
 
                     <!-- <q-item-section side top class="column q-mt-xs">
                     <q-badge
@@ -57,10 +58,16 @@
 .team-table__item {
     height: calc(100 * var(--vh, 1vh) - 50px);
     overflow: auto;
+    border-top: 1px solid $grey-4;
     .q-scrollarea__container {
         height: inherit;
         min-height: inherit;
     }
+}
+:deep(.page__select) {
+    width: 100%;
+    max-width: 50vw;
+    border: 1px solid $deep-purple;
 }
 </style>
 <script setup lang="ts">
@@ -74,30 +81,29 @@ import { useNavigationStore } from "@/store/navigation";
 import { parseAvatar } from "@/utils/avatar";
 import type Team from "@/types/team";
 import type Player from "@/types/player";
+const tab = ref("My games")
 const teamStore = useTeamStore();
 
-const teams = computed(() =>
-    [...teamStore.teams].map((t) => {
-        if (userStore.userTeams.includes(t.id)) return { ...t, isMine: true };
-        return t;
-    })
-);
-const loading = ref(false);
+const props = defineProps<{
+    teams: Team[]
+}>()
 
-const loadTeams = async (force: boolean = false) => {
-    loading.value = true;
-    await teamStore.fetchTeams(force);
-    loading.value = false;
-};
+
+
+// const loadTeams = async (force: boolean = false) => {
+//     loading.value = true;
+//     await teamStore.fetchTeams(force);
+//     loading.value = false;
+// };
 
 const tableArea = ref(null);
-const { direction } = useSwipe(tableArea, {
-    threshold: 200,
-    onSwipeEnd: (e) => {
-        if (direction.value !== "down") return;
-        loadTeams(true);
-    },
-});
+// const { direction } = useSwipe(tableArea, {
+//     threshold: 200,
+//     onSwipeEnd: (e) => {
+//         if (direction.value !== "down") return;
+//         loadTeams(true);
+//     },
+// });
 
 const itemToDelete = ref(null);
 const deleteTeam = async (team: Team) => {
@@ -159,4 +165,7 @@ const unsetFocus = (teamId: number) => {
     if (!focused.value || teamId !== focused.value) return;
     navigationStore.setTeamFocus(null);
 };
+
+const emit = defineEmits(['update'])
+
 </script>

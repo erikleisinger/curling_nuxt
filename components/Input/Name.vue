@@ -8,8 +8,8 @@
                 icon="edit"
                 color="grey-8"
                 @click="editingName = true"
-                :disable="savingName"
-                v-if="!editingName"
+                :disable="disabled || savingName"
+                v-if="!editingName && !disabled"
                 class="floating__edit"
             />
         <slot name="text">
@@ -53,6 +53,7 @@
     const emit = defineEmits(['save'])
 
     const props = defineProps({
+        disabled: Boolean,
         name: String,
     })
     const editedName = ref(null);

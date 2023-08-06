@@ -72,7 +72,7 @@
                         <q-icon size="1em" name="person" />
                     </q-badge>
 
-                    You
+                    Me
                 </div>
 
                 <div
@@ -112,7 +112,18 @@
                     >
                         <q-icon color="white" name="edit" size="xs"
                     /></q-btn>
+                     <q-btn
+                        color="deep-purple"
+                        round
+                        size="sm"
+                        class="q-mr-sm"
+                        @click="openPlayerEditor"
+                        v-else
+                    >
+                        <q-icon color="white" name="visibility" size="xs"
+                    /></q-btn>
                     <slot
+                    v-if="canEdit"
                         name="deleteButton"
                         v-bind:closeMenu="() => (menuOpen = false)"
                     >

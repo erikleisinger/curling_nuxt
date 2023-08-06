@@ -8,5 +8,6 @@ export const TABLE_NAMES = {
     SHEETS: 'sheets',
     SHOT_TYPES: 'shottypes',
     SHOTS: 'shots', 
+    TEAM_REQUESTS: 'team_requests',
     TEAMS: 'teams',
 };

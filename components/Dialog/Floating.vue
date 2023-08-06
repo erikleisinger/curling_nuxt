@@ -15,7 +15,7 @@
                     <q-btn flat round icon="close" @click="close"/>
                 </div>
                 </div>
-                <div class="content__container" v-cloak>
+                <div class="content__container" v-cloak v-if="!closing">
                     <slot @close="close" />
                 </div>
             </div>
@@ -32,7 +32,6 @@
     z-index: 100000;
     position: absolute;
     top: 0;
-    // transform-origin:0% 50%;
     transform-origin: bottom left;
     .inner__container {
         background-color: white;
@@ -62,15 +61,17 @@ const keyframes = [
 	}
 ]
 
-const {reverse} = useAnimate(container, keyframes, {duration: 300, fill: 'both'});
-
+const {reverse} = useAnimate(container, keyframes, {duration: 200, fill: 'both', easing: 'linear'});
+const closing = ref(false)
 const close = async () => {
 const timeout = () => {
         return new Promise((resolve) => setTimeout(resolve, 500));
       };
+      closing.value = true;
     reverse();
     await timeout();
     emit('close')
+    closing.value = false;
 }
 
 

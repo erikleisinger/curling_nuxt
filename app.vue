@@ -17,16 +17,19 @@ const setVh = () => {
 const vh = window.innerHeight * 0.01;
  document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
-onMounted(() => {
+
+onMounted(async () => {
  setVh();
  useEventListener(window, 'resize', setVh)
 })
+
 onBeforeMount(async () => {
     const route = useRoute();
     const user = useSupabaseUser();
     if (!PUBLIC_ROUTES.includes(route.fullPath) && user.value)   
      navigateTo(`/gateway?redirect=${route.fullPath}`)
 });
+
 const client = useSupabaseAuthClient();
 client.auth.onAuthStateChange((_, _session) => {
     if (_session?.access_token) {
@@ -36,4 +39,6 @@ client.auth.onAuthStateChange((_, _session) => {
         refreshToken.value = _session?.refresh_token ?? null;
     }
 });
+
+
 </script>

@@ -3,6 +3,7 @@ import { useStorage } from "@vueuse/core";
 import type Team from "@/types/team";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
+import {useUserStore} from '@/store/user'
 
 export const useTeamStore = defineStore("team", {
     state: () => {
@@ -27,8 +28,48 @@ export const useTeamStore = defineStore("team", {
                 console.error(error);
                 return;
             }
-            this.refreshTeam(teamId);
+            const team = await this.refreshTeam(teamId);
+            if (team) this.insertTeamIntoStore(team)
         },
+        async cancelTeamRequest({requestee_profile_id, team_id}: {requestee_profile_id: string, team_id: number}) {
+           const requester_profile_id = useUserStore().id;
+           const { client, fetchHandler } = useSupabaseFetch();
+           const { error } = await fetchHandler(() =>
+               client
+                   .from(TABLE_NAMES.TEAM_REQUESTS)
+                   .delete()
+                   .eq('requestee_profile_id', requestee_profile_id)
+                   .eq('requester_profile_id', requester_profile_id)
+                   .eq('team_id', team_id)
+           );
+
+           if (error) {
+               console.error(error);
+               return;
+           }
+           const team = await this.refreshTeam(team_id);
+           if (team) this.insertTeamIntoStore(team)
+        },
+        async confirmTeamRequest({requester_profile_id, team_id}: {requester_profile_id: string, team_id: number}) {
+            const requestee_profile_id = useUserStore().id;
+            const { client, fetchHandler } = useSupabaseFetch();
+            const { error } = await fetchHandler(() =>
+                client
+                    .from(TABLE_NAMES.TEAM_REQUESTS)
+                    .update({status: 'accepted'})
+                    .eq('requestee_profile_id', requestee_profile_id)
+                    .eq('requester_profile_id', requester_profile_id)
+                    .eq('team_id', team_id)
+                    .select('status')
+            );
+ 
+            if (error) {
+                console.error(error);
+                return;
+            }
+            const team = await this.refreshTeam(team_id);
+            if (team) this.insertTeamIntoStore(team)
+         },
         async createBlankTeam() {
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({text: 'Creating new team...', state: 'pending'})
@@ -47,7 +88,8 @@ export const useTeamStore = defineStore("team", {
                 notStore.updateNotification(notId, {state: 'failed', text: 'error creating new team: no id returned'})
                 return;
             }
-            await this.refreshTeam(id)
+            const refreshedTeam = await this.refreshTeam(id)
+            if (refreshedTeam) this.insertTeamIntoStore(refreshedTeam)
             this.sortTeams();
             notStore.updateNotification(notId, {state: 'completed', text: 'Team created!', timeout: 5000})
             return id;
@@ -64,6 +106,25 @@ export const useTeamStore = defineStore("team", {
                 this.teams.splice(index, 1);
             }
         },
+        async denyTeamRequest({requester_profile_id, team_id}: {requester_profile_id: string, team_id: number}) {
+            const requestee_profile_id = useUserStore().id;
+            const { client, fetchHandler } = useSupabaseFetch();
+            const { error } = await fetchHandler(() =>
+                client
+                    .from(TABLE_NAMES.TEAM_REQUESTS)
+                    .update({status: 'rejected'})
+                    .eq('requestee_profile_id', requestee_profile_id)
+                    .eq('requester_profile_id', requester_profile_id)
+                    .eq('team_id', team_id)
+            );
+ 
+            if (error) {
+                console.error(error);
+                return;
+            }
+            const team = await this.refreshTeam(team_id);
+            if (team) this.insertTeamIntoStore(team)
+         },
         async fetchTeams(force = false) {
             //   if (this.teams.length && !force) return;
 
@@ -74,14 +135,24 @@ export const useTeamStore = defineStore("team", {
             //   this.teams = data
             //   this.sortTeams();
             if (this.teams.length && !force) return;
+            const userStore = useUserStore();
+            let userId = userStore.id
+
+            if (!userId) {
+                const client = useSupabaseAuthClient();
+                const sesh = await client.auth.getUser();
+
+            const { id} = sesh.data.user || {};
+            userId = id;
+            }
 
             const { client, fetchHandler } = useSupabaseFetch();
             const { getQuery } = useDatabase();
             const { data } = await fetchHandler(
                 () =>
                     client
-                        .from(TABLE_NAMES.TEAMS)
-                        .select(getQuery(TABLE_NAMES.TEAMS)),
+                    .rpc('get_teams_basic')
+                    .eq('profile_id', userStore.id),
                 { onError: "Error fetching teams" }
             );
             if (!data) return;
@@ -111,32 +182,32 @@ export const useTeamStore = defineStore("team", {
                 this.sortTeams();
             }
         },
+        insertTeamIntoStore(team: Team) {
+            const index = this.teams.findIndex(
+                (g) => g.id === team.id
+            );
+            if (index === -1) {
+                this.teams.push(team);
+            } else {
+                this.teams.splice(index, 1, team);
+            }
+    
+        },
         async refreshTeam(teamId: number, shouldSort = false) {
             const { client, fetchHandler } = useSupabaseFetch();
             //   const {data} = await fetchHandler(() => client
             //     .rpc('get_team_detailed', {team_id_param: teamId}), {onError: 'Error refreshing team'})
-            const { getQuery } = useDatabase();
+            // const { getQuery } = useDatabase();
             const { data } = await fetchHandler(
                 () =>
                     client
-                        .from(TABLE_NAMES.TEAMS)
-                        .select(getQuery(TABLE_NAMES.TEAMS))
+                    .rpc('get_teams_basic')
                         .eq("id", teamId),
                 { onError: "Error fetching teams" }
             );
             const [refreshedTeam] = data || [];
 
-            if (refreshedTeam) {
-                const index = this.teams.findIndex(
-                    (g) => g.id === refreshedTeam.id
-                );
-                if (index === -1) {
-                    this.teams.push(refreshedTeam);
-                } else {
-                    this.teams.splice(index, 1, refreshedTeam);
-                }
-                if (shouldSort) this.sortTeams();
-            }
+            if (refreshedTeam) return refreshedTeam
         },
         async removePlayerFromTeam(teamId: number, position: string) {
             const { client, fetchHandler } = useSupabaseFetch();
@@ -151,12 +222,30 @@ export const useTeamStore = defineStore("team", {
                 console.error(error);
                 return;
             }
-            this.refreshTeam(teamId);
+            const team = await this.refreshTeam(teamId);
+            if (team) this.insertTeamIntoStore(team)
         },
         resetTeams() {
             this.teams = [];
         },
+        async sendTeamRequest({requestee_profile_id, team_id}: {requestee_profile_id: string, team_id: number}) {
+           const requester_profile_id = useUserStore().id;
+           const { client, fetchHandler } = useSupabaseFetch();
+           const { error } = await fetchHandler(() =>
+               client
+                   .from(TABLE_NAMES.TEAM_REQUESTS)
+                   .insert({ requester_profile_id, requestee_profile_id, team_id  })
+           );
+
+           if (error) {
+               console.error(error);
+               return;
+           }
+           const team = await this.refreshTeam(team_id);
+           if (team) this.insertTeamIntoStore(team)
+        },
         sortTeams() {
+            if (!this.teams?.length) return;
             const { sortNameAlphabetically } = useSort();
             this.teams.sort(sortNameAlphabetically);
         },
@@ -173,7 +262,8 @@ export const useTeamStore = defineStore("team", {
                 console.error(error);
                 return;
             }
-            this.refreshTeam(teamId);
+            const team = await this.refreshTeam(teamId);
+            if (team) this.insertTeamIntoStore(team)
         },
     },
 });

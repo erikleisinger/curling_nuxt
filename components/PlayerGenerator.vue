@@ -4,8 +4,9 @@
             style="position: absolute; top: 0; left: 0; z-index: 1"
             class="q-ma-sm"
             @click="savePlayer"
+            v-if="!readOnly"
         >
-            <q-btn flat round icon="save" size="md" color="deep-purple"/>
+            <q-btn flat round icon="save" size="md" color="deep-purple" :disable="readOnly"/>
         </div>
         <div class="row justify-center" style="height: 40%; position: relative">
             <div
@@ -32,96 +33,99 @@
             </div>
         </div>
 
-        <InputName :name="player.name" @save="saveName" class="q-mb-lg justify-center">
+        <InputName :name="player.name" @save="saveName" class="q-mb-lg justify-center" :disabled="readOnly">
     <template v-slot:text>
         <h2 class="text-md text-bold truncate-text">{{ name }}</h2>
     </template>
         </InputName>
-        <!-- <div
-           
-            class="row justify-center text-md items-center"
-        >
-            <h2 class="text-md text-bold">{{ name }}</h2>
-            <q-btn round size="sm" flat icon="edit" />
-        </div> -->
         <div
             class="row q-py-md"
             style="height: 50%; overflow: auto; border-top: 1px solid gray"
         >
-            <!-- <q-input class="col-grow q-mx-md q-mb-sm" v-model="name" rounded outlined label="Name"/> -->
             <AvatarFeatureSelector
                 :features="accessoriesTypes"
                 v-model="accessoriesType"
                 title="Accessory"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="clothesType"
                 v-model="clotheType"
                 title="Clothing"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="hatAndShirtColors"
                 v-model="clotheColor"
                 title="Shirt color"
                 class="col-12 col-sm-6"
-                :disabled="clotheType === 'BlazerSweater' || clotheType === 'BlazerShirt'"
+                :disabled="readOnly || clotheType === 'BlazerSweater' || clotheType === 'BlazerShirt'"
+
             />
             <AvatarFeatureSelector
                 :features="eyebrowTypes"
                 v-model="eyebrowType"
                 title="Eyebrows"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="eyeTypes"
                 v-model="eyeType"
                 title="Eyes"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="topTypes"
                 v-model="topType"
                 title="Hair / Hats"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="hairColors"
                 v-model="hairColor"
                 title="Hair color"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="hairColors"
                 v-model="facialHairColor"
                 title="Facial hair color"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="facialHairTypes"
                 v-model="facialHairType"
                 title="Facial hair"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="GraphicShirtTypes"
                 v-model="graphicType"
                 title="Logo"
                 class="col-12 col-sm-6"
-                :disabled="clotheType !== 'GraphicShirt'"
+                :disabled="readOnly || clotheType !== 'GraphicShirt'"
             />
             <AvatarFeatureSelector
                 :features="mouthTypes"
                 v-model="mouthType"
                 title="Mouth"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <AvatarFeatureSelector
                 :features="skinColors"
                 v-model="skinColor"
                 title="Skin color"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
 
             <AvatarFeatureSelector
@@ -129,17 +133,14 @@
                 v-model="topColor"
                 title="Hat color"
                 class="col-12 col-sm-6"
+                :disabled="readOnly" 
             />
             <div class="col-12 row justify-center q-mt-sm">
-            <q-btn @click="randomize" color="deep-purple">Random</q-btn>
+            <q-btn @click="randomize" :disable="readOnly" color="deep-purple">Random</q-btn>
             </div>
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
-    .floating-dialog__container {
-    }
-</style>
 <script setup lang="ts">
 import { mouthTypes } from "@/assets/avataaars/mouth";
 import { eyeTypes } from "@/assets/avataaars/eyes";
@@ -158,6 +159,7 @@ import Player from "@/types/player";
 import Json from "@/types/json";
 
 import { usePlayerStore } from "@/store/players";
+import { useUserStore } from "@/store/user";
 
 import { useElementSize, useDebounceFn } from "@vueuse/core";
 
@@ -293,4 +295,7 @@ const emit = defineEmits(["close"]);
 const saveName = (name: string) => {
      playerStore.insertPlayer({id: props.player?.id, name});   
 }
+
+const userStore = useUserStore();
+const readOnly = computed(() => props.player?.profile_id !== userStore.id)
 </script>

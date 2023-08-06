@@ -1,45 +1,39 @@
 <template>
-<NuxtLayout>
+    <NuxtLayout>
+        <AreaManage v-if="view === VIEWS.MANAGE" />
+        <Profile v-else-if="view === VIEWS.SETTINGS" />
+        <MySeason v-else-if="view === VIEWS.SEASON" />
+        <DialogTeamEditor v-if="isTeamEditorOpen" />
+        <DialogPlayerEditor v-if="isPlayerEditorOpen" />
+        <DialogConnect v-if="isConnectDialogOpen" />
 
-    <AreaManage v-if="view === VIEWS.MANAGE"/>
-    <Profile v-else-if="view === VIEWS.SETTINGS"/>
-    <MySeason v-else-if="view === VIEWS.SEASON"/>
-    <DialogTeamEditor v-if="isTeamEditorOpen"/>
-     <DialogPlayerEditor v-if="isPlayerEditorOpen"/>
-  
-         <DialogPlayerSelect
-        v-if="isPlayerSelectOpen"
-    />
-   
-      <!-- <q-btn to="/creategame" class="q-mb-md" rounded color="primary">New Game</q-btn>
+        <DialogPlayerSelect v-if="isPlayerSelectOpen" />
+
+        <!-- <q-btn to="/creategame" class="q-mb-md" rounded color="primary">New Game</q-btn>
     <q-btn to="/select" class="q-mb-md" rounded>Select a game</q-btn>
      <q-btn @click="handleLogout" rounded>Logout</q-btn> -->
-
-</NuxtLayout>
-
+    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
-    .main {
-        height: 100%;
-        width: 100%;
-    }
+.main {
+    height: 100%;
+    width: 100%;
+}
 </style>
 <script setup>
-import {useNavigationStore} from '@/store/navigation';
-import {useEditorStore} from '@/store/editor'
-import {VIEWS } from '@/constants/navigation'
+import { useNavigationStore } from "@/store/navigation";
+import { useEditorStore } from "@/store/editor";
+import { VIEWS } from "@/constants/navigation";
 const navStore = useNavigationStore();
-const view = computed(() => navStore.view)
+const view = computed(() => navStore.view);
 const handleLogout = () => {
-const {logout} = useSession()
-logout();
-}
+    const { logout } = useSession();
+    logout();
+};
 
 const editorStore = useEditorStore();
-const isPlayerEditorOpen = computed(() => editorStore.playerEditor.open)
-const isPlayerSelectOpen = computed(() => editorStore.playerSelect.open)
-const isTeamEditorOpen = computed(() => editorStore.teamEditor.open)
-
-    
+const isConnectDialogOpen = computed(() => editorStore.connectDialog.open);
+const isPlayerEditorOpen = computed(() => editorStore.playerEditor.open);
+const isPlayerSelectOpen = computed(() => editorStore.playerSelect.open);
+const isTeamEditorOpen = computed(() => editorStore.teamEditor.open);
 </script>
-

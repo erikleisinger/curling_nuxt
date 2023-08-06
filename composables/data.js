@@ -18,6 +18,7 @@ export const useData = () => {
     const rinkStore = useRinkStore();
     const sheetStore = useSheetStore()
   const progress = ref(0)
+
   const initData = async () => {
       progress.value = 0
       const {fetchShotTypes} = shotTypeStore
@@ -28,15 +29,18 @@ export const useData = () => {
       const {getCurrentUser} = userStore;
       const {fetchRinks} = rinkStore;
       const {fetchSheets} = sheetStore;
+
+      await getCurrentUser()
       const operations = [
         () => fetchShotTypes(true),
-        () => fetchTeams(true),
+
         () => fetchPlayers(true),
         () => fetchGames(true),
-        () => getCurrentUser(),
+
         () => getFriends(true),
         () => fetchRinks(true),
-        () => fetchSheets(true)
+        () => fetchSheets(true),
+        () => fetchTeams(true)
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(

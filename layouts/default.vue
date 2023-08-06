@@ -69,33 +69,43 @@
                     >
                         <q-fab
                             color="deep-purple"
-                            icon="add"
+                            icon="arrow_circle_up"
                             size="2em"
                             direction="up"
                             class="action__button"
                             v-model="actionOpen"
                         >
                             <q-fab-action
-                                color="deep-purple-10"
+                                color="white"
+                                text-color="deep-purple"
                                 icon="scoreboard"
                                 label="Line score"
                             ></q-fab-action>
                             <q-fab-action
-                                color="deep-purple-10"
+                                     color="white"
+                                text-color="deep-purple"
                                 icon="radio_button_checked"
                                 label="Shot by shot"
                             />
                             <q-fab-action
-                                color="deep-purple-10"
+                                     color="white"
+                                text-color="deep-purple"
                                 icon="groups_2"
                                 label="New team"
                                 @click="createNewTeam"
                             />
                                <q-fab-action
-                                color="deep-purple-10"
+                                   color="white"
+                                text-color="deep-purple"
                                 icon="person"
                                 label="New Player"
                                 @click="createNewPlayer"
+                            />
+                              <q-fab-action
+                                color="deep-purple"
+                                icon="diversity_1"
+                                label="Connect"
+                                @click="editorStore.toggleConnectDialog({open: true})"
                             />
                         </q-fab>
                     </div>
@@ -167,9 +177,9 @@ const createNewTeam = async () => {
         setView(VIEWS.MANAGE);
     });
 };
-
-const createNewPlayer = async () => {
     const editorStore = useEditorStore();
+const createNewPlayer = async () => {
+
     editorStore.togglePlayerEditor({open: true})
 };
 </script>
