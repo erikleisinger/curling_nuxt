@@ -1,7 +1,11 @@
 <template>
-    <div class="row items-center q-mt-xs no-wrap" v-if="player.id">
-        <div class="q-mr-sm avatar__container">
-            <PlayerAvatar :parsedAvatar="parsedAvatar" :player="player">
+    <div class="row items-center q-mt-xs no-wrap team-player__container">
+            <PlayerAvatar
+                :parsedAvatar="parsedAvatar"
+                :player="player"
+                :position="position"
+                v-if="player.id"
+            >
                 <template v-slot:deleteButton="{ closeMenu }">
                     <q-btn
                         color="deep-purple"
@@ -12,37 +16,27 @@
                     /></q-btn>
                 </template>
             </PlayerAvatar>
-        </div>
-        <div class="text-md truncate-text">{{ player.name }}</div>
-    </div>
-    <div class="row items-center q-mt-sm" v-else-if="!readOnly">
-        <q-badge
-            outline
-            rounded
-            click
-            color="grey"
-            :label="`+ Add ${position}`"
-            @click="emit('add', position)"
-        ></q-badge>
-    </div>
-     <div class="row items-center q-mt-sm" v-else-if="!['fifth', 'sixth', 'seventh'].includes(position)">
-        <q-badge
-            outline
-            rounded
-            color="grey"
-            :label="`This team has no ${position}!`"
-        ></q-badge>
-    </div>
+            <div class="avatar__blank row justify-center items-center" v-else-if="!readOnly || !['fifth', 'sixth', 'seventh'].includes(position)" @click="emit('add', position)">
+                <q-icon :name="readOnly ? 'person' : 'person_add'" color="grey-8" class="text-md" />
+            </div>
+        <div class=" truncate-text col-auto q-pl-xs">
+      
+                <q-item-label class="truncate-text">
+                    <span  v-if="player.id">
+                    {{ player.name }}
 
+                    </span>
+                    <span v-else-if="!readOnly" class="text-italic"  @click="emit('add', position)">
+                        Add a {{position}}
+                    </span>
+                        <span v-else-if="readOnly && !['fifth', 'sixth', 'seventh'].includes(position)" class="text-italic" >Missing {{position}}</span>
+                    </q-item-label>
+                <q-item-label caption v-if="player.id">{{position}}</q-item-label>
+    
+        </div>
+    </div>
 </template>
-<style lang="scss" scoped>
-.avatar__container {
-    width: 2.5em;
-    position: relative;
-    height: 2.5em;
-    max-height: 3em;
-}
-</style>
+
 <script setup>
 const props = defineProps({
     parsedAvatar: Object,

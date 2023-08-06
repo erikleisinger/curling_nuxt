@@ -2,7 +2,7 @@
     <NuxtLayout>
          <!-- <LazyButtonBottomDraggable icon="search" :position="position"/> -->
         <div
-            class="col-grow bg-white team-table__item"
+            class="col-grow bg-white team-table__container"
             ref="tableArea"
             v-if="!loading"
         >
@@ -55,7 +55,7 @@
 .focused {
     background-color: rgb(0 132 255 / 11%);
 }
-.team-table__item {
+.team-table__container {
     height: calc(100 * var(--vh, 1vh) - 50px);
     overflow: auto;
     border-top: 1px solid $grey-4;

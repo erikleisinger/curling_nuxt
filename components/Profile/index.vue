@@ -166,7 +166,7 @@ const playerStore = usePlayerStore();
 
 const player = computed(() => {
        const player = playerStore.players.find((p) => user.value.player.id === p.id)
-return {...player, profile_id_for_player: {id: user.value.id}}
+return player || {}
 })
 
 const { toTimezone } = useTime();

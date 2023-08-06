@@ -1,5 +1,4 @@
 <template>
-    <NuxtLayout>
         <div class="window-height window-width row justify-center items-center">
             <q-form
                 class="login__form q-pa-lg"
@@ -121,7 +120,6 @@
                 </q-card>
             </q-form>
         </div>
-    </NuxtLayout>
 </template>
 
 <style lang="scss">
