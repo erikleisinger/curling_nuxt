@@ -1,9 +1,9 @@
 <template>
     <NuxtLayout>
         <AreaManage v-if="view === VIEWS.MANAGE" />
-        <Profile v-else-if="view === VIEWS.SETTINGS" />
+        <ProfileExpandable v-else-if="view === VIEWS.SETTINGS" />
         <MySeason v-else-if="view === VIEWS.SEASON" />
-        <DialogTeamEditor v-if="isTeamEditorOpen" />
+        <DialogTeamViewer v-if="isTeamViewerOpen" />
         <DialogPlayerEditor v-if="isPlayerEditorOpen" />
         <DialogConnect v-if="isConnectDialogOpen" />
 
@@ -35,5 +35,5 @@ const editorStore = useEditorStore();
 const isConnectDialogOpen = computed(() => editorStore.connectDialog.open);
 const isPlayerEditorOpen = computed(() => editorStore.playerEditor.open);
 const isPlayerSelectOpen = computed(() => editorStore.playerSelect.open);
-const isTeamEditorOpen = computed(() => editorStore.teamEditor.open);
+const isTeamViewerOpen = computed(() => editorStore.teamViewer.open);
 </script>

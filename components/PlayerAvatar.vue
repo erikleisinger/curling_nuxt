@@ -189,19 +189,11 @@ const props = defineProps({
     hidePlayerIcon: Boolean,
     player: Object,
     parsedAvatar: Object,
-    popoutPosition: {
-        type: String,
-        default: "center left",
-    },
     showStats: {
         type: Boolean,
         default() {
             return false;
         },
-    },
-    width: {
-        type: String,
-        default: "3.5em",
     },
 });
 

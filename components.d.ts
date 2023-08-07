@@ -24,7 +24,7 @@ declare module 'vue' {
     DialogRinkEditor: typeof import('./components/Dialog/RinkEditor.vue')['default']
     DialogSheetEditor: typeof import('./components/Dialog/SheetEditor.vue')['default']
     DialogShotTypeEditor: typeof import('./components/Dialog/ShotTypeEditor.vue')['default']
-    DialogTeamEditor: typeof import('./components/Dialog/TeamEditor.vue')['default']
+    DialogTeamEditor: typeof import('./components/Dialog/TeamViewer.vue')['default']
     ErrorMessage: typeof import('./components/ErrorMessage.vue')['default']
     GameController: typeof import('./components/Game/Controller.vue')['default']
     GameEditor: typeof import('./components/Game/Editor.vue')['default']

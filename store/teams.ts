@@ -4,6 +4,8 @@ import type Team from "@/types/team";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
 import {useUserStore} from '@/store/user'
+import { DatabaseError } from "@/types/error";
+import {ErrorName} from '@/types/error'
 
 export const useTeamStore = defineStore("team", {
     state: () => {
@@ -44,8 +46,15 @@ export const useTeamStore = defineStore("team", {
            );
 
            if (error) {
-               console.error(error);
-               return;
+           
+           
+               throw new DatabaseError({
+                name: ErrorName.DELETE_ERROR, 
+                message: 'Error canceling request',
+                cause: error,
+                fatal: true,
+                table: TABLE_NAMES.TEAM_REQUESTS
+               })
            }
            const team = await this.refreshTeam(team_id);
            if (team) this.insertTeamIntoStore(team)
@@ -64,8 +73,13 @@ export const useTeamStore = defineStore("team", {
             );
  
             if (error) {
-                console.error(error);
-                return;
+                throw new DatabaseError({
+                    name: ErrorName.UPDATE_ERROR, 
+                    message: 'Error confirming request',
+                    cause: error,
+                    fatal: true,
+                    table: TABLE_NAMES.TEAM_REQUESTS
+                   })
             }
             const team = await this.refreshTeam(team_id);
             if (team) this.insertTeamIntoStore(team)
@@ -119,8 +133,13 @@ export const useTeamStore = defineStore("team", {
             );
  
             if (error) {
-                console.error(error);
-                return;
+                throw new DatabaseError({
+                    name: ErrorName.UPDATE_ERROR, 
+                    message: 'Error denying request',
+                    cause: error,
+                    fatal: true,
+                    table: TABLE_NAMES.TEAM_REQUESTS
+                   })
             }
             const team = await this.refreshTeam(team_id);
             if (team) this.insertTeamIntoStore(team)
@@ -238,8 +257,13 @@ export const useTeamStore = defineStore("team", {
            );
 
            if (error) {
-               console.error(error);
-               return;
+            throw new DatabaseError({
+                name: ErrorName.INSERT_ERROR, 
+                message: 'Error sending request',
+                cause: error,
+                fatal: true,
+                table: TABLE_NAMES.TEAM_REQUESTS
+               })
            }
            const team = await this.refreshTeam(team_id);
            if (team) this.insertTeamIntoStore(team)

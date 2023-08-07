@@ -3,8 +3,6 @@
         :style="{ transform: deleteOpen ? 'translateX(-3em)' : '' }"
         ref="teamItem"
         style="transition: transform 0.3s; display: block"
-        
-   
     >
         <div style="max-height: 2em; position: relative" class="q-my-sm">
             <InputName :name="item.name" @save="saveName" :disabled="readOnly">
@@ -41,65 +39,7 @@
                         })
                     "
                 ></q-badge>
-                <q-badge
-                    v-else-if="
-                        item.subject === 'requestee' &&
-                        item.status !== 'accepted' &&
-                        item.status !== 'rejected'
-                    "
-                    outline
-                    rounded
-                    click
-                    color="pink"
-                    :label="`Incoming request`"
-                >
-                    <q-btn
-                        flat
-                        round
-                        size="sm"
-                        @click="
-                            confirmRequest({
-                                team_id: item.id,
-                                requester_profile_id: item.requester_id,
-                            })
-                        "
-                        >Y</q-btn
-                    >
-                    <q-btn
-                        flat
-                        round
-                        size="sm"
-                        @click="
-                            denyRequest({
-                                team_id: item.id,
-                                requester_profile_id: item.requester_id,
-                            })
-                        "
-                        >N</q-btn
-                    >
-                </q-badge>
-                <q-badge
-                    v-else-if="
-                        item.status === 'accepted' &&
-                        item.subject !== 'requestee'
-                    "
-                    outline
-                    rounded
-                    click
-                    color="positive"
-                    :label="'Request accepted'"
-                ></q-badge>
-                <q-badge
-                    v-else-if="
-                        item.status === 'rejected' &&
-                        item.subject !== 'requestee'
-                    "
-                    outline
-                    rounded
-                    click
-                    color="negative"
-                    :label="'Request rejected'"
-                ></q-badge>
+  
                 <q-badge
                     v-else-if="readOnly"
                     outline
@@ -117,7 +57,7 @@
             </div>
         </div>
 
-        <div  class="row  no-wrap">
+        <div class="row no-wrap" v-if="!readOnly || hasPlayers()">
             <div class="col-6 table-team__section q-mr-xs col-shrink">
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.lead_player_id?.avatar)"
@@ -185,6 +125,9 @@
                 />
             </div>
         </div>
+          <div class="row no-wrap justify-center items-center text-sm text-italic " style="height: 4em" v-else>
+                {{item.name}} has no players!
+          </div>
     </q-item-section>
     <transition
         appear
@@ -214,27 +157,29 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
-    min-width:0;
+    min-width: 0;
     overflow: hidden;
 
     // For TableTeamPlayer
     :deep(.team-player__container) {
-    display: grid;
-    grid-template-columns: 30% 70%;
-    grid-template-rows: 1fr;
-    column-gap: 8px;
-     .avatar__blank {
-        width: 90%;
-        border-radius: 50%;
-        border: 1px solid #ddd;
-        background: #eee;
-        aspect-ratio: 1/1;
-        font-size: var(--text-sm);
-        @include sm {
-            font-size: var(--text-md);
+        display: grid;
+        grid-template-columns: 30% 70%;
+        grid-template-rows: 1fr;
+        .avatar__blank {
+            margin-top: 0.4em;
+            margin-bottom: 0.4em;
+            width: 93%;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: #eee;
+            margin-left: 0.15em;
+            aspect-ratio: 1/1;
+            font-size: var(--text-sm);
+            @include sm {
+                font-size: var(--text-md);
+            }
         }
     }
-}
 }
 </style>
 <script setup lang="ts">
@@ -251,6 +196,17 @@ const loading = ref(false);
 
 const teamStore = useTeamStore();
 const { removePlayerFromTeam, addPlayerToTeam } = teamStore;
+
+const hasPlayers = () => {
+    return  !!props.item?.lead_player_id?.id ||
+        !!props.item?.second_player_id?.id ||
+        !!props.item?.third_player_id?.id ||
+        !!props.item?.fourth_player_id?.id || 
+        !!props.item?.fifth_player_id?.id || 
+        !!props.item?.sixth_player_id?.id ||  
+        !!props.item?.seventh_player_id?.id
+}
+
 
 const removePlayer = async (teamId: number, position: string) => {
     loading.value = true;
@@ -317,7 +273,8 @@ const requestAccess = useThrottleFn(
         team_id: number;
         requestee_profile_id: string;
     }) => {
-        await teamStore.sendTeamRequest({ team_id, requestee_profile_id });
+    await teamStore.sendTeamRequest({ team_id, requestee_profile_id });
+    
         emit("update", {
             teamId: team_id,
             updates: {
@@ -336,7 +293,10 @@ const cancelRequest = useThrottleFn(
         team_id: number;
         requestee_profile_id: string;
     }) => {
+     
         await teamStore.cancelTeamRequest({ team_id, requestee_profile_id });
+ 
+
         emit("update", {
             teamId: team_id,
             updates: {

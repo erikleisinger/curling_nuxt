@@ -25,9 +25,9 @@ export const useEditorStore = defineStore("editor", {
             open: false,
             editedPlayer: null,
         },
-        teamEditor: {
+        teamViewer: {
             open: false,
-            editedTeam: null
+            team: null
         }
         
     }),
@@ -92,13 +92,13 @@ export const useEditorStore = defineStore("editor", {
         }
       });
     },
-    toggleTeamEditor({editedTeam, open}) {
+    toggleTeamViewer({team, open}) {
         if (open === false) {
-            this.teamEditor.open = false;
-            this.teamEditor.editedTeam = null
+            this.teamViewer.open = false;
+            this.teamViewer.team = null
         } else {
-            this.teamEditor.open = true;
-            this.teamEditor.editedTeam = editedTeam
+            this.teamViewer.open = true;
+            this.teamViewer.team = team
         }
     }
   },

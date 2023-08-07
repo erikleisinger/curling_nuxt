@@ -1,31 +1,12 @@
 <template>
-    <!-- <GlobalLoading v-if="globalLoading" infinite/>
-        <template v-else>
-    <slot />
-        </template>
-    <Banner/> -->
-
     <GlobalLoading v-if="globalLoading" infinite />
-
-    <q-layout view="hhh LpR fFf" v-else>
-        <q-header reveal elevated class="bg-primary text-white">
-            <slot name="header" />
+    <q-layout view="hhh lpr fFf" v-else>
+        <q-header>
+            <slot name="header"/>
         </q-header>
-
-        <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered>
-            <!-- drawer content -->
-        </q-drawer>
-
-        <q-drawer v-model="rightDrawerOpen" side="right" overlay bordered>
-            <!-- drawer content -->
-        </q-drawer>
-
-        <q-page-container>
-            <q-page>
+        <q-page-container class="page__container--global">
                 <slot />
-            </q-page>
         </q-page-container>
-
         <q-footer bordered class="bg-white text-black">
             <q-toolbar class="bottom__nav">
                 <div class="bottom__nav--item">
@@ -112,13 +93,14 @@
                 </div>
                 <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Manage"
+                        label="Browse"
                         :selected="view === VIEWS.MANAGE"
                         :onClick="() => setView(VIEWS.MANAGE)"
                         icon="groups_2"
                         size="3em"
                         class="col-grow"
-                    />
+                    >
+                    </ButtonNav>
                 </div>
                 <div class="bottom__nav--item">
                     <ButtonNav
@@ -128,7 +110,9 @@
                         icon="person"
                         size="3em"
                         class="col-grow"
-                    />
+                    >
+                <q-badge color="red" floating v-if="requests" rounded/>
+                    </ButtonNav>
                 </div>
             </q-toolbar>
         </q-footer>
@@ -136,6 +120,9 @@
     </q-layout>
 </template>
 <style lang="scss">
+.page__container--global {
+    height: calc(100 * var(--vh, 1vh));
+}
 .bottom__nav {
     display: grid;
     grid-template-rows: 3em;
@@ -143,6 +130,10 @@
     .bottom__nav--item {
         display: flex;
         justify-content: center;
+        .q-badge {
+            // font-family: $font-family-secondary;
+            padding: 0px 6px;
+        }
     }
 }
 </style>
@@ -152,16 +143,11 @@ import { VIEWS } from "@/constants/navigation";
 import { useEditorStore } from "@/store/editor";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
+import {useSocialStore} from '@/store/social'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 
-const toggleLeftDrawer = () => {
-    leftDrawerOpen = !leftDrawerOpen;
-};
-const toggleRightDrawer = () => {
-    rightDrawerOpen = !rightDrawerOpen;
-};
 
 const navStore = useNavigationStore();
 const { setView } = navStore;
@@ -179,7 +165,9 @@ const createNewTeam = async () => {
 };
     const editorStore = useEditorStore();
 const createNewPlayer = async () => {
-
     editorStore.togglePlayerEditor({open: true})
 };
+const socialStore = useSocialStore();
+const requests = computed(() => socialStore.requestsToRespond)
+
 </script>

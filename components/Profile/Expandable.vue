@@ -1,65 +1,58 @@
 <template>
-    <div class="row bg-white full-width q-pa-md row profile--container box-shadow--dark" ref="header">
-        <ProfileAvatar
-            :path="avatarUrl"
-            size="4"
-            @click="expand"
-            style="z-index: 3"
-        />
+<NuxtLayout>
+    <template v-slot:header>
+    <div
+        class="row bg-white full-width row profile--container box-shadow--dark row no-wrap"
+        ref="header"
+    >
+        <div class="col-3" style="max-width: min(20vw, 125px)">
+            <PlayerAvatar
+                :parsedAvatar="parseAvatar(avatar)"
+                :player="{ ...player, profile_id_for_player: profileId }"
+                hidePlayerIcon
+            />
+        </div>
+        <div class="column justify-center q-ml-sm">
         <h1
-            class="col-grow row items-center text-bold text-black text-lg username"
+            class=" row items-center text-bold text-black text-md "
             style="z-index: 2"
         >
-            {{ username }}
+            {{firstName}} {{lastName}}
         </h1>
-
-       
-    </div>
-     <div
-            class="profile--expandable pretty-shadow"
-            ref="profileContainer"
-            :class="expanded ? 'grow' : 'shrink'"
-        >
-            <LazyProfile />
+        <h2 class="text-sm">
+            @{{ username }}
+        </h2>
         </div>
+        <div class="col-grow row justify-end q-mr-sm items-center">
+        <q-btn flat round icon="logout" @click="logout" color="deep-purple"/>
+        </div>
+    </div>
+    </template>
+
+        <LazyProfile />
+</NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .profile--container {
-    padding: var(--space-sm);
+    padding: var(--space-xs) var(--space-xxxs) ;
     z-index: 3;
     position: relative;
-}
-h1.username {
-        margin-left: var(--space-sm)!important;
-    }
-.profile--expandable {
-    background-color: white;
-    transition: all 0.2s;
-    top: v-bind(top);
-    left: 0;
-    position: absolute;
-    z-index: 2;
-    &.grow {
-        transform: translateX(0);
-      
-    }
-    &.shrink {
-        transform: translateX(-100vw);
-    }
-    
-    z-index: 1;
+    color: black;
 }
 </style>
 <script setup>
 import { useElementSize, useSwipe, useScroll } from "@vueuse/core";
 import { useUserStore } from "@/store/user";
+import { parseAvatar } from "@/utils/avatar";
+
+
+const {logout} = useSession();
+
 const store = useUserStore();
-const avatarUrl = ref("");
-const username = ref("");
-onMounted(() => {
-    avatarUrl.value = store.avatarUrl;
-    username.value = store.username;
-});
+
+
+
+const { avatar, username, player, id: profileId, firstName, lastName } = store;
 
 const expand = () => {
     expanded.value = !expanded.value;

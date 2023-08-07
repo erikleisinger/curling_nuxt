@@ -90,14 +90,14 @@
         }
 
         .header {
-            font-family: "Montserrat", sans-serif;
+            font-family: $font-family-main;
             font-weight: bold;
             color: white;
 
             font-size: 2em;
         }
         .footer {
-            font-family: "Hind", sans-serif;
+            font-family: $font-family-secondary;
         }
     }
 }

@@ -1,28 +1,34 @@
 <template>
-    <NuxtLayout>
-        <q-btn icon="logout" @click="logout"/>
-        <div class="profile__container items-center">
-            <header
-                class="column justify-center items-center profile__header col-grow">
-                <div style="width: 50vw">
-                <PlayerAvatar :parsedAvatar="parseAvatar(player.avatar)" :player="player" popoutPosition="bottom right" hidePlayerIcon showStats>
-                    <template v-slot:deleteButton>
-                        <q-btn
-                            color="deep-purple"
-                            size="sm"
-                            round
-                            @click="openPlayerSelector"
-                            ><q-icon color="white" name="swap_horiz" size="xs"
-                        /></q-btn>
-                    </template>
-                </PlayerAvatar> 
-                </div>
-                <h1 class="text-black text-bold">{{`${user.firstName} ${user.lastName}`}}</h1>
-                <h2 class="text-muted text-lg" aria-roledescription="user name">
-                    #{{ user.username }}
-                </h2>
-            </header>
-            <main class="main-content__wrap">
+
+            <!-- class="column justify-center items-center profile__header col-grow" -->
+            <nav>
+                <q-tabs
+                    v-model="tab"
+                    inline-label
+                    outside-arrows
+                    stretch
+                    active-bg-color="deep-purple"
+                    active-color="white"
+                    color="deep-purple"
+                    class="profile__tabs text-deep-purple"
+                >
+                <q-tab
+                        :label="TAB_NAMES.REQUESTS.label"
+                        :name="TAB_NAMES.REQUESTS.value"    
+                        icon="textsms"
+                    
+                    >
+                        <q-badge color="red" floating rounded v-if="requestsNotifications"></q-badge>
+                    </q-tab>
+                    <q-tab
+                        :name="TAB_NAMES.SETTINGS.value"
+                        icon="settings"
+                        :label="TAB_NAMES.SETTINGS.label"
+                     
+                    />    
+                </q-tabs>
+            </nav>
+            <main class="main-content__wrap settings" v-if="tab === TAB_NAMES.SETTINGS.value">
                 <section name="timezone" class="section">
                     <label for="timezone" class="label">Timezone</label>
                     <div id="timezone">{{ user.timezone }}</div>
@@ -69,49 +75,39 @@
                     </div>
                 </section>
             </main>
-        </div>
-    </NuxtLayout>
+            <main class="main-content__wrap" v-else-if="tab === TAB_NAMES.REQUESTS.value">
+                <ProfileRequests/>
+            </main>
 </template>
 <style lang="scss" scoped>
-.profile__container {
-    height: calc(100vh - (64px + 0.75 * 1em * 2));
-    height: calc(var(--vh, 1vh) * 100 - (64px + 0.75 * 1em * 2));
-    overflow: auto;
-    .profile__header {
-        position: relative;
-        z-index: 1;
-        padding: var(--space-xl) !important;
-
-        h1 {
-            margin-top: var(--space-sm);
-        }
-        .upload__input {
-            width: 0.1px;
-            height: 0.1px;
-            opacity: 0;
-            overflow: hidden;
-            position: absolute;
-            z-index: -1;
-        }
-        .upload__input--label {
-            position: absolute;
-            background-color: var(--transparent-light);
-            height: 100%;
-            width: 100%;
-            border-radius: 50%;
-            .icon {
-                font-size: var(--text-lg);
-            }
-            color: rgba(255, 255, 255, 0.8);
-        }
+// .request-status__container {
+//     border: 2px solid $red;
+//     margin-bottom: var(--space-sm);
+//     padding: var(--space-xs);
+//     font-family: $font-family-main;
+//     position: relative;
+//     height: fit-content;
+//     background-color: $red;
+//     color: white;
+// }
+.profile__tabs {
+    // border-bottom: 2px solid $deep-purple;
+    :deep(.q-tab__indicator) {
+        display: none !important;
     }
+}
+
     .main-content__wrap {
+        &.settings {
+ padding: var(--space-sm);
+        }
+       
         background-color: white;
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-        margin: 0 var(--space-sm) 0 var(--space-sm);
-        border-top-left-radius: 32px;
-        border-top-right-radius: 32px;
-        padding: var(--space-lg);
+        height: calc(100% - 48px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-width: 100%;
+        position: relative;
 
         color: black;
         .section {
@@ -139,35 +135,48 @@
             }
         }
     }
-}
 </style>
 <script setup>
 import imageCompression from "browser-image-compression";
 import { useUserStore } from "@/store/user";
-import {usePlayerStore} from '@/store/players'
-import {useEditorStore} from '@/store/editor'
+import { usePlayerStore } from "@/store/players";
+import { useEditorStore } from "@/store/editor";
 import { BannerColors } from "@/types/color";
-import {useNotificationStore} from '@/store/notification'
+import { useNotificationStore } from "@/store/notification";
+import {useSocialStore} from '@/store/social'
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 
-import {parseAvatar} from '@/utils/avatar'
+import { parseAvatar } from "@/utils/avatar";
 
-const {logout} = useSession();
+const TAB_NAMES = ref({
+    REQUESTS: {
+        label: "Requests",
+        value: "requests",
+    },
+    SETTINGS: {
+        label: "Settings",
+        value: "settings",
+    },
+});
+
+const tab = ref("requests");
 
 const store = useUserStore();
 
 const user = computed(() => {
-    const { id, timezone, friendId, username, player, firstName, lastName } = store;
-    return { id, timezone, friendId, username,  player, firstName, lastName};
+    const { id, timezone, friendId, username, player, firstName, lastName } =
+        store;
+    return { id, timezone, friendId, username, player, firstName, lastName };
 });
- 
 
 const playerStore = usePlayerStore();
 
 const player = computed(() => {
-       const player = playerStore.players.find((p) => user.value.player.id === p.id)
-return player || {}
-})
+    const player = playerStore.players.find(
+        (p) => user.value.player.id === p.id
+    );
+    return player || {};
+});
 
 const { toTimezone } = useTime();
 
@@ -219,38 +228,44 @@ const addFriend = async () => {
 
 const openPlayerSelector = () => {
     const editorStore = useEditorStore();
-  
-    editorStore.togglePlayerSelect({open: true, onSelect: async (playerId) => {
-  const notificationStore = useNotificationStore();
-  const notId = notificationStore.addNotification({
-    state: 'pending',
-    text: 'Updating...'
-  })
-  try {
- await playerStore.updatePlayerLink({
-            playerId: player.value.id,
-            profileId: null
-        })
-        await playerStore.updatePlayerLink({
-            playerId: playerId,
-            profileId: user.value.id
-        })
-        await store.getCurrentUser();
-         notificationStore.updateNotification(notId, {
-            state: 'completed',
-            text: 'Player linked!',
 
-        })
-  } catch(e) {
-     notificationStore.updateNotification(notId, {
-            state: 'failed',
-            text: `Issue linking player: ${e}`,
-
-        })
-  }
-       
-
-       
-    }})
+    editorStore.togglePlayerSelect({
+        open: true,
+        onSelect: async (playerId) => {
+            const notificationStore = useNotificationStore();
+            const notId = notificationStore.addNotification({
+                state: "pending",
+                text: "Updating...",
+            });
+            try {
+                await playerStore.updatePlayerLink({
+                    playerId: player.value.id,
+                    profileId: null,
+                });
+                await playerStore.updatePlayerLink({
+                    playerId: playerId,
+                    profileId: user.value.id,
+                });
+                await store.getCurrentUser();
+                notificationStore.updateNotification(notId, {
+                    state: "completed",
+                    text: "Player linked!",
+                });
+            } catch (e) {
+                notificationStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `Issue linking player: ${e}`,
+                });
+            }
+        },
+    });
 };
+
+/**
+ * Team requests
+ */
+
+const socialStore = useSocialStore();
+const requestsNotifications = computed(() => socialStore.requestsToRespond)
+
 </script>

@@ -5,7 +5,7 @@
 </template>
 <style lang="scss" scoped>
 .select__section {
-    height: calc((var(--vh) * 100));
+    height: calc((var(--vh) * 100) - 50px);
     overflow: auto;
 }
 </style>

@@ -5,7 +5,7 @@
             <q-toolbar
                 class="bg-deep-purple text-white q-px-none"
                 v-if="$q.screen.lt.md"
-                role="navigation"
+                    
             >
                 <q-tabs
                     v-model="tab"

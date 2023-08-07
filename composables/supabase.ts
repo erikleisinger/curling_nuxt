@@ -75,7 +75,7 @@ export const useSupabaseFetch = () => {
                 setBanner(callbacks.onSuccess, BannerColors.Primary);
             }
         }
-        return { data: data || true, error };
+        return { data: data ?? true, error };
     };
     return { client, fetchHandler };
 };

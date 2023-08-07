@@ -33,13 +33,12 @@
 
 </template>
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
 .line__select {
     border: 1px solid $blue-7;
 }
     h1 {
         font-size: 2em;
-           font-family: "Montserrat", sans-serif;
+           font-family: $font-family-main;
     }
 .turn-select-btn__wrap {
     width: 100%;

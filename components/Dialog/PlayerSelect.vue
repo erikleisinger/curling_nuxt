@@ -18,11 +18,11 @@
                 >
             </template>
         </TablePlayers>
-        <!-- <LoaderComponent/> -->
     </DialogFloating>
 </template>
 <script setup>
 import { useEditorStore } from "@/store/editor";
+
 const emit = defineEmits(["close", "select"]);
 
 const editorStore = useEditorStore();
@@ -36,16 +36,4 @@ const handleSelect = async (e) => {
 const close = () => {
     editorStore.togglePlayerSelect({open: false})
 }
-  const timeout = () => {
-        return new Promise((resolve) => setTimeout(resolve, 4000));
-      };
-// const LoaderComponent = defineAsyncComponent({
-//     loader: async () => {
-//         // await timeout();
-//         return import('../Table/Players.vue')
-//     },
-//     loadingComponent: `<div>Loading</div>`,
-//     delay: 4000,
-//     timeout: 200,
-// })
 </script>

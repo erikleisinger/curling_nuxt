@@ -54,6 +54,8 @@ html, body, div, span, object, iframe, figure, h1, h2, h3, h4, h5, h6, p, blockq
     --transparent-heavy: rgba(0,0,0,0.8);
   }
 
+  $font-family-main: "Montserrat", sans-serif;
+  $font-family-secondary: "Hind", sans-serif;
 
 
 html {
@@ -66,7 +68,7 @@ body {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    font-family: "Hind", sans-serif;
+    font-family: $font-family-secondary;
     -webkit-touch-callout: none; /* Safari */
     -webkit-user-select: none; /* Chrome */
     -moz-user-select: none; /* Firefox */
@@ -82,7 +84,7 @@ h4,
 h5,
 h6,
 label {
-    font-family: "Montserrat", sans-serif;
+    font-family:  $font-family-main;
     line-height: unset;
     margin: 0;
 }

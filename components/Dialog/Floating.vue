@@ -15,9 +15,12 @@
                     <q-btn flat round icon="close" @click="close"/>
                 </div>
                 </div>
-                <div class="content__container" v-cloak v-if="!closing">
+                <div class="content__container"  v-if="!transitioning">
                     <slot @close="close" />
                 </div>
+                <!-- <div v-else class="content__container">
+                    <q-inner-loading :showing="true" color="deep-purple" size="3em"/>
+                </div> -->
             </div>
         </div>
     </Teleport>
@@ -29,7 +32,7 @@
 .outer__container {
     height: calc(100 * var(--vh, 1vh));
     width: 100vw;
-    z-index: 100000;
+    z-index: 100003;
     position: absolute;
     top: 0;
     transform-origin: bottom left;
@@ -43,6 +46,7 @@
         .content__container {
             height: calc(100% - 3em);
             overflow: auto;
+            position:relative;
         }
     }
 }
@@ -62,17 +66,28 @@ const keyframes = [
 ]
 
 const {reverse} = useAnimate(container, keyframes, {duration: 200, fill: 'both', easing: 'linear'});
-const closing = ref(false)
-const close = async () => {
+const transitioning = ref(true)
+
 const timeout = () => {
-        return new Promise((resolve) => setTimeout(resolve, 500));
+        return new Promise((resolve) => setTimeout(resolve, 250));
       };
-      closing.value = true;
+
+const close = async () => {
+
+      transitioning.value = true;
     reverse();
     await timeout();
     emit('close')
-    closing.value = false;
+    transitioning.value = false;
 }
+onBeforeMount(() => {
+    transitioning.value = true;
+})
+
+onMounted(async () => {
+    await timeout();
+    transitioning.value = false;
+})
 
 
 </script>

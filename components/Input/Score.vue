@@ -41,12 +41,11 @@
     </section>
 </template>
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
 .score-container__wrap {
     height: 100%;
     overflow: auto;
     background-color: rgba(255, 255, 255, 0.9);
-    font-family: "Montserrat", sans-serif;
+    font-family: $font-family-main;
     display: grid;
     grid-template-rows: minmax(100% ,100%) auto;
     padding-bottom: var(--space-lg);

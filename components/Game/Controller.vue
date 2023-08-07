@@ -56,7 +56,6 @@
 </NuxtLayout>
 </template>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
 
 #rings {
     overscroll-behavior-y: v-bind("overscroll");
