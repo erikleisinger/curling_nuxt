@@ -1,7 +1,13 @@
 <template>
     <q-item-label class="row items-center no-wrap"  >
-         <div class="col-shrink"  v-if="!editingName" style="position: relative; max-width: calc(100% - 96px)" >
-            <q-btn
+         <div class="col-shrink"  v-if="!editingName" style="position: relative" >
+         <div>
+        <slot name="text">
+           
+                {{ name || "Unnamed team" }}
+           
+        </slot>
+           <q-btn
                 size="xs"
                 flat
                 round
@@ -10,13 +16,10 @@
                 @click="editingName = true"
                 :disable="disabled || savingName"
                 v-if="!editingName && !disabled"
-                class="floating__edit"
+               
             />
-        <slot name="text">
-           
-                {{ name || "Unnamed team" }}
-           
-        </slot>
+         </div>
+         
          </div>
             <q-input
                 v-else
@@ -38,15 +41,17 @@
                     />
                 </template>
             </q-input>
-            
+
+             
         </q-item-label>
+      
 </template>
 <style lang="scss" >
     .floating__edit {
         position: absolute;
         top: 0;
         right: -3em;
-        z-index: 1;
+        z-index: 1000;
     }
 </style>
 <script setup>
@@ -59,6 +64,11 @@
     const editedName = ref(null);
     const editingName = ref(false);
     const savingName = ref(false)
+
+    onMounted(() => {
+        if (!props.name) return;
+        editedName.value = props.name;
+    })
 
 
 

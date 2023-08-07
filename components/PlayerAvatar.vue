@@ -27,92 +27,26 @@
                 <q-icon size="1em" name="person" />
             </q-badge>
         </div>
+          <div ref="avatarElement" style="position: absolute; height: 100%; width: 100%"/>
     </Avataaar>
+  
     <q-menu
+            v-if="avatarElement && props.player?.id"
         :model-value="menuOpen"
+            :target="avatarElement"
         class="q-pa-sm q-pb-sm player-avatar__menu"
         ref="menu"
         auto-close
         @hide="menuOpen = false"
         transition-show="scale"
-        cover
-        anchor="center start"
+        anchor="center right"
+        
+        :cover="false"
+
         :fit="false"
     >
-        <div class="row items-center q-mt-xs no-wrap player__container">
-            <Avataaar
-                v-bind="props.parsedAvatar"
-                @click.stop.prevent="openMenu"
-           
-            />
-            <div >
-                <q-item-label class="truncate-text" >
-                    <span v-if="player.id">
-                        {{ player.name }}
-                    </span>
-                </q-item-label>
-                <q-item-label
-                    caption
-                    class="truncate-text text-caption row items-center"
-                    v-if="!!isCurrentUserPlayer || !!isOtherUserPlayer"
-                >
-                    <q-badge
-                        :color="isCurrentUserPlayer ? 'green' : 'red'"
-                        class="user-link__badge"
-                        bottom
-                        rounded
-                    >
-                        <q-icon size="1em" name="person" />
-                    </q-badge>
-                    <span class="q-ml-xs">{{ isOtherUserPlayer || "Me" }}</span>
-                </q-item-label>
-                <q-item-label class="truncate-text text-md q-pb-xs">
-                    <q-btn
-                        color="deep-purple"
-                        round
-                        size="sm"
-                        class="q-mr-sm"
-                        @click="goToStats"
-                        v-if="showStats"
-                    >
-                        <q-icon color="white" name="equalizer" size="xs"
-                    /></q-btn>
-                    <q-btn
-                        color="deep-purple"
-                        round
-                        size="sm"
-                        class="q-mr-sm"
-                        @click="openPlayerEditor"
-                        v-if="canEdit"
-                    >
-                        <q-icon color="white" name="edit" size="xs"
-                    /></q-btn>
-                    <q-btn
-                        color="deep-purple"
-                        round
-                        size="sm"
-                        class="q-mr-sm"
-                        @click="openPlayerEditor"
-                        v-else
-                    >
-                        <q-icon color="white" name="visibility" size="xs"
-                    /></q-btn>
-                    <slot
-                        v-if="canEdit"
-                        name="deleteButton"
-                        v-bind:closeMenu="() => (menuOpen = false)"
-                    >
-                        <q-btn
-                            color="deep-purple"
-                            size="sm"
-                            round
-                            @click="openDeleteDialog"
-                            v-if="canEdit && canDelete"
-                            ><q-icon color="white" name="delete" size="xs"
-                        /></q-btn>
-                    </slot>
-                </q-item-label>
-            </div>
+      <div class="column" >
+               <q-btn color="deep-purple" rounded icon="visibility" :stretch="false" @click="openPlayerEditor" class="q-mb-sm" large>View</q-btn>
         </div>
     </q-menu>
 
@@ -141,13 +75,14 @@
 
 }
 .player-avatar__menu {
-    background-color: unset;
+    background-color: unset!important;
     z-index: 1000000;
-    background-color: white;
+    box-shadow: unset!important;
     border-radius: 8px;
     padding-bottom: 8px;
     min-height: unset !important;
     height: fit-content;
+    min-width: unset!important;
 }
 .avatar-editor__container {
     height: calc(100 * var(--vh, 1vh));
@@ -189,6 +124,10 @@ const props = defineProps({
     hidePlayerIcon: Boolean,
     player: Object,
     parsedAvatar: Object,
+    showFullMenu: {
+        type: Boolean,
+        default: true,
+    },
     showStats: {
         type: Boolean,
         default() {
@@ -252,4 +191,6 @@ const isOtherUserPlayer = computed(() => {
         return false;
     return `@${props.player.profile_username}`;
 });
+
+const avatarElement = ref(null);
 </script>

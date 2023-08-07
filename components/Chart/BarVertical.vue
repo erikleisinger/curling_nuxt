@@ -74,7 +74,7 @@ onMounted(() => {
                 {
                     data: props.data,
                     parsing: {
-                        xAxisKey: props.percent ? "percent" : "rawValue",
+                        yAxisKey: "percent",
                     },
                 },
             ],
@@ -83,6 +83,10 @@ onMounted(() => {
         options: {
             datalabels: {
                 color: "white",
+                formatter: (data) => {
+                    console.log("label format: ", data);
+                    return "";
+                },
             },
             datasets: {
                 bar: {
@@ -91,7 +95,7 @@ onMounted(() => {
                 },
             },
             // borderColor: "rgba(0,0,0,0.5)",
-            indexAxis: "y",
+            indexAxis: "x",
             layout: {
                 padding: {
                     top: 0,
@@ -150,14 +154,28 @@ onMounted(() => {
             },
             responsive: true,
             scales: {
-                x: {
+                y: {
                     min: 0,
                     max: props.max || null,
+                    grace: 1,
+                    ticks: {
+                          callback: (data) => {
+                        return `${data}%`
+                    },
+                        stepSize: 1,
+                        display: true,
+                    },
+                  
                 },
-                y: {
+                x: {
                     afterFit: (data) => {
                         data.width = 50;
                     },
+                    ticks: {
+                        callback: (data) => {
+                        return `${data}pt`
+                    },
+                    }
                 },
             },
         },

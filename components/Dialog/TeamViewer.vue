@@ -1,24 +1,26 @@
 <template>
     <DialogFloating @close="toggleTeamViewer({ open: false })">
-        <template v-slot:prependButton>
-            <q-btn flat round icon="edit" v-if="canEdit"/>
-        </template>
-        <header class="pretty-shadow">
+        <header class="pretty-shadow q-px-sm" ref="header">
+            <div class="row">
               <LazyTableTeamItem2
                     :item="team"
-         
+                v-if="!loading"
                 />
+                     <!-- <q-btn flat round icon="edit" v-if="canEdit"  color="grey-8"/> -->
+            </div>
                         <nav>
  <q-tabs dense v-model="tab" stretch>
-                    <q-tab name="history" label="Game history"/>
-                     <q-tab name="stats" label="Stats"/>
+         <q-tab name="stats" label="Stats" style="width: 33%"/>
+               <q-tab name="players" label="Players" style="width: 33%"/>
+                    <q-tab name="history" label="History" style="width: 33%"/>
+                
                 </q-tabs>
 
         </nav>
         </header>
 
 
-        <main>
+        <main :style="`height: calc(100% - ${height}px); overflow: auto`">
 
             <KeepAlive>
                     <div  v-if="tab === 'history'">
@@ -80,6 +82,8 @@
                     </div>
         
                     <TeamStatsView :teamId="team.id" v-else-if="tab === 'stats'"/>
+
+                    <TableTeamItem v-else-if="tab === 'players'" :item="team"/>
               
                 </KeepAlive>
         </main>
@@ -118,17 +122,21 @@ import { useEditorStore } from "@/store/editor";
 import { useTeamStore } from "@/store/teams";
 import {useUserStore} from '@/store/user'
 import { parseAvatar } from "@/utils/avatar";
+import {useElementSize} from '@vueuse/core'
 const editorStore = useEditorStore();
 
-const tab = ref('history')
+const tab = ref('stats')
 
 const { toggleTeamViewer } = editorStore;
 
 const {format} = useTime();
 
+const loading = ref(false)
 const team = ref(null);
-onMounted(async () => {
+onBeforeMount(async () => {
+    loading.value = true;
     const edited = editorStore.teamViewer.team;
+    console.log('edited: ', edited)
     if (edited?.id) getTeamRecord(edited.id);
     if (!edited?.created_at && edited?.id) {
         const storeTeam = useTeamStore().teams.find((t) => t.id === edited?.id);
@@ -136,7 +144,7 @@ onMounted(async () => {
             team.value = storeTeam
         } else {
             const client = useSupabaseClient();
-            const {data} = await client.rpc('get_teams_detailed').eq('id', edited?.id);
+            const {data} = await client.rpc('get_teams_basic').eq('id', edited?.id);
             const [fromDb] = data;
             if (fromDb) {
                 team.value = fromDb
@@ -151,6 +159,8 @@ onMounted(async () => {
     
 
     if (team.value) setSkipAvatar();
+    console.log('got team: ', team.value, skipAvatar.value)
+    loading.value = false
 });
 
 
@@ -183,4 +193,7 @@ const getTeamRecord = async (team_id_param: number) => {
 
 const userStore = useUserStore();
 const canEdit = computed(() => team.value?.profile_id === userStore.id)
+
+const header = ref(null);
+const {height} = useElementSize(header)
 </script>

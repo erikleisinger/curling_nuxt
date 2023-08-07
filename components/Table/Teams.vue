@@ -23,7 +23,6 @@
                 <LazyTableTeamItem2
                     :item="item"
                     @delete="itemToDelete = item"
-                    :readOnly="item.profile_id !== userStore.id"
                     @update="emit('update', $event)"
                 />
             </q-item>

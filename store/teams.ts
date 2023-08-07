@@ -145,14 +145,6 @@ export const useTeamStore = defineStore("team", {
             if (team) this.insertTeamIntoStore(team)
          },
         async fetchTeams(force = false) {
-            //   if (this.teams.length && !force) return;
-
-            //   const {client, fetchHandler} = useSupabaseFetch();
-            //   const {data} = await fetchHandler(() => client
-            //     .rpc('get_teams_detailed'), {onError: 'Error fetching teams'})
-            //     if (!data) return;
-            //   this.teams = data
-            //   this.sortTeams();
             if (this.teams.length && !force) return;
             const userStore = useUserStore();
             let userId = userStore.id
@@ -166,7 +158,6 @@ export const useTeamStore = defineStore("team", {
             }
 
             const { client, fetchHandler } = useSupabaseFetch();
-            const { getQuery } = useDatabase();
             const { data } = await fetchHandler(
                 () =>
                     client
@@ -181,7 +172,6 @@ export const useTeamStore = defineStore("team", {
         async insertTeam(team: Team) {
             const { client, fetchHandler } = useSupabaseFetch();
             const { getQuery } = useDatabase();
-            //   const {id} = getUser() ?? {};
             const { data } = await fetchHandler(
                 () =>
                     client

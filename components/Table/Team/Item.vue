@@ -4,130 +4,91 @@
         ref="teamItem"
         style="transition: transform 0.3s; display: block"
     >
-        <div style="max-height: 2em; position: relative" class="q-my-sm">
-            <InputName :name="item.name" @save="saveName" :disabled="readOnly">
-                <template v-slot:text>
-                    <h2 class="text-md text-bold truncate-text">
-                        {{ item.name }}
-                    </h2>
-                </template>
-            </InputName>
-            <div
-                style="
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    height: 10px;
-                    height: 100%;
-                "
-                class="row items-center"
-            >
-                <q-badge
-                    v-if="
-                        item.subject === 'requester' &&
-                        item.status === 'pending'
-                    "
-                    outline
-                    rounded
-                    click
-                    color="orange"
-                    :label="`Pending`"
-                    @click="
-                        cancelRequest({
-                            team_id: item.id,
-                            requestee_profile_id: item.profile_id,
-                        })
-                    "
-                ></q-badge>
-  
-                <q-badge
-                    v-else-if="readOnly"
-                    outline
-                    rounded
-                    click
-                    color="grey-8"
-                    :label="'Request access'"
-                    @click="
-                        requestAccess({
-                            team_id: item.id,
-                            requestee_profile_id: item.profile_id,
-                        })
-                    "
-                ></q-badge>
-            </div>
-        </div>
+        <div style="max-height: 2em; position: relative" class="q-my-sm"></div>
 
-        <div class="row no-wrap" v-if="!readOnly || hasPlayers()">
-            <div class="col-6 table-team__section q-mr-xs col-shrink">
-                <TableTeamPlayer
-                    :parsedAvatar="parseAvatar(item.lead_player_id?.avatar)"
-                    :player="item.lead_player_id ?? {}"
-                    position="lead"
-                    @add="openPlayerSelector('lead')"
-                    @remove="removePlayer(item.id, 'lead')"
-                    :readOnly="readOnly"
-                />
-
-                <TableTeamPlayer
-                    :parsedAvatar="parseAvatar(item.second_player_id?.avatar)"
-                    :player="item.second_player_id ?? {}"
-                    position="second"
-                    @add="openPlayerSelector('second')"
-                    @remove="removePlayer(item.id, 'second')"
-                    :readOnly="readOnly"
-                />
-
-                <TableTeamPlayer
-                    :parsedAvatar="parseAvatar(item.third_player_id?.avatar)"
-                    :player="item.third_player_id ?? {}"
-                    position="third"
-                    @add="openPlayerSelector('third')"
-                    @remove="removePlayer(item.id, 'third')"
-                    :readOnly="readOnly"
-                />
-
+        <div class="row team-players--wrap" v-if="hasPlayers()">
+            <div class="col-12 col-sm-6 team-player__container">
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.fourth_player_id?.avatar)"
                     :player="item.fourth_player_id ?? {}"
-                    position="fourth"
-                    @add="openPlayerSelector('fourth')"
-                    @remove="removePlayer(item.id, 'fourth')"
-                    :readOnly="readOnly"
+                    position="Fourth"
                 />
+                <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.lead_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('lead')"></q-btn>
+                </div>
             </div>
-            <div class="col-6 table-team__section q-ml-xs col-shrink">
+            <div class="col-12 col-sm-6 team-player__container">
+                <TableTeamPlayer
+                    :parsedAvatar="parseAvatar(item.third_player_id?.avatar)"
+                    :player="item.third_player_id ?? {}"
+                    position="Third"
+                />
+                  <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.third_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('second')"></q-btn>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 team-player__container">
+                <TableTeamPlayer
+                    :parsedAvatar="parseAvatar(item.second_player_id?.avatar)"
+                    :player="item.second_player_id ?? {}"
+                    position="Second"
+                />
+              <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.second_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('third')"></q-btn>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 team-player__container">
+                <TableTeamPlayer
+                    :parsedAvatar="parseAvatar(item.lead_player_id?.avatar)"
+                    :player="item.lead_player_id ?? {}"
+                    position="Lead"
+                />
+                  <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.lead_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('fourth')"></q-btn>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 team-player__container">
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.fifth_player_id?.avatar)"
                     :player="item.fifth_player_id ?? {}"
-                    position="fifth"
-                    @add="openPlayerSelector('fifth')"
-                    @remove="removePlayer(item.id, 'fifth')"
-                    :readOnly="readOnly"
+                    position="Fifth"
                 />
-
+               <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.fifth_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('fifth')"></q-btn>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 team-player__container"    v-if="item.fifth_player_id?.id">
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.sixth_player_id?.avatar)"
                     :player="item.sixth_player_id ?? {}"
                     v-if="item.fifth_player_id?.id"
-                    position="sixth"
-                    @add="openPlayerSelector('sixth')"
-                    @remove="removePlayer(item.id, 'sixth')"
-                    :readOnly="readOnly"
+                    position="Sixth"
                 />
+                  <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.sixth_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('sixth')"></q-btn>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 team-player__container"   v-if="item.sixth_player_id?.id">
                 <TableTeamPlayer
                     :parsedAvatar="parseAvatar(item.seventh_player_id?.avatar)"
                     :player="item.seventh_player_id ?? {}"
-                    v-if="item.sixth_player_id?.id"
-                    position="seventh"
-                    @add="openPlayerSelector('seventh')"
-                    @remove="removePlayer(item.id, 'seventh')"
-                    :readOnly="readOnly"
+                  
+                    position="Seventh"
                 />
+                   <div class="row items-center justify-end" v-if="!readOnly" >
+                <q-btn flat  round :icon="item.seventh_player_id?.id ? 'change_circle' : 'add'" color="grey-8" @click="openPlayerSelector('seventh')"></q-btn>
+                </div>
             </div>
         </div>
-          <div class="row no-wrap justify-center items-center text-sm text-italic " style="height: 4em" v-else>
-                {{item.name}} has no players!
-          </div>
+        <div
+            class="row no-wrap justify-center items-center text-sm text-italic"
+            style="height: 4em"
+            v-else
+        >
+            {{ item.name }} has no players!
+        </div>
     </q-item-section>
     <transition
         appear
@@ -144,6 +105,16 @@
     </transition>
 </template>
 <style lang="scss" scoped>
+.team-players--wrap {
+    .team-player__container {
+        display: grid;
+        grid-template-columns: v-bind(columns);
+        padding: var(--space-sm);
+
+        border-bottom: 1px solid $grey-3;
+    }
+}
+
 .delete__section {
     position: absolute;
     right: 0;
@@ -153,43 +124,15 @@
     height: 100%;
     color: white;
 }
-.table-team__section {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 1fr);
-    min-width: 0;
-    overflow: hidden;
-
-    // For TableTeamPlayer
-    :deep(.team-player__container) {
-        display: grid;
-        grid-template-columns: 30% 70%;
-        grid-template-rows: 1fr;
-        .avatar__blank {
-            margin-top: 0.4em;
-            margin-bottom: 0.4em;
-            width: 93%;
-            border-radius: 50%;
-            border: 1px solid #ddd;
-            background: #eee;
-            margin-left: 0.15em;
-            aspect-ratio: 1/1;
-            font-size: var(--text-sm);
-            @include sm {
-                font-size: var(--text-md);
-            }
-        }
-    }
-}
 </style>
 <script setup lang="ts">
 import { useSwipe, useThrottleFn } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import { useEditorStore } from "@/store/editor";
+import { useUserStore } from "@/store/user";
 const props = defineProps({
     item: Object,
-    readOnly: Boolean,
 });
 
 const loading = ref(false);
@@ -198,15 +141,16 @@ const teamStore = useTeamStore();
 const { removePlayerFromTeam, addPlayerToTeam } = teamStore;
 
 const hasPlayers = () => {
-    return  !!props.item?.lead_player_id?.id ||
+    return (
+        !!props.item?.lead_player_id?.id ||
         !!props.item?.second_player_id?.id ||
         !!props.item?.third_player_id?.id ||
-        !!props.item?.fourth_player_id?.id || 
-        !!props.item?.fifth_player_id?.id || 
-        !!props.item?.sixth_player_id?.id ||  
+        !!props.item?.fourth_player_id?.id ||
+        !!props.item?.fifth_player_id?.id ||
+        !!props.item?.sixth_player_id?.id ||
         !!props.item?.seventh_player_id?.id
-}
-
+    );
+};
 
 const removePlayer = async (teamId: number, position: string) => {
     loading.value = true;
@@ -273,8 +217,8 @@ const requestAccess = useThrottleFn(
         team_id: number;
         requestee_profile_id: string;
     }) => {
-    await teamStore.sendTeamRequest({ team_id, requestee_profile_id });
-    
+        await teamStore.sendTeamRequest({ team_id, requestee_profile_id });
+
         emit("update", {
             teamId: team_id,
             updates: {
@@ -293,9 +237,7 @@ const cancelRequest = useThrottleFn(
         team_id: number;
         requestee_profile_id: string;
     }) => {
-     
         await teamStore.cancelTeamRequest({ team_id, requestee_profile_id });
- 
 
         emit("update", {
             teamId: team_id,
@@ -346,4 +288,8 @@ const denyRequest = useThrottleFn(
     },
     10000
 );
+
+const readOnly = computed(() => useUserStore().id !== props.item?.profile_id);
+
+const columns = computed(() => readOnly.value ? '30% 70%' : '30% auto auto')
 </script>

@@ -1,6 +1,6 @@
 <template>
     <!-- -->
-    <div ref="statsContainer">
+    <div ref="statsContainer" class="stats__container">
         <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
@@ -11,7 +11,6 @@
                 }"
             >
                 <ChartWinLossTie
-                    style="max-height: 200px"
                     ref="winLossChart"
                     :data="[wins, losses, ties]"
                     v-if="!loadingRecord && visible"
@@ -19,27 +18,36 @@
             </div>
         </section>
         <section name="hammer conversion" class="stats__section">
-            <h2 class="text-md text-bold">Hammer conversion</h2>
+            <h2 class="text-md text-bold">Hammer efficiency</h2>
+            <h3 class="text-sm">Scoring efficiency with hammer</h3>
+
+            <ChartBar
+                :data="formattedHammerStats"
+                v-if="formattedHammerStats && visible"
+                :max="100"
+                percent
+            />
+        </section>
+        <section name="hammer scoring" class="stats__section">
+            <h2 class="text-md text-bold">Hammer scoring</h2>
             <h3 class="text-sm">
                 Points scored when {{ props.teamName }} has hammer
             </h3>
-
-          
-                <ChartBar
-                    :data="formattedHammerStats"
-                    v-if="formattedHammerStats && visible"
-                />
-          
+            <ChartBarVertical
+                :data="formattedHammerPoints"
+                v-if="formattedHammerPoints && visible"
+                axis="x"
+            />
         </section>
         <section name="defense" class="stats__section">
             <h2 class="text-md text-bold">Defense</h2>
             <h3 class="text-sm">Performance without hammer</h3>
-   
-                <ChartBar
-                    :data="formattedNoHammerStats"
-                    v-if="formattedNoHammerStats && visible"
-                />
-      
+            <ChartBar
+                :data="formattedNoHammerStats"
+                v-if="formattedNoHammerStats && visible"
+                :max="100"
+                percent
+            />
         </section>
 
         <!-- <div>
@@ -70,12 +78,14 @@
     </div>
 </template>
 <style lang="scss" scoped>
-.stats__section {
-    border-radius: 0px;
-    box-shadow: $pretty-shadow;
-    margin-bottom: var(--space-xs);
-    margin-top: var(--space-xs);
-    padding: var(--space-sm);
+.stats__container {
+    padding-top: var(--space-sm);
+    .stats__section {
+        border-radius: 0px;
+        box-shadow: $pretty-shadow;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm);
+    }
 }
 </style>
 <script setup>
@@ -94,20 +104,16 @@ const { height: winLossChartHeight } = useElementSize(winLossChart);
 
 const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
-const route = useRoute();
 const stats = ref(null);
+
 const wins = ref(0);
 const losses = ref(0);
 const ties = ref(0);
-const controlOfGame = ref(null);
-const stolenEnds = ref(null);
-const hammerConversion = ref(null);
-const blankEnds = ref(null);
-const forcedWith = ref(null);
-const forceWithout = ref(null);
-const avgPointsConceded = ref(null);
+
 const formattedHammerStats = ref(null);
 const formattedNoHammerStats = ref(null);
+const formattedHammerPoints = ref(null);
+
 const getGameStats = async () => {
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
@@ -121,10 +127,12 @@ const getGameStats = async () => {
     stats.value = s;
     const {
         avg_points_conceded,
+        failed_force_end_count,
         forced_end_count,
         hammer_1_point_count,
         hammer_blank_count,
         hammer_ends_count,
+        hammer_steal_count,
         stolen_end_count,
         total_ends_played,
     } = stats.value;
@@ -145,49 +153,108 @@ const getGameStats = async () => {
             ),
             rawValue: addPointCounts(2, 8),
             total: hammer_ends_count - hammer_blank_count,
-            description: `Scored 2+ points with hammer`,
+            description: `Scored 2+ points`,
             title: "Hammer conversion",
         },
         {
-            y: "1",
+            y: "Force",
             percent: toPercent(
                 hammer_1_point_count / (hammer_ends_count - hammer_blank_count)
             ),
             rawValue: hammer_1_point_count,
             total: hammer_ends_count - hammer_blank_count,
-            title: "Forces",
-            description: `Ends where ${props.teamName} was forced to 1`,
+            title: "Forced",
+            description: `Forced to take 1 point`,
         },
         {
-            y: "0",
+            y: "Blank",
             percent: toPercent(hammer_blank_count / hammer_ends_count),
             rawValue: hammer_blank_count,
             total: hammer_ends_count,
-            description: ``,
-            title: "Blank frequency",
+            description: `Elected to blank the end (0 points)`,
+            title: "Blank end",
+        },
+        {
+            y: "Steal",
+            percent: toPercent(
+                hammer_steal_count / (hammer_ends_count - hammer_blank_count)
+            ),
+            rawValue: hammer_steal_count,
+            total: hammer_ends_count,
+            description: `Opposition stole 1+ points`,
+            title: "Stolen end",
         },
     ];
+    //
+    formattedHammerPoints.value = Array.from(Array(9).keys()).map((key) => {
+        return {
+            x: `${key}`,
+            y: `${key}`,
+            percent: toPercent(
+                stats.value[
+                    key === 0
+                        ? "hammer_blank_count"
+                        : `hammer_${key}_point_count`
+                ] /
+                    (hammer_ends_count - hammer_steal_count)
+            ),
+            rawValue:
+                stats.value[
+                    key === 0
+                        ? "hammer_blank_count"
+                        : `hammer_${key}_point_count`
+                ],
+            total: hammer_ends_count - hammer_steal_count,
+            description: "",
+            title: `Scored ${key} point${key !== 1 ? "s" : ""} ${
+                key === 0 ? "(blanked)" : ""
+            }`,
+        };
+    });
+
+    //  [
+    //     {
+    //         y: "0",
+    //         percent: toPercent(
+    //             addPointCounts(2, 8) / (hammer_ends_count - hammer_blank_count)
+    //         ),
+    //         rawValue: addPointCounts(2, 8),
+    //         total: hammer_ends_count - hammer_blank_count,
+    //         description: `Scored 2+ points with hammer`,
+    //         title: "Hammer conversion",
+    //     },
+    // ];
 
     formattedNoHammerStats.value = [
         {
-            y: "Steals",
+            y: "Steal",
             percent: toPercent(
                 stolen_end_count / (total_ends_played - hammer_ends_count)
             ),
             rawValue: stolen_end_count,
             total: total_ends_played - hammer_ends_count,
-            description: `Ends stolen by ${props.teamName}`,
+            description: `Stole 1+ points`,
             title: "Stolen ends",
         },
         {
-            y: "Forces",
+            y: "Force",
             percent: toPercent(
                 forced_end_count / (total_ends_played - hammer_ends_count)
             ),
             rawValue: forced_end_count,
             total: total_ends_played - hammer_ends_count,
-            description: `Opposition forced to take 1 point`,
-            title: "Forces",
+            description: `Forced opposition to take 1 point`,
+            title: "Forced end",
+        },
+        {
+            y: "2+",
+            percent: toPercent(
+                failed_force_end_count / (total_ends_played - hammer_ends_count)
+            ),
+            rawValue: failed_force_end_count,
+            total: total_ends_played - hammer_ends_count,
+            description: `Opposition took 2+ points`,
+            title: "Failed to force",
         },
 
         //    {
@@ -199,34 +266,34 @@ const getGameStats = async () => {
         // },
     ];
 
-    // Of all ends played, what % of the time did the team have the hammer?
-    controlOfGame.value = toPercent(hammer_ends_count / total_ends_played); // DONE
+    // // Of all ends played, what % of the time did the team have the hammer?
+    // controlOfGame.value = toPercent(hammer_ends_count / total_ends_played); // DONE
 
-    // How many ends did they steal?
-    stolenEnds.value = toPercent(
-        stolen_end_count / (total_ends_played - hammer_ends_count) // DONE
-    );
+    // // How many ends did they steal?
+    // stolenEnds.value = toPercent(
+    //     stolen_end_count / (total_ends_played - hammer_ends_count) // DONE
+    // );
 
-    // Hammer efficiency -- scored 2+ points with hammer. NOT INCLUDING blanks
-    hammerConversion.value = toPercent(
-        addPointCounts(2, 8) / (hammer_ends_count - hammer_blank_count) // DONE
-    );
+    // // Hammer efficiency -- scored 2+ points with hammer. NOT INCLUDING blanks
+    // hammerConversion.value = toPercent(
+    //     addPointCounts(2, 8) / (hammer_ends_count - hammer_blank_count) // DONE
+    // );
 
-    // Blank ends: % of ends with hammer when score was 0
-    blankEnds.value = toPercent(hammer_blank_count / hammer_ends_count); // DONE
+    // // Blank ends: % of ends with hammer when score was 0
+    // blankEnds.value = toPercent(hammer_blank_count / hammer_ends_count); // DONE
 
-    // forced with hammer: % of ends with hammer when team only scored 1
-    forcedWith.value = toPercent(
-        hammer_1_point_count / (hammer_ends_count - hammer_blank_count)
-    );
+    // // forced with hammer: % of ends with hammer when team only scored 1
+    // forcedWith.value = toPercent(
+    //     hammer_1_point_count / (hammer_ends_count - hammer_blank_count)
+    // );
 
-    // forced opposition to take one when they had hammer
-    forceWithout.value = toPercent(
-        forced_end_count / (total_ends_played - hammer_ends_count) // DONE
-    );
+    // // forced opposition to take one when they had hammer
+    // forceWithout.value = toPercent(
+    //     forced_end_count / (total_ends_played - hammer_ends_count) // DONE
+    // );
 
-    // Average points conceded without hammer
-    avgPointsConceded.value = avg_points_conceded.toFixed(2);
+    // // Average points conceded without hammer
+    // avgPointsConceded.value = avg_points_conceded.toFixed(2);
 };
 const loadingRecord = ref(false);
 const getWinsLossess = async () => {

@@ -93,7 +93,6 @@ export const useEditorStore = defineStore("editor", {
       });
     },
     toggleTeamViewer({team, open}) {
-        console.log('TOGGLE TEAM VIEWER: ', open)
         if (open === false) {
             this.teamViewer.open = false;
             this.teamViewer.team = null

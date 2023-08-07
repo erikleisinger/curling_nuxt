@@ -49,7 +49,6 @@ onMounted(() => {
          plugins: [ChartDataLabels],
         options: {
             // borderColor: "rgba(0,0,0,0.5)",
-            borderJoinStyle: "round",
             backgroundColor: (val) => {
                 const color = {
                     0: "#5142f6", // Win

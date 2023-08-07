@@ -8,11 +8,11 @@
         <template v-slot="{data:item}">
             <q-item class="items-center row" v-memo="[item.avatar, item.name]">
                 <!-- <q-item v-for="item in players" :key="item.id" class="items-center row" v-memo="[item.avatar, item.name]"> -->
-                <q-item-section avatar>
+                <q-item-section avatar style="height: 100%; min-height: inherit">
                     <PlayerAvatar
+                    
                         :parsedAvatar="parseAvatar(item.avatar)"
                         :player="item"
-                        :showStats="false"
                     />
                 </q-item-section>
                 <q-item-section>

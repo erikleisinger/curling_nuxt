@@ -21,8 +21,7 @@ onBeforeMount(() => {
     if (!editedPlayer?.created_at && editedPlayer?.id) {
         player.value = usePlayerStore().players.find((p) => p.id === editedPlayer.id)
 
-    }
-    if (editedPlayer) player.value = editedPlayer;
+    } else if (editedPlayer) player.value = editedPlayer;
 });
 
 const emit = defineEmits(["close"]);
