@@ -130,9 +130,8 @@
                     </q-chip>
                 </q-item-label> -->
                 <q-item-label
-                    >Request to <span class="text-bold">@{{request.requestee_username}}</span>
-                    for access to team
-                   "{{ request.team_name }}"</q-item-label
+                    >Request to  <ProfileChip :username="request.requestee_username" :id="request.requestee_id"/>
+                    for access to <TeamChip :name="request.team_name" :id="request.team_id"/></q-item-label
                 >
                 <q-item-label caption>{{request.status}} {{
                     parseTimestamp(request.updated_at)

@@ -8,7 +8,7 @@ import {useConfirmDialog} from '@vueuse/core'
 import {useEditorStore} from '@/store/editor'
 const {toggleTeamViewer} = useEditorStore();
     const props = defineProps({
-        id: String,
+        id: Number,
         name: String
     })
 

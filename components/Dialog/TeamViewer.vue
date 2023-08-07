@@ -18,7 +18,7 @@
                                 <Avataaar v-bind="skipAvatar" />
                             </div>
                             <h2 class="text-sm truncate-text">
-                                {{ team.name }}
+                                {{ team?.name || 'Unnamed team' }}
                             </h2>
                         </div>
                         <div class="row justify-around items-center text-xxxl">
@@ -87,14 +87,28 @@ const { toggleTeamViewer } = editorStore;
 const {format} = useTime();
 
 const team = ref(null);
-onMounted(() => {
+onMounted(async () => {
     const edited = editorStore.teamViewer.team;
     if (edited?.id) getTeamRecord(edited.id);
     if (!edited?.created_at && edited?.id) {
-        team.value = useTeamStore().teams.find((t) => t.id === edited?.id);
-    } else if (edited?.id) {
-        team.value = edited;
-    }
+        const storeTeam = useTeamStore().teams.find((t) => t.id === edited?.id);
+        if (storeTeam) {
+            team.value = storeTeam
+        } else {
+            const client = useSupabaseClient();
+            const {data} = await client.rpc('get_teams_detailed').eq('id', edited?.id);
+            const [fromDb] = data;
+            if (fromDb) {
+                team.value = fromDb
+            } else {
+                console.error('failed to set team: no team could be found')
+            }
+        }
+
+
+
+    } 
+    
 
     if (team.value) setSkipAvatar();
 });
