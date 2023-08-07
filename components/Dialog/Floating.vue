@@ -73,7 +73,6 @@ const timeout = () => {
       };
 
 const close = async () => {
-
       transitioning.value = true;
     reverse();
     await timeout();

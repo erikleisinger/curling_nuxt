@@ -1,35 +1,43 @@
 <template>
     <!-- <NuxtLayout> -->
-        <div
-            class="col-grow bg-white "
-            style="height: 100%"
-            ref="tableArea"
-        >
-            <q-list separator>
-                   
-                <q-item
-                 v-for="item in teams"
-                    :key="item.id"
-                    :class="{ focused: focused === item.id }"
-                    :id="`team-table-item-${item.id}`"
-                    @click="unsetFocus(item.id)"
-                    clickable
-                >
-                    <LazyTableTeamItem :item="item" @delete="itemToDelete = item" :readOnly="item.profile_id !== userStore.id" @update="emit('update', $event)"/>
-                </q-item>
-                
-            </q-list>
-
-        </div>
-        <DialogConfirmation
-            v-if="itemToDelete"
-            @close="itemToDelete = null"
-            @confirm="deleteTeam(itemToDelete)"
-        >
-            Are you sure you want to delete team "{{
-                itemToDelete.name ?? "Unnamed team"
-            }}"
-        </DialogConfirmation>
+    <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
+        <q-list separator>
+            <q-item
+                v-for="item in teams"
+                :key="item.id"
+                :class="{ focused: focused === item.id }"
+                :id="`team-table-item-${item.id}`"
+                @click="unsetFocus(item.id)"
+                clickable
+                v-memo="[
+                    item.name,
+                    item.lead_player_id?.id,
+                    item.second_player_id?.id,
+                    item.third_player_id?.id,
+                    item.fourth_player_id?.id,
+                    item.fifth_player_id?.id,
+                    item.sixth_player_id?.id,
+                    item.seventh_player_id?.id,
+                ]"
+            >
+                <LazyTableTeamItem2
+                    :item="item"
+                    @delete="itemToDelete = item"
+                    :readOnly="item.profile_id !== userStore.id"
+                    @update="emit('update', $event)"
+                />
+            </q-item>
+        </q-list>
+    </div>
+    <DialogConfirmation
+        v-if="itemToDelete"
+        @close="itemToDelete = null"
+        @confirm="deleteTeam(itemToDelete)"
+    >
+        Are you sure you want to delete team "{{
+            itemToDelete.name ?? "Unnamed team"
+        }}"
+    </DialogConfirmation>
     <!-- </NuxtLayout> -->
 </template>
 <style lang="scss">
@@ -62,15 +70,12 @@ import { useNavigationStore } from "@/store/navigation";
 import { parseAvatar } from "@/utils/avatar";
 import type Team from "@/types/team";
 import type Player from "@/types/player";
-const tab = ref("My games")
+const tab = ref("My games");
 const teamStore = useTeamStore();
 
-
 const props = defineProps<{
-    teams: Team[]
-}>()
-
-
+    teams: Team[];
+}>();
 
 // const loadTeams = async (force: boolean = false) => {
 //     loading.value = true;
@@ -120,7 +125,7 @@ const { y: scrollY } = useScroll(tableArea, {
 });
 
 const focusOnTeam = () => {
- if (!focused.value) return;
+    if (!focused.value) return;
     const teamId = focused.value;
     setTimeout(() => {
         const elementId = `team-table-item-${teamId}`;
@@ -134,20 +139,19 @@ const focusOnTeam = () => {
         const scrollTo = element?.offsetTop;
         tableArea.value.scrollTop = scrollTo;
     }, 1000);
-}
+};
 onMounted(() => {
-   focusOnTeam();
+    focusOnTeam();
 });
 
 watch(focused, () => {
     focusOnTeam();
-})
+});
 
 const unsetFocus = (teamId: number) => {
     if (!focused.value || teamId !== focused.value) return;
     navigationStore.setTeamFocus(null);
 };
 
-const emit = defineEmits(['update'])
-
+const emit = defineEmits(["update"]);
 </script>

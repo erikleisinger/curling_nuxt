@@ -11,16 +11,32 @@ const props = defineProps({
     data: {
         type: Array,
         default() {
-            return [0, 100, 100]
+            return [0, 1, 2]
         }
     },
+})
+
+const sumGames = computed(() => {
+return props.data.reduce((all, current) => (all += current), 0)
+})
+
+const percentagesFromData = computed(() => {
+    
+    const [wins, losses, ties] = props.data;
+    console.log(wins, losses, ties)
+    if (!wins && !losses && !ties) return [33,33,33]
+    return [
+        wins / sumGames.value * 100,
+        losses / sumGames.value * 100,
+        ties / sumGames.value * 100
+    ]
 })
 
 onMounted(() => {
     const data = {
         datasets: [
             {
-                data: props.data,
+                data: percentagesFromData.value,
             },
         ],
 
@@ -44,6 +60,14 @@ onMounted(() => {
                 return color;
             },
             plugins: {
+                datalabels: {
+                    color: 'white',
+                    formatter: (data) => {
+                        if (!data) return ''
+                        return `${data.toFixed()}%`
+                    },
+                    
+                },
                     legend: {
                         labels: {
                             boxWidth: 10,
@@ -55,8 +79,8 @@ onMounted(() => {
                 tooltip: {
                     usePointStyle: true,
                     callbacks: {
-                        label: ({ formattedValue }) => {
-                            return `${formattedValue}%`;
+                        label: ({dataIndex}) => {
+                           return `${props.data[dataIndex]} out of ${sumGames.value}`
                         },
                         labelPointStyle: () => {
                             return {

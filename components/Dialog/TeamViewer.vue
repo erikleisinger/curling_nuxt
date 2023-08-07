@@ -1,11 +1,28 @@
 <template>
     <DialogFloating @close="toggleTeamViewer({ open: false })">
-        <div style="height: 100%" class="row q-pa-md team-viewer__wrap">
-            <section>
-                <TableTeamItem :item="team" readOnly v-if="team" />
-            </section>
-            <section>
-                <h2>Game History</h2>
+        <template v-slot:prependButton>
+            <q-btn flat round icon="edit" v-if="canEdit"/>
+        </template>
+        <header class="pretty-shadow">
+              <LazyTableTeamItem2
+                    :item="team"
+         
+                />
+                        <nav>
+ <q-tabs dense v-model="tab" stretch>
+                    <q-tab name="history" label="Game history"/>
+                     <q-tab name="stats" label="Stats"/>
+                </q-tabs>
+
+        </nav>
+        </header>
+
+
+        <main>
+
+            <KeepAlive>
+                    <div  v-if="tab === 'history'">
+
                 <div v-if="results">
                     <div
                         v-for="result in results"
@@ -60,27 +77,50 @@
                                 <div class="overline row justify-center text-xs" style="grid-column: 1/4; margin-top: -1em">{{format(result.start_time, 'MMMM D, YYYY')}}</div>
                     </div>
                 </div>
+                    </div>
+        
+                    <TeamStatsView :teamId="team.id" v-else-if="tab === 'stats'"/>
+              
+                </KeepAlive>
+        </main>
+
+                 <!-- <h2 class="text-md text-bold">Team</h2> -->
+            <!-- <section style="overflow: scroll">
+                <TableTeamView :item="team" readOnly v-if="team" />
+            </section> -->
+            <!-- <section> 
+               
+                <div style="height: calc(100% - 36px); overflow: scroll; width: 100%">
+           
+                
+                    
+                </div>
             </section>
-        </div>
+        </div> -->
     </DialogFloating>
 </template>
 <style lang="scss">
+$header-height: 2em;
 .result__container {
     display: grid;
-    grid-template-rows: 1fr auto;
+    // grid-template-rows: 1fr auto;
+    grid-template-rows: 100%;
     grid-template-columns: 30% 40% 30%;
 
 }
 .team-viewer__wrap {
     display: grid;
-    grid-template-rows: repeat(2, 50%);
+    grid-template-rows: 2em calc(40% - $header-height / 2) calc(60% - $header-height / 2);
 }
 </style>
 <script setup lang="ts">
 import { useEditorStore } from "@/store/editor";
 import { useTeamStore } from "@/store/teams";
+import {useUserStore} from '@/store/user'
 import { parseAvatar } from "@/utils/avatar";
 const editorStore = useEditorStore();
+
+const tab = ref('history')
 
 const { toggleTeamViewer } = editorStore;
 
@@ -113,6 +153,7 @@ onMounted(async () => {
     if (team.value) setSkipAvatar();
 });
 
+
 const skipAvatar = ref(null);
 
 const setSkipAvatar = () => {
@@ -139,4 +180,7 @@ const getTeamRecord = async (team_id_param: number) => {
     const { data } = await client.rpc("get_team_record", { team_id_param });
     if (data) results.value = data
 };
+
+const userStore = useUserStore();
+const canEdit = computed(() => team.value?.profile_id === userStore.id)
 </script>

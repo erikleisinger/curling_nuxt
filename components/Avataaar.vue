@@ -1,5 +1,5 @@
 <template>
-<div style="position:relative; height: 100%; width: 100%" class="column justify-center">
+<div style="position:relative; height: 100%; width: 100%" class="column justify-center" >
 <svg
     viewBox='0 0 264 280'
     version='1.1'
@@ -131,8 +131,8 @@ const props = defineProps({
              default: '#6fb8e0'
         },
         accessoriesType: { type: String, default: "Blank"},
-        clotheColor: { type: String, default: "Black"},
-        clotheType: { type: String, default:'BlazerShirt' },
+        clotheColor: { type: String, default: "#ffffff"},
+        clotheType: { type: String, default:'ShirtCrewNeck' },
         eyebrowType: { type: String, default: "Default" },
         eyeType: { type: String, default: "Default" },
         facialHairColor: { type: String, default:  "Auburn" },
@@ -140,9 +140,9 @@ const props = defineProps({
         graphicType: { type: String, default: "Skull" },
         hairColor: { type: String, default: "Auburn" },
         mouthType: { type: String, default: 'Default' },
-        skinColor: { type: String, default: "Pale" },
+        skinColor: { type: String, default: "#ffffff" },
         topColor: { type: String, default: "Black" },
-        topType: { type: String, default: "LongHairFrida"},
+        topType: { type: String, default: "Blank"},
 })
 
        const  cssVars = computed(() => {
