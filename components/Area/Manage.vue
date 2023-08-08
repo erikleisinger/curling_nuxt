@@ -1,6 +1,6 @@
 <template>
     <main class="column select__section full-width">
-        <TableTeams  />
+        <TeamList  :teams="teams"/>
     </main>
 </template>
 <style lang="scss" scoped>
@@ -9,5 +9,11 @@
     overflow: auto;
 }
 </style>
+<script setup>
+     import {useTeamStore} from '@/store/teams';
+     const store = useTeamStore();
+
+     const teams = computed(() => store.teams)
+</script>
 
 

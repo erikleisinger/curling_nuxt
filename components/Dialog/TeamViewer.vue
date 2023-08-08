@@ -2,7 +2,7 @@
     <DialogFloating @close="toggleTeamViewer({ open: false })">
         <header class="pretty-shadow q-px-sm" ref="header">
             <div class="row">
-                <TeamBasic :item="team" v-if="!loading" />
+                <TeamBasic :item="team" v-if="!loading" editable />
             </div>
             <nav>
                 <q-tabs dense v-model="tab" stretch>
@@ -26,10 +26,10 @@
                                 class="team__profile--container column no-wrap"
                             >
                                 <div class="q-pa-md">
-                                    <Avataaar v-bind="skipAvatar" />
+                                    <Avataaar v-bind="parseAvatar(team.team_avatar)" />
                                 </div>
                                 <h2 class="text-sm truncate-text">
-                                    {{ team?.name || "Unnamed team" }}
+                                    {{ team.name }}
                                 </h2>
                             </div>
                             <div
@@ -121,41 +121,14 @@ const { toggleTeamViewer } = editorStore;
 const { format } = useTime();
 
 const loading = ref(false);
-let team : Ref | null;
-onBeforeMount(async () => {
 
-    loading.value = true;
-    const teamId = editorStore.teamViewer.team?.id;
+const teamStore = useTeamStore();
 
-    if (teamId) {
-        const {getRealtimeTeam} = useTeam();
-        const {team:t} = await getRealtimeTeam({teamId, realtime: true})
-        team = t;
-         if (team.value) setSkipAvatar();
-    }
+const teamId = editorStore.teamViewer.team?.id;
 
-    loading.value = false;
-});
+const team = computed(() =>  teamStore.teams.find((t) => t.id === teamId))
 
-const skipAvatar = ref(null);
 
-const setSkipAvatar = () => {
-    let a;
-    if (!team.value?.skip_id) {
-        a = team.value?.fourth_player_id?.avatar;
-    } else {
-        a = [
-            team.value.lead_player_id,
-            team.value.second_player_id,
-            team.value.third_player_id,
-            team.value.fourth_player_id,
-            team.value.fifth_player_id,
-            team.value.sixth_player_id,
-            team.value.seventh_player_id,
-        ].find((p) => p?.id === team.value.skip_id)?.avatar;
-    }
-    if (a) skipAvatar.value = parseAvatar(a);
-};
 
 const results = ref(null);
 const getTeamRecord = async (team_id_param: number) => {
@@ -163,6 +136,10 @@ const getTeamRecord = async (team_id_param: number) => {
     const { data } = await client.rpc("get_team_record", { team_id_param });
     if (data) results.value = data;
 };
+
+onMounted(() => {
+    getTeamRecord(teamId);
+})
 
 const userStore = useUserStore();
 const canEdit = computed(() => team.value?.profile_id === userStore.id);

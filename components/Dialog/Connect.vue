@@ -66,7 +66,7 @@
             </div>
         </div>
         <q-inner-loading v-else-if="loading"/>
-        <TableTeams v-else-if="teams?.length" :teams="teams" @update="onItemUpdate"/>
+        <TeamList v-else-if="teams?.length" :teams="teams" @update="onItemUpdate"/>
     </DialogFloating>
 </template>
 <style lang="scss">
