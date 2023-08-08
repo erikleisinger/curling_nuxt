@@ -2,7 +2,7 @@
     <DialogFloating @close="toggleTeamViewer({ open: false })">
         <header class="pretty-shadow q-px-sm" ref="header">
             <div class="row">
-                <TeamBasic :item="team" v-if="!loading" editable />
+                <TeamBasic :item="team" v-if="!loading" :editable="canEdit" />
             </div>
             <nav>
                 <q-tabs dense v-model="tab" stretch>
@@ -126,7 +126,9 @@ const teamStore = useTeamStore();
 
 const teamId = editorStore.teamViewer.team?.id;
 
-const team = computed(() =>  teamStore.teams.find((t) => t.id === teamId))
+const team = computed(() =>  {
+    return teamStore.teams.find((t) => t.id === teamId) || editorStore.teamViewer.team
+})
 
 
 

@@ -79,7 +79,7 @@ const props = defineProps({
     item: Object,
 });
 
-const canEdit = (props.item.profile_id = userId.value);
+const canEdit = props.item.profile_id === userId.value;
 
 const columns = ref(props.viewable ? 'max(70px, 15vw) auto auto' : 'max(70px, 15vw) 1fr')
 
@@ -120,6 +120,7 @@ const deleteItem = () => {
 
 const viewTeam = () => {
     const editorStore = useEditorStore();
+    console.log('view team: ', props.item)
     editorStore.toggleTeamViewer({open: true, team: props.item})
 }
 
