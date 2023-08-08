@@ -1,7 +1,7 @@
 <template>
     <!-- <NuxtLayout> -->
     <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
-        <q-list separator>
+        <q-list separator v-if="teams.length">
             <q-item
                 v-for="item in teams"
                 :key="item.id"
@@ -18,10 +18,13 @@
                     item.fifth_player_id?.id,
                     item.sixth_player_id?.id,
                     item.seventh_player_id?.id,
-                ]"
+                ]" 
             >
-                <LazyTableTeamItem2
-                    :item="item"
+       
+             <!--
+                -->
+                <TeamBasic
+                    :item="useStoreTeam(item.id)"
                     @delete="itemToDelete = item"
                     @update="emit('update', $event)"
                 />
@@ -61,7 +64,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTeamStore } from "@/store/teams";
-import { useScroll, useSwipe, useThrottleFn } from "@vueuse/core";
+import {toValue,  useScroll, useSwipe, useThrottleFn } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
 import { useFriendStore } from "@/store/friends";
@@ -73,7 +76,7 @@ const tab = ref("My games");
 const teamStore = useTeamStore();
 
 const props = defineProps<{
-    teams: Team[];
+    filter?: String,
 }>();
 
 // const loadTeams = async (force: boolean = false) => {
@@ -90,6 +93,16 @@ const tableArea = ref(null);
 //         loadTeams(true);
 //     },
 // });
+    let teams = ref([])
+    let useStoreTeam;
+    onMounted(async() => {
+        const {useTempTeamStore} = useTeam();
+        const {teams: storeTeams, useStoreTeam:us} = await useTempTeamStore({useStore: true, filter: null, realtime: true})
+        useStoreTeam = us;
+        
+        teams.value = toValue(storeTeams);
+
+    })
 
 const itemToDelete = ref(null);
 const deleteTeam = async (team: Team) => {
@@ -153,4 +166,5 @@ const unsetFocus = (teamId: number) => {
 };
 
 const emit = defineEmits(["update"]);
+
 </script>

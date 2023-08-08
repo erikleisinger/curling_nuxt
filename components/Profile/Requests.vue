@@ -247,7 +247,6 @@ const EVENT_TYPES = {
 };
 
 const handleSubscription = (event: any, role: RequestRole) => {
-    console.log("SUB: ", event.new, event.old, role);
     const { eventType, old: deleted } = event;
     if (eventType === EVENT_TYPES.DELETE) {
         const { old: deletedRequest } = event;

@@ -73,7 +73,7 @@ declare module 'vue' {
     TableRinks: typeof import('./components/Table/Rinks.vue')['default']
     TableSheets: typeof import('./components/Table/Sheets.vue')['default']
     TableShotTypes: typeof import('./components/Table/ShotTypes.vue')['default']
-    TableTeamItem: typeof import('./components/Table/Team/Item.vue')['default']
+    TableTeamItem: typeof import('./components/Team/Item.vue')['default']
     TableTeams: typeof import('./components/Table/Teams.vue')['default']
     TeamStats: typeof import('./components/Team/Stats.vue')['default']
     TooltipInfo: typeof import('./components/Tooltip/Info.vue')['default']

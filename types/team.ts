@@ -31,5 +31,6 @@ interface Team extends BasicTeam {
     seventh_player_id: BasicPlayer | null;
     sixth_player_id: BasicPlayer | null;
     third_player_id: BasicPlayer | null;
+    skip: BasicPlayer | null
 }
 export default Team;

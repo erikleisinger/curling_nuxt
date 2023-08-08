@@ -1,7 +1,42 @@
 <template>
+    <NuxtLayout>
+        <template v-slot:header>
+            <div
+                class="row bg-white full-width row profile__header--container box-shadow--dark row no-wrap"
+                ref="header"
+            >
+                <div class="col-3" style="max-width: min(20vw, 125px)">
+                    <PlayerAvatar
+                        :parsedAvatar="parseAvatar(user.avatar)"
+                        :player="{
+                            ...player,
+                            profile_id_for_player: user.id,
+                        }"
+                        hidePlayerIcon
+                    />
+                </div>
+                <div class="column justify-center q-ml-sm">
+                    <h1
+                        class="row items-center text-bold text-black text-md"
+                        style="z-index: 2"
+                    >
+                        {{ user.firstName }} {{ user.lastName }}
+                    </h1>
+                    <h2 class="text-sm">@{{ user.username }}</h2>
+                </div>
+                <div class="col-grow row justify-end q-mr-sm items-center">
+                    <q-btn
+                        flat
+                        round
+                        icon="logout"
+                        @click="logout"
+                        color="deep-purple"
+                    />
+                </div>
+            </div>
 
             <!-- class="column justify-center items-center profile__header col-grow" -->
-            <nav>
+            <nav class="bg-white">
                 <q-tabs
                     v-model="tab"
                     inline-label
@@ -12,74 +47,90 @@
                     color="deep-purple"
                     class="profile__tabs text-deep-purple"
                 >
-                <q-tab
+                    <q-tab
                         :label="TAB_NAMES.REQUESTS.label"
-                        :name="TAB_NAMES.REQUESTS.value"    
+                        :name="TAB_NAMES.REQUESTS.value"
                         icon="textsms"
-                    
                     >
-                        <q-badge color="red" floating rounded v-if="requestsNotifications"></q-badge>
+                        <q-badge
+                            color="red"
+                            floating
+                            rounded
+                            v-if="requestsNotifications"
+                        ></q-badge>
                     </q-tab>
                     <q-tab
                         :name="TAB_NAMES.SETTINGS.value"
                         icon="settings"
                         :label="TAB_NAMES.SETTINGS.label"
-                     
-                    />    
+                    />
                 </q-tabs>
             </nav>
-            <main class="main-content__wrap settings" v-if="tab === TAB_NAMES.SETTINGS.value">
-                <section name="timezone" class="section">
-                    <label for="timezone" class="label">Timezone</label>
-                    <div id="timezone">{{ user.timezone }}</div>
-                </section>
-                <section name="timezone" class="section">
-                    <label for="friendId" class="label">Friend ID</label>
-                    <div class="row no-wrap items-center">
-                        <div id="friendId" class="friend__id">
-                            {{ user.friendId }}
-                        </div>
-                        <q-icon
-                            flat
-                            round
-                            name="content_copy"
-                            color="primary"
-                            @click="copyFriendId"
-                            size="1em"
-                        />
+        </template>
+        <main
+            class="main-content__wrap settings"
+            v-if="tab === TAB_NAMES.SETTINGS.value"
+        >
+            <section name="timezone" class="section">
+                <label for="timezone" class="label">Timezone</label>
+                <div id="timezone">{{ user.timezone }}</div>
+            </section>
+            <section name="timezone" class="section">
+                <label for="friendId" class="label">Friend ID</label>
+                <div class="row no-wrap items-center">
+                    <div id="friendId" class="friend__id">
+                        {{ user.friendId }}
                     </div>
-                </section>
-                <section name="timezone" class="section">
-                    <label class="label" for="friendId">Add a friend</label>
-                    <label class="label sub"
-                        >Paste your friend's ID here to add them as a
-                        friend</label
+                    <q-icon
+                        flat
+                        round
+                        name="content_copy"
+                        color="primary"
+                        @click="copyFriendId"
+                        size="1em"
+                    />
+                </div>
+            </section>
+            <section name="timezone" class="section">
+                <label class="label" for="friendId">Add a friend</label>
+                <label class="label sub"
+                    >Paste your friend's ID here to add them as a friend</label
+                >
+                <div>
+                    <q-input
+                        v-model="friendToAdd"
+                        rounded
+                        outlined
+                        class="q-mt-sm"
                     >
-                    <div>
-                        <q-input
-                            v-model="friendToAdd"
-                            rounded
-                            outlined
-                            class="q-mt-sm"
-                        >
-                            <template v-slot:after>
-                                <q-btn
-                                    color="primary"
-                                    round
-                                    icon="person_add"
-                                    :disable="!friendToAdd"
-                                    @click="addFriend"
-                                />
-                            </template>
-                        </q-input>
-                    </div>
-                </section>
-            </main>
-            <main class="main-content__wrap" v-else-if="tab === TAB_NAMES.REQUESTS.value">
-                <ProfileRequests/>
-            </main>
+                        <template v-slot:after>
+                            <q-btn
+                                color="primary"
+                                round
+                                icon="person_add"
+                                :disable="!friendToAdd"
+                                @click="addFriend"
+                            />
+                        </template>
+                    </q-input>
+                </div>
+            </section>
+        </main>
+        <main
+            class="main-content__wrap"
+            v-else-if="tab === TAB_NAMES.REQUESTS.value"
+        >
+            <ProfileRequests />
+        </main>
+    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
+.profile__header--container {
+    padding: var(--space-xs) var(--space-xxxs);
+    z-index: 3;
+    position: relative;
+    color: black;
+}
 // .request-status__container {
 //     border: 2px solid $red;
 //     margin-bottom: var(--space-sm);
@@ -97,44 +148,44 @@
     }
 }
 
-    .main-content__wrap {
-        &.settings {
- padding: var(--space-sm);
+.main-content__wrap {
+    &.settings {
+        padding: var(--space-sm);
+    }
+
+    background-color: white;
+    height: calc(100% - 48px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: 100%;
+    position: relative;
+
+    color: black;
+    .section {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+
+        &:not(:last-child) {
+            margin-bottom: var(--space-md);
         }
-       
-        background-color: white;
-        height: calc(100% - 48px);
-        overflow-x: hidden;
-        overflow-y: auto;
-        max-width: 100%;
-        position: relative;
-
-        color: black;
-        .section {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-
-            &:not(:last-child) {
-                margin-bottom: var(--space-md);
+        .label {
+            font-weight: bold;
+            margin-bottom: var(--space-xxxxs);
+            display: block;
+            font-size: var(--text-md);
+            &.sub {
+                font-size: 0.9em;
+                font-style: italic;
+                font-weight: unset;
+                margin-bottom: var(--space-sm);
             }
-            .label {
-                font-weight: bold;
-                margin-bottom: var(--space-xxxxs);
-                display: block;
-                font-size: var(--text-md);
-                &.sub {
-                    font-size: 0.9em;
-                    font-style: italic;
-                    font-weight: unset;
-                    margin-bottom: var(--space-sm);
-                }
-            }
-            .friend__id {
-                margin-right: var(--space-sm);
-            }
+        }
+        .friend__id {
+            margin-right: var(--space-sm);
         }
     }
+}
 </style>
 <script setup>
 import imageCompression from "browser-image-compression";
@@ -143,10 +194,17 @@ import { usePlayerStore } from "@/store/players";
 import { useEditorStore } from "@/store/editor";
 import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
-import {useSocialStore} from '@/store/social'
+import { useSocialStore } from "@/store/social";
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 
 import { parseAvatar } from "@/utils/avatar";
+
+
+
+const {logout} = useSession();
+
+
+
 
 const TAB_NAMES = ref({
     REQUESTS: {
@@ -164,9 +222,9 @@ const tab = ref("requests");
 const store = useUserStore();
 
 const user = computed(() => {
-    const { id, timezone, friendId, username, player, firstName, lastName } =
+    const { id, timezone, friendId, username, player, firstName, lastName, avatar } =
         store;
-    return { id, timezone, friendId, username, player, firstName, lastName };
+    return { id, timezone, friendId, username, player, firstName, lastName, avatar };
 });
 
 const playerStore = usePlayerStore();
@@ -266,6 +324,5 @@ const openPlayerSelector = () => {
  */
 
 const socialStore = useSocialStore();
-const requestsNotifications = computed(() => socialStore.requestsToRespond)
-
+const requestsNotifications = computed(() => socialStore.requestsToRespond);
 </script>

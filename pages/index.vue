@@ -1,7 +1,7 @@
 <template>
     <NuxtLayout>
         <AreaManage v-if="view === VIEWS.MANAGE" />
-        <ProfileExpandable v-else-if="view === VIEWS.SETTINGS" />
+        <Profile v-else-if="view === VIEWS.SETTINGS" />
         <MySeason v-else-if="view === VIEWS.SEASON" />
         <DialogTeamViewer v-if="isTeamViewerOpen" />
         <DialogPlayerEditor v-if="isPlayerEditorOpen" />

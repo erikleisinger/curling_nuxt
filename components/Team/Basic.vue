@@ -3,6 +3,7 @@
         :style="{ transform: deleteOpen ? 'translateX(-3em)' : '' }"
         ref="teamItem"
         style="transition: transform 0.3s; display: block"
+
     >
         <div class="row no-wrap" >
             <div class="row table-team__section full-width">
@@ -13,6 +14,7 @@
                     <TeamAvatar
                         :parsedAvatar="parseAvatar(skip.avatar)"
                         :team="item"
+                       
                     >
                     </TeamAvatar>
                     <div
@@ -87,6 +89,8 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import { useEditorStore } from "@/store/editor";
 import {useUserStore} from '@/store/user'
+import {parseAvatar} from '@/utils/avatar'
+import Team from '@/types/team'
 
 const userStore = useUserStore();
 
@@ -95,10 +99,24 @@ const userStore = useUserStore();
 const props = defineProps({
     item: Object,
 });
+// let team = ref<Team | null>(null);
+// let name = ref<string | null | undefined>(null);
+// let skip = ref(null);
+// const loading = ref(true)
+// onBeforeMount(async () => {
+//     const {team:t, name:n, skip:s} = await useTeam({teamId: props.item?.id, realtime: true})
+//     team = t;
+//     name = n;
+//     skip = s;
 
-const canEdit = computed(() => userStore.id === props.item?.profile_id)
+//     loading.value = false;
+// })
 
-const teamName = computed(() => props.item?.name || skip.value?.name || 'Unknown')
+const team = ref(props.item?.value)
+
+const canEdit = computed(() => userStore.id === props.item.profile_id)
+
+const teamName = computed(() => props.item.name || skip.value?.name || 'Unknown')
 
 const skip = computed(() => {
     if (!props?.item) return null;
@@ -117,7 +135,6 @@ const skip = computed(() => {
         : props.item.fourth_player_id;
 });
 
-const loading = ref(false);
 
 const teamStore = useTeamStore();
 const { removePlayerFromTeam, addPlayerToTeam } = teamStore;
@@ -148,113 +165,12 @@ const deleteItem = () => {
     deleteOpen.value = false;
 };
 
-// const openPlayerSelector = (position: string) => {
-//     const editorStore = useEditorStore();
-//     editorStore.togglePlayerSelect({
-//         open: true,
-//         onSelect: (playerId: number) => {
-//             addPlayer(playerId, position);
-//         },
-//     });
-// };
 
-// const addPlayer = async (playerId: number, position: string) => {
-//     const teamId = props.item?.id;
-//     if (!position || !playerId || !teamId) {
-//         console.error(
-//             "error adding player to team: no player or position or team specified: ",
-//             position,
-//             teamId,
-//             playerId
-//         );
-//         return;
-//     }
-//     await teamStore.addPlayerToTeam(playerId, teamId, position);
-// };
 
 
 const savingName = ref(false);
 const saveName = async (name: string) => {
-    teamStore.updateTeamName(name, props.item?.id);
+    teamStore.updateTeamName(name, props.item.id);
 };
 
-const requestAccess = useThrottleFn(
-    async ({
-        team_id,
-        requestee_profile_id,
-    }: {
-        team_id: number;
-        requestee_profile_id: string;
-    }) => {
-        await teamStore.sendTeamRequest({ team_id, requestee_profile_id });
-
-        emit("update", {
-            teamId: team_id,
-            updates: {
-                status: "pending",
-                subject: "requester",
-            },
-        });
-    },
-    10000
-);
-const cancelRequest = useThrottleFn(
-    async ({
-        team_id,
-        requestee_profile_id,
-    }: {
-        team_id: number;
-        requestee_profile_id: string;
-    }) => {
-        await teamStore.cancelTeamRequest({ team_id, requestee_profile_id });
-
-        emit("update", {
-            teamId: team_id,
-            updates: {
-                status: null,
-                subject: null,
-            },
-        });
-    },
-    10000
-);
-const confirmRequest = useThrottleFn(
-    async ({
-        team_id,
-        requester_profile_id,
-    }: {
-        team_id: number;
-        requester_profile_id: string;
-    }) => {
-        console.log("conf: ", requester_profile_id);
-        await teamStore.confirmTeamRequest({ team_id, requester_profile_id });
-        emit("update", {
-            teamId: team_id,
-            updates: {
-                status: "accepted",
-                subject: null,
-            },
-        });
-    },
-    10000
-);
-const denyRequest = useThrottleFn(
-    async ({
-        team_id,
-        requester_profile_id,
-    }: {
-        team_id: number;
-        requester_profile_id: string;
-    }) => {
-        await teamStore.denyTeamRequest({ team_id, requester_profile_id });
-        emit("update", {
-            teamId: team_id,
-            updates: {
-                status: "denied",
-                subject: null,
-            },
-        });
-    },
-    10000
-);
 </script>

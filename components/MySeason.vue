@@ -137,6 +137,7 @@ const view = ref("gameResults");
 
 const VIEWS = ["gameResults", "overtime"];
 
+
 const statsController = ref(null);
 
 const stats = ref({
@@ -160,6 +161,7 @@ const stats = ref({
 // const datasets = ref([]);
 const loading = ref(true);
 onMounted(async () => {
+
     // const { client, fetchHandler } = useSupabaseFetch();
     // const { data } = await fetchHandler(
     //     () =>
