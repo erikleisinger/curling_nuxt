@@ -3,6 +3,7 @@ import { BasicTeamRequest, RequestStatus } from "@/types/request";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import { DatabaseError, ErrorName } from "@/types/error";
+import { useNotificationStore } from "@/store/notification";
 
 export const useSocialStore = defineStore("social", {
     state: () => {
@@ -13,36 +14,50 @@ export const useSocialStore = defineStore("social", {
         };
     },
     actions: {
-        async cancelTeamRequest({requestee_profile_id, team_id}: {requestee_profile_id: string, team_id: number}) {
-            const {user} = useUser()
+        async cancelTeamRequest({
+            requestee_profile_id,
+            team_id,
+        }: {
+            requestee_profile_id: string;
+            team_id: number;
+        }) {
+            const { user } = useUser();
             const requester_profile_id = user.value;
             const { client, fetchHandler } = useSupabaseFetch();
             const { error } = await fetchHandler(() =>
                 client
                     .from(TABLE_NAMES.TEAM_REQUESTS)
                     .delete()
-                    .eq('requestee_profile_id', requestee_profile_id)
-                    .eq('requester_profile_id', requester_profile_id)
-                    .eq('team_id', team_id)
+                    .eq("requestee_profile_id", requestee_profile_id)
+                    .eq("requester_profile_id", requester_profile_id)
+                    .eq("team_id", team_id)
             );
- 
+
             if (error) {
-            
-            
                 throw new DatabaseError({
-                 name: ErrorName.DELETE_ERROR, 
-                 message: 'Error canceling request',
-                 cause: error,
-                 fatal: true,
-                 table: TABLE_NAMES.TEAM_REQUESTS
-                })
+                    name: ErrorName.DELETE_ERROR,
+                    message: "Error canceling request",
+                    cause: error,
+                    fatal: true,
+                    table: TABLE_NAMES.TEAM_REQUESTS,
+                });
+            } else {
+                this.emitUpdate(team_id, null)
             }
             await this.fetchTeamRequests();
             const teamStore = useTeamStore();
             const team = await teamStore.refreshTeam(team_id);
-            if (team) teamStore.insertTeamIntoStore(team)
+            if (team) teamStore.insertTeamIntoStore(team);
             return team;
-         },
+        },
+        emitUpdate(teamId: number, status: string) {
+            const event = new CustomEvent(`REQUEST_${teamId}_UPDATED`, {
+                detail: {
+                    status
+                }
+            })
+            window.dispatchEvent(event)
+        },
         async fetchTeamRequests() {
             const { client, fetchHandler } = useSupabaseFetch();
 
@@ -56,6 +71,13 @@ export const useSocialStore = defineStore("social", {
             }
             this.requestsToRespond = data ?? 0;
         },
+        async getTeamRequestsByUser(profileId: string) {
+            const client = useSupabaseClient();
+
+            const {data, error} = await client.rpc('get_team_requests').eq('requestee_profile_id', profileId)
+
+            return data;
+        },
         async sendTeamRequest({
             requestee_profile_id,
             team_id,
@@ -63,56 +85,87 @@ export const useSocialStore = defineStore("social", {
             requestee_profile_id: string;
             team_id: number;
         }) {
-            const { user: requester_profile_id } = useUser();
+            const { user: userId } = useUser();
+            const requester_profile_id = userId.value;
             const { client, fetchHandler } = useSupabaseFetch();
+
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Sending request...`,
+                timeout: 10000,
+            });
+
             const { error } = await fetchHandler(() =>
                 client
                     .from(TABLE_NAMES.TEAM_REQUESTS)
-                    .insert({ requester_profile_id, requestee_profile_id, team_id })
+                    .upsert({
+                        requester_profile_id,
+                        requestee_profile_id,
+                        team_id,
+                        status: 'pending',
+                    })
             );
-    
+
             if (error) {
-                const duplicate = new RegExp("unique_team_request");
-                if (!duplicate.test(error?.message)) {
-                    const notStore = useNotificationStore();
-                    notStore.addNotification({
+                // const duplicate = new RegExp("unique_team_request");
+
+                notStore.updateNotification(
+                    notId,
+                    {
                         state: "failed",
                         text: `Error sending request: ${error.message} (code ${
                             error?.code ?? "X"
                         })`,
                         timeout: 10000,
-                    });
-                }
+                    }
+            );
+
+                return false;
+            } else {    
+                this.emitUpdate(team_id, 'pending')
+        
+                notStore.updateNotification(
+                    notId,
+                    {
+                        state: "completed",
+                        text: "Request send!",
+                        timeout: 4000,
+                    }
+                );
+                return true;
             }
-            const teamStore = useTeamStore();
-            const team = await teamStore.refreshTeam(team_id);
-            if (team) teamStore.insertTeamIntoStore(team);
-            return team;
         },
-        async updateTeamRequestStatus({requester_profile_id, team_id, status}: {requester_profile_id: string, team_id: number, status: RequestStatus}) {
-            const {user} = useUser()
-            const requestee_profile_id = user.value
+        async updateTeamRequestStatus({
+            requester_profile_id,
+            team_id,
+            status,
+        }: {
+            requester_profile_id: string;
+            team_id: number;
+            status: RequestStatus;
+        }) {
+            const { user } = useUser();
+            const requestee_profile_id = user.value;
             const { client, fetchHandler } = useSupabaseFetch();
             const { error } = await fetchHandler(() =>
                 client
                     .from(TABLE_NAMES.TEAM_REQUESTS)
-                    .update({status})
-                    .eq('requestee_profile_id', requestee_profile_id)
-                    .eq('requester_profile_id', requester_profile_id)
-                    .eq('team_id', team_id)
+                    .update({ status })
+                    .eq("requestee_profile_id", requestee_profile_id)
+                    .eq("requester_profile_id", requester_profile_id)
+                    .eq("team_id", team_id)
             );
- 
+
             if (error) {
                 throw new DatabaseError({
-                    name: ErrorName.UPDATE_ERROR, 
-                    message: 'Error denying request',
+                    name: ErrorName.UPDATE_ERROR,
+                    message: "Error denying request",
                     cause: error,
                     fatal: true,
-                    table: TABLE_NAMES.TEAM_REQUESTS
-                   })
+                    table: TABLE_NAMES.TEAM_REQUESTS,
+                });
             }
-        
-         },
+        },
     },
-    
 });

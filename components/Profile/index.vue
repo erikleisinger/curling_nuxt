@@ -131,18 +131,7 @@
     position: relative;
     color: black;
 }
-// .request-status__container {
-//     border: 2px solid $red;
-//     margin-bottom: var(--space-sm);
-//     padding: var(--space-xs);
-//     font-family: $font-family-main;
-//     position: relative;
-//     height: fit-content;
-//     background-color: $red;
-//     color: white;
-// }
 .profile__tabs {
-    // border-bottom: 2px solid $deep-purple;
     :deep(.q-tab__indicator) {
         display: none !important;
     }

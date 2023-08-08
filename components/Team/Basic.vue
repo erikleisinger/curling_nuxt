@@ -25,9 +25,15 @@
                             </q-item-label>
                         </InputName>
                     </div>
+                    <slot name="actions" v-bind:viewTeam="viewTeam">
                     <div class="row justify-end items-center" v-if="viewable">
                         <q-btn flat color="deep-purple" @click="viewTeam">View</q-btn>
+                           
                     </div>
+                    </slot>
+              
+                
+
                 </div>
             </div>
         </div>
@@ -69,6 +75,8 @@ import { useEditorStore } from "@/store/editor";
 import { parseAvatar } from "@/utils/avatar";
 import Team from "@/types/team";
 
+const slots = useSlots();
+
 const { user: userId } = useUser();
 
 const props = defineProps({
@@ -81,7 +89,7 @@ const props = defineProps({
 
 const canEdit = props.item.profile_id === userId.value;
 
-const columns = ref(props.viewable ? 'max(70px, 15vw) auto auto' : 'max(70px, 15vw) 1fr')
+const columns = ref(props.viewable || slots.actions ? 'max(70px, 15vw) auto auto' : 'max(70px, 15vw) 1fr')
 
 /**
  * Begin item deletion

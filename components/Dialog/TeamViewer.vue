@@ -2,7 +2,13 @@
     <DialogFloating @close="toggleTeamViewer({ open: false })">
         <header class="pretty-shadow q-px-sm" ref="header">
             <div class="row">
-                <TeamBasic :item="team" v-if="!loading" :editable="canEdit" />
+                <TeamBasic :item="team" v-if="!loading" :editable="canEdit">
+                    <template v-slot:actions>
+                        <div class="row justify-end items-center" v-if="request">
+                            <RequestStatus :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/>
+                        </div>
+                    </template>
+                </TeamBasic>
             </div>
             <nav>
                 <q-tabs dense v-model="tab" stretch>
@@ -26,7 +32,9 @@
                                 class="team__profile--container column no-wrap"
                             >
                                 <div class="q-pa-md">
-                                    <Avataaar v-bind="parseAvatar(team.team_avatar)" />
+                                    <Avataaar
+                                        v-bind="parseAvatar(team.team_avatar)"
+                                    />
                                 </div>
                                 <h2 class="text-sm truncate-text">
                                     {{ team.name }}
@@ -111,7 +119,7 @@ import { useTeamStore } from "@/store/teams";
 import { useUserStore } from "@/store/user";
 import { parseAvatar } from "@/utils/avatar";
 import { useElementSize } from "@vueuse/core";
-import Team from '@/types/team'
+import Team from "@/types/team";
 const editorStore = useEditorStore();
 
 const tab = ref("stats");
@@ -126,11 +134,12 @@ const teamStore = useTeamStore();
 
 const teamId = editorStore.teamViewer.team?.id;
 
-const team = computed(() =>  {
-    return teamStore.teams.find((t) => t.id === teamId) || editorStore.teamViewer.team
-})
-
-
+const team = computed(() => {
+    return (
+        teamStore.teams.find((t) => t.id === teamId) ||
+        editorStore.teamViewer.team
+    );
+});
 
 const results = ref(null);
 const getTeamRecord = async (team_id_param: number) => {
@@ -139,13 +148,28 @@ const getTeamRecord = async (team_id_param: number) => {
     if (data) results.value = data;
 };
 
-onMounted(() => {
-    getTeamRecord(teamId);
-})
+
 
 const userStore = useUserStore();
 const canEdit = computed(() => team.value?.profile_id === userStore.id);
 
 const header = ref(null);
 const { height } = useElementSize(header);
+
+const getRequest = async (teamId: number) => {
+        const client = useSupabaseClient();
+     const {data, error} = await client.rpc('get_team_requests').eq('team_id', teamId)
+     return data;
+}
+
+const request = ref({})
+onMounted(async () => {
+    getTeamRecord(teamId);
+    if (!canEdit.value) {
+        const [r] = await getRequest(teamId)
+        if (r) request.value = r
+       
+        
+    }
+});
 </script>

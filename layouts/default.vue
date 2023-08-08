@@ -19,16 +19,18 @@
                         class="col-grow"
                     />
                 </div>
-                <div class="bottom__nav--item">
+                  <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Stats"
-                        :selected="view === VIEWS.STATS"
-                        :onClick="() => setView(VIEWS.STATS)"
-                        icon="leaderboard"
+                        label="Manage"
+                        :selected="view === VIEWS.MANAGE"
+                        :onClick="() => setView(VIEWS.MANAGE)"
+                        icon="groups_2"
                         size="3em"
                         class="col-grow"
-                    />
+                    >
+                    </ButtonNav>
                 </div>
+
                 <!-- New game -->
                 <div
                     style="
@@ -91,23 +93,22 @@
                         </q-fab>
                     </div>
                 </div>
-                <div class="bottom__nav--item">
+                              <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Browse"
-                        :selected="view === VIEWS.MANAGE"
-                        :onClick="() => setView(VIEWS.MANAGE)"
-                        icon="groups_2"
+                        label="Explore"
+                        :selected="view === VIEWS.EXPLORE"
+                        :onClick="() => setView(VIEWS.EXPLORE)"
+                        icon="explore"
                         size="3em"
                         class="col-grow"
-                    >
-                    </ButtonNav>
+                    />
                 </div>
                 <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Profile"
+                        label="Settings"
                         :selected="view === VIEWS.SETTINGS"
                         :onClick="() => setView(VIEWS.SETTINGS)"
-                        icon="person"
+                        icon="settings"
                         size="3em"
                         class="col-grow"
                     >
