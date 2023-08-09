@@ -84,7 +84,6 @@ onMounted(() => {
             datalabels: {
                 color: "white",
                 formatter: (data) => {
-                    console.log("label format: ", data);
                     return "";
                 },
             },

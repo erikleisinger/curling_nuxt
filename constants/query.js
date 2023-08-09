@@ -48,71 +48,47 @@ export const TABLE_QUERIES = {
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     second_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     third_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     fourth_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     fifth_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     sixth_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
     ),
     seventh_player_id (
         id,
         name,
         avatar,
-        profile_id,
-        profile_id_for_player (
-            id,
-            username
-        )
+        profile_id
+    ),
+    team_avatar,
+    username:profile_id (
+        username
     )
     `,
     [TABLE_NAMES.SHOT_TYPES]: `

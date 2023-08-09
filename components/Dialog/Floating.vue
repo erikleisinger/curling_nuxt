@@ -2,6 +2,7 @@
     <Teleport to="body">
         <div class="outer__container" ref="container">
             <div class="pretty-shadow inner__container">
+                
                 <div
                     class="row bg-deep-purple text-white pretty-shadow justify-between items-center q-px-xs"
                     style="
@@ -10,14 +11,15 @@
                         border-top-left-radius: inherit;
                     "
                 >
-                <slot name="prependButton"/>
-                <div class="col-grow row justify-end">
-                    <q-btn flat round icon="close" @click="close"/>
+              
+                <div class="col-grow row justify-start">
+                    <q-btn flat round icon="arrow_back" @click="close"/>
                 </div>
                 </div>
                 <div class="content__container"  v-if="!transitioning">
                     <slot @close="close" />
                 </div>
+                  <slot name="prependButton"/>
                 <!-- <div v-else class="content__container">
                     <q-inner-loading :showing="true" color="deep-purple" size="3em"/>
                 </div> -->
@@ -40,8 +42,8 @@
         background-color: white;
         pointer-events: all;
         border-radius: 16px;
-        height: calc(100% - 32px);
-        margin: 16px;
+        height: calc(100% - var(--space-xs) * 2);
+        margin: var(--space-xs);
         overflow: hidden;
         .content__container {
             height: calc(100% - 3em);

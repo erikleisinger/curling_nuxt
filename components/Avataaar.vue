@@ -1,5 +1,6 @@
 <template>
-<div style="position:relative; height: 100%; width: 100%" class="column justify-center" >
+<div style="margin-top: -20%; margin-left: -4%">
+<div style="position:relative; height: 100%; width: 100%;" class="column justify-center" >
 <svg
     viewBox='0 0 264 280'
     version='1.1'
@@ -97,6 +98,7 @@
     
 </svg>
     <slot/>
+</div>
 </div>
 
 </template>

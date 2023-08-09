@@ -2,13 +2,14 @@
     <q-chip
         ref="chipElement"
         rounded
-        :color="STATUS_COLORS[status]"
-        :text-color="status ? 'white' : 'black'"
+        :color="STATUS_COLORS[status] ?? 'white'"
+        :outline="!status"
+        :text-color="'deep-purple'"
         clickable
         class="request-status__container text-sm"
         @click="onChipClick"
     >
-        {{ status || "Request access" }}
+        {{ status || "Read only" }}
     </q-chip>
 </template>
 <script setup>
@@ -48,7 +49,6 @@ const onUpdate = ({ detail }) => {
 useEventListener(window, `REQUEST_${props.resourceId}_UPDATED`, onUpdate);
 
 const onChipClick = () => {
-    console.log(status.value);
     if (!status.value) {
         useSocialStore().sendTeamRequest({
             requestee_profile_id: props.profileId,

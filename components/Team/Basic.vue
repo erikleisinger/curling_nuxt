@@ -3,13 +3,15 @@
         :style="{ transform: deleteOpen ? 'translateX(-3em)' : '' }"
         ref="teamItem"
         style="transition: transform 0.3s; display: block"
+       
     >
         <div class="row no-wrap">
             <div class="row table-team__section full-width">
                 <div class="q-mt-xs team-player__container">
-                    <Avataaar v-bind="parseAvatar(props.item.team_avatar)" />
+                    <Avataaar v-bind="parseAvatar(props.item.team_avatar)" :class="{'animated__avatar': animated}"  @click="onClick"/>
+
                     <div
-                        class="truncate-text col-auto q-pl-xs q-ml-xs column justify-center text-lg text-bold"
+                        class="truncate-text q-pl-xs q-ml-xs column justify-center text-lg text-bold"
                     >
                         <q-item-label overline>Team</q-item-label>
                         <InputName
@@ -17,23 +19,15 @@
                             v-if="props.item.name"
                             @save="saveName"
                             :disabled="!canEdit || !editable"
-                        >
-                            <q-item-label class="truncate-text">
-                                <span>
-                                    {{ props.item.name }}
-                                </span>
-                            </q-item-label>
-                        </InputName>
+                        />
+                        <q-item-label style="margin-top: -0.3em" caption v-if="item.profile_id && item.profile_id !== userId && item.username"><ProfileChip :id="item.profile_id" :username="item.username"/> </q-item-label>
                     </div>
-                    <slot name="actions" v-bind:viewTeam="viewTeam">
-                    <div class="row justify-end items-center" v-if="viewable">
-                        <q-btn flat color="deep-purple" @click="viewTeam">View</q-btn>
-                           
+                    <div
+                        class="row justify-end items-center"
+                        v-if="slots.actions"
+                    >
+                        <slot name="actions" v-bind:viewTeam="viewTeam" />
                     </div>
-                    </slot>
-              
-                
-
                 </div>
             </div>
         </div>
@@ -57,6 +51,7 @@
     display: grid;
     grid-template-columns: v-bind(columns);
     width: 100%;
+    padding: var(--space-sm);
 }
 .delete__section {
     position: absolute;
@@ -66,6 +61,36 @@
     background-color: $negative;
     height: 100%;
     color: white;
+}
+.animated__avatar {
+    animation: float 0.7s infinite linear;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    
+    &:hover {
+      animation: scale 0.3s forwards linear;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0)
+    }
+    100% {
+        transform: translateY(0.15em)
+    }
+}
+
+@keyframes scale {
+    0% {
+        transform: scale(1)
+    }
+    50% {
+          transform: scale(1.2) 
+    }
+    100% {
+          transform: scale(1) 
+    }
 }
 </style>
 <script setup lang="ts">
@@ -77,9 +102,15 @@ import Team from "@/types/team";
 
 const slots = useSlots();
 
+const onClick = () => {
+    if (!props.viewable) return;
+    viewTeam();
+};
+
 const { user: userId } = useUser();
 
 const props = defineProps({
+    animated: Boolean,
     deleteable: Boolean,
     editable: Boolean,
     viewable: Boolean,
@@ -89,7 +120,11 @@ const props = defineProps({
 
 const canEdit = props.item.profile_id === userId.value;
 
-const columns = ref(props.viewable || slots.actions ? 'max(70px, 15vw) auto auto' : 'max(70px, 15vw) 1fr')
+const columns = ref(
+    props.viewable || slots.actions
+        ? "25% 1fr"
+        : "25% 1fr"
+);
 
 /**
  * Begin item deletion
@@ -121,21 +156,18 @@ const deleteItem = () => {
  * End item deletion
  */
 
-
 /**
  * Begin view item
  */
 
 const viewTeam = () => {
     const editorStore = useEditorStore();
-    console.log('view team: ', props.item)
-    editorStore.toggleTeamViewer({open: true, team: props.item})
-}
+    editorStore.toggleTeamViewer({ open: true, team: props.item });
+};
 
 /**
  * End view item
  */
-
 
 /**
  * Begin change name

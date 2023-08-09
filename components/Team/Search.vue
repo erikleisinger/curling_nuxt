@@ -20,54 +20,33 @@
             </q-input>
         </div>
         <div class="col-12">
-            <q-item
+            <PlayerBasic
                 v-for="item in results"
                 :key="item.id"
-                class="items-center row"
+                :player="{
+                    ...item,
+                    avatar: item.player_id?.avatar,
+                    name: `${item.first_name ?? ''} ${item.last_name ?? ''}`,
+                }"
+                style="height: 80px"
+            
             >
-                <q-item-section avatar>
-                    <LazyPlayerAvatar
-                        :parsedAvatar="parseAvatar(item.player_id?.avatar)"
-                        :player="item"
-                        :showStats="false"
-                    />
-                </q-item-section>
-                <q-item-section>
-                    <q-item-label
-                        class="row items-center"
-                        style="line-height: 1em !important"
-                        >{{ item.first_name }}
-                        {{ item.last_name }}</q-item-label
-                    >
-                    <q-item-label
-                        caption
-                        class="row items-center"
-                        style="line-height: 1em !important"
-                        >@{{ item.username }}</q-item-label
-                    >
-                </q-item-section>
-                <q-item-section side @click.stop.prevent>
-                    <div class="text-grey-8 row no-wrap">
-                        <q-btn
-                            text-color="deep-purple"
-                            flat
-                            @click="viewUser(item)"
-                            >View</q-btn
-                        >
-                    </div>
-                </q-item-section>
-            </q-item>
+                <template v-slot:subtitle> @{{ item.username }} </template>
+                <template v-slot:append>
+                    <q-btn flat color="deep-purple" @click="viewUser({id: item.id, username: item.username})">View</q-btn>
+                </template>
+            </PlayerBasic>
         </div>
     </div>
     <q-inner-loading v-else-if="loading" />
-    <div v-else-if="teams?.length">
-        <header class="row no-wrap">
+    <div v-else-if="teams?.length" class="full-height">
+        <header class="row no-wrap items-center" style="height: 4em">
             <q-btn flat round icon="arrow_back" @click="unView" />
             <h1 class="text-md text-bold q-pa-sm">
                 <ProfileChip v-bind="viewedUser" />'s teams
             </h1>
         </header>
-        <q-list separator>
+        <q-list separator style="max-height: calc(100% - 4em); overflow: auto">
             <q-item
                 v-for="item in teams"
                 :key="item.id"
@@ -75,11 +54,14 @@
                 v-memo="[item.name]"
             >
                 <TeamBasic :item="item" viewable>
-                      <!-- <template v-slot:actions>
+                    <!-- <template v-slot:actions>
                         <div class="row justify-end items-center" >
                             <RequestStatus :initialStatus="item.request?.status" :profileId="item.profile_id" :resourceId="item.id" resourceType="team"/>
                         </div>
                     </template> -->
+                    <template v-slot:actions="{viewTeam}">
+                      <q-btn flat color="deep-purple" @click="viewTeam">View</q-btn>
+                    </template>
                 </TeamBasic>
             </q-item>
         </q-list>
@@ -138,10 +120,12 @@ const teams = ref([]);
 const loading = ref(false);
 
 const getRequests = async (username) => {
-        const client = useSupabaseClient();
-     const {data, error} = await client.rpc('get_team_requests').eq('requestee_username', username)
-     return data;
-}
+    const client = useSupabaseClient();
+    const { data, error } = await client
+        .rpc("get_team_requests")
+        .eq("requestee_username", username);
+    return data;
+};
 
 const viewedUser = ref({});
 
@@ -166,23 +150,17 @@ const viewUser = useThrottleFn(async ({ id, username }) => {
     //     request: requests.find((r) => r.team_id === t.id) ?? {}
     // }))
 
-
     loading.value = false;
 }, 2000);
 
 const requestAccess = useThrottleFn(
-    async ({
-        team_id,
-        requestee_profile_id,
-    }) => {
-        console.log(team_id, requestee_profile_id)
+    async ({ team_id, requestee_profile_id }) => {
         const socialStore = useSocialStore();
         const success = await socialStore.sendTeamRequest({
             team_id,
             requestee_profile_id,
         });
 
-        console.log("UPDATED TEAM: ", updatedTeam);
     },
     10000
 );

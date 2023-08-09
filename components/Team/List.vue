@@ -1,21 +1,37 @@
 <template>
     <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
-        <q-list separator>
-            <q-item
-                v-for="item in teams"
-                :key="item.id"
-                :class="{ focused: focused === item.id }"
+        <RecycleScroller
+            :items="teams"
+            :item-size="1"
+            :min-item-size="50"
+            height="100%"
+            :buffer="200"
+            key-field="id"
+            v-slot="{ item, index }"
+            ref="scroller"
+        >
+            <div
                 :id="`team-table-item-${item.id}`"
-                @click="unsetFocus(item.id)"
-                clickable
-                v-memo="[
-                    item.name,
-                    item.team_avatar
-                ]"
+                @click="onClick(item.id, index)"
+                :class="{ focused: focused === item.id }"
+                class="team-item"
+                v-ripple.early
             >
-                <TeamBasic :item="item" @delete="itemToDelete = item" viewable deleteable />
-            </q-item>
-        </q-list>
+                <TeamBasic
+                    :item="item"
+                    @delete="itemToDelete = item"
+                    viewable
+                    deleteable
+                    v-memo="[item.name, item.team_avatar]"
+                
+                 
+                />
+                   <!--     v-if="expanded !== item.id" -->
+                <!-- <div v-else style="height: calc(100% - 200px)">
+                    <TeamFull :team="item" /> -->
+                <!-- </div> -->
+            </div>
+        </RecycleScroller>
     </div>
     <DialogConfirmation
         v-if="itemToDelete"
@@ -27,7 +43,10 @@
         }}"
     </DialogConfirmation>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
+.team-item {
+    border-bottom: 1px solid $grey-3;
+}
 .focused {
     background-color: rgb(0 132 255 / 11%);
 }
@@ -64,20 +83,32 @@ const { y: scrollY } = useScroll(tableArea, {
     behavior: "smooth",
 });
 
+const scroller = ref(null)
+
+const scrollTo = async (index: number) => {
+    console.log(index)
+    console.log(scroller.value.scrollToItem())
+    await new Promise((r) => setTimeout(r, 3))
+    scroller.value.scrollToItem(index);
+   
+};
+
 const focusOnTeam = () => {
     if (!focused.value) return;
     const teamId = focused.value;
     setTimeout(() => {
-        const elementId = `team-table-item-${teamId}`;
-        const element = document.getElementById(elementId);
-        if (!element) {
-            console.error(
-                "could not scroll to focused team: team element not found"
-            );
-            return;
-        }
-        const scrollTo = element?.offsetTop;
-        tableArea.value.scrollTop = scrollTo;
+         const elementId = `team-table-item-${teamId}`;
+    const element = document.getElementById(elementId);
+    console.dir(element);
+    if (!element) {
+        console.error(
+            "could not scroll to focused team: team element not found"
+        );
+        return;
+    }
+    const scrollPos = element?.offsetTop;
+    console.log(scrollPos);
+    tableArea.value.scrollTop = scrollPos;
     }, 1000);
 };
 onMounted(() => {
@@ -88,10 +119,24 @@ watch(focused, () => {
     focusOnTeam();
 });
 
+const expanded = ref(null);
+
+const onClick = (teamId: number, index: number) => {
+    emit('select', index)
+    if (focused.value && teamId === focused.value) unsetFocus(teamId);
+    if (expanded.value === teamId) {
+        expanded.value = null;
+    } else {
+        expanded.value = teamId;
+ scrollTo(index);
+       
+    }
+};
+
 const unsetFocus = (teamId: number) => {
     if (!focused.value || teamId !== focused.value) return;
     navigationStore.setTeamFocus(null);
 };
 
-const emit = defineEmits(["update"]);
+const emit = defineEmits(["update", 'select']);
 </script>

@@ -36,9 +36,10 @@
                     :key="item.id"
                     class="items-center row"
                 >
+                {{item.player_id}}
                     <q-item-section avatar>
                         <LazyPlayerAvatar
-                            :parsedAvatar="parseAvatar(item.player_id?.avatar)"
+                            :parsedAvatar="parseAvatar(item.player_id?.avatar ?? {})"
                             :player="item"
                             :showStats="false"
                         />
@@ -116,7 +117,6 @@ const unView = () => {
 const teams = ref([])
 const loading = ref(false)
 const viewUser = useThrottleFn(async (id) => {
-    console.log('item: ', id)
         loading.value = true;
     viewing.value = true;
 

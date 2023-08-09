@@ -110,13 +110,4 @@ const { direction } = useSwipe(tableArea, {
     },
 });
 
-// onBeforeMount(async () => {
-//     console.log('GAMES TABLE BEFORE MOUNT')
-//     const {setLoading} = useLoading();
-//     setLoading(true)
-//     await friendStore.getFriends();
-//     await loadGames(false)
-//     setLoading(false)
-//     console.log('GAMES TABLE AFTER BEFORE MOUNT')
-// })
 </script>

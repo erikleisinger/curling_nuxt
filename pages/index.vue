@@ -1,6 +1,6 @@
 <template>
     <NuxtLayout>
-        <AreaManage v-if="view === VIEWS.MANAGE" />
+        <AreaManage2 v-if="view === VIEWS.MANAGE" />
         <Profile v-else-if="view === VIEWS.SETTINGS" />
         <MySeason v-else-if="view === VIEWS.SEASON" />
         <TeamSearch v-else-if="view === VIEWS.EXPLORE"/>

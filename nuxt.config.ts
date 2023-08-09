@@ -52,6 +52,12 @@ export default defineNuxtConfig({
                 "slideOutDown",
             ],
             fontIcons: ["material-icons-outlined", "material-symbols-outlined", "material-icons"],
+            
+        },
+        config: {
+            ripple: {
+
+            }
         },
         plugins: ["Dialog", "Notify"],
         sassVariables: true,

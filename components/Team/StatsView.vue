@@ -1,13 +1,13 @@
 <template>
     <!-- -->
-    <div ref="statsContainer" class="stats__container">
+    <div ref="statsContainer" class="stats__container row">
         <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
                 class="row justify-center q-pa-lg"
                 :style="{
-                    marginTop: `-${winLossChartHeight / 4}px`,
-                    marginBottom: `-${winLossChartHeight / 4}px`,
+                    marginTop: `-${winLossChartHeight / 3.5}px`,
+                    marginBottom: `-${winLossChartHeight / 3.5}px`,
                 }"
             >
                 <ChartWinLossTie
@@ -23,10 +23,11 @@
 
             <ChartBar
                 :data="formattedHammerStats"
-                v-if="formattedHammerStats && visible"
+                v-if="!loadingStats && formattedHammerStats && visible"
                 :max="100"
                 percent
             />
+             <q-inner-loading color="deep-purple"  :showing="loadingStats"/>
         </section>
         <section name="hammer scoring" class="stats__section">
             <h2 class="text-md text-bold">Hammer scoring</h2>
@@ -35,19 +36,21 @@
             </h3>
             <ChartBarVertical
                 :data="formattedHammerPoints"
-                v-if="formattedHammerPoints && visible"
+                v-if="!loadingStats && formattedHammerPoints && visible"
                 axis="x"
             />
+            <q-inner-loading color="deep-purple" :showing="loadingStats"/>
         </section>
         <section name="defense" class="stats__section">
             <h2 class="text-md text-bold">Defense</h2>
             <h3 class="text-sm">Performance without hammer</h3>
             <ChartBar
                 :data="formattedNoHammerStats"
-                v-if="formattedNoHammerStats && visible"
+                v-if="!loadingStats && formattedNoHammerStats && visible"
                 :max="100"
                 percent
             />
+             <q-inner-loading color="deep-purple"  :showing="loadingStats"/>
         </section>
 
         <!-- <div>
@@ -80,16 +83,23 @@
 <style lang="scss" scoped>
 .stats__container {
     padding-top: var(--space-sm);
+    border-radius: 8px;
     .stats__section {
         border-radius: 0px;
         box-shadow: $pretty-shadow;
-        margin-bottom: var(--space-sm);
+        margin: var(--space-xs);
         padding: var(--space-sm);
+        aspect-ratio: 3/2;
+        position: relative;
+        width: calc(100% - var(--space-md));
+        @include sm {
+            width: calc(50% - var(--space-md))
+        }
     }
 }
 </style>
 <script setup>
-import { useElementSize, useElementVisibility } from "@vueuse/core";
+import { useElementSize, useElementVisibility, watchDebounced } from "@vueuse/core";
 
 const props = defineProps({
     teamId: Number,
@@ -114,7 +124,10 @@ const formattedHammerStats = ref(null);
 const formattedNoHammerStats = ref(null);
 const formattedHammerPoints = ref(null);
 
+const loadingStats = ref(false)
+
 const getGameStats = async () => {
+    loadingStats.value = true;
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
         () =>
@@ -294,6 +307,7 @@ const getGameStats = async () => {
 
     // // Average points conceded without hammer
     // avgPointsConceded.value = avg_points_conceded.toFixed(2);
+       loadingStats.value = false
 };
 const loadingRecord = ref(false);
 const getWinsLossess = async () => {
@@ -311,11 +325,13 @@ const getWinsLossess = async () => {
     ties.value = data.ties;
     loadingRecord.value = false;
 };
-onBeforeMount(async () => {
+
+const currentTeamId = computed(() => props.teamId)
+watchDebounced(currentTeamId, () => {
     getGameStats();
 
     getWinsLossess();
-});
+}, {debounce: 500, immediate: true});
 
 // Utils
 

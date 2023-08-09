@@ -1,18 +1,11 @@
 <template>
     <div style="position: relative" class="floating-dialog__container">
-         <div
-            style="position: absolute; top: 0; left: 0; z-index: 1"
-            class="q-ma-sm"
-            @click="savePlayer"
-            v-if="!readOnly"
-        >
-            <q-btn flat round icon="save" size="md" color="deep-purple" :disable="readOnly"/>
-        </div>
-        <div class="row justify-center" style="height: 40%; position: relative">
+
+
+        <div class="row justify-center items-center" style="height: 40%; position: relative"     ref="avatarContainer">
             <div
-                style="height: 90%"
-                :style="`width: calc(${height}px * .92)`"
-                ref="avatarContainer"
+                :style="`width:50%; max-width: calc(${height}px * 0.7)`"
+            
             >
                 <Avataaar
                 v-if="!loading"
@@ -38,6 +31,22 @@
         <h2 class="text-md text-bold truncate-text">{{ name }}</h2>
     </template>
         </InputName>
+        <div class=" toolbar row justify-between q-ma-md" style="position: absolute; top: 0; right:0"> 
+             <q-fab
+             color="deep-purple"
+                        direction="down"
+                        dense
+                        padding="12px"
+                        :persistent="false"
+                        icon="build"
+                   
+                    >
+    <q-btn  round icon="save" size="md" color="deep-purple" :disable="readOnly"/>
+             </q-fab>
+            
+            
+            
+          </div>
         <div
             class="row q-py-md"
             style="height: 50%; overflow: auto; border-top: 1px solid gray"

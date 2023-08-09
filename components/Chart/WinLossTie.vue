@@ -23,7 +23,6 @@ return props.data.reduce((all, current) => (all += current), 0)
 const percentagesFromData = computed(() => {
     
     const [wins, losses, ties] = props.data;
-    console.log(wins, losses, ties)
     if (!wins && !losses && !ties) return [33,33,33]
     return [
         wins / sumGames.value * 100,

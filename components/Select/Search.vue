@@ -40,8 +40,5 @@ const results = computed(() => {
         return p.label.match(regex)
     })
 })
-watch(results, (v) => {
-    console.log('results: ', v)
-}, {deep: true})
 
 </script>

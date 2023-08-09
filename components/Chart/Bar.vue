@@ -6,50 +6,7 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const props = defineProps({
-    data: {
-        type: Array,
-        default() {
-            return [
-                {
-                    y: "Hammer possession",
-                    percent: 20,
-                    rawValue: "2",
-                    total: "3",
-                    description: "Ends where you had hammer",
-                },
-                {
-                    y: "Hammer conversion",
-                    percent: 10,
-                    rawValue: "2",
-                    total: "3",
-                },
-                {
-                    y: "Hammer possession2",
-                    percent: 20,
-                    rawValue: "2",
-                    total: "3",
-                },
-                {
-                    y: "Hammer conversion2",
-                    percent: 10,
-                    rawValue: "2",
-                    total: "3",
-                },
-                {
-                    y: "Hammer possession3",
-                    percent: 20,
-                    rawValue: "2",
-                    total: "3",
-                },
-                {
-                    y: "Hammer conversion3",
-                    percent: 10,
-                    rawValue: "2",
-                    total: "3",
-                },
-            ];
-        },
-    },
+    data: Array,
     displayLabel: {
         type: Boolean,
         default() {

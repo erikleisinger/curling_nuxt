@@ -2,34 +2,48 @@
     <q-item-section ref="teamItem" style="display: block">
         <div style="max-height: 2em; position: relative" class="q-my-sm"></div>
 
-        <div class="row team-players--wrap" v-if="hasPlayers()">
-            <div class="col-12 col-sm-6 team-player__container" v-for="position in ['fourth', 'third', 'second', 'lead', 'fifth']" :key="`${item.id}-${position}`">
-                 <TeamPlayer
-                    :id="item[`${position}_player_id`]?.id"
-                    :position="position"
-                />
-                <div class="row items-center justify-end" v-if="!readOnly">
+        <div class="row" v-if="hasPlayers()">
+            <PlayerBasic
+                class="col-12 col-sm-6"
+                style="max-height: 75px"
+                v-for="position in [
+                    'fourth',
+                    'third',
+                    'second',
+                    'lead',
+                    'fifth',
+                ]"
+                :key="`${item.id}-${position}`"
+                :player="getPlayer(item[`${position}_player_id`]?.id)"
+            >
+                <template v-slot:subtitle>
+                    {{ position }}
+                </template>
+                <template v-slot:append>
                     <q-btn
                         flat
                         round
                         :icon="
-                            item[`${position}_player_id`]?.id ? 'change_circle' : 'add'
+                            item[`${position}_player_id`]?.id
+                                ? 'change_circle'
+                                : 'add'
                         "
                         color="grey-8"
+                        v-if="!readOnly"
                         @click="openPlayerSelector(position)"
                     ></q-btn>
-                </div>
-            </div>
-            <div
-                class="col-12 col-sm-6 team-player__container"
+                </template>
+            </PlayerBasic>
+            <PlayerBasic
                 v-if="item.fifth_player_id?.id"
+                class="col-12 col-sm-6"
+                    style="max-height: 75px"
+                   :player="getPlayer(item.sixth_player_id?.id)"
             >
-                     <TeamPlayer
-                    :id="item.sixth_player_id?.id"
-                    position="Sixth"
-                />
-                <div class="row items-center justify-end" v-if="!readOnly">
+                <template v-slot:subtitle> sixth </template>
+                <template v-slot:append>
                     <q-btn
+                        v-if="!readOnly"
                         flat
                         round
                         :icon="
@@ -38,18 +52,18 @@
                         color="grey-8"
                         @click="openPlayerSelector('sixth')"
                     ></q-btn>
-                </div>
-            </div>
-            <div
-                class="col-12 col-sm-6 team-player__container"
+                </template>
+            </PlayerBasic>
+            <PlayerBasic
                 v-if="item.sixth_player_id?.id"
+                class="col-12 col-sm-6"
+                    style="max-height: 75px"
+                 :player="getPlayer(item.seventh_player_id?.id)"
             >
-                     <TeamPlayer
-                    :id="item.seventh_player_id?.id"
-                    position="Seventh"
-                />
-                <div class="row items-center justify-end" v-if="!readOnly">
+                <template v-slot:subtitle> seventh </template>
+                <template v-slot:append>
                     <q-btn
+                        v-if="!readOnly"
                         flat
                         round
                         :icon="
@@ -58,8 +72,8 @@
                         color="grey-8"
                         @click="openPlayerSelector('seventh')"
                     ></q-btn>
-                </div>
-            </div>
+                </template>
+            </PlayerBasic>
         </div>
         <div
             class="row no-wrap justify-center items-center text-sm text-italic"
@@ -70,20 +84,10 @@
         </div>
     </q-item-section>
 </template>
-<style lang="scss" scoped>
-.team-players--wrap {
-    .team-player__container {
-        display: grid;
-        grid-template-columns: v-bind(columns);
-        padding: var(--space-sm);
-
-        border-bottom: 1px solid $grey-3;
-    }
-}
-</style>
 <script setup lang="ts">
 import { useEditorStore } from "@/store/editor";
-import {useTeamStore} from '@/store/teams'
+import { useTeamStore } from "@/store/teams";
+import {usePlayerStore} from '@/store/players'
 const props = defineProps({
     item: Object,
 });
@@ -103,7 +107,7 @@ const hasPlayers = () => {
 };
 
 const openPlayerSelector = (position: string) => {
-    const {addPlayerToTeam} = useTeamStore();
+    const { addPlayerToTeam } = useTeamStore();
     const editorStore = useEditorStore();
     editorStore.togglePlayerSelect({
         open: true,
@@ -112,6 +116,10 @@ const openPlayerSelector = (position: string) => {
         },
     });
 };
+  const playerStore = usePlayerStore()
+const getPlayer = (id: number) => {
+    return playerStore.players.find((p) => p.id === id) || {}
+}
 
 const { user: userId } = useUser();
 
