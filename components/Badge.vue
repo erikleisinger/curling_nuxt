@@ -116,7 +116,7 @@
             <div class="badge-header">
             <h2 class="text-lg text-bold truncate-text text-center">{{BADGE_TITLES[badge]}}</h2>
             <h3 class="text-sm text-caption text-deep-purple text-center" style="margin-top: -0.1em; line-height: unset">
-                {{BADGE_FORMULAS[badge]}}
+                {{BADGE_FORMULAS[badge](props.raw)}}
             </h3>
             </div>
             <p class="text-center">
@@ -126,7 +126,7 @@
     </div>
 </template>
 <style lang="scss">
-$icon-height: 6em;
+$icon-height: 4em;
 .badge__content--container {
         margin: var(--space-xs);
        transition: transform 0.3s;
@@ -139,7 +139,6 @@ $icon-height: 6em;
         // right: 0;
         margin: auto;
         background-color: white;
-        margin: var(--space-xs);
         // border-top-left-radius: 35%;
         //   border-bottom-left-radius: 35%;
         border-radius: 16px;
@@ -148,6 +147,8 @@ $icon-height: 6em;
         //   padding-right: 0px;
           max-width: min(70%, 300px);
           width: 60%;
+          left:0;
+          right:0;
         //   max-width: 95vw;
         // &:after {
         //     content: v-bind(badgeTitle);
@@ -214,6 +215,7 @@ const props = defineProps({
         type: String,
         default: "bandit",
     },
+    raw: Number,
 });
 
 const description = computed(() => BADGE_DESCRIPTIONS[props.badge] ?? LOREM_IPSUM)

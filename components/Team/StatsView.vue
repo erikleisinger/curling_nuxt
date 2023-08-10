@@ -2,12 +2,12 @@
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
         <!-- Badges  -->
-       <div class="row justify-center full-width q-px-sm" style="">
-            <Badge badge="showoff" />
-            <Badge />
-            <Badge badge="bulwark" />
-            <Badge badge="minimalist"/>
-              <Badge badge="survivalist"/>
+       <div class="row full-width q-px-sm" style="">
+            <Badge badge="showoff" v-if="showoff" :raw="showoff" />
+            <Badge badge="bandit" v-if="bandit" :raw="bandit" />
+            <Badge badge="bulwark" v-if="bulwark" :raw="bulwark" />
+            <Badge badge="minimalist" v-if="minimalist" :raw="minimalist"/>
+              <Badge badge="survivalist" v-if="survivor" :raw="survivor"/>
         </div>
         <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -188,14 +188,22 @@ const defenseScore = ref(0);
 
 const loadingStats = ref(false);
 
+const bandit = ref(0);
+const bulwark = ref(0);
+const control_freak = ref(0);
+const minimalist = ref(0);
+const showoff = ref(0);
+const strategist = ref(0);
+const survivor = ref(0);
+
+
+
 const getGameStats = async () => {
     loadingStats.value = true;
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
         () =>
-            client.rpc("get_team_stats", {
-                team_id_param: props.teamId,
-            }),
+            client.rpc("get_team_statistics").eq('id', props.teamId),
         { onError: "Error fetching game stats." }
     );
     const [s] = data;
@@ -211,6 +219,14 @@ const getGameStats = async () => {
         stolen_end_count,
         total_ends_played,
     } = stats.value;
+
+    bandit.value = stats.value.bandit;
+    bulwark.value = stats.value.bulwark;
+    control_freak.value = stats.value.control_freak;
+    minimalist.value = stats.value.minimalist;
+    showoff.value = stats.value.showoff;
+    strategist.value = stats.value.strategist
+    survivor.value = stats.value.survivor
 
     //  {
     //             y: "Hammer possession",

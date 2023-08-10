@@ -15,11 +15,11 @@ export const BADGE_TITLES = {
 }
 
 export const BADGE_FORMULAS = {
-    showoff: 'Scoring 3+ points with hammer',
-    bandit: 'Stealing without hammer',
-    bulwark: 'Opposition seldom scores more than 1 point',
-    minimalist: 'Blanking with hammer',
-    survivalist: 'Scoring 1 point with hammer'
+    showoff: (val) =>  `With hammer, scores 3+ points ${val.toFixed()}% of the time.`,
+    bandit: (val) => `Without hammer, steals ${val.toFixed()}% of the time.`,
+    bulwark: (val) => `Without hammer, opposition scores 2+ points only ${val.toFixed()}% of the time.`,
+    minimalist: (val) => `With hammer, blanks ${val.toFixed()}% of the time.`,
+    survivalist: (val) => `With hammer, scores only 1 point ${val.toFixed()}% of the time.`
 }
 
 export const BADGE_DESCRIPTIONS = {
