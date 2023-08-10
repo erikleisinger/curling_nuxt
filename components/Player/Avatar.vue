@@ -95,6 +95,7 @@
     position: absolute;
     right: 0;
     bottom: 0;
+    
 }
 .user-link__badge {
     padding: 4px;

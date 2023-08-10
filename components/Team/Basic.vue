@@ -76,6 +76,7 @@
     animation: float 0.7s infinite linear;
     animation-direction: alternate;
     animation-iteration-count: infinite;
+    
 
     &:hover {
         animation: scale 0.3s forwards linear;

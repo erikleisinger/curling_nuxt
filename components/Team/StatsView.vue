@@ -1,10 +1,13 @@
 <template>
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
-            <div class="row justify-center full-width q-px-sm" style="">
-               <Badge badge="showoff"/>
-                                     <Badge />
-                                       <Badge badge="bulwark"/>
+        <!-- Badges  -->
+       <div class="row justify-center full-width q-px-sm" style="">
+            <Badge badge="showoff" />
+            <Badge />
+            <Badge badge="bulwark" />
+            <Badge badge="minimalist"/>
+              <Badge badge="survivalist"/>
         </div>
         <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -22,23 +25,15 @@
                 />
             </div>
         </section>
-    
+
         <section name="hammer conversion" class="stats__section">
             <div class="row items-center no-wrap total__card--wrap">
-                   <div
-                    class="row justify-center items-center total__card col-grow"
-                >
-                    <!-- <q-icon name="hotel_class" size="lg"/> -->
-                    <div class="total__card--inner text-bold">
-                        {{ hammerEfficiencyScore }}
-                    </div>
-                </div>
+               <StatsAggregateCard :score="hammerEfficiencyScore"/>
                 <div class="column">
                     <h2 class="text-md text-bold">Hammer efficiency</h2>
                     <h3 class="text-sm">Scoring efficiency with hammer</h3>
                 </div>
                 <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
-             
             </div>
 
             <ChartBar
@@ -76,24 +71,15 @@
             <q-inner-loading color="deep-purple" :showing="loadingStats" />
         </section> -->
         <section name="defense" class="stats__section">
-             <div class="row items-center no-wrap total__card--wrap">
-                   <div
-                    class="row justify-center items-center total__card col-grow"
-                >
-                    <!-- <q-icon name="hotel_class" size="lg"/> -->
-                    <div class="total__card--inner text-bold">
-                        {{ defenseScore }}
-                    </div>
-                </div>
+            <div class="row items-center no-wrap total__card--wrap">
+               <StatsAggregateCard :score="defenseScore"/>
                 <div class="column">
-                      <h2 class="text-md text-bold">Defense</h2>
-            <h3 class="text-sm">Performance without hammer</h3>
+                    <h2 class="text-md text-bold">Defense</h2>
+                    <h3 class="text-sm">Performance without hammer</h3>
                 </div>
                 <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
-             
             </div>
 
-       
             <ChartBar
                 :data="formattedNoHammerStats"
                 v-if="!loadingStats && formattedNoHammerStats && visible"
@@ -148,33 +134,8 @@
     }
     .total__card--wrap {
         margin-bottom: var(--space-sm);
-  .total__card {
-        border-radius: 24px;
-        border: 1px solid $grey-5;
-        padding: var(--space-xxs);
-        aspect-ratio: 1/1;
-        font-size: 2em;
-        width: 25%;
-        max-width: 25%;
-        margin-right: var(--space-xxs);
-        position: relative;
-        box-shadow: $pretty-shadow-2;
-        .total__card--inner {
-            position: relative;
-            color: rgba(0, 0, 0, 0.8);
-            &:after {
-                position: absolute;
-                content: "/10";
-                font-size: 0.3em !important;
-                bottom: 0.5em;
-                right: -1em;
-                margin-left: calc(var(--space-sm) * -1);
-                font-weight: normal;
-            }
-        }
+     
     }
-    }
-  
 }
 </style>
 <script setup>
@@ -223,7 +184,7 @@ const formattedHammerStats = ref(null);
 const formattedNoHammerStats = ref(null);
 const formattedHammerPoints = ref(null);
 const hammerEfficiencyScore = ref(0);
-const defenseScore = ref(0)
+const defenseScore = ref(0);
 
 const loadingStats = ref(false);
 
@@ -261,24 +222,22 @@ const getGameStats = async () => {
 
     const getHammerEfficiencyScore = () => {
         const totalEnds = hammer_ends_count - hammer_blank_count;
-        const twoPts = addPointCounts(2,8);
-        console.log('two: ', twoPts, totalEnds)
+        const twoPts = addPointCounts(2, 8);
+        console.log("two: ", twoPts, totalEnds);
         // const twoPts = 3;
         const forces = hammer_1_point_count;
-        console.log('forces: ', forces)
+        console.log("forces: ", forces);
         const subtotal = twoPts * 1 + forces * 0.5;
         return ((subtotal / totalEnds) * 10).toFixed(1);
     };
 
-       const getDefenseScore = () => {
+    const getDefenseScore = () => {
         const totalEnds = total_ends_played - hammer_ends_count;
         const stolen = stolen_end_count;
         const forces = forced_end_count;
         const subtotal = stolen * 1 + forces * 0.5;
         return ((subtotal / totalEnds) * 10).toFixed(1);
     };
-
-
 
     hammerEfficiencyScore.value = getHammerEfficiencyScore();
 
