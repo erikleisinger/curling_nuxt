@@ -26,6 +26,8 @@
                         ref="inputRef"
                         v-model="searchInput"
                         @keydown.enter="search"
+                        @focus="onFocus"
+                        @blur="onFocus"
                         clearable
                     >
                         <template v-slot:before>
@@ -154,7 +156,7 @@
 }
 </style>
 <script setup>
-import { useElementSize, useSwipe, useThrottleFn } from "@vueuse/core";
+import { useElementSize, useFocus, useSwipe, useThrottleFn } from "@vueuse/core";
 import { TABLE_QUERIES } from "@/constants/query";
 const tab = ref("stats");
 import { useTeamStore } from "@/store/teams";
@@ -172,11 +174,15 @@ const team = computed(() => {
 });
 
 const onSelect = (index) => {
+        console.log(inputRef.value)
+    if (!clickable.value) return;
     teamIndex.value = index;
     resultIndex.value = null
     showSearch.value = false;
 };
 const onSelectGlobal = (index) => {
+    console.log(inputRef.value)
+    if (!clickable.value) return;
     resultIndex.value = index;
     teamIndex.value = null;
     showSearch.value = false;
@@ -194,6 +200,20 @@ const toggleGlobal = () => {
     global.value = !global.value;
     if (global.value) inputRef.value.focus();
 };
+
+const clickable = ref(true)
+
+const onFocus = ({type}) => {
+    nextTick(() => {
+        if (type === 'focusin') {
+            clickable.value = false;
+        } else {
+            clickable.value = true;
+        }
+    })
+    console.log('focused: ', val)
+}
+
 
 const global = ref(false);
 

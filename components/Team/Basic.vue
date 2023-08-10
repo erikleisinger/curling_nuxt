@@ -3,24 +3,33 @@
         :style="{ transform: deleteOpen ? 'translateX(-3em)' : '' }"
         ref="teamItem"
         style="transition: transform 0.3s; display: block"
-       
     >
         <div class="row no-wrap">
             <div class="row table-team__section full-width">
                 <div class="q-mt-xs team-player__container">
-                    <Avataaar v-bind="parseAvatar(props.item.team_avatar)" :class="{'animated__avatar': animated}"  @click="onClick"/>
+                    <Avataaar
+                        v-bind="parseAvatar(props.item.team_avatar)"
+                        :class="{ animated__avatar: animated }"
+                        @click="onClick"
+                    />
 
                     <div
                         class="truncate-text q-pl-xs q-ml-xs column justify-center text-lg text-bold"
                     >
-                        <q-item-label overline>Team</q-item-label>
+                        <!--  -->
+                        <q-item-label overline><span>Team</span> </q-item-label>
                         <InputName
                             :name="props.item.name"
                             v-if="props.item.name"
                             @save="saveName"
                             :disabled="!canEdit || !editable"
                         />
-                        <q-item-label style="margin-top: -0.3em" caption v-if="item.profile_id && item.profile_id !== userId && item.username"><ProfileChip :id="item.profile_id" :username="item.username"/> </q-item-label>
+
+                        <q-item-label caption class="row" v-if="item.profile_id && item.profile_id !== userId && item.username">
+                          <ProfileChip  :id="item.profile_id" :username="item.username"/>
+                             
+                      
+                        </q-item-label>
                     </div>
                     <div
                         class="row justify-end items-center"
@@ -47,6 +56,7 @@
     </transition>
 </template>
 <style lang="scss" scoped>
+
 .team-player__container {
     display: grid;
     grid-template-columns: v-bind(columns);
@@ -66,30 +76,30 @@
     animation: float 0.7s infinite linear;
     animation-direction: alternate;
     animation-iteration-count: infinite;
-    
+
     &:hover {
-      animation: scale 0.3s forwards linear;
+        animation: scale 0.3s forwards linear;
     }
 }
 
 @keyframes float {
     0% {
-        transform: translateY(0)
+        transform: translateY(0);
     }
     100% {
-        transform: translateY(0.15em)
+        transform: translateY(0.15em);
     }
 }
 
 @keyframes scale {
     0% {
-        transform: scale(1)
+        transform: scale(1);
     }
     50% {
-          transform: scale(1.2) 
+        transform: scale(1.2);
     }
     100% {
-          transform: scale(1) 
+        transform: scale(1);
     }
 }
 </style>
@@ -120,11 +130,7 @@ const props = defineProps({
 
 const canEdit = props.item.profile_id === userId.value;
 
-const columns = ref(
-    props.viewable || slots.actions
-        ? "25% 1fr"
-        : "25% 1fr"
-);
+const columns = ref(props.viewable || slots.actions ? "25% 1fr" : "25% 1fr");
 
 /**
  * Begin item deletion

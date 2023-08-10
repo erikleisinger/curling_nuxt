@@ -38,6 +38,8 @@ onMounted(() => {
         },
         plugins: [ChartDataLabels],
         options: {
+            // maintainAspectRatio: false,
+            // responsive: false,
             datalabels: {
                 color: "white",
             },
@@ -119,5 +121,6 @@ onMounted(() => {
             },
         },
     });
+
 });
 </script>

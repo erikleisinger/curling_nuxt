@@ -1,6 +1,11 @@
 <template>
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
+            <div class="row justify-center full-width q-px-sm" style="">
+               <Badge badge="showoff"/>
+                                     <Badge />
+                                       <Badge badge="bulwark"/>
+        </div>
         <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
@@ -17,9 +22,24 @@
                 />
             </div>
         </section>
+    
         <section name="hammer conversion" class="stats__section">
-            <h2 class="text-md text-bold">Hammer efficiency</h2>
-            <h3 class="text-sm">Scoring efficiency with hammer</h3>
+            <div class="row items-center no-wrap total__card--wrap">
+                   <div
+                    class="row justify-center items-center total__card col-grow"
+                >
+                    <!-- <q-icon name="hotel_class" size="lg"/> -->
+                    <div class="total__card--inner text-bold">
+                        {{ hammerEfficiencyScore }}
+                    </div>
+                </div>
+                <div class="column">
+                    <h2 class="text-md text-bold">Hammer efficiency</h2>
+                    <h3 class="text-sm">Scoring efficiency with hammer</h3>
+                </div>
+                <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
+             
+            </div>
 
             <ChartBar
                 :data="formattedHammerStats"
@@ -27,30 +47,60 @@
                 :max="100"
                 percent
             />
-             <q-inner-loading color="deep-purple"  :showing="loadingStats"/>
+
+            <q-inner-loading color="deep-purple" :showing="loadingStats" />
         </section>
-        <section name="hammer scoring" class="stats__section">
-            <h2 class="text-md text-bold">Hammer scoring</h2>
-            <h3 class="text-sm">
-                Points scored when {{ props.teamName }} has hammer
-            </h3>
+        <!-- <section name="hammer scoring" class="stats__section">
+            <div class="row items-center no-wrap total__card--wrap">
+                 <div
+                    class="row justify-center items-center total__card col-grow"
+                >
+          
+                    <div class="total__card--inner text-bold">
+                        {{ hammerEfficiencyScore }}
+                    </div>
+                </div>
+                <div class="column">
+                    <h2 class="text-md text-bold">Hammer scoring</h2>
+                    <h3 class="text-sm">
+                        Points scored when {{ props.teamName }} has hammer
+                    </h3>
+                </div>
+               
+            </div>
             <ChartBarVertical
                 :data="formattedHammerPoints"
                 v-if="!loadingStats && formattedHammerPoints && visible"
                 axis="x"
             />
-            <q-inner-loading color="deep-purple" :showing="loadingStats"/>
-        </section>
+            <q-inner-loading color="deep-purple" :showing="loadingStats" />
+        </section> -->
         <section name="defense" class="stats__section">
-            <h2 class="text-md text-bold">Defense</h2>
+             <div class="row items-center no-wrap total__card--wrap">
+                   <div
+                    class="row justify-center items-center total__card col-grow"
+                >
+                    <!-- <q-icon name="hotel_class" size="lg"/> -->
+                    <div class="total__card--inner text-bold">
+                        {{ defenseScore }}
+                    </div>
+                </div>
+                <div class="column">
+                      <h2 class="text-md text-bold">Defense</h2>
             <h3 class="text-sm">Performance without hammer</h3>
+                </div>
+                <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
+             
+            </div>
+
+       
             <ChartBar
                 :data="formattedNoHammerStats"
                 v-if="!loadingStats && formattedNoHammerStats && visible"
                 :max="100"
                 percent
             />
-             <q-inner-loading color="deep-purple"  :showing="loadingStats"/>
+            <q-inner-loading color="deep-purple" :showing="loadingStats" />
         </section>
 
         <!-- <div>
@@ -82,7 +132,7 @@
 </template>
 <style lang="scss" scoped>
 .stats__container {
-    padding-top: var(--space-sm);
+    padding-top: var(--space-xs);
     border-radius: 8px;
     .stats__section {
         border-radius: 0px;
@@ -93,13 +143,46 @@
         position: relative;
         width: calc(100% - var(--space-md));
         @include sm {
-            width: calc(50% - var(--space-md))
+            width: calc(50% - var(--space-md));
         }
     }
+    .total__card--wrap {
+        margin-bottom: var(--space-sm);
+  .total__card {
+        border-radius: 24px;
+        border: 1px solid $grey-5;
+        padding: var(--space-xxs);
+        aspect-ratio: 1/1;
+        font-size: 2em;
+        width: 25%;
+        max-width: 25%;
+        margin-right: var(--space-xxs);
+        position: relative;
+        box-shadow: $pretty-shadow-2;
+        .total__card--inner {
+            position: relative;
+            color: rgba(0, 0, 0, 0.8);
+            &:after {
+                position: absolute;
+                content: "/10";
+                font-size: 0.3em !important;
+                bottom: 0.5em;
+                right: -1em;
+                margin-left: calc(var(--space-sm) * -1);
+                font-weight: normal;
+            }
+        }
+    }
+    }
+  
 }
 </style>
 <script setup>
-import { useElementSize, useElementVisibility, watchDebounced } from "@vueuse/core";
+import {
+    useElementSize,
+    useElementVisibility,
+    watchDebounced,
+} from "@vueuse/core";
 
 const props = defineProps({
     teamId: Number,
@@ -116,6 +199,22 @@ const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
 const stats = ref(null);
 
+const getMedalStyle = (score) => {
+    console.log("medal style: ", score);
+    if (Number.isNaN(score)) return "white";
+    if (score > 5) {
+        return {
+            backgroundColor: "yellow",
+            color: "black",
+        };
+    } else if (score > 3) {
+        return {
+            backgroundColor: "orange",
+            color: "black",
+        };
+    }
+};
+
 const wins = ref(0);
 const losses = ref(0);
 const ties = ref(0);
@@ -123,8 +222,10 @@ const ties = ref(0);
 const formattedHammerStats = ref(null);
 const formattedNoHammerStats = ref(null);
 const formattedHammerPoints = ref(null);
+const hammerEfficiencyScore = ref(0);
+const defenseScore = ref(0)
 
-const loadingStats = ref(false)
+const loadingStats = ref(false);
 
 const getGameStats = async () => {
     loadingStats.value = true;
@@ -157,6 +258,31 @@ const getGameStats = async () => {
     //             total: "3",
     //             description: "Ends where you had hammer",
     //         },
+
+    const getHammerEfficiencyScore = () => {
+        const totalEnds = hammer_ends_count - hammer_blank_count;
+        const twoPts = addPointCounts(2,8);
+        console.log('two: ', twoPts, totalEnds)
+        // const twoPts = 3;
+        const forces = hammer_1_point_count;
+        console.log('forces: ', forces)
+        const subtotal = twoPts * 1 + forces * 0.5;
+        return ((subtotal / totalEnds) * 10).toFixed(1);
+    };
+
+       const getDefenseScore = () => {
+        const totalEnds = total_ends_played - hammer_ends_count;
+        const stolen = stolen_end_count;
+        const forces = forced_end_count;
+        const subtotal = stolen * 1 + forces * 0.5;
+        return ((subtotal / totalEnds) * 10).toFixed(1);
+    };
+
+
+
+    hammerEfficiencyScore.value = getHammerEfficiencyScore();
+
+    defenseScore.value = getDefenseScore();
 
     formattedHammerStats.value = [
         {
@@ -307,7 +433,7 @@ const getGameStats = async () => {
 
     // // Average points conceded without hammer
     // avgPointsConceded.value = avg_points_conceded.toFixed(2);
-       loadingStats.value = false
+    loadingStats.value = false;
 };
 const loadingRecord = ref(false);
 const getWinsLossess = async () => {
@@ -326,12 +452,16 @@ const getWinsLossess = async () => {
     loadingRecord.value = false;
 };
 
-const currentTeamId = computed(() => props.teamId)
-watchDebounced(currentTeamId, () => {
-    getGameStats();
+const currentTeamId = computed(() => props.teamId);
+watchDebounced(
+    currentTeamId,
+    () => {
+        getGameStats();
 
-    getWinsLossess();
-}, {debounce: 500, immediate: true});
+        getWinsLossess();
+    },
+    { debounce: 500, immediate: true }
+);
 
 // Utils
 
