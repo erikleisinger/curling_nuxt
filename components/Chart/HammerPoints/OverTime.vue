@@ -167,6 +167,7 @@ watchDebounced(
                         // },
                         ticks: {
                             precision: 1,
+                            
                         }
                         
                     },

@@ -83,7 +83,7 @@ export const useSessionStore = defineStore("session", {
             } catch {
                 return { id: null, name: null };
             }
-           
+
             return { id: null, name: null };
         },
         getShotColor() {
@@ -247,7 +247,8 @@ export const useSessionStore = defineStore("session", {
                 name
             ),
             away_fourth_id (
-                id, name
+                id, 
+                name
             ),
             home_lead_id (
                 id,
@@ -280,8 +281,7 @@ export const useSessionStore = defineStore("session", {
             } else if (!data || !data?.length) {
                 throw new ValidationError({
                     name: ErrorName.VALIDATION_FAILED,
-                    message:
-                        "Could not initialize game: there are no players!",
+                    message: "Could not initialize game: there are no players!",
                     fatal: true,
                 });
             } else {
@@ -294,21 +294,20 @@ export const useSessionStore = defineStore("session", {
             if (!end) {
                 throw new ValidationError({
                     name: ErrorName.VALIDATION_FAILED,
-                    message: 'Could not initialize end. No end to initialize!',
+                    message: "Could not initialize end. No end to initialize!",
                     fatal: true,
-                })
+                });
             }
             let endShots: Shot[];
 
             const { shots, id } = end;
             if (!shots.length) {
                 const { client, fetchHandler } = useSupabaseFetch();
-                const { data, error } = await fetchHandler(
-                    () =>
-                        client
-                            .from(TABLE_NAMES.ENDS)
-                            .select(
-                                `
+                const { data, error } = await fetchHandler(() =>
+                    client
+                        .from(TABLE_NAMES.ENDS)
+                        .select(
+                            `
                     shots(
                         id,
                         end_id,
@@ -322,16 +321,17 @@ export const useSessionStore = defineStore("session", {
                         rock_positions
                     )
                     `
-                            )
-                            .eq("id", id)
+                        )
+                        .eq("id", id)
                 );
-                if (error) throw new DatabaseError({
-                    name: ErrorName.SELECT_ERROR,
-                    message: 'Error fetching end: database error occured.',
-                    cause: error,
-                    fatal: true,
-                    table: TABLE_NAMES.ENDS
-                })
+                if (error)
+                    throw new DatabaseError({
+                        name: ErrorName.SELECT_ERROR,
+                        message: "Error fetching end: database error occured.",
+                        cause: error,
+                        fatal: true,
+                        table: TABLE_NAMES.ENDS,
+                    });
                 const [shotsData] = data || [];
                 const { shots }: { shots: Shot[] } = shotsData || {};
                 endShots = shots;

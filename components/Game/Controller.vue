@@ -1,6 +1,5 @@
 <template>
-<NuxtLayout>
-    <section
+   <section
         v-if="$q.screen.gt.sm || tab === 'rings'"
         id="rings"
         key="rings"
@@ -53,7 +52,7 @@
         @go="goToCustomShot"
         @cancel="dialogNavigationOpen = false"
     />
-</NuxtLayout>
+
 </template>
 <style lang="scss">
 

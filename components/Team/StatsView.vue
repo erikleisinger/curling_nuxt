@@ -255,7 +255,7 @@ const { y, isScrolling, directions } = useScroll(statsContainer, {
         let nextPos = null;
         if (scrollingDown) {
             const diff = y.value % containerHeight.value;
-            const shouldScroll = diff > containerHeight.value / 3;
+            const shouldScroll = diff > containerHeight.value / 4;
             if (shouldScroll) {
    console.log('NEXT: ', y.value + (containerHeight.value - diff))
                 nextPos = y.value + (containerHeight.value - diff);
@@ -266,7 +266,7 @@ const { y, isScrolling, directions } = useScroll(statsContainer, {
             const shouldScroll = y.value % containerHeight.value < containerHeight.value * 0.75
             if (shouldScroll) {
                 nextPos = y.value -y.value % containerHeight.value
-                  console.log('NEXT: ', y.value + (containerHeight.value - diff))
+                  console.log('NEXT: ', y.value -y.value % containerHeight.value)
             }
         }
 

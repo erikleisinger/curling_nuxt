@@ -8,7 +8,7 @@
                     <h3 class="text-sm"><slot name="subtitle"/></h3>
                 </div>
             </div>
-            <span ref="chartContainer">
+            <span ref="chartContainer" :id="`stats-scroller-${index}`" style="height: 100%">
                   <transition-group appear :enter-active-class="`animated ${enterClass}`" :leave-active-class="`animated ${leaveClass}`"> 
             <slot/>
                   </transition-group>
@@ -51,11 +51,21 @@ $section-margin: var(--space-xs);
 
 </style>
 <script setup>
+import PinchZoom from "pinch-zoom-js";
 import {useSwipe, useRefHistory} from '@vueuse/core'
     const props = defineProps({
         loading: Boolean,
         index: Number,
     })
+    onMounted(() => {
+        console.log('making zoomer: ', document.querySelector(`#stats-scroller-${props.index}`))
+         new PinchZoom(document.querySelector(`#stats-scroller-${props.index}`), {
+                maxZoom: 6,
+                draggableUnzoomed: false,
+            });
+          
+    })
+  
     const emit = defineEmits(['swipe'])
     const chartContainer = ref(null)
     const {direction} = useSwipe(chartContainer, {
