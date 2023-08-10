@@ -69,6 +69,7 @@
                                 text-color="deep-purple"
                                 icon="radio_button_checked"
                                 label="Shot by shot"
+                                to="/game?id=53"
                             />
                             <q-fab-action
                                      color="white"
