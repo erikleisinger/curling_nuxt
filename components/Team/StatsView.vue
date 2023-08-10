@@ -1,15 +1,46 @@
 <template>
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
+
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+
+
+
+
         <!-- Badges  -->
-       <div class="row full-width q-px-sm" style="">
+        <!-- <div class="row full-width q-px-sm" style="">
             <Badge badge="showoff" v-if="showoff" :raw="showoff" />
             <Badge badge="bandit" v-if="bandit" :raw="bandit" />
             <Badge badge="bulwark" v-if="bulwark" :raw="bulwark" />
             <Badge badge="minimalist" v-if="minimalist" :raw="minimalist"/>
               <Badge badge="survivalist" v-if="survivor" :raw="survivor"/>
-        </div>
-        <section name="win loss tie" class="stats__section">
+        </div> -->
+        <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
                 class="row justify-center q-pa-lg"
@@ -24,18 +55,18 @@
                     v-if="!loadingRecord && visible"
                 />
             </div>
-        </section>
+        </section> -->
 
-        <section name="hammer conversion" class="stats__section">
+        <!-- <section name="hammer conversion" class="stats__section">
             <div class="row items-center no-wrap total__card--wrap">
-               <StatsAggregateCard :score="hammerEfficiencyScore"/>
+                <StatsAggregateCard :score="hammerEfficiencyScore" />
                 <div class="column">
-                    <h2 class="text-md text-bold">Hammer efficiency</h2>
+                    <h2 class="text-md text-bold">Scoring over time</h2>
                     <h3 class="text-sm">Scoring efficiency with hammer</h3>
                 </div>
-                <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
+                :style="getMedalStyle(hammerEfficiencyScore)"
             </div>
-
+            <ChartHammerPointsOverTime />
             <ChartBar
                 :data="formattedHammerStats"
                 v-if="!loadingStats && formattedHammerStats && visible"
@@ -44,7 +75,43 @@
             />
 
             <q-inner-loading color="deep-purple" :showing="loadingStats" />
-        </section>
+        </section> -->
+        <!-- <section name="hammer conversion" class="stats__section">
+            <div class="row items-center no-wrap total__card--wrap">
+                <StatsAggregateCard :score="hammerEfficiencyScore" />
+                <div class="column">
+                    <h2 class="text-md text-bold">Big brain energy</h2>
+                    <h3 class="text-sm">Scoring efficiency with hammer</h3>
+                </div>
+          
+            </div>
+       
+       
+
+            <q-inner-loading color="deep-purple" :showing="loadingStats" />
+        </section> -->
+        <!-- <section name="hammer conversion" class="stats__section">
+            <div class="row items-center no-wrap total__card--wrap">
+                <StatsAggregateCard :score="hammerEfficiencyScore" />
+                <div class="column">
+                    <h2 class="text-md text-bold">How small your ears are</h2>
+                    <h3 class="text-sm">Scoring efficiency with hammer</h3>
+                </div>
+                :style="getMedalStyle(hammerEfficiencyScore)"
+            </div>
+            <div style="height: 100%">
+            <ChartHammerPointsOverTime />
+            <ChartBar
+                :data="formattedHammerStats"
+                v-if="!loadingStats && formattedHammerStats && visible"
+                :max="100"
+                percent
+            />
+            </div>
+
+            <q-inner-loading color="deep-purple" :showing="loadingStats" />
+        </section> -->
+
         <!-- <section name="hammer scoring" class="stats__section">
             <div class="row items-center no-wrap total__card--wrap">
                  <div
@@ -70,15 +137,15 @@
             />
             <q-inner-loading color="deep-purple" :showing="loadingStats" />
         </section> -->
-        <section name="defense" class="stats__section">
+        <!-- <section name="defense" class="stats__section" >
             <div class="row items-center no-wrap total__card--wrap">
                <StatsAggregateCard :score="defenseScore"/>
                 <div class="column">
                     <h2 class="text-md text-bold">Defense</h2>
                     <h3 class="text-sm">Performance without hammer</h3>
                 </div>
-                <!-- :style="getMedalStyle(hammerEfficiencyScore)" -->
-            </div>
+                :style="getMedalStyle(hammerEfficiencyScore)" -->
+        <!-- </div>
 
             <ChartBar
                 :data="formattedNoHammerStats"
@@ -87,7 +154,7 @@
                 percent
             />
             <q-inner-loading color="deep-purple" :showing="loadingStats" />
-        </section>
+        </section>  -->
 
         <!-- <div>
         <h1>Offense</h1>
@@ -117,13 +184,20 @@
     </div>
 </template>
 <style lang="scss" scoped>
+$section-margin: var(--space-xs);
 .stats__container {
-    padding-top: var(--space-xs);
+    // padding-top: var(--space-xs);
     border-radius: 8px;
+    height: inherit;
+    overflow: auto;
+
     .stats__section {
+        display: grid;
+        grid-template-rows: 25% 75%;
+        height: calc(100% - $section-margin * 2);
         border-radius: 0px;
         box-shadow: $pretty-shadow;
-        margin: var(--space-xs);
+        margin: $section-margin;
         padding: var(--space-sm);
         aspect-ratio: 3/2;
         position: relative;
@@ -131,18 +205,26 @@
         @include sm {
             width: calc(50% - var(--space-md));
         }
+        :deep(.pinch-zoom-container) {
+            height: 100%!important;
+        }
+        canvas {
+            height: 75%;
+            width: 100%;
+        }
     }
     .total__card--wrap {
         margin-bottom: var(--space-sm);
-     
     }
 }
 </style>
 <script setup>
 import {
     useElementSize,
+    useScroll,
     useElementVisibility,
     watchDebounced,
+    useDebounceFn
 } from "@vueuse/core";
 
 const props = defineProps({
@@ -153,11 +235,61 @@ const props = defineProps({
     },
 });
 
+const chart = ref(null)
+const index = ref(0);
+
 const winLossChart = ref(null);
 const { height: winLossChartHeight } = useElementSize(winLossChart);
 
+
 const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
+const disableScroll = ref(false);
+const { y, isScrolling, directions } = useScroll(statsContainer, {
+    behavior: "smooth",
+    throttle: 0.5,
+    onScroll: (val) => {
+        if (disableScroll.value ) return;
+
+        const { top: scrollingUp, bottom: scrollingDown } = directions;
+        let nextPos = null;
+        if (scrollingDown) {
+            const diff = y.value % containerHeight.value;
+            const shouldScroll = diff > containerHeight.value / 3;
+            if (shouldScroll) {
+   console.log('NEXT: ', y.value + (containerHeight.value - diff))
+                nextPos = y.value + (containerHeight.value - diff);
+            }
+         
+        } else if (scrollingUp) {
+            console.log(y.value % containerHeight.value)
+            const shouldScroll = y.value % containerHeight.value < containerHeight.value * 0.75
+            if (shouldScroll) {
+                nextPos = y.value -y.value % containerHeight.value
+                  console.log('NEXT: ', y.value + (containerHeight.value - diff))
+            }
+        }
+
+        // console.log("remainder: ", diff);
+        // console.log("scrolling up: ", directions.top);
+        // console.log("Y VALUE: ", y.value);
+        // console.log(shouldScroll);
+        if (nextPos !== null) {
+            disableScroll.value = true;
+            y.value = nextPos;
+           
+        }
+},
+    onStop: () => {
+        if (disableScroll.value) {
+            setTimeout(() => {
+                disableScroll.value = false;
+            }, 1000)
+        }
+    }
+});
+const { height: containerHeight } = useElementSize(statsContainer);
+
 const stats = ref(null);
 
 const getMedalStyle = (score) => {
@@ -196,14 +328,11 @@ const showoff = ref(0);
 const strategist = ref(0);
 const survivor = ref(0);
 
-
-
 const getGameStats = async () => {
     loadingStats.value = true;
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
-        () =>
-            client.rpc("get_team_statistics").eq('id', props.teamId),
+        () => client.rpc("get_team_statistics").eq("id", props.teamId),
         { onError: "Error fetching game stats." }
     );
     const [s] = data;
@@ -225,8 +354,8 @@ const getGameStats = async () => {
     control_freak.value = stats.value.control_freak;
     minimalist.value = stats.value.minimalist;
     showoff.value = stats.value.showoff;
-    strategist.value = stats.value.strategist
-    survivor.value = stats.value.survivor
+    strategist.value = stats.value.strategist;
+    survivor.value = stats.value.survivor;
 
     //  {
     //             y: "Hammer possession",

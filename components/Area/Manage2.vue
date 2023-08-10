@@ -129,7 +129,7 @@
     }
 }
 .select__section {
-    height: calc((var(--vh) * 100) - 175px);
+    height: v-bind(mainHeight);
     overflow: auto;
 }
 .outer-header__container {
@@ -234,6 +234,8 @@ const { direction } = useSwipe(swipe, {
 
 const header = ref(null);
 const { height: headerHeight } = useElementSize(header);
+
+const mainHeight = computed(() => `calc(100% - 48px)`)
 
 const avatarHeader = ref(null);
 const { height: avatarHeight } = useElementSize(avatarHeader);

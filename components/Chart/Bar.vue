@@ -23,12 +23,27 @@ const props = defineProps({
 
 const chart = ref(null);
 onMounted(() => {
-    new Chart(chart.value, {
+  new Chart(chart.value, {
         type: "bar",
         label: "Title",
         data: {
             datasets: [
                 {
+                    barPercentage: 0.9,
+                    categoryPercentage: (val) => {
+                        console.log('CATEGORYa: ', val)
+                        return 1;
+                    },
+                    // borderRadius: 32,
+                    
+                    borderSkipped: false,
+                    borderWidth:2,
+                    borderColor: 'rgba(99, 149, 255, 0.9)',
+                    // spacing: 100,
+                    backgroundColor: (val) => {
+                        // console.log('bg color: ', val)
+                        return 'rgba(99, 149, 255, 0.5)'
+                    },
                     data: props.data,
                     parsing: {
                         xAxisKey: props.percent ? "percent" : "rawValue",
@@ -38,20 +53,26 @@ onMounted(() => {
         },
         plugins: [ChartDataLabels],
         options: {
-            // maintainAspectRatio: false,
-            // responsive: false,
-            datalabels: {
-                color: "white",
-            },
+            aspectRatio: 1,
+            maintainAspectRatio: true,
+            responsive: false,
+            
+
+
             datasets: {
                 bar: {
-                    barThickness: 15,
-                    minBarLength: 15,
+
+                    // barThickness: 60,
+                    minBarLength: 40,
                 },
+            },
+            elements: {
+                barThickness: 30,
             },
             // borderColor: "rgba(0,0,0,0.5)",
             indexAxis: "y",
             layout: {
+                
                 padding: {
                     top: 0,
                 },
@@ -60,6 +81,13 @@ onMounted(() => {
                 datalabels: {
                     // anchor: "center",
                     color: "white",
+                    font: {
+                        size: 20,
+                        family: '"Hind", sans-serif'
+                    },
+                    // display: false,
+
+
                     formatter: (value, context) => {
                         if (props.percent) return `${value.percent}%`;
                         return value.rawValue;
@@ -107,20 +135,32 @@ onMounted(() => {
                     },
                 },
             },
-            responsive: true,
             scales: {
+                
                 x: {
+                    height: 3000,
                     min: 0,
                     max: props.max || null,
+                   grid: {
+                    display: false,
+                   },
+
+                    
+                    
                 },
                 y: {
-                    afterFit: (data) => {
-                        data.width = 50;
-                    },
+                    grid: {
+                        display: false,
+                    }
+                    
+                    // afterFit: (data) => {
+                    //     data.width = 50;
+                    // },
                 },
             },
         },
     });
 
+// myChart.
 });
 </script>
