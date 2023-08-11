@@ -63,6 +63,7 @@
                                 text-color="deep-purple"
                                 icon="scoreboard"
                                 label="Line score"
+                                @click="toggleLineScore({open: true})"
                             ></q-fab-action>
                             <q-fab-action
                                      color="white"
@@ -166,6 +167,7 @@ const createNewTeam = async () => {
     });
 };
     const editorStore = useEditorStore();
+    const {toggleLineScore} = editorStore;
 const createNewPlayer = async () => {
     editorStore.togglePlayerEditor({open: true})
 };

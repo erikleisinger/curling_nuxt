@@ -17,6 +17,10 @@ export const useEditorStore = defineStore("editor", {
         connectDialog: {
             open: false,
         },
+        linescore: {
+            open: false,
+            editedGame: null,
+        },
         playerSelect: {
             open: false,
             onSelect: null,
@@ -45,6 +49,15 @@ export const useEditorStore = defineStore("editor", {
           edited,
         }
       });
+    },
+    toggleLineScore({open, editedGame = null}) {
+        if (open === false || !editedGame) {
+            this.linescore.editedGame = null;
+        } else {
+            this.linescore.editedGame = editedGame
+        }
+
+        this.linescore.open = open;
     },
     togglePlayerEditor({editedPlayer = null, open}) {
         if (open === false) {

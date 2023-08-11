@@ -7,6 +7,7 @@
         <DialogTeamViewer v-if="isTeamViewerOpen" />
         <DialogPlayerEditor v-if="isPlayerEditorOpen" />
         <DialogConnect v-if="isConnectDialogOpen" />
+        <DialogLinescore v-if="isLinescoreOpen"/>
 
         <DialogPlayerSelect v-if="isPlayerSelectOpen" />
 
@@ -34,6 +35,7 @@ const handleLogout = () => {
 
 const editorStore = useEditorStore();
 const isConnectDialogOpen = computed(() => editorStore.connectDialog.open);
+const isLinescoreOpen = computed(() => editorStore.linescore.open);
 const isPlayerEditorOpen = computed(() => editorStore.playerEditor.open);
 const isPlayerSelectOpen = computed(() => editorStore.playerSelect.open);
 const isTeamViewerOpen = computed(() => editorStore.teamViewer.open);

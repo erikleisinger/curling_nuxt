@@ -2,44 +2,44 @@
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
 
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-
-
-
-
-        <!-- Badges  -->
-        <!-- <div class="row full-width q-px-sm" style="">
+   <!-- Badges  -->
+        <div class="row full-width q-px-sm" style="">
             <Badge badge="showoff" v-if="showoff" :raw="showoff" />
             <Badge badge="bandit" v-if="bandit" :raw="bandit" />
             <Badge badge="bulwark" v-if="bulwark" :raw="bulwark" />
             <Badge badge="minimalist" v-if="minimalist" :raw="minimalist"/>
               <Badge badge="survivalist" v-if="survivor" :raw="survivor"/>
-        </div> -->
+        </div>
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+        <ChartHammerPoints />
+
+
+
+
+
+     
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
