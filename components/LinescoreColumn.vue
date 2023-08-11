@@ -1,12 +1,12 @@
 <template>
     <div class="scoreboard__end-row justify-center items-center" ref="el">
         <div class="inner row items-center justify-center q-pt-sm">
-            <div class="inner-scorecard" @click="setTop">{{score.home}}</div>
+            <div class="inner-scorecard text-center" @click="setTop">{{score.home}}</div>
         </div>
     </div>
     <div class="scoreboard__end-row justify-center items-center">
         <div class="inner row items-center justify-center q-pt-sm">
-            <div @click="setBottom" class="inner-scorecard">{{score.away}}</div>
+            <div @click="setBottom" class="inner-scorecard text-center">{{score.away}}</div>
         </div>
     </div>
 </template>
@@ -59,13 +59,14 @@ const scale = computed(
 
 
 const setTop = () => {
-    console.log('set top: ', score.value)
+    if (!targetIsVisible.value) return;
     score.value.home += 1;
     if (score.value.away) score.value.away = 0;
        emit('update:model-value', score.value)
 
 }
 const setBottom = () => {
+     if (!targetIsVisible.value) return;
       score.value.away +=1;
     if (score.value.home) score.value.home = 0;
 }
