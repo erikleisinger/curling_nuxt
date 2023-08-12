@@ -1,10 +1,9 @@
 <template>
-    <canvas ref="chart" />
+    <canvas ref="chart" class="zoomable-chart" />
 </template>
 <script setup>
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import PinchZoom from "pinch-zoom-js";
 
 const props = defineProps({
     visible: Boolean,
@@ -35,13 +34,7 @@ onMounted(() => {
 const id = Math.floor(Math.random() * 1000000000)
 const renderChart = () => {
    rendered.value = true;
-        //     setTimeout(() => {
-        //    new PinchZoom(document.querySelector(`.zoomable-chart`), {
-        //         maxZoom: 6,
-        //         draggableUnzoomed: false,
-        //     });
-        //     }, 1000)
-
+           
         window[`chart${id}`] = new Chart(chart.value, {
             type: "line",
             label: "Title",

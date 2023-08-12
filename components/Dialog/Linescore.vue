@@ -64,7 +64,8 @@
             v-else-if="view === views.LINESCORE"
             class="full-height scoreboard__container"
         >
-           <LinescoreGridView :game="{
+           <LinescoreGridView ref="nav"
+           :game="{
             home: {
                 id: teamSelection.home?.id,
                 avatar: teamSelection.home?.team_avatar,

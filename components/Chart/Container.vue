@@ -57,12 +57,18 @@ import {useSwipe, useRefHistory} from '@vueuse/core'
         loading: Boolean,
         index: Number,
     })
+    const pz = ref(null)
     onMounted(() => {
-         new PinchZoom(document.querySelector(`#stats-scroller-${props.index}`), {
-                maxZoom: 6,
+         pz.value = new PinchZoom(document.querySelector(`#stats-scroller-${props.index}`), {
+                maxZoom: 3,
                 draggableUnzoomed: false,
             });
           
+    })
+
+    onBeforeUnmount(() => {
+        console.log(pz.value.destroy)
+        // pz.value.destroy
     })
   
     const emit = defineEmits(['swipe'])
