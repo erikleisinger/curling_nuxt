@@ -5,7 +5,6 @@
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import PinchZoom from "pinch-zoom-js";
-import { useDebounceFn, watchDebounced } from "@vueuse/core";
 
 const props = defineProps({
     visible: Boolean,
@@ -18,19 +17,23 @@ const rendered = ref(false);
 const myChart = ref(null);
 
 onMounted(() => {
+    console.log('mounted')
             if (!isVisible.value && !rendered.value) return;
         if (!isVisible.value && rendered.value) {
             return;
         } else if (rendered.value) {
             return;
         }
-
-        renderChart();
+        setTimeout(() => {
+   renderChart();
+}, 300)
+     
 
      
 })
 
-const renderChart = useDebounceFn(() => {
+const id = Math.floor(Math.random() * 1000000000)
+const renderChart = () => {
    rendered.value = true;
         //     setTimeout(() => {
         //    new PinchZoom(document.querySelector(`.zoomable-chart`), {
@@ -39,7 +42,7 @@ const renderChart = useDebounceFn(() => {
         //     });
         //     }, 1000)
 
-        myChart.value = new Chart(chart.value, {
+        window[`chart${id}`] = new Chart(chart.value, {
             type: "line",
             label: "Title",
             data: {
@@ -177,12 +180,12 @@ const renderChart = useDebounceFn(() => {
                 },
             },
         });
-}, 200)
+}
 
     onBeforeUnmount(() => {
-     
-        if (!myChart.value) return;
-           console.log('unmounting')
-        myChart.value.destroy();
+        const chart = window[`chart${id}`]
+        if (!chart) return;
+        chart.destroy();
+        delete window[`chart${id}`]
     })
 </script>
