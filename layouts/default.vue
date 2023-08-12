@@ -19,16 +19,16 @@
                         class="col-grow"
                     />
                 </div>
-                  <div class="bottom__nav--item">
+             
+                 <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Manage"
-                        :selected="view === VIEWS.MANAGE"
-                        :onClick="() => setView(VIEWS.MANAGE)"
-                        icon="groups_2"
+                        label="Explore"
+                        :selected="view === VIEWS.EXPLORE"
+                        :onClick="() => setView(VIEWS.EXPLORE)"
+                        icon="explore"
                         size="3em"
                         class="col-grow"
-                    >
-                    </ButtonNav>
+                    />
                 </div>
 
                 <!-- New game -->
@@ -89,16 +89,17 @@
                         </q-fab>
                     </div>
                 </div>
-                              <div class="bottom__nav--item">
+                             <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Explore"
-                        :selected="view === VIEWS.EXPLORE"
-                        :onClick="() => setView(VIEWS.EXPLORE)"
-                        icon="explore"
+                        label="Manage"
+                        :selected="view === VIEWS.MANAGE"
+                        :onClick="() => setView(VIEWS.MANAGE)"
+                        icon="groups_2"
                         size="3em"
                         class="col-grow"
-                    />
-                </div>
+                    >
+                    </ButtonNav>
+                </div>     
                 <div class="bottom__nav--item">
                     <ButtonNav
                         label="Settings"

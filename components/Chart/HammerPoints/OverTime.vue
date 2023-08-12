@@ -5,7 +5,7 @@
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import PinchZoom from "pinch-zoom-js";
-import { watchDebounced } from "@vueuse/core";
+import { useDebounceFn, watchDebounced } from "@vueuse/core";
 
 const props = defineProps({
     visible: Boolean,
@@ -16,19 +16,22 @@ const chart = ref(null);
 const isVisible = computed(() => props.visible);
 const rendered = ref(false);
 const myChart = ref(null);
-watchDebounced(
-    isVisible,
-    (val) => {
-        if (!val && !rendered.value) return;
-        if (!val && rendered.value) {
-            // myChart?.value?.hide();
+
+onMounted(() => {
+            if (!isVisible.value && !rendered.value) return;
+        if (!isVisible.value && rendered.value) {
             return;
         } else if (rendered.value) {
-            // myChart?.value?.show();
             return;
         }
 
-        rendered.value = true;
+        renderChart();
+
+     
+})
+
+const renderChart = useDebounceFn(() => {
+   rendered.value = true;
         //     setTimeout(() => {
         //    new PinchZoom(document.querySelector(`.zoomable-chart`), {
         //         maxZoom: 6,
@@ -174,7 +177,12 @@ watchDebounced(
                 },
             },
         });
-    },
-    { immediate: true, debounce: 50 }
-);
+}, 200)
+
+    onBeforeUnmount(() => {
+     
+        if (!myChart.value) return;
+           console.log('unmounting')
+        myChart.value.destroy();
+    })
 </script>

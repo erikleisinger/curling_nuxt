@@ -1,6 +1,6 @@
 <template>
     <div
-        class="badge__content--container"
+        class="badge__content--container z-max"
         ref="badgeRef"
         :class="{hover}"
         @click="hover = true"
@@ -112,7 +112,7 @@
         </div>
         
   
-        <div v-if="hover" class="badge-description__container ">
+        <div v-if="hover" class="badge-description__container z-max">
             <div class="badge-header">
             <h2 class="text-lg text-bold truncate-text text-center">{{BADGE_TITLES[badge]}}</h2>
             <h3 class="text-sm text-caption text-deep-purple text-center" style="margin-top: -0.1em; line-height: unset">
@@ -128,7 +128,7 @@
 <style lang="scss">
 $icon-height: 4em;
 .badge__content--container {
-        margin: var(--space-xs);
+        // margin: var(--space-xs);
        transition: transform 0.3s;
           
      &.hover {
@@ -177,7 +177,7 @@ $icon-height: 4em;
 .badge__container {
         //  float:left;
     transition: transform 0.3s;
-    height: $icon-height;
+    height: v-bind(height);
     border-radius: 32px;
     aspect-ratio: 1/1;
     // padding: calc($icon-height * 0.1);
@@ -195,7 +195,7 @@ $icon-height: 4em;
         fill: white;
     }
     .badge__container--inner {
-        padding: calc($icon-height * 0.1);
+        padding: v-bind(padding);
         border-radius: inherit;
         border: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -215,9 +215,14 @@ const props = defineProps({
         type: String,
         default: "bandit",
     },
+    height: {
+        type: String,
+        default: '4em'
+    },
     raw: Number,
 });
 
+const padding = computed(() => `calc(${props.height} * 0.1)`)
 const description = computed(() => BADGE_DESCRIPTIONS[props.badge] ?? LOREM_IPSUM)
 
 const badgeRef = ref(null);

@@ -1,34 +1,47 @@
 <template>
     <div class="full-width container">
-        <h1 class="q-pa-sm text-lg text-bold text-italic">My season</h1>
-
-        <div class="row justify-center">
-            <q-btn-toggle
-                style=""
-                v-model="model"
-                class="page__select"
-                no-caps
-                rounded
-                unelevated
-                toggle-color="deep-purple"
-                color="white"
-                text-color="deep-purple"
-                spread
-                :options="[
-                    { label: '', value: 'stats', slot: 'stats' },
-                    { label: 'Schedule', value: 'games', slot: 'games' },
-                ]"
-            >
-                <template v-slot:stats> Summary </template>
-            </q-btn-toggle>
-        </div>
+        <header>
+            <div class="profile__wrap full-width">
+                <ProfileCard :avatar="user.avatar">
+                    {{ user.firstName }} {{ user.lastName }}
+                    <template v-slot:subtitle> @{{ user.username }} </template>
+                    <template v-slot:append>
+                        <q-btn
+                            flat
+                            round
+                            icon="logout"
+                            @click="logout"
+                            color="deep-purple"
+                        />
+                    </template>
+                </ProfileCard>
+            </div>
+            <nav class="row justify-center">
+                <q-btn-toggle
+                    style=""
+                    v-model="model"
+                    class="page__select"
+                    no-caps
+                    rounded
+                    unelevated
+                    toggle-color="deep-purple"
+                    color="white"
+                    text-color="deep-purple"
+                    spread
+                    :options="[
+                        { label: '', value: 'stats', slot: 'stats' },
+                        { label: 'Schedule', value: 'games', slot: 'games' },
+                    ]"
+                >
+                    <template v-slot:stats> Summary </template>
+                </q-btn-toggle>
+            </nav>
+        </header>
         <div v-show="model === 'stats'" style="height: fit-content">
             <div ref="statsController">
                 <!-- <transition-group appear enter-active-class="slideInLeft" leave-active-class="slideOutRight"> -->
                 <StatsContainer v-if="view === 'gameResults'" key="gameResults">
-                    <template v-slot:title>
-                        Season summary
-                    </template>
+                    <template v-slot:title> Season summary </template>
                     <ChartWinLossTie style="max-height: 250px" />
                 </StatsContainer>
                 <StatsContainer>
@@ -90,6 +103,10 @@
     </div>
 </template>
 <style lang="scss" scoped>
+.profile__wrap {
+    padding: var(--space-sm);
+    border-bottom: 1px solid $grey-4;
+}
 :deep(.page__select) {
     width: 100%;
     max-width: 50vw;
@@ -99,6 +116,10 @@
     min-height: inherit;
     overflow: auto;
     max-height: calc((100 * var(--vh, 1vh) - 50px));
+}
+nav {
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-md);
 }
 :deep(.slider) {
     .q-slider__selection {
@@ -129,14 +150,14 @@
 </style>
 <script setup>
 import { useSwipe } from "@vueuse/core";
-import {useNotificationStore} from '@/store/notification'
+import { useNotificationStore } from "@/store/notification";
+import { useUserStore } from "@/store/user";
 import Chart from "chart.js/auto";
 const model = ref("stats");
 
 const view = ref("gameResults");
 
 const VIEWS = ["gameResults", "overtime"];
-
 
 const statsController = ref(null);
 
@@ -161,7 +182,6 @@ const stats = ref({
 // const datasets = ref([]);
 const loading = ref(true);
 onMounted(async () => {
-
     // const { client, fetchHandler } = useSupabaseFetch();
     // const { data } = await fetchHandler(
     //     () =>
@@ -185,18 +205,20 @@ onMounted(async () => {
     loading.value = false;
 });
 
-const datasets = [              {
-                    label: "Avg for",
-                    backgroundColor: "#f06292",
-                    barThickness: 15,
-                    data: [2.2],
-                },
-                {
-                    label: "Avg against",
-                    backgroundColor: "#ab47bc",
-                       barThickness: 15,
-                    data: [1],
-                }]
+const datasets = [
+    {
+        label: "Avg for",
+        backgroundColor: "#f06292",
+        barThickness: 15,
+        data: [2.2],
+    },
+    {
+        label: "Avg against",
+        backgroundColor: "#ab47bc",
+        barThickness: 15,
+        data: [1],
+    },
+];
 
 const datasetsTwo = [
     {
@@ -250,4 +272,28 @@ const { direction } = useSwipe(statsController, {
     },
 });
 
+const userStore = useUserStore();
+const user = computed(() => {
+    const {
+        id,
+        timezone,
+        friendId,
+        username,
+        player,
+        firstName,
+        lastName,
+        avatar,
+    } = userStore;
+    return {
+        id,
+        timezone,
+        friendId,
+        username,
+        player,
+        firstName,
+        lastName,
+        avatar,
+    };
+});
+const { logout } = useSession();
 </script>

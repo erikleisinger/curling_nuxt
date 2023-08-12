@@ -1,9 +1,10 @@
 <template>
-<div>
+<div class="full-height"   v-if="results?.length">
         <div
             v-for="result in results"
             :key="result.id"
             class="result__container"
+          
         >
             <div class="team__profile--container column no-wrap">
                 <div class="q-pa-md">
@@ -44,6 +45,15 @@
             </div>
         </div>
 </div>
+<div class="full-height relative-position row justify-center items-center"   v-else>
+    <q-inner-loading :showing="loading" color="deep-purple" label="Loading games..."/>
+    <div v-if="!loading">
+        <div class="column items-center">
+            <q-icon name="sentiment_very_dissatisfied" size="7em" color="deep-purple"/>
+            <div class="q-mt-sm">{{team.name || 'Unnamed team'}} has no games!</div>
+            </div>
+    </div>
+</div>
 </template>
 <style lang="scss" scoped>
 $header-height: 2em;
@@ -63,19 +73,26 @@ const props = defineProps({
 });
 const { format } = useTime();
 
+const loading = ref(true)
+
 const getTeamRecord = async (team_id_param) => {
+ 
     const client = useSupabaseClient();
     const { data } = await client.rpc("get_team_record", { team_id_param });
     if (data) results.value = data;
+
 };
 const results = ref(null);
 
 const currentTeamId = computed(() => props?.teamId);
 watchDebounced(
     currentTeamId,
-    () => {
+    async () => {
+           loading.value = true;
         results.value = null;
-        getTeamRecord(props.teamId);
+        
+        await getTeamRecord(props.teamId);
+            loading.value = false;
     },
     { debounce: 500, immediate: true }
 );

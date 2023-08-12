@@ -12,6 +12,11 @@ $z-notification: $above + $z-confirmation;
 .q-footer {
     z-index: $z-footer!important;
 }
-.z-fab {
+.q-fab {
     z-index: $z-tools!important;
+}
+
+.q-tabs {
+    z-index: $z-footer!important;
+
 }

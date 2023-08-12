@@ -1,25 +1,17 @@
 <template>
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
-
-   <!-- Badges  -->
-        <div class="row full-width q-px-sm" style="">
+        <q-inner-loading color="purple" label="Loading stats..." :showing="loading"/>
+        <!-- Badges  -->
+        <!-- <div class="row full-width q-px-sm" style="">
             <Badge badge="showoff" v-if="showoff" :raw="showoff" />
             <Badge badge="bandit" v-if="bandit" :raw="bandit" />
             <Badge badge="bulwark" v-if="bulwark" :raw="bulwark" />
             <Badge badge="minimalist" v-if="minimalist" :raw="minimalist"/>
               <Badge badge="survivalist" v-if="survivor" :raw="survivor"/>
-        </div>
-        <ChartHammerPoints />
+        </div> -->
+        <ChartHammerPoints v-if="!loading"/>
 
-    
-
- 
-
-
-
-
-     
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
             <div
@@ -168,7 +160,7 @@ $section-margin: var(--space-xs);
 .stats__container {
     // padding-top: var(--space-xs);
     border-radius: 8px;
-    height: inherit;
+    aspect-ratio: 3/4;
     overflow: auto;
 
     .stats__section {
@@ -186,7 +178,7 @@ $section-margin: var(--space-xs);
             width: calc(50% - var(--space-md));
         }
         :deep(.pinch-zoom-container) {
-            height: 100%!important;
+            height: 100% !important;
         }
         canvas {
             height: 75%;
@@ -204,7 +196,7 @@ import {
     useScroll,
     useElementVisibility,
     watchDebounced,
-    useDebounceFn
+    useDebounceFn,
 } from "@vueuse/core";
 
 const props = defineProps({
@@ -215,12 +207,11 @@ const props = defineProps({
     },
 });
 
-const chart = ref(null)
+const chart = ref(null);
 const index = ref(0);
 
 const winLossChart = ref(null);
 const { height: winLossChartHeight } = useElementSize(winLossChart);
-
 
 const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
@@ -229,7 +220,7 @@ const { y, isScrolling, directions } = useScroll(statsContainer, {
     behavior: "smooth",
     throttle: 0.5,
     onScroll: (val) => {
-        if (disableScroll.value ) return;
+        if (disableScroll.value) return;
 
         const { top: scrollingUp, bottom: scrollingDown } = directions;
         let nextPos = null;
@@ -237,16 +228,19 @@ const { y, isScrolling, directions } = useScroll(statsContainer, {
             const diff = y.value % containerHeight.value;
             const shouldScroll = diff > containerHeight.value / 4;
             if (shouldScroll) {
-   console.log('NEXT: ', y.value + (containerHeight.value - diff))
+                console.log("NEXT: ", y.value + (containerHeight.value - diff));
                 nextPos = y.value + (containerHeight.value - diff);
             }
-         
         } else if (scrollingUp) {
-            console.log(y.value % containerHeight.value)
-            const shouldScroll = y.value % containerHeight.value < containerHeight.value * 0.75
+            console.log(y.value % containerHeight.value);
+            const shouldScroll =
+                y.value % containerHeight.value < containerHeight.value * 0.75;
             if (shouldScroll) {
-                nextPos = y.value -y.value % containerHeight.value
-                  console.log('NEXT: ', y.value -y.value % containerHeight.value)
+                nextPos = y.value - (y.value % containerHeight.value);
+                console.log(
+                    "NEXT: ",
+                    y.value - (y.value % containerHeight.value)
+                );
             }
         }
 
@@ -257,16 +251,15 @@ const { y, isScrolling, directions } = useScroll(statsContainer, {
         if (nextPos !== null) {
             disableScroll.value = true;
             y.value = nextPos;
-           
         }
-},
+    },
     onStop: () => {
         if (disableScroll.value) {
             setTimeout(() => {
                 disableScroll.value = false;
-            }, 1000)
+            }, 1000);
         }
-    }
+    },
 });
 const { height: containerHeight } = useElementSize(statsContainer);
 
@@ -537,14 +530,15 @@ const getWinsLossess = async () => {
 };
 
 const currentTeamId = computed(() => props.teamId);
+const loading = ref(true);
 watchDebounced(
     currentTeamId,
-    () => {
-        getGameStats();
-
-        getWinsLossess();
+    async () => {
+        loading.value = true;
+        await Promise.all([getGameStats(), getWinsLossess()]);
+        loading.value = false;
     },
-    { debounce: 500, immediate: true }
+    { debounce: 1, immediate: true }
 );
 
 // Utils

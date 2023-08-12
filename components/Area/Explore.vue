@@ -1,5 +1,6 @@
 <template>
     <header class="outer-header__container" ref="header">
+        <div class="team__content--container" >
         <div class="team-header__container" ref="swipe">
             <div class="row justify-between no-wrap">
                 <!-- <q-btn flat dense icon="chevron_left" size="" color="grey-6" @click="goNext(-1)" /> -->
@@ -13,11 +14,17 @@
                     :style="{ opacity: showSearch ? '0' : '1' }"
                     ref="avatarHeader"
                 >
-                    <ProfileCard :avatar="team.team_avatar" type="team" animated viewable :item="team" >
+                    <ProfileCard :avatar="team?.team_avatar" type="team" animated viewable :item="team" :onClick="expandTeam">
                         <template v-slot:overline>
                             Team
                         </template> 
-                         <span class="text-bold">{{team.name}}</span>
+                         <span class="text-bold">{{team?.name}}</span>
+                         <template v-slot:subtitle>
+                            <div class="badge__container">
+                              <Badge badge="showoff"  :raw="5" height="2em" />
+            <Badge badge="bandit"  :raw="6" height="2em" />
+            </div>
+                         </template>    
                       
                     </ProfileCard>
                 </div>
@@ -62,24 +69,30 @@
                 <!-- <q-btn flat dense icon="chevron_right" size="" color="grey-6" @click="goNext(1)" /> -->
             </div>
         </div>
+        <transition appear enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp">
+         <div v-if="showTeam">Team details</div>
+        </transition>
+        </div>
+              
         <nav>
-            <q-tabs dense v-model="tab" stretch active-color="deep-purple">
+            <q-tabs dense v-model="tab" stretch active-color="deep-purple" v-if="!showSearch">
                 <q-tab name="stats" label="Stats" style="width: 50%" />
                 <q-tab name="history" label="History" style="width: 50%" />
             </q-tabs>
          
         </nav>
+ 
     </header>
   
     <main class="column select__section full-width no-wrap">
       
 
-        <transition
+        <!-- <transition
             appear
             enter-active-class="animated slideInLeft"
             leave-active-class="animated slideOutRight"
-        >
-            <KeepAlive>
+        > -->
+           
                 <TeamStatsView
                     :teamId="team?.id"
                     v-if="!showSearch && tab === 'stats'"
@@ -94,23 +107,31 @@
             />
 
                 <TeamList
+                 v-else-if="!results"
                     :teams="teams"
                     @select="onSelect"
-                    v-else-if="!results"
+                  
                     key="myteams"
                 />
+                
+               
                 <TeamList
-                    v-else
+                v-else
                     :teams="results"
                     @select="onSelectGlobal"
                     key="globalteams"
-                />
-            </KeepAlive>
-        </transition>
+               />
+          
+        <!-- </transition> -->
     
     </main>
 </template>
 <style lang="scss" scoped>
+.badge__container {
+    display: flex;
+    height: 2em;
+    margin-top: calc(-1 * var(--space-xs));
+}
 .search__container--floating {
     position: absolute;
     width: calc(100vw);
@@ -148,13 +169,18 @@
     // border-bottom-left-radius: 16px;
     // border-bottom-right-radius: 16px;
 }
+.team__content--container {
+        border-bottom: 1px solid $grey-4;
 .team-header__container {
     // border-radius: inherit;
-    border-bottom: 1px solid $grey-4;
+    padding: var(--space-xs);
+
     position: sticky;
     top: 0;
     background-color: rgba(255, 255, 255, 0.98);
 }
+}
+
 
 @keyframes expand {
     0% {
@@ -166,7 +192,7 @@
 }
 </style>
 <script setup>
-import { useElementSize, useFocus, useSwipe, useThrottleFn } from "@vueuse/core";
+import { useElementSize, useFocus, useSwipe, useThrottleFn} from "@vueuse/core";
 import { TABLE_QUERIES } from "@/constants/query";
 const tab = ref("stats");
 import { useTeamStore } from "@/store/teams";
@@ -180,7 +206,7 @@ const resultIndex = ref(null);
 const team = computed(() => {
     if (teamIndex.value !== null) return teams.value[teamIndex.value]
     if (resultIndex.value !== null && results.value) return results.value[resultIndex.value];
-    return teams.value[0]
+    return null
 });
 
 const onSelect = (index) => {
@@ -200,7 +226,7 @@ const index = ref(0);
 
 const swipe = ref(null);
 
-const showSearch = ref(false);
+const showSearch = ref(true);
 
 const inputRef = ref(null);
 
@@ -243,7 +269,7 @@ const { direction } = useSwipe(swipe, {
 const header = ref(null);
 const { height: headerHeight } = useElementSize(header);
 
-const mainHeight = computed(() => `calc(100% - 48px)`)
+const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`)
 
 const avatarHeader = ref(null);
 const { height: avatarHeight } = useElementSize(avatarHeader);
@@ -252,6 +278,7 @@ const { height: avatarHeight } = useElementSize(avatarHeader);
  * BEGIN SEARCH
  */
 const toggleSearch = useThrottleFn(() => {
+    if (!team.value) return;
     showSearch.value = !showSearch.value;
 }, 500);
 
@@ -300,4 +327,14 @@ const useSearch = useThrottleFn(async () => {
 /**
  * END SEARCH
  */
+
+/**
+ * View team details
+ */
+
+const showTeam = ref(false)
+
+const expandTeam = () => {
+    showTeam.value = !showTeam.value
+}
 </script>

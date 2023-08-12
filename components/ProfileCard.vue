@@ -4,12 +4,12 @@
             <Avataaar
                 v-bind="parseAvatar(avatar)"
                 :class="{ animated__avatar: animated }"
-                @click="onClick"
+                @click="handleClick"
             />
         </slot>
 
         <div
-            class="truncate-text col-auto q-pl-xs q-ml-xs column justify-center text-md column no-wrap"
+            class="truncate-text col-auto q-pl-xs q-ml-xs column justify-center text-md column no-wrap" style="overflow: visible"
         >
             <q-item-label overline v-if="type">{{ typeName }}</q-item-label>
             <q-item-label class="truncate-text">
@@ -30,7 +30,7 @@
     grid-template-columns: 3em auto auto;
     padding: var(--space-sm);
 
-    border-bottom: 1px solid $grey-3;
+    // border-bottom: 1px solid $grey-3;
 
     .animated__avatar {
         animation: float 0.7s infinite linear;
@@ -72,6 +72,7 @@ const props = defineProps({
     animated: Boolean,
     avatar: String,
     item: Object,
+    onClick: Function,
     type: String,
     viewable: {
         type: Boolean,
@@ -86,7 +87,11 @@ const typeName = ref(
 );
 const slots = useSlots();
 
-const onClick = () => {
+const handleClick = () => {
+    if (props.onClick) {
+        props.onClick();
+        return;
+    }
     if (!props.type || !props.viewable) return;
     const editorStore = useEditorStore();
 

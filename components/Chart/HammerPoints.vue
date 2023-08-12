@@ -4,8 +4,8 @@
         <template v-slot:subtitle>{{DESCRIPTIONS[index]}}</template>
         <template v-slot:card><StatsAggregateCard :score="index * 2" /></template>
 
-           <ChartHammerPointsOverTime v-show="index === 0" :visible="index === 0" :index="0" key="chart-1"/>
-             <ChartHammerPointsOverTime v-show="index === 1"  :visible="index === 1" :index="1" key="chart-2"/>
+           <ChartHammerPointsOverTime v-if="index === 0" :visible="index === 0" :index="0" key="chart-1"/>
+             <ChartHammerPointsOverTime v-if="index === 1"  :visible="index === 1" :index="1" key="chart-2"/>
   
     </ChartContainer>
 </template>
