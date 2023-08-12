@@ -8,7 +8,7 @@
                 <slot />
         </q-page-container>
         <q-footer bordered class="bg-white text-black">
-            <q-toolbar class="bottom__nav">
+            <q-toolbar class="bottom__nav" >
                 <div class="bottom__nav--item">
                     <ButtonNav
                         label="Season"
@@ -49,6 +49,7 @@
                             margin: auto;
                         "
                         class="row justify-center"
+                        ref="fab"
                     >
                         <q-fab
                             color="deep-purple"
@@ -58,14 +59,7 @@
                             class="action__button"
                             v-model="actionOpen"
                         >
-                            <q-fab-action
-                                color="white"
-                                text-color="deep-purple"
-                                icon="scoreboard"
-                                label="Line score"
-                                @click="toggleLineScore({open: true})"
-                            ></q-fab-action>
-                            <q-fab-action
+                             <q-fab-action
                                      color="white"
                                 text-color="deep-purple"
                                 icon="radio_button_checked"
@@ -73,6 +67,14 @@
                                 to="/game?id=53"
                             />
                             <q-fab-action
+                                color="deep-purple"
+                                text-color="white"
+                                icon="scoreboard"
+                                label="Line score"
+                                @click="toggleLineScore({open: true})"
+                            ></q-fab-action>
+                       
+                            <!-- <q-fab-action
                                      color="white"
                                 text-color="deep-purple"
                                 icon="groups_2"
@@ -85,7 +87,7 @@
                                 icon="person"
                                 label="New Player"
                                 @click="createNewPlayer"
-                            />
+                            /> -->
                         </q-fab>
                     </div>
                 </div>
@@ -142,6 +144,7 @@ import { useEditorStore } from "@/store/editor";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import {useSocialStore} from '@/store/social'
+import {onClickOutside} from '@vueuse/core'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
@@ -168,5 +171,10 @@ const createNewPlayer = async () => {
 };
 const socialStore = useSocialStore();
 const requests = computed(() => socialStore.requestsToRespond)
+
+const fab = ref(null)
+onClickOutside(fab, () => {
+    actionOpen.value = false;
+})
 
 </script>
