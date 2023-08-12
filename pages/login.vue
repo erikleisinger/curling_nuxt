@@ -178,9 +178,7 @@ const onSubmit = async (e) => {
         console.log('error logging in: ', error)
         if (!error) {
             authStore.setLoggedIn(true);
-            reloadNuxtApp({
-                path: '/gateway'
-            })
+            navigateTo('/gateway')
         } else if (error && error.message) {
             setBanner(error.message, BannerColors.Negative);
         } else {

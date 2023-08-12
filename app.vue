@@ -24,9 +24,11 @@ onMounted(async () => {
 })
 
 onBeforeMount(async () => {
+
     const route = useRoute();
+        console.log('before mount: ', route)
     const user = useSupabaseUser();
-    if (!PUBLIC_ROUTES.includes(route.fullPath) && user.value)   
+    if (!PUBLIC_ROUTES.includes(route.fullPath) && user.value && route.name !== 'gateway')   
      navigateTo(`/gateway?redirect=${route.fullPath}`)
 });
 

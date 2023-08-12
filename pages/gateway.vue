@@ -9,12 +9,15 @@ const status = ref("");
 
 const { initData, verifyData, progress } = useData();
 onMounted(async () => {
+    console.log(nextPage)
     await initData();
     await verifyData();
-    if (nextPage.value) {
+    if (!!nextPage?.value) {
+        console.log('going next page: ', nextPage.value)
         navigateTo(nextPage.value)
     } else {
-        navigateTo('/')
+        console.log('navigating to root')
+        navigateTo('/', {replace: true})
     }
 });
 </script>
