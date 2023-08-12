@@ -1,5 +1,6 @@
 <template>
     <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
+        <slot/>
         <RecycleScroller
             :items="teams"
             :item-size="1"
@@ -9,6 +10,7 @@
             key-field="id"
             v-slot="{ item, index }"
             ref="scroller"
+            v-if="teams?.length"
         >
             <div
                 :id="`team-table-item-${item.id}`"
@@ -58,9 +60,13 @@ import { useNavigationStore } from "@/store/navigation";
 import { useTeamStore } from "@/store/teams";
 import type Team from "@/types/team";
 
-const props = defineProps<{
-    teams: Team[];
-}>();
+const props = defineProps({
+    teams: {
+        tyoe: Array as Team[],
+        default: [],
+        required: false,
+    }
+})
 
 const tableArea = ref(null);
 
@@ -86,8 +92,6 @@ const { y: scrollY } = useScroll(tableArea, {
 const scroller = ref(null)
 
 const scrollTo = async (index: number) => {
-    console.log(index)
-    console.log(scroller.value.scrollToItem())
     await new Promise((r) => setTimeout(r, 3))
     scroller.value.scrollToItem(index);
    
@@ -107,7 +111,6 @@ const focusOnTeam = () => {
         return;
     }
     const scrollPos = element?.offsetTop;
-    console.log(scrollPos);
     tableArea.value.scrollTop = scrollPos;
     }, 1000);
 };
@@ -122,13 +125,13 @@ watch(focused, () => {
 const expanded = ref(null);
 
 const onClick = (teamId: number, index: number) => {
-    emit('select', index)
+    emit('select', index, teamId)
     if (focused.value && teamId === focused.value) unsetFocus(teamId);
     if (expanded.value === teamId) {
         expanded.value = null;
-    } else {
+    } else if (teamId) {
         expanded.value = teamId;
- scrollTo(index);
+        // scrollTo(index);
        
     }
 };

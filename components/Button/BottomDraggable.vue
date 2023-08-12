@@ -1,7 +1,8 @@
 <template>
+  <!-- storage-key="add-button"
+        storage-type="session" -->
     <UseDraggable
-        storage-key="add-button"
-        storage-type="session"
+      
         :initialValue="initialValue"
         style="position: fixed; z-index: 10000000"
         v-slot="{ isDragging }"

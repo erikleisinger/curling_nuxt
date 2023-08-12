@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/store/user";
 import { PUBLIC_ROUTES } from "@/constants/routes";
-import {useEventListener} from '@vueuse/core'
+import {useEventListener, useScreenOrientation} from '@vueuse/core'
 
 const setVh = () => {
 const vh = window.innerHeight * 0.01;

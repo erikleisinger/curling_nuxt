@@ -64,7 +64,6 @@ const { format } = useTime();
 
 const getTeamRecord = async (team_id_param) => {
     const client = useSupabaseClient();
-    console.log("GET: ", team_id_param);
     const { data } = await client.rpc("get_team_record", { team_id_param });
     if (data) results.value = data;
 };

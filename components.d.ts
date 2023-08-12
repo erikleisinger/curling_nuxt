@@ -18,7 +18,7 @@ declare module 'vue' {
     DialogEnd: typeof import('./components/Dialog/End.vue')['default']
     DialogGameEditor: typeof import('./components/Dialog/GameEditor.vue')['default']
     DialogGameStats: typeof import('./components/Dialog/GameStats.vue')['default']
-    DialogLinescore: typeof import('./components/Dialog/Linescore.vue')['default']
+    DialogLinescore: typeof import('./components/Dialog/LinescoreOld.vue')['default']
     DialogNavigation: typeof import('./components/Dialog/Navigation.vue')['default']
     DialogPlayerEditor: typeof import('./components/Dialog/PlayerEditor.vue')['default']
     DialogRinkEditor: typeof import('./components/Dialog/RinkEditor.vue')['default']

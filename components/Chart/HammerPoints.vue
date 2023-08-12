@@ -26,7 +26,6 @@ const DESCRIPTIONS = [
 ]
 const components = ref([null, null])
     const onSwipe = (direction) => {
-        console.log('SWIPING: ', direction)
         const inc = {
             left: 1,
             right: -1,

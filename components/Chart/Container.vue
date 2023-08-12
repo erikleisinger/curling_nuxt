@@ -58,7 +58,6 @@ import {useSwipe, useRefHistory} from '@vueuse/core'
         index: Number,
     })
     onMounted(() => {
-        console.log('making zoomer: ', document.querySelector(`#stats-scroller-${props.index}`))
          new PinchZoom(document.querySelector(`#stats-scroller-${props.index}`), {
                 maxZoom: 6,
                 draggableUnzoomed: false,

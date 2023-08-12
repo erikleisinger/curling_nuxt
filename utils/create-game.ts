@@ -278,5 +278,36 @@ export const createPlayerGameJunction = async (game_id: string, homePlayers: Pla
         message: 'Could not create player game junction.',
         cause: error
     })
+}
 
+export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
+    return Object.entries(ends).reduce((all, [endNo, score], index) => {
+        console.log(score.home, score.away, score)
+        const end = {
+            game_id: gameId,
+            end_number: index + 1,
+            points_scored: Math.max(score.home, score.away),
+            scoring_team_id: score.home
+                ? homeId
+                : score.away
+                ? awayId
+                : null, 
+        };
+
+        if (index === 0) {
+            end.hammer_team_id = hammerFirstEnd;
+        } else {
+            const {scoring_team_id, points_scored, hammer_team_id} = all[index - 1]
+            if (scoring_team_id === homeId && points_scored > 0) {
+                end.hammer_team_id = awayId
+            } else if (scoring_team_id === awayId && points_scored > 0) {
+                end.hammer_team_id = homeId
+            } else {
+                end.hammer_team_id = hammer_team_id
+            }
+        }
+        return [...all, end]
+
+        
+    }, []);
 }

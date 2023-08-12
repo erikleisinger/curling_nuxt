@@ -12,8 +12,11 @@
                     "
                 >
               
-                <div class="col-grow row justify-start">
-                    <q-btn flat round icon="arrow_back" @click="close"/>
+                <div class="col-grow row justify-start" v-if="backable">
+                    <q-btn flat round icon="arrow_back"  @click="close"/>
+                </div>
+                 <div class="col-grow row justify-end" v-else>
+                    <q-btn flat round icon="close"  @click="close"/>
                 </div>
                 </div>
                 <div class="content__container"  v-if="!transitioning">
@@ -55,6 +58,14 @@
 </style>
 <script setup>
 import { useAnimate } from "@vueuse/core";
+
+const props = defineProps({
+    backable: {
+        type: Boolean,
+        default: true,
+    }
+})
+
 const emit = defineEmits(["close"]);
 const container = ref(null);
 

@@ -174,14 +174,12 @@ const team = computed(() => {
 });
 
 const onSelect = (index) => {
-        console.log(inputRef.value)
     if (!clickable.value) return;
     teamIndex.value = index;
     resultIndex.value = null
     showSearch.value = false;
 };
 const onSelectGlobal = (index) => {
-    console.log(inputRef.value)
     if (!clickable.value) return;
     resultIndex.value = index;
     teamIndex.value = null;
