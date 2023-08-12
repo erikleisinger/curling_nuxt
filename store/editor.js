@@ -14,9 +14,7 @@ export const useEditorStore = defineStore("editor", {
             x: 0,
             y: 0,
         },
-        connectDialog: {
-            open: false,
-        },
+
         linescore: {
             open: false,
             editedGame: null,
@@ -38,9 +36,6 @@ export const useEditorStore = defineStore("editor", {
   actions: {
     setMousePos(e) {
         console.log('set mouse pos: ', e)
-    },
-    toggleConnectDialog({open}) {
-       this.connectDialog.open = open;
     },
     toggleGameDialog(edited) {
       Dialog.create({

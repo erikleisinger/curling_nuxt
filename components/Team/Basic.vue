@@ -5,7 +5,7 @@
         style="transition: transform 0.3s; display: block"
     >
         <div class="row no-wrap">
-            <div class="row table-team__section full-width">
+            <div class="row  full-width">
                 <div class="q-mt-xs team-player__container">
                     <Avataaar
                         v-bind="parseAvatar(props.item.team_avatar)"
@@ -56,12 +56,12 @@
     </transition>
 </template>
 <style lang="scss" scoped>
-
 .team-player__container {
     display: grid;
     grid-template-columns: v-bind(columns);
     width: 100%;
     padding: var(--space-sm);
+     width: min(90vw, 300px);
 }
 .delete__section {
     position: absolute;

@@ -86,12 +86,6 @@
                                 label="New Player"
                                 @click="createNewPlayer"
                             />
-                              <q-fab-action
-                                color="deep-purple"
-                                icon="diversity_1"
-                                label="Connect"
-                                @click="editorStore.toggleConnectDialog({open: true})"
-                            />
                         </q-fab>
                     </div>
                 </div>

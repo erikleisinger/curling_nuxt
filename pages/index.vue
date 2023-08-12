@@ -3,7 +3,7 @@
         <AreaManage2 v-if="view === VIEWS.MANAGE" />
         <Profile v-else-if="view === VIEWS.SETTINGS" />
         <MySeason v-else-if="view === VIEWS.SEASON" />
-        <TeamSearch v-else-if="view === VIEWS.EXPLORE"/>
+
         <DialogTeamViewer v-if="isTeamViewerOpen" />
         <DialogPlayerEditor v-if="isPlayerEditorOpen" />
         <DialogConnect v-if="isConnectDialogOpen" />

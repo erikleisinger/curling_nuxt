@@ -12,29 +12,9 @@
         </div>
         <ChartHammerPoints />
 
-        <ChartHammerPoints />
-        <ChartHammerPoints />
+    
 
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
-        <ChartHammerPoints />
-
+ 
 
 
 
