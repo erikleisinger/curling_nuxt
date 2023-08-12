@@ -4,7 +4,7 @@
     <UseDraggable
       
         :initialValue="initialValue"
-        style="position: fixed; z-index: 10000000"
+        style="position: fixed"
         v-slot="{ isDragging }"
     >
         <q-btn

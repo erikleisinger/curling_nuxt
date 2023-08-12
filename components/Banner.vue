@@ -20,7 +20,7 @@
   position: fixed;
   bottom: 0;
   width: 100vw;
-  z-index: 10000;
+  z-index: $z-notification;
 }
 </style>
 <script setup lang="ts">

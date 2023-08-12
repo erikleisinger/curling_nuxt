@@ -1,13 +1,16 @@
 <template>
     <DialogFloating @close="toggleTeamViewer({ open: false })">
-        <template v-slot:prependButton>
-              <RequestStatus v-if="request && !canEdit" :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/>
+        <template v-slot:buttonLeft>
+           <div/>
         </template>
+        <!-- <template v-slot:prependButton>
+              <RequestStatus v-if="request && !canEdit" :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/> -->
+        <!-- </template> -->
         <header class="pretty-shadow q-px-sm" ref="header">
             <div class="row">
-                <TeamBasic :item="team" v-if="!loading" :editable="canEdit">
-                
-                </TeamBasic>
+                <ProfileCard :avatar="team.team_avatar" v-if="!loading" type="team">
+                    {{team.name}}
+                </ProfileCard>
             </div>
         </header>
 

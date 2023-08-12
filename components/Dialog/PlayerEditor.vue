@@ -2,6 +2,7 @@
     <DialogFloating
         @close="togglePlayerEditor({ open: false })"
     >
+    <template v-slot:buttonRight>{{}}</template>
         <PlayerGenerator
             style="height: 100%"
             :player="player"

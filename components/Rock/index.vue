@@ -26,9 +26,8 @@
   border-radius: 50%;
   top: 0;
   left: 0;
-  z-index: 1;
   transform: translateZ(0deg);
-
+  z-index: 1;
   &.draggable {
     position: absolute;
   }

@@ -7,7 +7,7 @@
     .notification__handler--wrap {
         height: calc(100 * var(--vh, 1vh));
         width: 100%;
-        z-index: 10000001;
+        z-index: $z-notification;
         position: absolute;
         top: 0;
         left: 0;

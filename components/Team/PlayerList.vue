@@ -3,9 +3,8 @@
         <div style="max-height: 2em; position: relative" class="q-my-sm"></div>
 
         <div class="row" v-if="hasPlayers()">
-            <PlayerBasic
+            <ProfileCard
                 class="col-12 col-sm-6"
-                style="max-height: 75px"
                 v-for="position in [
                     'fourth',
                     'third',
@@ -14,8 +13,10 @@
                     'fifth',
                 ]"
                 :key="`${item.id}-${position}`"
-                :player="getPlayer(item[`${position}_player_id`]?.id)"
+                :avatar="getPlayer(item[`${position}_player_id`]?.id)?.avatar"
             >
+                <template v-slot:overline> Player </template>
+                {{ getPlayer(item[`${position}_player_id`]?.id)?.name }}
                 <template v-slot:subtitle>
                     {{ position }}
                 </template>
@@ -33,13 +34,13 @@
                         @click="openPlayerSelector(position)"
                     ></q-btn>
                 </template>
-            </PlayerBasic>
-            <PlayerBasic
+            </ProfileCard>
+            <ProfileCard
                 v-if="item.fifth_player_id?.id"
                 class="col-12 col-sm-6"
-                    style="max-height: 75px"
-                   :player="getPlayer(item.sixth_player_id?.id)"
+                :avatar="getPlayer(item[`sixth_player_id`]?.id)?.avatar"
             >
+                {{ getPlayer(item[`sixth_player_id`]?.id)?.name }}
                 <template v-slot:subtitle> sixth </template>
                 <template v-slot:append>
                     <q-btn
@@ -53,13 +54,13 @@
                         @click="openPlayerSelector('sixth')"
                     ></q-btn>
                 </template>
-            </PlayerBasic>
-            <PlayerBasic
+            </ProfileCard>
+            <ProfileCard
                 v-if="item.sixth_player_id?.id"
                 class="col-12 col-sm-6"
-                    style="max-height: 75px"
-                 :player="getPlayer(item.seventh_player_id?.id)"
+                :avatar="getPlayer(item.seventh_player_id?.id)?.avatar"
             >
+                {{ getPlayer(item.seventh_player_id?.id)?.name }}
                 <template v-slot:subtitle> seventh </template>
                 <template v-slot:append>
                     <q-btn
@@ -73,7 +74,7 @@
                         @click="openPlayerSelector('seventh')"
                     ></q-btn>
                 </template>
-            </PlayerBasic>
+            </ProfileCard>
         </div>
         <div
             class="row no-wrap justify-center items-center text-sm text-italic"
@@ -87,7 +88,7 @@
 <script setup lang="ts">
 import { useEditorStore } from "@/store/editor";
 import { useTeamStore } from "@/store/teams";
-import {usePlayerStore} from '@/store/players'
+import { usePlayerStore } from "@/store/players";
 const props = defineProps({
     item: Object,
 });
@@ -116,10 +117,10 @@ const openPlayerSelector = (position: string) => {
         },
     });
 };
-  const playerStore = usePlayerStore()
+const playerStore = usePlayerStore();
 const getPlayer = (id: number) => {
-    return playerStore.players.find((p) => p.id === id) || {}
-}
+    return playerStore.players.find((p) => p.id === id) || {};
+};
 
 const { user: userId } = useUser();
 

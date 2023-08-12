@@ -1,133 +1,101 @@
 <template>
-    <NuxtLayout>
-        <template v-slot:header>
-            <div
-                class="row bg-white full-width row profile__header--container box-shadow--dark row no-wrap"
-                ref="header"
-            >
-                <div class="col-3" style="max-width: min(20vw, 125px)">
-                    <PlayerAvatar
-                        :parsedAvatar="parseAvatar(user.avatar)"
-                        :player="{
-                            ...player,
-                            profile_id_for_player: user.id,
-                        }"
-                        hidePlayerIcon
-                    />
-                </div>
-                <div class="column justify-center q-ml-sm">
-                    <h1
-                        class="row items-center text-bold text-black text-md"
-                        style="z-index: 2"
-                    >
-                        {{ user.firstName }} {{ user.lastName }}
-                    </h1>
-                    <h2 class="text-sm">@{{ user.username }}</h2>
-                </div>
-                <div class="col-grow row justify-end q-mr-sm items-center">
-                    <q-btn
-                        flat
-                        round
-                        icon="logout"
-                        @click="logout"
-                        color="deep-purple"
-                    />
-                </div>
-            </div>
-
-            <!-- class="column justify-center items-center profile__header col-grow" -->
-            <nav class="bg-white">
-                <q-tabs
-                    v-model="tab"
-                    inline-label
-                    outside-arrows
-                    stretch
-                    active-bg-color="deep-purple"
-                    active-color="white"
-                    color="deep-purple"
-                    class="profile__tabs text-deep-purple"
-                >
-                    <q-tab
-                        :label="TAB_NAMES.REQUESTS.label"
-                        :name="TAB_NAMES.REQUESTS.value"
-                        icon="textsms"
-                    >
-                        <q-badge
-                            color="red"
-                            floating
-                            rounded
-                            v-if="requestsNotifications"
-                        ></q-badge>
-                    </q-tab>
-                    <q-tab
-                        :name="TAB_NAMES.SETTINGS.value"
-                        icon="settings"
-                        :label="TAB_NAMES.SETTINGS.label"
-                    />
-                </q-tabs>
-            </nav>
+    <ProfileCard :avatar="user.avatar">
+           {{ user.firstName }} {{ user.lastName }}
+        <template v-slot:subtitle> @{{ user.username }} </template>
+        <template v-slot:append>
+            <q-btn
+                flat
+                round
+                icon="logout"
+                @click="logout"
+                color="deep-purple"
+            />
         </template>
-        <main
-            class="main-content__wrap settings"
-            v-if="tab === TAB_NAMES.SETTINGS.value"
+    </ProfileCard>
+    <nav class="bg-white">
+        <q-tabs
+            v-model="tab"
+            inline-label
+            outside-arrows
+            stretch
+            active-bg-color="deep-purple"
+            active-color="white"
+            color="deep-purple"
+            class="profile__tabs text-deep-purple"
         >
-            <section name="timezone" class="section">
-                <label for="timezone" class="label">Timezone</label>
-                <div id="timezone">{{ user.timezone }}</div>
-            </section>
-            <section name="timezone" class="section">
-                <label for="friendId" class="label">Friend ID</label>
-                <div class="row no-wrap items-center">
-                    <div id="friendId" class="friend__id">
-                        {{ user.friendId }}
-                    </div>
-                    <q-icon
-                        flat
-                        round
-                        name="content_copy"
-                        color="primary"
-                        @click="copyFriendId"
-                        size="1em"
-                    />
+            <q-tab
+                :label="TAB_NAMES.REQUESTS.label"
+                :name="TAB_NAMES.REQUESTS.value"
+                icon="textsms"
+            >
+                <q-badge
+                    color="red"
+                    floating
+                    rounded
+                    v-if="requestsNotifications"
+                ></q-badge>
+            </q-tab>
+            <q-tab
+                :name="TAB_NAMES.SETTINGS.value"
+                icon="settings"
+                :label="TAB_NAMES.SETTINGS.label"
+            />
+        </q-tabs>
+    </nav>
+    <main
+        class="main-content__wrap settings"
+        v-if="tab === TAB_NAMES.SETTINGS.value"
+    >
+        <section name="timezone" class="section">
+            <label for="timezone" class="label">Timezone</label>
+            <div id="timezone">{{ user.timezone }}</div>
+        </section>
+        <section name="timezone" class="section">
+            <label for="friendId" class="label">Friend ID</label>
+            <div class="row no-wrap items-center">
+                <div id="friendId" class="friend__id">
+                    {{ user.friendId }}
                 </div>
-            </section>
-            <section name="timezone" class="section">
-                <label class="label" for="friendId">Add a friend</label>
-                <label class="label sub"
-                    >Paste your friend's ID here to add them as a friend</label
-                >
-                <div>
-                    <q-input
-                        v-model="friendToAdd"
-                        rounded
-                        outlined
-                        class="q-mt-sm"
-                    >
-                        <template v-slot:after>
-                            <q-btn
-                                color="primary"
-                                round
-                                icon="person_add"
-                                :disable="!friendToAdd"
-                                @click="addFriend"
-                            />
-                        </template>
-                    </q-input>
-                </div>
-            </section>
-        </main>
-        <main
-            class="main-content__wrap"
-            v-else-if="tab === TAB_NAMES.REQUESTS.value"
-        >
-            <ProfileRequests />
-        </main>
-    </NuxtLayout>
+                <q-icon
+                    flat
+                    round
+                    name="content_copy"
+                    color="primary"
+                    @click="copyFriendId"
+                    size="1em"
+                />
+            </div>
+        </section>
+        <section name="timezone" class="section">
+            <label class="label" for="friendId">Add a friend</label>
+            <label class="label sub"
+                >Paste your friend's ID here to add them as a friend</label
+            >
+            <div>
+                <q-input v-model="friendToAdd" rounded outlined class="q-mt-sm">
+                    <template v-slot:after>
+                        <q-btn
+                            color="primary"
+                            round
+                            icon="person_add"
+                            :disable="!friendToAdd"
+                            @click="addFriend"
+                        />
+                    </template>
+                </q-input>
+            </div>
+        </section>
+    </main>
+    <main
+        class="main-content__wrap"
+        v-else-if="tab === TAB_NAMES.REQUESTS.value"
+    >
+        <ProfileRequests />
+    </main>
 </template>
 <style lang="scss" scoped>
 .profile__header--container {
     padding: var(--space-xs) var(--space-xxxs);
-    z-index: 3;
     position: relative;
     color: black;
 }
@@ -177,23 +145,14 @@
 }
 </style>
 <script setup>
-import imageCompression from "browser-image-compression";
 import { useUserStore } from "@/store/user";
-import { usePlayerStore } from "@/store/players";
 import { useEditorStore } from "@/store/editor";
 import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
 import { useSocialStore } from "@/store/social";
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 
-import { parseAvatar } from "@/utils/avatar";
-
-
-
-const {logout} = useSession();
-
-
-
+const { logout } = useSession();
 
 const TAB_NAMES = ref({
     REQUESTS: {
@@ -211,18 +170,26 @@ const tab = ref("requests");
 const store = useUserStore();
 
 const user = computed(() => {
-    const { id, timezone, friendId, username, player, firstName, lastName, avatar } =
-        store;
-    return { id, timezone, friendId, username, player, firstName, lastName, avatar };
-});
-
-const playerStore = usePlayerStore();
-
-const player = computed(() => {
-    const player = playerStore.players.find(
-        (p) => user.value.player.id === p.id
-    );
-    return player || {};
+    const {
+        id,
+        timezone,
+        friendId,
+        username,
+        player,
+        firstName,
+        lastName,
+        avatar,
+    } = store;
+    return {
+        id,
+        timezone,
+        friendId,
+        username,
+        player,
+        firstName,
+        lastName,
+        avatar,
+    };
 });
 
 const { toTimezone } = useTime();
@@ -273,40 +240,6 @@ const addFriend = async () => {
     }
 };
 
-const openPlayerSelector = () => {
-    const editorStore = useEditorStore();
-
-    editorStore.togglePlayerSelect({
-        open: true,
-        onSelect: async (playerId) => {
-            const notificationStore = useNotificationStore();
-            const notId = notificationStore.addNotification({
-                state: "pending",
-                text: "Updating...",
-            });
-            try {
-                await playerStore.updatePlayerLink({
-                    playerId: player.value.id,
-                    profileId: null,
-                });
-                await playerStore.updatePlayerLink({
-                    playerId: playerId,
-                    profileId: user.value.id,
-                });
-                await store.getCurrentUser();
-                notificationStore.updateNotification(notId, {
-                    state: "completed",
-                    text: "Player linked!",
-                });
-            } catch (e) {
-                notificationStore.updateNotification(notId, {
-                    state: "failed",
-                    text: `Issue linking player: ${e}`,
-                });
-            }
-        },
-    });
-};
 
 /**
  * Team requests

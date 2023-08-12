@@ -34,17 +34,17 @@
             @navigate="dialogNavigationOpen = true"
         />
     </section>
-    <DialogConfirmation
-        v-if="!!confirmUnsaved"
-        confirmButtonText="Save"
-        :cancelButtonText="'Discard'"
-        @close="onDiscardChanges"
-        @confirm="confirmUnsaved"
-        cancelColor="negative"
-        confirmColor="primary"
-    >
-        Save changes?
-    </DialogConfirmation>
+        <DialogConfirmation
+            v-if="!!confirmUnsaved"
+            confirmButtonText="Save"
+            :cancelButtonText="'Discard'"
+            @close="onDiscardChanges"
+            @confirm="confirmUnsaved"
+            cancelColor="negative"
+            confirmColor="primary"
+        >
+            Save changes?
+        </DialogConfirmation>
     <DialogGameStats v-if="gameStatsDialog" @close="gameStatsDialog = false" :gameId="store.game.id"/>
     <DialogEnd v-if="endOfEndDialog" @close="endOfEndDialog = false" @save="goNext(true)"/>
     <DialogNavigation

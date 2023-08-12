@@ -13,7 +13,13 @@
                     :style="{ opacity: showSearch ? '0' : '1' }"
                     ref="avatarHeader"
                 >
-                    <TeamBasic :item="team" animated viewable />
+                    <ProfileCard :avatar="team.team_avatar" type="team" animated viewable :item="team" >
+                        <template v-slot:overline>
+                            Team
+                        </template> 
+                         <span class="text-bold">{{team.name}}</span>
+                      
+                    </ProfileCard>
                 </div>
                 <div v-if="showSearch" class="search__container--floating">
                     <q-input
@@ -143,7 +149,6 @@
     position: sticky;
     top: 0;
     background-color: rgba(255, 255, 255, 0.98);
-    z-index: 10000;
 }
 
 @keyframes expand {

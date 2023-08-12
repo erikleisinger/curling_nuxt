@@ -62,16 +62,7 @@
             color="rgba(0,0,0,0.3)"
             eager
         />
-        <!-- <q-checkbox
-            v-model="fourthSkip"
-            @update:model-value="setSkip('fourth')"
-            checked-icon="star"
-            unchecked-icon="grade"
-            size="3em"
-            dense
-              color="yellow"
-        /> -->
-        <!-- <div v-if="!away" class="disabled--overlay" /> -->
+
     </div>
 </template>
 <style lang="scss" scoped>
@@ -85,19 +76,8 @@
     display: grid;
     grid-template-rows: repeat(4, 1fr);
     grid-template-columns: minmax(60px, 2em) auto;
-    //grid-template-columns: minmax(60px, 2em) auto minmax(1em, 2em);
     row-gap: var(--space-xs);
     color: white;
-    .disabled--overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        border-radius: var(--space-sm);
-        background-color: rgba(0, 0, 0, 0.6);
-        height: 100%;
-        width: 100%;
-        z-index: 2;
-    }
     .player__position,
     .player__name {
         display: flex;

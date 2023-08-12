@@ -12,11 +12,14 @@
                     "
                 >
               
-                <div class="col-grow row justify-start" v-if="backable">
-                    <q-btn flat round icon="arrow_back"  @click="close"/>
-                </div>
-                 <div class="col-grow row justify-end" v-else>
+          
+                 <div class="col-grow row justify-between">
+                    <slot name="buttonLeft" v-bind:close="close">
+                              <q-btn flat round icon="arrow_back"  @click="close"/>
+                    </slot>
+                        <slot name="buttonRight" v-bind:close="close">
                     <q-btn flat round icon="close"  @click="close"/>
+                        </slot>
                 </div>
                 </div>
                 <div class="content__container"  v-if="!transitioning">
@@ -37,7 +40,7 @@
 .outer__container {
     height: calc(100 * var(--vh, 1vh));
     width: 100vw;
-    z-index: 100003;
+    z-index: $z-dialog;
     position: absolute;
     top: 0;
     transform-origin: bottom left;

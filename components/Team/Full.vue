@@ -1,9 +1,12 @@
 <template>
         <header class="pretty-shadow q-px-sm" ref="header">
             <div class="row">
-                <TeamBasic :item="team" v-if="!loading" :editable="canEdit">
-                
-                </TeamBasic>
+                <ProfileCard :avarar="team.avatar" v-if="!loading" :editable="canEdit" type="team">
+                  <template v-slot:overline>
+                            Team
+                        </template> 
+                     <span class="text-bold">{{team.name}}</span>
+                </ProfileCard>
             </div>
             <nav>
                 <q-tabs dense v-model="tab" stretch>

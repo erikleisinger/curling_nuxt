@@ -5,11 +5,12 @@
         color="primary"
     />
     <RecycleScroller :items="players" :item-size="1" height="100%" :buffer="0" key-field="id" v-slot="{ item }">
-            <PlayerBasic :player="item" class="list--player">
+            <ProfileCard :avatar="item.avatar" class="list--player">
+                 {{item.name}}
                 <template v-slot:append>
                      <slot name="actions" v-bind:playerId="item.id" />
                 </template>
-            </PlayerBasic>
+            </ProfileCard>
     </RecycleScroller>
 </template>
 <style lang="scss">

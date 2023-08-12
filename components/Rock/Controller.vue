@@ -11,7 +11,7 @@
                                 width: 100%;
                                 position: absolute;
                                 background-color: rgba(0, 0, 0, 0.4);
-                                z-index: 1;
+                              
                             "
                             id="deleteOverlay"
                       v-if="deleteOverlay" 
@@ -25,7 +25,7 @@
                 position: absolute;
                 top: 0;
                 right: 0;
-                z-index: 100;
+             
                 margin-top: 3%;
                 margin-right: 3%;
             "
@@ -125,7 +125,7 @@
         </div>
         <div
             class="row justify-between"
-            :style="`z-index:1; margin:auto; position: absolute; bottom: 0; width: 100%`"
+            :style="`margin:auto; position: absolute; bottom: 0; width: 100%`"
         >
             <div style="position: relative; height: 100%; width: 100%">
                 <div

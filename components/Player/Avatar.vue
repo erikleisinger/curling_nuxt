@@ -76,20 +76,12 @@
 }
 .player-avatar__menu {
     background-color: unset!important;
-    z-index: 1000000;
     box-shadow: unset!important;
     border-radius: 8px;
     padding-bottom: 8px;
     min-height: unset !important;
     height: fit-content;
     min-width: unset!important;
-}
-.avatar-editor__container {
-    height: calc(100 * var(--vh, 1vh));
-    width: 100vw;
-    z-index: 100002;
-    position: absolute;
-    top: 0;
 }
 .user-link__badge--floating {
     position: absolute;

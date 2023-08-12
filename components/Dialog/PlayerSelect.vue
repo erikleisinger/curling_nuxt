@@ -1,6 +1,6 @@
 <template>
     <DialogFloating @close="close($event)">
-        <template v-slot:prependButton>
+        <template v-slot:buttonLeft>
             <q-btn
                 flat
                 round

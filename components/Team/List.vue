@@ -18,16 +18,21 @@
                 :class="{ focused: focused === item.id }"
                 class="team-item"
                 v-ripple.early
+                        
             >
-                <TeamBasic
-                    :item="item"
-                    @delete="itemToDelete = item"
-                    viewable
-                    deleteable
-                    v-memo="[item.name, item.team_avatar]"
+                <ProfileCard
+                    :avatar="item.team_avatar"
+                     v-memo="[item.name, item.team_avatar]"
+           
                 
                  
-                />
+                >
+                <template v-slot:overline>
+                    Team
+                </template>
+                   {{item.name}}
+
+                </ProfileCard>
                    <!--     v-if="expanded !== item.id" -->
                 <!-- <div v-else style="height: calc(100% - 200px)">
                     <TeamFull :team="item" /> -->

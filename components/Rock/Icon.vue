@@ -73,7 +73,6 @@
         top: 0;
         right: 0;
         margin: auto;
-        z-index: 1;
         border-radius: 50%;
         font-weight: 600;
     }

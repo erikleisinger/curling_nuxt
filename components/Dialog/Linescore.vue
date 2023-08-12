@@ -1,9 +1,22 @@
 <template>
     <DialogFloating @close="toggleLineScore({ open: false })" :backable="false">
+
+        <!-- Toolbar -->
+        <template v-slot:buttonLeft>
+            <div />
+        </template>
+        <template v-slot:buttonRight>
+            <q-btn flat round icon="close" @click="confirmUnsaved = true" />
+        </template>
+
+
+        <!-- STEP 1: Team Select -->
         <LinescoreTeamSelect
             v-if="view === views.TEAM_SELECT"
             @complete="view = views.LINESCORE"
         />
+
+        <!-- STEP 2: Line score input -->
         <div
             class="full-height scoreboard__container row justify-center items-center"
             v-if="view === views.LINESCORE"
@@ -87,6 +100,19 @@
                 <div class="start__padding col-grow" />
             </div>
         </div>
+        <DialogConfirmation
+            v-if="!!confirmUnsaved"
+            confirmButtonText="Discard"
+            cancelButtonText="Cancel"
+            @confirm="toggleLineScore({ open: false })"
+            @close="confirmUnsaved = false"
+            cancelColor=""
+            confirmColor="negative"
+        >
+            <!--  -->
+            <!-- -->
+            Are you sure you want to close? All unsaved changes will be lost.
+        </DialogConfirmation>
     </DialogFloating>
 </template>
 <style lang="scss" scoped>
@@ -142,7 +168,7 @@ $scroll-margin: -100px;
         height: 100%;
         scroll-snap-type: x mandatory;
         scroll-snap-stop: always;
-        
+
         width: 100%;
         border-radius: 8px;
         overflow-y: hidden;
@@ -151,15 +177,6 @@ $scroll-margin: -100px;
         .start__padding {
             width: calc(100vw / 2 - $column-width / 2);
             height: 100%;
-        }
-        .button-invis {
-            position: fixed;
-            z-index: 1000;
-            width: calc($column-width / 2);
-            height: 100%;
-            &.right {
-                right: 0;
-            }
         }
         :deep(.scoreboard__end-container) {
             scroll-snap-align: center;
@@ -186,9 +203,11 @@ import {
     useScroll,
     useSwipe,
     useThrottleFn,
-    useWindowSize
+    useWindowSize,
 } from "@vueuse/core";
-import {generateEnds} from '@/utils/create-game'
+import { generateEnds } from "@/utils/create-game";
+
+const confirmUnsaved = ref(false);
 
 const root = ref(null);
 
@@ -207,12 +226,12 @@ const emit = defineEmits(["close"]);
 const scroller = ref(null);
 const { x, isScrolling } = useScroll(scroller, { behavior: "smooth" });
 
-const {width: windowWidth} = useWindowSize();
+const { width: windowWidth } = useWindowSize();
 //Temp disable
 const scrollTo = (end) => {
     const e = document.getElementById(`scoreboard-end-${end}`);
     const { parentElement: ele } = e;
-    x.value = ele?.offsetLeft - windowWidth.value / 4
+    x.value = ele?.offsetLeft - windowWidth.value / 4;
 };
 
 const score = ref({
@@ -275,10 +294,10 @@ const awayTotal = computed(() =>
 const homeId = ref(20);
 const awayId = ref(80);
 
-const hammerTeamId = ref(20)
+const hammerTeamId = ref(20);
 
 const createGame = async () => {
-    const  client  = useSupabaseClient();
+    const client = useSupabaseClient();
     if (
         !homeId.value ||
         !awayId.value ||
@@ -288,43 +307,48 @@ const createGame = async () => {
         console.error("missing fields");
         return;
     }
-    const { data, error } = await client.from("games").insert({
-        home: homeId.value,
-        away: awayId.value,
-        home_color: homeColor.value,
-        away_color: awayColor.value,
-        hammer_first_end: homeId.value,
-    }).select('id')
+    const { data, error } = await client
+        .from("games")
+        .insert({
+            home: homeId.value,
+            away: awayId.value,
+            home_color: homeColor.value,
+            away_color: awayColor.value,
+            hammer_first_end: homeId.value,
+        })
+        .select("id");
     if (error) {
-        const {setBanner} = useBanner();
-        setBanner('Error creating game', 'negative')
+        const { setBanner } = useBanner();
+        setBanner("Error creating game", "negative");
     } else {
         const [game] = data || [];
-        const {id} = game || {};
-        createEnds(id)
-
+        const { id } = game || {};
+        createEnds(id);
     }
 };
 
 const createEnds = async (gameId) => {
     if (!gameId) {
-        const {setBanner} = useBanner();
-        setBanner('Error creating ends: no game id', 'negative')
+        const { setBanner } = useBanner();
+        setBanner("Error creating ends: no game id", "negative");
         return;
     }
-      
-   const ends = generateEnds(score.value, hammerTeamId.value, homeId.value, awayId.value, gameId)
-     const  client  = useSupabaseClient();
 
-     const {data, error} = await client.from('ends').insert(ends)
+    const ends = generateEnds(
+        score.value,
+        hammerTeamId.value,
+        homeId.value,
+        awayId.value,
+        gameId
+    );
+    const client = useSupabaseClient();
 
-
-}
+    const { data, error } = await client.from("ends").insert(ends);
+};
 
 const save = async () => {
-  
     await createGame();
-    toggleLineScore({ open: false })
+    toggleLineScore({ open: false });
 };
 
 const { orientation } = useScreenOrientation();

@@ -1,0 +1,17 @@
+$base: 10;
+$above: 1;
+$below: -1;
+
+$z-footer: $above + $base;
+$z-tools: $above + $z-footer;
+$z-tooltip: $above + $z-tools;
+$z-dialog: $above + $z-tooltip;
+$z-confirmation: $above + $z-dialog;
+$z-notification: $above + $z-confirmation;
+
+.q-footer {
+    z-index: $z-footer!important;
+}
+.z-fab {
+    z-index: $z-tools!important;
+}

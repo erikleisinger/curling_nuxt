@@ -41,14 +41,6 @@
         </q-input>
     </q-item-label>
 </template>
-<style lang="scss">
-.floating__edit {
-    position: absolute;
-    top: 0;
-    right: -3em;
-    z-index: 1000;
-}
-</style>
 <script setup>
 const emit = defineEmits(["save"]);
 

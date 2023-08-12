@@ -133,7 +133,7 @@ $icon-height: 4em;
           
      &.hover {
         position: absolute;
-        z-index: 10000000;
+        z-index: $z-tooltip;
         transform: scale(1.4);
         // left: 0;
         // right: 0;
