@@ -69,12 +69,12 @@
             home: {
                 id: teamSelection.home?.id,
                 avatar: teamSelection.home?.team_avatar,
-                color: homeColor
+                color: teamSelection?.homeColor
             },
             away: {
                 id: teamSelection?.away?.id,
                 avatar: teamSelection?.away?.team_avatar,
-                color: awayColor
+                color: teamSelection?.awayColor
             },
             hammerFirstEnd: hammerFirstEndTeam
             }"
@@ -391,8 +391,6 @@ const score = ref({
     },
 });
 
-const homeColor = ref("blue");
-const awayColor = ref("red");
 
 const homeTotal = computed(() =>
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].reduce((acc, current) => {
