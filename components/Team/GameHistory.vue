@@ -1,4 +1,5 @@
 <template>
+<div>
         <div
             v-for="result in results"
             :key="result.id"
@@ -42,7 +43,7 @@
                 {{ format(result.start_time, "MMMM D, YYYY") }}
             </div>
         </div>
-
+</div>
 </template>
 <style lang="scss" scoped>
 $header-height: 2em;

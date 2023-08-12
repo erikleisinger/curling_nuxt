@@ -17,12 +17,6 @@
                 {{ selections?.home?.name }}
             </span>
 
-            <template v-slot:append>
-                <div style="max-width: 3em">
-                    <!-- :prevent="[awayColor]" -->
-                    <SelectColor v-model="selections.homeColor" v-if="selections.home && selections.away"/>
-                </div>
-            </template>
         </ProfileCard>
     </transition>
        <transition
@@ -30,7 +24,6 @@
         enter-active-class="animated slideInLeft"
         leave-active-class="animated slideOutLeft"
     >
-    <div v-if="selections.home && selections.away" class="versus row justify-center items-center">VS</div>
        </transition>
     <transition
         appear
@@ -45,16 +38,15 @@
             <span class="text-bold">
                 {{ selections?.away?.name }}
             </span>
-            <template v-slot:append>
-                <div style="max-width: 3em">
-                    <!-- :prevent="[homeColor]" -->
-                    <SelectColor v-model="selections.awayColor" v-if="selections.home && selections.away"/>
-                </div>
-            </template>
+
         </ProfileCard>
     </transition>
+    
+<KeepAlive>
 
-    <TeamList :teams="teams" v-if="teams?.length && (!selections.home || !selections.away)" @select="onSelect" />
+    <TeamList :teams="teamOptions" v-if="teamOptions?.length " @select="onSelect" />
+   
+</KeepAlive>
 
     </div>
     </div>
@@ -78,13 +70,7 @@
                 justify-content: space-around;
             }
         }
-        .versus {
-            height: 3em;
-            width: 100%;
-            font-size: var(--text-lg);
-            font-weight: bold;
-            font-style: italic;
-        }
+
     }
 </style>
 <script setup>
@@ -106,6 +92,11 @@ const selections = computed({
     },
 });
 
+const teams = ref([])
+const teamOptions =  computed(() => teams.value.filter((t) => t.id !== selections.value.home?.id))
+
+// For now teams are generated; ultimately we want this to be a prop
+// to allow for selecting my teams, other people's teams, etc
 onMounted(() => {
     const teamStore = useTeamStore();
     teams.value = [...teamStore.teams];
@@ -116,7 +107,7 @@ const awayTeam = ref(null);
 
 const homeColor = ref("yellow");
 const awayColor = ref(null);
-const teams = ref([]);
+
 
 const onSelect = (_, _1, team) => {
     if (!selections.value.home) {
@@ -124,6 +115,7 @@ const onSelect = (_, _1, team) => {
     } else if (!selections.value.away) {
         selections.value.away = team;
     }
+    if (selections.value.away && selections.value.home) emit('select')
 };
 
 const steps = {
@@ -133,5 +125,5 @@ const steps = {
 
 const step = ref(steps.SELECT_HOME);
 
-const emit = defineEmits(["update:modelValue", "close"]);
+const emit = defineEmits(["select", "update:modelValue"]);
 </script>

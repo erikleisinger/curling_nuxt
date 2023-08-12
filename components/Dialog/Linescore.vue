@@ -1,12 +1,5 @@
 <template>
     <DialogFloating @close="toggleLineScore({ open: false })" :backable="false">
-        <!-- STEP 1: Team Select -->
-        <LinescoreTeamSelect
-            v-if="view === views.TEAM_SELECT"
-            @close="confirmUnsaved = true"
-            v-model="teamSelection"
-        />
-
         <template v-slot:buttonLeft>
             <div />
         </template>
@@ -28,7 +21,7 @@
                     />
                 </div>
                 <div v-else />
-                {{ headerText }}
+                <div class="text-center">{{ headerText }}</div>
                 <div
                     class="row items-center justify-center"
                     v-if="showForwardArrow"
@@ -38,82 +31,58 @@
                         round
                         icon="arrow_forward"
                         @click="onForwardArrowClick"
+                        :disable="forwardArrowDisabled"
                     />
                 </div>
             </div>
         </template>
 
-        <!-- STEP 2: Line score input -->
+        <!-- STEP 1: Team Select -->
+        <LinescoreTeamSelect
+            v-if="view === views.TEAM_SELECT"
+            @select="view = views.COLOR_SELECT"
+            v-model="teamSelection"
+        />
+        <!-- STEP 2: Rock color select -->
+
+        <LinescoreColorSelect
+            v-else-if="view === views.COLOR_SELECT"
+            v-model="teamSelection"
+        />
+
+        <!-- STEP 3: Hammer select -->
+
+        <LinescoreHammerSelect
+            v-else-if="view === views.HAMMER_SELECT"
+            :teamSelection="teamSelection"
+            v-model="hammerFirstEndTeam"
+        />
+
+        <!-- STEP 4: Line score input -->
 
         <div
-            v-if="view === views.LINESCORE"
+            v-else-if="view === views.LINESCORE"
             class="full-height scoreboard__container"
         >
-            <div class="nav__container" ref="nav">
-                <div
-                    class="row justify-center items-center text-xl nav__container--item"
-                >
-                    <div class="nav-container--item__column">
-                        <div></div>
-                        <div class="row items-center team-avatar__container">
-                            <Avataaar
-                                style="height: 100%; width: 100%"
-                                v-bind="
-                                    parseAvatar(teamSelection.home?.team_avatar)
-                                "
-                            >
-                            </Avataaar>
-                            <q-badge
-                                :color="teamSelection?.homeColor"
-                                rounded
-                            ></q-badge>
-                        </div>
-                        <div
-                            class="row items-center team-avatar__container"
-                            style="width: 1em"
-                        >
-                            <Avataaar
-                                style="height: 100%; width: 100%"
-                                v-bind="
-                                    parseAvatar(teamSelection.away?.team_avatar)
-                                "
-                            />
-                            <q-badge
-                                :color="teamSelection?.awayColor"
-                                rounded
-                            ></q-badge>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    v-for="end in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    :key="`${end}-label`"
-                    class="row justify-center items-center text-xl nav__container--item"
-                    :class="{ selected: visible === end }"
-                    @click="scrollTo(end)"
-                >
-                    <div class="nav-container--item__column">
-                        <div>{{ end }}</div>
-                        <div>{{ score[end].home }}</div>
-                        <div>{{ score[end].away }}</div>
-                    </div>
-                </div>
-                <div
-                    class="row justify-center items-center text-xl nav__container--item"
-                >
-                    <div class="nav-container--item__column full-width total">
-                        <div class="row justify-center items-center">T</div>
-                        <!-- :class="{ selected: awayTotal < homeTotal }" -->
-                        <div class="row justify-center items-center">
-                            {{ homeTotal }}
-                        </div>
-                        <!-- :class="{ selected: homeTotal < awayTotal }" -->
-                        <div class="row justify-center items-center">
-                            {{ awayTotal }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+           <LinescoreGridView :game="{
+            home: {
+                id: teamSelection.home?.id,
+                avatar: teamSelection.home?.team_avatar,
+                color: homeColor
+            },
+            away: {
+                id: teamSelection?.away?.id,
+                avatar: teamSelection?.away?.team_avatar,
+                color: awayColor
+            },
+            hammerFirstEnd: hammerFirstEndTeam
+            }"
+            :endCount="10"
+            :score="score"
+            :selected="visible"
+            @select="scrollTo"
+
+            />
 
             <div
                 class="scoreboard__score-container row no-wrap hide-scroll"
@@ -190,46 +159,7 @@ $scroll-margin: -100px;
     flex-wrap: nowrap;
 }
 
-.nav__container {
-    // height: 100%;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 2fr repeat(10, 1fr) 2fr;
-    column-gap: 1px;
-    background-color: $grey-4;
-    .nav__container--item {
-        border-bottom: 1px solid $grey-4;
-        background-color: white;
-        height: 100%;
-        position: relative;
-        &.selected {
-            background-color: #00cd93;
-            color: white;
-            font-weight: bold;
-        }
 
-        .nav-container--item__column {
-            display: grid;
-            grid-template-rows: repeat(3, 33%);
-            overflow: hidden;
-            height: 100%;
-            &.total {
-                // background-color: rgba(0, 0, 0, 0.1);
-            }
-            > div {
-                text-align: center;
-            }
-            .team-avatar__container {
-                position: relative;
-                .q-badge {
-                    position: absolute;
-                    bottom: 0.4em;
-                    right: 0;
-                }
-            }
-        }
-    }
-}
 .scoreboard__end-row {
     display: flex;
     flex-direction: column;
@@ -294,12 +224,14 @@ const teamSelection = ref({
 const headerText = computed(() => {
     if (view.value === views.TEAM_SELECT) {
         if (!teamSelection.value.home) {
-            return "Select a team";
-        } else if (!teamSelection.value.away) {
-            return "Select an opposition";
+            return "Select your team";
         } else {
-            return "Select rock colors";
+            return "Select an opposition";
         }
+    } else if (view.value === views.COLOR_SELECT) {
+        return "Select rock colors (optional)";
+    } else if (view.value === views.HAMMER_SELECT) {
+        return "Who won hammer for end 1?";
     } else if (view.value === views.LINESCORE) {
         return "Enter linescore";
     } else if (view.value === views.CONFIRM) {
@@ -316,17 +248,30 @@ const showForwardArrow = computed(() => {
     if (view.value === views.TEAM_SELECT) {
         return teamSelection?.value?.home && teamSelection?.value?.away;
     }
-    if (view.value === views.LINESCORE) return true;
+    if (
+        [views.COLOR_SELECT, views.LINESCORE, views.HAMMER_SELECT].includes(
+            view.value
+        )
+    )
+        return true;
 });
-const onForwardArrowClick = () => {
+const onForwardArrowClick = useThrottleFn(() => {
     if (view.value === views.TEAM_SELECT) {
         if (teamSelection?.value?.away && teamSelection.value?.home) {
-            view.value = views.LINESCORE;
+            view.value = views.COLOR_SELECT;
         }
+    } else if (view.value === views.COLOR_SELECT) {
+        view.value = views.HAMMER_SELECT;
+    } else if (view.value === views.HAMMER_SELECT) {
+        view.value = views.LINESCORE;
     } else if (view.value === views.LINESCORE) {
         view.value = views.CONFIRM;
     }
-};
+}, 100);
+
+const forwardArrowDisabled = computed(
+    () => view.value === views.HAMMER_SELECT && !hammerFirstEndTeam.value
+);
 
 /**
  * END forward arrow logic
@@ -341,24 +286,35 @@ const showBackArrow = computed(() => {
     if (view.value === views.TEAM_SELECT) {
         return !!teamSelection?.value?.home;
     }
-    if ([views.LINESCORE, views.CONFIRM].includes(view.value)) return true;
+    if (
+        [
+            views.COLOR_SELECT,
+            views.HAMMER_SELECT,
+            views.LINESCORE,
+            views.CONFIRM,
+        ].includes(view.value)
+    )
+        return true;
 });
 
-const onBackArrowClick = () => {
+const onBackArrowClick = useThrottleFn(() => {
     if (view.value === views.TEAM_SELECT) {
         if (teamSelection?.value?.away) {
             teamSelection.value.away = null;
         } else if (teamSelection?.value?.home) {
             teamSelection.value.home = null;
         }
-    }
-    if (view.value === views.LINESCORE) {
+    } else if (view.value === views.COLOR_SELECT) {
         view.value = views.TEAM_SELECT;
-    }
-    if (view.value === views.CONFIRM) {
+    } else if (view.value === views.HAMMER_SELECT) {
+        view.value = views.COLOR_SELECT;
+    } else if (view.value === views.LINESCORE) {
+        view.value = views.HAMMER_SELECT;
+    }else if (view.value === views.CONFIRM) {
+
         view.value = views.LINESCORE;
     }
-};
+}, 100);
 
 /**
  * END back arrow logic
@@ -451,6 +407,7 @@ const awayTotal = computed(() =>
 const save = async () => {
     const teamsAndColors = { ...teamSelection.value };
     const scoreCopy = { ...score.value };
+    const hammerFirstEndCopy = hammerFirstEndTeam.value;
 
     toggleLineScore({ open: false });
 
@@ -460,7 +417,7 @@ const save = async () => {
             away: teamsAndColors?.away?.id,
             home_color: teamsAndColors?.homeColor,
             away_color: teamsAndColors?.awayColor,
-            hammer_first_end: teamsAndColors?.home?.id,
+            hammer_first_end: hammerFirstEndCopy,
         },
         score: scoreCopy,
     });
@@ -472,7 +429,7 @@ const awayTeam = ref(null);
 const homeId = computed(() => homeTeam?.value?.id);
 const awayId = computed(() => awayTeam?.value?.id);
 
-const hammerFirstEndTeam = ref(20);
+const hammerFirstEndTeam = ref(0);
 
 const createGame = async ({ game, score }) => {
     const gameStore = useGameStore();
@@ -511,6 +468,8 @@ const rows = computed(() => {
 
 const views = {
     TEAM_SELECT: "teamselect",
+    COLOR_SELECT: "colorselect",
+    HAMMER_SELECT: "hammerSelect",
     LINESCORE: "linescore",
     CONFIRM: "confirm",
 };

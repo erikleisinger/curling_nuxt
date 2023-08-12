@@ -1,7 +1,7 @@
 <template>
     <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
         <slot/>
-        <RecycleScroller
+        <!-- <RecycleScroller
             :items="teams"
             :item-size="1"
             :min-item-size="50"
@@ -11,13 +11,20 @@
             v-slot="{ item, index }"
             ref="scroller"
             v-if="teams?.length"
-        >
+        > -->
+        <q-virtual-scroll
+    :items="teams"
+    separator
+    v-slot="{ item, index }"
+        ref="scroller"
+            v-if="teams?.length"
+  >
+    
             <div
                 :id="`team-table-item-${item.id}`"
                 @click="onClick(item, index)"
                 :class="{ focused: focused === item.id }"
                 class="team-item"
-                v-ripple.early
                         
             >
                 <ProfileCard
@@ -38,7 +45,8 @@
                     <TeamFull :team="item" /> -->
                 <!-- </div> -->
             </div>
-        </RecycleScroller>
+        </q-virtual-scroll>
+        <!-- </RecycleScroller> -->
     </div>
     <DialogConfirmation
         v-if="itemToDelete"

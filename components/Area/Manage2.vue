@@ -63,14 +63,16 @@
             </div>
         </div>
         <nav>
-            <!-- <q-tabs dense v-model="tab" stretch active-color="deep-purple">
+            <q-tabs dense v-model="tab" stretch active-color="deep-purple">
                 <q-tab name="stats" label="Stats" style="width: 50%" />
                 <q-tab name="history" label="History" style="width: 50%" />
-            </q-tabs> -->
+            </q-tabs>
+         
         </nav>
     </header>
+  
     <main class="column select__section full-width no-wrap">
-        <!-- <div style="height: 50px" v-if="showSearch">hi</div> -->
+      
 
         <transition
             appear
@@ -80,9 +82,16 @@
             <KeepAlive>
                 <TeamStatsView
                     :teamId="team?.id"
-                    v-if="!showSearch"
+                    v-if="!showSearch && tab === 'stats'"
                     key="stats"
                 />
+                    <TeamGameHistory
+                :teamId="team?.id"
+                :team="team"
+                  key="gamehistory"
+             
+                v-else-if="!showSearch && tab === 'history'"
+            />
 
                 <TeamList
                     :teams="teams"
@@ -98,11 +107,7 @@
                 />
             </KeepAlive>
         </transition>
-        <!-- <TeamGameHistory
-                :teamId="teams[index].id"
-                :team="teams[index]"
-                v-else
-            /> -->
+    
     </main>
 </template>
 <style lang="scss" scoped>
@@ -140,11 +145,11 @@
 }
 .outer-header__container {
     box-shadow: $pretty-shadow;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+    // border-bottom-left-radius: 16px;
+    // border-bottom-right-radius: 16px;
 }
 .team-header__container {
-    border-radius: inherit;
+    // border-radius: inherit;
     border-bottom: 1px solid $grey-4;
     position: sticky;
     top: 0;
