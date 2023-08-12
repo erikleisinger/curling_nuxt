@@ -65,13 +65,24 @@ const colorOptions = ref([
     },
 ]);
 
+const getNextColorIndex = (index) => {
+let nextIndex = index + 1 > colorOptions.value.length - 1 ? 0 : index + 1;
+    if (props.prevent.includes(colorOptions.value[nextIndex]?.value)) {
+        return getNextColorIndex (nextIndex)
+    }
+    return nextIndex
+}
+
 const changeColor = () => {
     const currentColorIndex = colorOptions.value.findIndex(
         ({ value }) => value === editedValue.value
-    );
-    const next = colorOptions.value.find(({ value }, index) => {
-        return index !== currentColorIndex && !props.prevent.includes(value);
-    });
-    editedValue.value = next?.value || 'red';
+    ) || 0
+    
+    const next = getNextColorIndex(currentColorIndex)
+    editedValue.value = colorOptions.value[next]?.value || 'red';
 };
+
+onMounted(() => {
+    if (!props.modelValue) changeColor();
+})
 </script>

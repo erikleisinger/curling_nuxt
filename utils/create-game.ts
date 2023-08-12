@@ -281,6 +281,7 @@ export const createPlayerGameJunction = async (game_id: string, homePlayers: Pla
 }
 
 export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
+    console.log('GNEERATED ENDS: ', ends, hammerFirstEnd, homeId, awayId, gameId)
     return Object.entries(ends).reduce((all, [endNo, score], index) => {
         console.log(score.home, score.away, score)
         const end = {

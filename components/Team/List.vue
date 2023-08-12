@@ -14,7 +14,7 @@
         >
             <div
                 :id="`team-table-item-${item.id}`"
-                @click="onClick(item.id, index)"
+                @click="onClick(item, index)"
                 :class="{ focused: focused === item.id }"
                 class="team-item"
                 v-ripple.early
@@ -129,8 +129,9 @@ watch(focused, () => {
 
 const expanded = ref(null);
 
-const onClick = (teamId: number, index: number) => {
-    emit('select', index, teamId)
+const onClick = (team: Team, index: number) => {
+    const teamId = team?.id
+    emit('select', index, teamId, team)
     if (focused.value && teamId === focused.value) unsetFocus(teamId);
     if (expanded.value === teamId) {
         expanded.value = null;

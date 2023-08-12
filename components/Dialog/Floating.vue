@@ -22,7 +22,13 @@
                         </slot>
                 </div>
                 </div>
+                   <header class="pretty-shadow" style="position: relative; z-index: 1" ref="header">
+                    <slot name="header">
+
+                    </slot>
+                      </header>
                 <div class="content__container"  v-if="!transitioning">
+                   
                     <slot @close="close" />
                 </div>
                   <slot name="prependButton"/>
@@ -52,7 +58,7 @@
         margin: var(--space-xs);
         overflow: hidden;
         .content__container {
-            height: calc(100% - 3em);
+            height: v-bind(contentHeight);
             overflow: auto;
             position:relative;
         }
@@ -60,7 +66,7 @@
 }
 </style>
 <script setup>
-import { useAnimate } from "@vueuse/core";
+import { useAnimate, useElementSize } from "@vueuse/core";
 
 const props = defineProps({
     backable: {
@@ -103,6 +109,10 @@ onMounted(async () => {
     await timeout();
     transitioning.value = false;
 })
+const header = ref(null)
+const {height: headerHeight} = useElementSize(header)
+
+const contentHeight = computed(() => `calc(100% - 3em - ${headerHeight.value}px)`)
 
 
 </script>

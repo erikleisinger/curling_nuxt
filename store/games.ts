@@ -2,9 +2,11 @@ import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import type Game from "@/types/game";
+import type End from '@/types/end'
 import type { SupabaseGameReturn } from "types/fetch";
 import type { Database } from "@/types/supabase";
 import { BannerColors } from "@/types/color";
+import { useNotificationStore } from "@/store/notification";
 import { useSessionStore } from "@/store/session";
 
 export const useGameStore = defineStore("games", {
@@ -13,7 +15,50 @@ export const useGameStore = defineStore("games", {
             games: useStorage("games", [] as Game[]),
         };
     },
-    actions: {
+    actions: {  
+        async createGameEnds(ends: Partial<End>[]) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Saving ends...`,
+                timeout: 10000,
+            });
+
+            const {client, fetchHandler} = useSupabaseFetch();;
+            const { error } = await fetchHandler(() =>client
+                .from(TABLE_NAMES.ENDS)
+                .insert(ends))
+
+            
+            if (error) {
+                // const duplicate = new RegExp("unique_team_request");
+
+                notStore.updateNotification(
+                    notId,
+                    {
+                        state: "failed",
+                        text: `Error saving ends: ${error.message} (code ${
+                            error?.code ?? "X"
+                        })`,
+                        timeout: 10000,
+                    }
+            );
+
+          
+            } else {    
+        
+                notStore.updateNotification(
+                    notId,
+                    {
+                        state: "completed",
+                        text: "Ends saved!",
+                        timeout: 3000,
+                    }
+                );
+ 
+            }
+        },
+
         async deleteGame(id: number | null) {
             const {client, fetchHandler} = useSupabaseFetch();
             const {data } = await fetchHandler(() => client
@@ -62,13 +107,49 @@ export const useGameStore = defineStore("games", {
             }
             return null;
         },
-        async insertGame(game: Game) {
+        async insertGame(game: Partial<Game>) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Saving game...`,
+                timeout: 10000,
+            });
             const {client, fetchHandler} = useSupabaseFetch();;
             const { getQuery } = useDatabase();
-            const { data} = await fetchHandler(() =>client
+            const { data, error } = await fetchHandler(() =>client
                 .from(TABLE_NAMES.GAMES)
                 .upsert(game)
-                .select(getQuery(TABLE_NAMES.GAMES)), {onError: 'Error creating game'})
+                .select(getQuery(TABLE_NAMES.GAMES)))
+
+
+                if (error) {
+                    // const duplicate = new RegExp("unique_team_request");
+    
+                    notStore.updateNotification(
+                        notId,
+                        {
+                            state: "failed",
+                            text: `Error creating game: ${error.message} (code ${
+                                error?.code ?? "X"
+                            })`,
+                            timeout: 10000,
+                        }
+                );
+    
+              
+                } else {    
+            
+                    notStore.updateNotification(
+                        notId,
+                        {
+                            state: "completed",
+                            text: "Game saved!",
+                            timeout: 3000,
+                        }
+                    );
+     
+                }
+
             if (data) {
                 const [game] = data;
                 const index = this.games.findIndex((g) => g.id === game.id);
@@ -81,7 +162,9 @@ export const useGameStore = defineStore("games", {
                 if (game?.id === sessionStore?.game?.id) {
                     sessionStore.setGame(game);
                 }
+                return game?.id
             }
+            return null;
         },
         resetGames() {
             this.games = [];

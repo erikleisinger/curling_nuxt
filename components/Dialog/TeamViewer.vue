@@ -1,24 +1,18 @@
 <template>
     <DialogFloating @close="toggleTeamViewer({ open: false })">
         <template v-slot:buttonLeft>
-           <div/>
+            <div />
+        </template>
+        <template v-slot:header>
+            <ProfileCard :avatar="team.team_avatar" v-if="!loading" type="team">
+                {{ team.name }}
+            </ProfileCard>
         </template>
         <!-- <template v-slot:prependButton>
               <RequestStatus v-if="request && !canEdit" :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/> -->
         <!-- </template> -->
-        <header class="pretty-shadow q-px-sm" ref="header">
-            <div class="row">
-                <ProfileCard :avatar="team.team_avatar" v-if="!loading" type="team">
-                    {{team.name}}
-                </ProfileCard>
-            </div>
-        </header>
-
         <main :style="`height: calc(100% - ${height}px); overflow: auto`">
-           
-
-                <TeamPlayerList :item="team" />
-            
+            <TeamPlayerList :item="team" />
         </main>
     </DialogFloating>
 </template>
@@ -65,12 +59,6 @@ const team = computed(() => {
     );
 });
 
-
-
 const userStore = useUserStore();
 const canEdit = computed(() => team.value?.profile_id === userStore.id);
-
-const header = ref(null);
-const { height } = useElementSize(header);
-
 </script>
