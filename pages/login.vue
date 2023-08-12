@@ -8,7 +8,10 @@
                 <q-card :flat="$q.screen.lt.sm">
                     <q-tabs
                         v-model="tab"
-                        class="q-px-lg q-px-sm-none text-primary"
+                                   active-bg-color="white"
+            active-color="deep-purple"
+            color="deep-purple"
+                        class="q-px-lg q-px-sm-none text-deep-purple"
                     >
                         <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
                         <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
@@ -28,7 +31,6 @@
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
                             outlined
-                            class="q-mb-md"
                         />
                         <q-input
                             name="last name"
@@ -44,7 +46,7 @@
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
                             outlined
-                            class="q-mb-md"
+
                         />
                         <q-input
                             name="username"
@@ -60,7 +62,6 @@
                             v-if="tab === TAB_NAMES.SIGN_UP"
                             rounded
                             outlined
-                            class="q-mb-md"
                         />
                         <q-input
                             name="email"
@@ -71,7 +72,6 @@
                             lazy-rules
                             rounded
                             outlined
-                            class="q-mb-md"
                         />
                         <q-input
                             name="password"
@@ -89,7 +89,6 @@
                         <q-input
                             name="password verification"
                             label="Verify your password"
-                            class="q-mt-md"
                             type="password"
                             v-model="passwordCheck"
                             :rules="[
@@ -108,7 +107,7 @@
                     >
                         <q-btn
                             label="Submit"
-                            color="primary"
+                            color="deep-purple"
                             type="submit"
                             :disabled="loading"
                             :loading="loading"

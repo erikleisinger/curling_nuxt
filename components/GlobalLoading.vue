@@ -3,7 +3,7 @@
         <div style="width: 100vw; position:relative" class="q-mx-lg column items-center">
         <main v-if="!error" class="column items-center full-width">
         <h1 class="q-pb-md text-lg">{{label}} </h1>
-        <q-linear-progress rounded  stripe size="10px" :value="value" :indeterminate="infinite"></q-linear-progress>
+        <q-linear-progress rounded  stripe size="10px" :value="value" :indeterminate="infinite" color="deep-purple"></q-linear-progress>
         </main>
         <main v-else class="column items-center full-width">
             <q-icon size="5em" color="negative" name="mood_bad"/>
