@@ -1,5 +1,6 @@
 <template>
-    <DialogFloating @close="toggleLineScore({ open: false })" :backable="false">
+    <DialogFloating @close="toggleLineScore({ open: false })" :backable="false" :loading="loading">
+
         <template v-slot:buttonLeft>
             <div />
         </template>
@@ -214,6 +215,7 @@ import {
 } from "@vueuse/core";
 import { generateEnds } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
+import {TABLE_NAMES} from '@/constants/tables'
 
 const teamSelection = ref({
     home: null,
@@ -403,6 +405,8 @@ const awayTotal = computed(() =>
     }, 0)
 );
 
+const editedId = ref(null)
+
 const save = async () => {
     const teamsAndColors = { ...teamSelection.value };
     const scoreCopy = { ...score.value };
@@ -410,14 +414,20 @@ const save = async () => {
 
     toggleLineScore({ open: false });
 
-    createGame({
-        game: {
+    const gameToCreate = {
             home: teamsAndColors?.home?.id,
             away: teamsAndColors?.away?.id,
             home_color: teamsAndColors?.homeColor,
             away_color: teamsAndColors?.awayColor,
             hammer_first_end: hammerFirstEndCopy,
-        },
+        }
+
+        if (editedId.value) {
+            gameToCreate.id = editedId.value;
+        }
+
+    createGame({
+        game: gameToCreate,
         score: scoreCopy,
     });
 };
@@ -441,8 +451,12 @@ const createGame = async ({ game, score }) => {
         game?.away,
         gameId
     );
-
-    await gameStore.createGameEnds(ends);
+    if (editedId.value) {
+        await gameStore.bulkUpdateGameEnds(ends)
+    } else {
+   await gameStore.createGameEnds(ends);
+    }
+ 
 };
 
 const { orientation } = useScreenOrientation();
@@ -475,15 +489,64 @@ const views = {
 
 const view = ref(null);
 
-onMounted(() => {
+const fetchGame = async (game) => {
+    const {id} = game;
+    if (!id) {
+        console.error('no game to initialize');
+        return;
+    }
+
+    const gameStore = useGameStore();
+
+    const gameFromStore = await gameStore.getGame(id, true)
+    const {away, home, home_color: homeColor, away_color: awayColor, hammer_first_end} = gameFromStore
+
+    teamSelection.value = {
+        homeColor, 
+        awayColor, 
+        home,
+        away,
+    }
+    hammerFirstEndTeam.value = hammer_first_end
+    await fetchEndsForGame({
+        gameId: id,
+        homeId: home?.id,
+        awayId: away?.id
+    })
+}
+
+const fetchEndsForGame = async ({gameId, homeId, awayId}) => {
+     const {client, fetchHandler} = useSupabaseFetch();;
+            const { data:ends, error } = await fetchHandler(() =>client
+                .from(TABLE_NAMES.ENDS)
+                .select('*')
+                .eq('game_id', gameId))
+
+      ends.forEach((end) => {
+        const {end_number: endNo, points_scored: points = 0, scoring_team_id: whoScored} = end;
+        if (whoScored === homeId) {
+            score.value[endNo].home = points;
+        } else if (whoScored === awayId) {
+                score.value[endNo].away = points;
+        }
+      })
+}
+
+const loading = ref(    )
+
+onMounted(async () => {
+    loading.value = true;
     const { editedGame } = editorStore.linescore;
     // if edited game, go directly to view 2: linescore input
     if (editedGame) {
         view.value = views.LINESCORE;
+        editedId.value = editedGame.id;
+        await fetchGame(editedGame);
     } else {
         // Go to team select
         view.value = views.TEAM_SELECT;
     }
+    loading.value = false;
 });
 
 const nav = ref(null);

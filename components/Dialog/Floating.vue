@@ -2,6 +2,9 @@
     <Teleport to="body">
         <div class="outer__container" ref="container">
             <div class="pretty-shadow inner__container">
+               
+                    <q-inner-loading :showing="loading" color="primary" size="3em" class="z-top"/>
+              
                 
                 <div
                     class="row bg-deep-purple text-white pretty-shadow justify-between items-center q-px-xs"
@@ -32,9 +35,7 @@
                     <slot @close="close" />
                 </div>
                   <slot name="prependButton"/>
-                <!-- <div v-else class="content__container">
-                    <q-inner-loading :showing="true" color="deep-purple" size="3em"/>
-                </div> -->
+                
             </div>
         </div>
     </Teleport>
@@ -72,7 +73,8 @@ const props = defineProps({
     backable: {
         type: Boolean,
         default: true,
-    }
+    },
+    loading: Boolean,
 })
 
 const emit = defineEmits(["close"]);

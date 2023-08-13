@@ -33,6 +33,7 @@ export default defineNuxtConfig({
         pure: ['console.log'],
       },
     quasar: {
+        
         cssAddon: true,
         extras: {
             animations: [
@@ -55,6 +56,9 @@ export default defineNuxtConfig({
             
         },
         config: {
+            brand: {
+                primary: '#673ab7'
+            },
             ripple: {
 
             }

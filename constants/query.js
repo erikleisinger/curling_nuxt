@@ -5,11 +5,13 @@ export const TABLE_QUERIES = {
     start_time,
     home (
       id,
-      name
+      name,
+      team_avatar
     ),
     away (
       id,
-      name
+      name,
+      team_avatar
     ),
     name,
     ends(count),

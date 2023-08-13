@@ -4,6 +4,7 @@
             v-for="result in results"
             :key="result.id"
             class="result__container"
+            @click="editGame(result.id)"
           
         >
             <div class="team__profile--container column no-wrap">
@@ -67,6 +68,7 @@ $header-height: 2em;
 </style>
 <script setup>
 import { watchDebounced } from "@vueuse/core";
+import {useEditorStore} from '@/store/editor'
 const props = defineProps({
     team: Object,
     teamId: Number,
@@ -96,4 +98,10 @@ watchDebounced(
     },
     { debounce: 500, immediate: true }
 );
+
+const editGame = (gameId) => {
+    const editorStore = useEditorStore();
+    editorStore.toggleLineScore({open: true, editedGame: {id: gameId}})
+    console.log('edit: ', gameId)
+}
 </script>

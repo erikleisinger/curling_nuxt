@@ -14,7 +14,8 @@
                     :style="{ opacity: showSearch ? '0' : '1' }"
                     ref="avatarHeader"
                 >
-                    <ProfileCard :avatar="team?.team_avatar" type="team" animated viewable :item="team" :onClick="expandTeam">
+                <!-- :onClick="expandTeam" -->
+                    <ProfileCard :avatar="team?.team_avatar" type="team" animated viewable :item="team" >
                         <template v-slot:overline>
                             Team
                         </template> 
