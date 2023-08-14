@@ -1,6 +1,6 @@
 <template>
     <!-- @click="editGame(result.id)" -->
-    <div class="result__container--wrap" :class="{ expanded }" >
+    <div class="result__container--wrap" :class="{ expanded }">
         <div class="result__container" ref="header" @click="emit('expand')">
             <div class="team__profile--container column no-wrap">
                 <div class="team-avatar__container">
@@ -83,7 +83,6 @@
                     :score="getScore"
                     :selected="20"
                     style="margin-top: 1em"
-
                 >
                     <template v-slot:header>
                         <div
@@ -296,48 +295,132 @@
                         </div>
                     </template>
                 </LinescoreGridView>
-          
-                   
-                    <div
-                        class="h2h-container"
-                        v-if="scoreDetails?.length"
-                         :style="{order: visibleStat === 'conversions' ? 1 : 3}"
-                    >
-                     <div class="text-center text-bold h2h__header">Hammer conversion</div>
-                     <div class="text-center h2h__header text-sm text-italic">Scoring 2+ points with hammer</div>
-                        <div class="h2h-percentage--wrap">
-                            <percentage
-                                :percent="getPercent('home_conversions')"
-                                :color="result.home_color"
-                                label=""
-                                reverse
-                            />
-                            <div>
-                                <q-btn
-                                    flat
-                                    round
-                                    icon="visibility"
-                                    :color="
-                                        visibleStat === 'conversions'
-                                            ? 'primary'
-                                            : 'grey-9'
-                                    "
-                                    @click.prevent.stop="
-                                        showStat('conversions')
-                                    "
-                                />
-                            </div>
-                            <percentage
-                                :percent="getPercent('away_conversions')"
-                                :color="result.away_color"
-                                label=""
+
+                <div
+                    class="h2h-container"
+                    v-if="scoreDetails?.length"
+                >
+                    <div class="text-center text-bold h2h__header">
+                        Hammer conversion
+                    </div>
+                    <div class="text-center h2h__header text-sm text-italic">
+                        Scoring 2+ points with hammer
+                    </div>
+                    <div class="h2h-percentage--wrap">
+                        <percentage
+                            :percent="getPercent('home_conversions')"
+                            :color="result.home_color"
+                            label=""
+                            reverse
+                        />
+                        <div>
+                            <q-btn
+                                flat
+                                round
+                                icon="visibility"
+                                :color="
+                                    showConversions
+                                        ? 'primary'
+                                        : 'grey-9'
+                                "
+                                @click.prevent.stop="showConversions = !showConversions"
                             />
                         </div>
+                        <percentage
+                            :percent="getPercent('away_conversions')"
+                            :color="result.away_color"
+                            label=""
+                        />
                     </div>
-             
-                <div class="h2h-container"  v-if="scoreDetails?.length">
-                      <div class="text-center text-bold h2h__header">Force efficiency</div>
-                     <div class="text-center h2h__header text-sm text-italic">Without hammer, forcing opposition to 1</div>
+                    <div style="overflow: hidden">
+                        <transition
+                            appear
+                            enter-active-class="animated slideInDown"
+                            leave-active-class="animated slideOutUp"
+                        >
+                            <LinescoreGridView
+                                v-if="showConversions"
+                                :game="{
+                                    home: {
+                                        id: 1,
+                                        avatar: result.home_avatar,
+                                        color: result.home_color,
+                                    },
+                                    away: {
+                                        id: 2,
+                                        avatar: result.away_avatar,
+                                        color: result.away_color,
+                                    },
+                                }"
+                                :endCount="result.end_count"
+                                :score="getScore"
+                                :selected="20"
+                                style="margin-top: 1em"
+                            >
+                                <template v-slot:header>
+                                    <div style="visibility: hidden">F</div>
+                                    <div style="visibility: hidden">F</div>
+                                </template>
+                                <template v-slot:row="{ end }">
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_conversions
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_conversions
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_conversions
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_conversions
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                </template>
+                                <template v-slot:footer>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("home_conversions").toFixed()
+                                        }}%
+                                    </div>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("away_conversions").toFixed()
+                                        }}%
+                                    </div>
+                                </template>
+                            </LinescoreGridView>
+                        </transition>
+                    </div>
+                </div>
+
+                <div class="h2h-container" v-if="scoreDetails?.length">
+                    <div class="text-center text-bold h2h__header">
+                        Force efficiency
+                    </div>
+                    <div class="text-center h2h__header text-sm text-italic">
+                        Without hammer, forcing opposition to 1
+                    </div>
                     <div class="h2h-percentage--wrap">
                         <percentage
                             :percent="getPercent('home_forces')"
@@ -350,12 +433,8 @@
                                 flat
                                 round
                                 icon="visibility"
-                                :color="
-                                    visibleStat === 'forces'
-                                        ? 'primary'
-                                        : 'grey-9'
-                                "
-                                @click.prevent.stop="showStat('forces')"
+                                :color="showForces ? 'primary' : 'grey-9'"
+                                @click.prevent.stop="showForces = !showForces"
                             />
                         </div>
                         <percentage
@@ -364,10 +443,95 @@
                             label=""
                         />
                     </div>
+
+                    <div style="overflow: hidden">
+                        <transition
+                            appear
+                            enter-active-class="animated slideInDown"
+                            leave-active-class="animated slideOutUp"
+                        >
+                            <LinescoreGridView
+                                v-if="showForces"
+                                :game="{
+                                    home: {
+                                        id: 1,
+                                        avatar: result.home_avatar,
+                                        color: result.home_color,
+                                    },
+                                    away: {
+                                        id: 2,
+                                        avatar: result.away_avatar,
+                                        color: result.away_color,
+                                    },
+                                }"
+                                :endCount="result.end_count"
+                                :score="getScore"
+                                :selected="20"
+                                style="margin-top: 1em"
+                            >
+                                <template v-slot:header>
+                                    <div style="visibility: hidden">F</div>
+                                    <div style="visibility: hidden">F</div>
+                                </template>
+                                <template v-slot:row="{ end }">
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_forces
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_forces
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_forces
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_forces
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                </template>
+                                <template v-slot:footer>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("home_forces").toFixed()
+                                        }}%
+                                    </div>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("away_forces").toFixed()
+                                        }}%
+                                    </div>
+                                </template>
+                            </LinescoreGridView>
+                        </transition>
+                    </div>
                 </div>
-                <div class="h2h-container" v-if="scoreDetails?.length"    >
-                       <div class="text-center text-bold h2h__header">Steal efficiency</div>
-                     <div class="text-center h2h__header text-sm text-italic">Scoring without hammer</div>
+                <div class="h2h-container" v-if="scoreDetails?.length">
+                    <div class="text-center text-bold h2h__header">
+                        Steal efficiency
+                    </div>
+                    <div class="text-center h2h__header text-sm text-italic">
+                        Scoring without hammer
+                    </div>
                     <div class="h2h-percentage--wrap">
                         <percentage
                             :percent="getPercent('home_steals')"
@@ -380,12 +544,8 @@
                                 flat
                                 round
                                 icon="visibility"
-                                :color="
-                                    visibleStat === 'steals'
-                                        ? 'primary'
-                                        : 'grey-9'
-                                "
-                                @click.prevent.stop="showStat('steals')"
+                                :color="showSteals ? 'primary' : 'grey-9'"
+                                @click.prevent.stop="showSteals = !showSteals"
                             />
                         </div>
                         <percentage
@@ -394,9 +554,91 @@
                             label=""
                         />
                     </div>
+                    <div style="overflow: hidden">
+                        <transition
+                            appear
+                            enter-active-class="animated slideInDown"
+                            leave-active-class="animated slideOutUp"
+                        >
+                            <LinescoreGridView
+                                v-if="showSteals"
+                                :game="{
+                                    home: {
+                                        id: 1,
+                                        avatar: result.home_avatar,
+                                        color: result.home_color,
+                                    },
+                                    away: {
+                                        id: 2,
+                                        avatar: result.away_avatar,
+                                        color: result.away_color,
+                                    },
+                                }"
+                                :endCount="result.end_count"
+                                :score="getScore"
+                                :selected="20"
+                                style="margin-top: 1em"
+                            >
+                                <template v-slot:header>
+                                    <div style="visibility: hidden">F</div>
+                                    <div style="visibility: hidden">F</div>
+                                </template>
+                                <template v-slot:row="{ end }">
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_steals
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_steals
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_steals
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_steals
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                </template>
+                                <template v-slot:footer>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("home_steals").toFixed()
+                                        }}%
+                                    </div>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("away_steals").toFixed()
+                                        }}%
+                                    </div>
+                                </template>
+                            </LinescoreGridView>
+                        </transition>
+                    </div>
                 </div>
-                <div class="h2h-container" v-if="scoreDetails?.length"  >
-                     <div class="text-center text-bold h2h__header">Hammer possession</div>
+                <div class="h2h-container" v-if="scoreDetails?.length">
+                    <div class="text-center text-bold h2h__header">
+                        Hammer possession
+                    </div>
                     <div class="h2h-percentage--wrap">
                         <percentage
                             :percent="getPercent('home_hammer')"
@@ -410,11 +652,11 @@
                                 round
                                 icon="visibility"
                                 :color="
-                                    visibleStat === 'hammer'
+                                    showHammer
                                         ? 'primary'
                                         : 'grey-9'
                                 "
-                                @click.prevent.stop="showStat('hammer')"
+                                @click.prevent.stop="showHammer = !showHammer"
                             />
                         </div>
                         <percentage
@@ -422,6 +664,86 @@
                             :color="result.away_color"
                             label=""
                         />
+                    </div>
+                      <div style="overflow: hidden">
+                        <transition
+                            appear
+                            enter-active-class="animated slideInDown"
+                            leave-active-class="animated slideOutUp"
+                        >
+                            <LinescoreGridView
+                                v-if="showHammer"
+                                :game="{
+                                    home: {
+                                        id: 1,
+                                        avatar: result.home_avatar,
+                                        color: result.home_color,
+                                    },
+                                    away: {
+                                        id: 2,
+                                        avatar: result.away_avatar,
+                                        color: result.away_color,
+                                    },
+                                }"
+                                :endCount="result.end_count"
+                                :score="getScore"
+                                :selected="20"
+                                style="margin-top: 1em"
+                            >
+                                <template v-slot:header>
+                                    <div style="visibility: hidden">F</div>
+                                    <div style="visibility: hidden">F</div>
+                                </template>
+                                <template v-slot:row="{ end }">
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_hammer
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.home_hammer
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                    <div>
+                                        <q-icon
+                                            size="6vw"
+                                            :name="
+                                                getIcon(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_hammer
+                                                )
+                                            "
+                                            :color="
+                                                getIconColor(
+                                                    scoreDetails[end - 1]
+                                                        ?.away_hammer
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                </template>
+                                <template v-slot:footer>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("home_hammer").toFixed()
+                                        }}%
+                                    </div>
+                                    <div style="font-size: 6vw">
+                                        {{
+                                            getPercent("away_hammer").toFixed()
+                                        }}%
+                                    </div>
+                                </template>
+                            </LinescoreGridView>
+                        </transition>
                     </div>
                 </div>
                 <table class="score_detail_card" v-if="false">
@@ -684,7 +1006,7 @@ const props = defineProps({
     result: Object,
 });
 
-const emit = defineEmits(['expand'])
+const emit = defineEmits(["expand"]);
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -836,6 +1158,11 @@ const getScore = computed(() => {
         }
     }, {});
 });
+
+const showForces = ref(false);
+const showSteals = ref(false);
+const showHammer = ref(false)
+const showConversions = ref(false)
 
 const visibleStat = ref(null);
 
