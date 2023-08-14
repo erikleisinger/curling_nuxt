@@ -79,222 +79,11 @@
                             color: result.away_color,
                         },
                     }"
-                    :endCount="result.end_count"
+                    :endCount="Math.max(result.end_count, scoreDetails.length)"
                     :score="getScore"
                     :selected="20"
                     style="margin-top: 1em"
-                >
-                    <template v-slot:header>
-                        <div
-                            v-if="visibleStat === 'hammer'"
-                            style="visibility: hidden"
-                        >
-                            H
-                        </div>
-                        <div
-                            v-if="visibleStat === 'hammer'"
-                            style="visibility: hidden"
-                        >
-                            H
-                        </div>
-                        <div
-                            v-if="visibleStat === 'conversions'"
-                            style="visibility: hidden"
-                        >
-                            C
-                        </div>
-                        <div
-                            v-if="visibleStat === 'conversions'"
-                            style="visibility: hidden"
-                        >
-                            C
-                        </div>
-                        <div
-                            v-if="visibleStat === 'steals'"
-                            style="visibility: hidden"
-                        >
-                            S
-                        </div>
-                        <div
-                            v-if="visibleStat === 'steals'"
-                            style="visibility: hidden"
-                        >
-                            S
-                        </div>
-                        <div
-                            v-if="visibleStat === 'forces'"
-                            style="visibility: hidden"
-                        >
-                            F
-                        </div>
-                        <div
-                            v-if="visibleStat === 'forces'"
-                            style="visibility: hidden"
-                        >
-                            F
-                        </div>
-                    </template>
-                    <template v-slot:row="{ end }">
-                        <div v-if="visibleStat === 'hammer'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.home_hammer)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.home_hammer
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'hammer'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.away_hammer)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.away_hammer
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'conversions'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(
-                                        scoreDetails[end - 1]?.home_conversions
-                                    )
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.home_conversions
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'conversions'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(
-                                        scoreDetails[end - 1]?.away_conversions
-                                    )
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.away_conversions
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'steals'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.home_steals)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.home_steals
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'steals'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.away_steals)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.away_steals
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'forces'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.home_forces)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.home_forces
-                                    )
-                                "
-                            />
-                        </div>
-                        <div v-if="visibleStat === 'forces'">
-                            <q-icon
-                                size="6vw"
-                                :name="
-                                    getIcon(scoreDetails[end - 1]?.away_forces)
-                                "
-                                :color="
-                                    getIconColor(
-                                        scoreDetails[end - 1]?.away_forces
-                                    )
-                                "
-                            />
-                        </div>
-                    </template>
-                    <template v-slot:footer>
-                        <div
-                            v-if="visibleStat === 'hammer'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("home_hammer").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'hammer'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("away_hammer").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'conversions'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("home_conversions").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'conversions'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("away_conversions").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'steals'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("home_steals").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'steals'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("away_steals").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'forces'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("home_forces").toFixed() }}%
-                        </div>
-                        <div
-                            v-if="visibleStat === 'forces'"
-                            style="font-size: 6vw"
-                        >
-                            {{ getPercent("away_forces").toFixed() }}%
-                        </div>
-                    </template>
-                </LinescoreGridView>
+             />
 
                 <div
                     class="h2h-container"
@@ -352,7 +141,7 @@
                                         color: result.away_color,
                                     },
                                 }"
-                                :endCount="result.end_count"
+                               :endCount="Math.max(result.end_count, scoreDetails.length)"
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
@@ -464,7 +253,7 @@
                                         color: result.away_color,
                                     },
                                 }"
-                                :endCount="result.end_count"
+                             :endCount="Math.max(result.end_count, scoreDetails.length)"
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
@@ -574,7 +363,7 @@
                                         color: result.away_color,
                                     },
                                 }"
-                                :endCount="result.end_count"
+                              :endCount="Math.max(result.end_count, scoreDetails.length)"
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
@@ -685,7 +474,7 @@
                                         color: result.away_color,
                                     },
                                 }"
-                                :endCount="result.end_count"
+                               :endCount="Math.max(result.end_count, scoreDetails.length)"
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
@@ -1123,10 +912,9 @@ const getPercent = (key) => {
 
 const getScore = computed(() => {
     return Array.from(
-        { length: props.result.end_count },
+        { length: Math.max(props.result.end_count, scoreDetails.value?.length) },
         (_, i) => i + 1
     ).reduce((all, current, index) => {
-        console.log("index: ", index, scoreDetails.value[index]);
         if (!scoreDetails.value[index]) {
             return {
                 ...all,
