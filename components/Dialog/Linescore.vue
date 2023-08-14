@@ -1,6 +1,9 @@
 <template>
-    <DialogFloating @close="toggleLineScore({ open: false })" :backable="false" :loading="loading">
-
+    <DialogFloating
+        @close="toggleLineScore({ open: false })"
+        :backable="false"
+        :loading="loading"
+    >
         <template v-slot:buttonLeft>
             <div />
         </template>
@@ -38,6 +41,12 @@
             </div>
         </template>
 
+        <LinescoreEndCountSelect
+            v-if="view === views.END_COUNT_SELECT"
+            @select="view = views.TEAM_SELECT"
+            v-model="endCount"
+        />
+
         <!-- STEP 1: Team Select -->
         <LinescoreTeamSelect
             v-if="view === views.TEAM_SELECT"
@@ -65,25 +74,25 @@
             v-else-if="view === views.LINESCORE"
             class="full-height scoreboard__container"
         >
-           <LinescoreGridView ref="nav"
-           :game="{
-            home: {
-                id: teamSelection.home?.id,
-                avatar: teamSelection.home?.team_avatar,
-                color: teamSelection?.homeColor
-            },
-            away: {
-                id: teamSelection?.away?.id,
-                avatar: teamSelection?.away?.team_avatar,
-                color: teamSelection?.awayColor
-            },
-            hammerFirstEnd: hammerFirstEndTeam
-            }"
-            :endCount="10"
-            :score="score"
-            :selected="visible"
-            @select="scrollTo"
-
+            <LinescoreGridView
+                ref="nav"
+                :game="{
+                    home: {
+                        id: teamSelection.home?.id,
+                        avatar: teamSelection.home?.team_avatar,
+                        color: teamSelection?.homeColor,
+                    },
+                    away: {
+                        id: teamSelection?.away?.id,
+                        avatar: teamSelection?.away?.team_avatar,
+                        color: teamSelection?.awayColor,
+                    },
+                    hammerFirstEnd: hammerFirstEndTeam,
+                }"
+                :endCount="endNumbers.length"
+                :score="score"
+                :selected="visible"
+                @select="scrollTo"
             />
 
             <div
@@ -92,6 +101,68 @@
                 ref="scroller"
                 :style="{ height: contentHeight }"
             >
+                <!-- <div class="scroller__team--container" ref="teamContainer">
+                    <div class="scroller__team column">
+                        <div class="scroller-team__avatar q-mb-sm">
+                            <Avataaar
+                                v-bind="
+                                    parseAvatar(teamSelection.home?.team_avatar)
+                                "
+                            />
+                            <q-badge
+                                color="deep-purple"
+                                class="hammer"
+                                rounded
+                                v-if="
+                                    hammerFirstEndTeam ===
+                                    teamSelection.home?.id
+                                "
+                            >
+                             
+                                <q-icon name="hardware" color="white"></q-icon
+                            ></q-badge>
+                            <q-badge
+                                :color="teamSelection.homeColor"
+                                rounded
+                            ></q-badge>
+                        </div>
+
+                    </div>
+                    <div class="full-height full-width row items-center justify-center">
+                        <q-btn
+                            color="primary"
+                            @click="concede('home')"
+                            icon="handshake"
+                            round
+                        />
+                        </div>
+                    <div class="scroller__team column">
+                        <div class="scroller-team__avatar q-mb-sm">
+                            <Avataaar
+                                v-bind="
+                                    parseAvatar(teamSelection.away?.team_avatar)
+                                "
+                            />
+                            <q-badge
+                                color="deep-purple"
+                                class="hammer"
+                                rounded
+                                v-if="
+                                    hammerFirstEndTeam ===
+                                    teamSelection.away?.id
+                                "
+                            >
+                          
+                                <q-icon name="hardware" color="white"></q-icon
+                            ></q-badge>
+                            <q-badge
+                                :color="teamSelection.awayColor"
+                                rounded
+                            ></q-badge>
+                        </div>
+
+                    </div>
+                </div> -->
                 <div class="start__padding col-grow" />
 
                 <!-- <ScrollerSection>
@@ -102,7 +173,7 @@
 
                 <ScrollerSection
                     @visible="setVisible(end)"
-                    v-for="end in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                    v-for="end in endNumbers"
                     :key="`end-input-${end}`"
                 >
                     <!-- v-slot="{distance}" -->
@@ -115,10 +186,46 @@
                             v-model="score[end]"
                             :visible="visible === end"
                             :endno="end"
+                            :extra="end > endCount"
+                            @remove="removeEnd(end)"
+                            :shakeable="
+                                end < endCount && score[end + 1].home !== 'X'
+                            "
+                            @shake="concede"
                         />
                     </div>
                 </ScrollerSection>
                 <div class="start__padding col-grow" />
+                <transition
+                    appear
+                    enter-active-class=" animated fadeIn"
+                    leave-active-class="animated fadeOut"
+                >
+                    <div
+                        class="next-options__container column"
+                        v-if="visible === endCount"
+                        style="min-width: 10vw"
+                    >
+                        <q-btn
+                            icon="add"
+                            stretch
+                            class="col-grow q-pa-none"
+                            @click="goExtra"
+                            no-wrap
+                            v-if="showExtraEnd()"
+                            ><span class="q-pl-xs">Extra</span></q-btn
+                        >
+                        <q-btn
+                            stretch
+                            color="primary"
+                            icon="check"
+                            no-wrap
+                            class="col-grow q-pa-none"
+                            @click="onForwardArrowClick"
+                            ><span class="q-pl-xs">Done</span></q-btn
+                        >
+                    </div>
+                </transition>
             </div>
         </div>
 
@@ -147,6 +254,7 @@
 $column-width: 26vh;
 $gutter-width: 20vw;
 $scroll-margin: -100px;
+$team-nav-margin: 6vh;
 
 .header__current-step {
     height: 4em;
@@ -160,7 +268,6 @@ $scroll-margin: -100px;
     font-family: $font-family-main;
     flex-wrap: nowrap;
 }
-
 
 .scoreboard__end-row {
     display: flex;
@@ -179,15 +286,63 @@ $scroll-margin: -100px;
         border-radius: 8px;
         overflow-y: hidden;
         overflow-x: auto;
-        position: relative;
+
+        overscroll-behavior: contain;
+        .next-options__container {
+            position: absolute;
+            right: 0;
+            height: inherit;
+            //   width: calc((100vw / 2 - $column-width / 1.5));
+            width: $column-width / 2;
+        }
+        :deep(.el) {
+            //   margin-left: 100px;
+        }
+        // padding-left: 26vh;
         .start__padding {
             width: calc(100vw / 2 - $column-width / 2);
             height: 100%;
         }
+        :deep(.scroller__team--container) {
+            position: sticky;
+            height: 100%;
+            left: 0;
+            top: 0;
+            padding-left: var(--space-xxxs);
+
+            z-index: 2;
+            display: grid;
+            grid-template-rows: 1fr 3em 1fr;
+            height: 100%;
+
+            .scroller__team {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .scroller-team__avatar {
+                    width: 3em;
+                    position: relative;
+                    .q-badge {
+                        position: absolute;
+                        right: 0;
+
+                        &.hammer {
+                            top: 0;
+                            padding: 2px;
+                        }
+
+                        &:not(.hammer) {
+                            bottom: 0;
+                        }
+                    }
+                }
+            }
+        }
+
         :deep(.scoreboard__end-container) {
             scroll-snap-align: center;
             scroll-snap-stop: always;
-            overflow: hidden;
+            overflow: visible;
             display: grid;
             min-width: $column-width;
             max-width: $column-width;
@@ -196,6 +351,7 @@ $scroll-margin: -100px;
             row-gap: 1px;
             height: 100%;
             width: 100%;
+            position: relative;
         }
     }
 }
@@ -212,20 +368,23 @@ import {
     useSwipe,
     useThrottleFn,
     useWindowSize,
+    toRefs,
 } from "@vueuse/core";
 import { generateEnds } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
-import {TABLE_NAMES} from '@/constants/tables'
+import { TABLE_NAMES } from "@/constants/tables";
 
 const teamSelection = ref({
     home: null,
     away: null,
-    homeColor: null,
-    awayColor: null,
+    homeColor: "yellow",
+    awayColor: "red",
 });
 
 const headerText = computed(() => {
-    if (view.value === views.TEAM_SELECT) {
+    if (view.value === views.END_COUNT_SELECT){
+        return 'Select number of ends'
+   }else  if (view.value === views.TEAM_SELECT) {
         if (!teamSelection.value.home) {
             return "Select your team";
         } else {
@@ -286,11 +445,12 @@ const forwardArrowDisabled = computed(
  */
 
 const showBackArrow = computed(() => {
-    if (view.value === views.TEAM_SELECT) {
-        return !!teamSelection?.value?.home;
-    }
+    // if (view.value === views.TEAM_SELECT) {
+    //     return !!teamSelection?.value?.home;
+    // }
     if (
         [
+            views.TEAM_SELECT,
             views.COLOR_SELECT,
             views.HAMMER_SELECT,
             views.LINESCORE,
@@ -306,6 +466,8 @@ const onBackArrowClick = useThrottleFn(() => {
             teamSelection.value.away = null;
         } else if (teamSelection?.value?.home) {
             teamSelection.value.home = null;
+        } else {
+            view.value = views.END_COUNT_SELECT;
         }
     } else if (view.value === views.COLOR_SELECT) {
         view.value = views.TEAM_SELECT;
@@ -313,8 +475,7 @@ const onBackArrowClick = useThrottleFn(() => {
         view.value = views.COLOR_SELECT;
     } else if (view.value === views.LINESCORE) {
         view.value = views.HAMMER_SELECT;
-    }else if (view.value === views.CONFIRM) {
-
+    } else if (view.value === views.CONFIRM) {
         view.value = views.LINESCORE;
     }
 }, 100);
@@ -340,7 +501,10 @@ const setVisible = (index) => {
 const emit = defineEmits(["close"]);
 
 const scroller = ref(null);
-const { x, isScrolling } = useScroll(scroller, { behavior: "smooth" });
+const { x, isScrolling, arrivedState } = useScroll(scroller, {
+    behavior: "smooth",
+});
+const { right: arrivedRight } = toRefs(arrivedState);
 
 const { width: windowWidth } = useWindowSize();
 //Temp disable
@@ -394,18 +558,21 @@ const score = ref({
 });
 
 
+
 const homeTotal = computed(() =>
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].reduce((acc, current) => {
+    [...endNumbers.value].reduce((acc, current) => {
+        if (score.value[current].home === "X") return acc;
         return (acc += score.value[current].home);
     }, 0)
 );
 const awayTotal = computed(() =>
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].reduce((acc, current) => {
+    [...endNumbers.value].reduce((acc, current) => {
+        if (score.value[current].away === "X") return acc;
         return (acc += score.value[current].away);
     }, 0)
 );
 
-const editedId = ref(null)
+const editedId = ref(null);
 
 const save = async () => {
     const teamsAndColors = { ...teamSelection.value };
@@ -414,17 +581,22 @@ const save = async () => {
 
     toggleLineScore({ open: false });
 
-    const gameToCreate = {
-            home: teamsAndColors?.home?.id,
-            away: teamsAndColors?.away?.id,
-            home_color: teamsAndColors?.homeColor,
-            away_color: teamsAndColors?.awayColor,
-            hammer_first_end: hammerFirstEndCopy,
-        }
+    const conceded = score.value[Object.keys(score.value).length].home === 'X';
 
-        if (editedId.value) {
-            gameToCreate.id = editedId.value;
-        }
+    const gameToCreate = {
+        home: teamsAndColors?.home?.id,
+        away: teamsAndColors?.away?.id,
+        home_color: teamsAndColors?.homeColor,
+        away_color: teamsAndColors?.awayColor,
+        hammer_first_end: hammerFirstEndCopy,
+        end_count: endCount.value,
+        completed: true,
+        conceded
+    };
+
+    if (editedId.value) {
+        gameToCreate.id = editedId.value;
+    }
 
     createGame({
         game: gameToCreate,
@@ -450,13 +622,13 @@ const createGame = async ({ game, score }) => {
         game?.home,
         game?.away,
         gameId
+        
     );
     if (editedId.value) {
-        await gameStore.bulkUpdateGameEnds(ends)
+        await gameStore.bulkUpdateGameEnds(ends);
     } else {
-   await gameStore.createGameEnds(ends);
+        await gameStore.createGameEnds(ends);
     }
- 
 };
 
 const { orientation } = useScreenOrientation();
@@ -480,6 +652,7 @@ const rows = computed(() => {
 });
 
 const views = {
+    END_COUNT_SELECT: "endcountselect",
     TEAM_SELECT: "teamselect",
     COLOR_SELECT: "colorselect",
     HAMMER_SELECT: "hammerSelect",
@@ -490,49 +663,58 @@ const views = {
 const view = ref(null);
 
 const fetchGame = async (game) => {
-    const {id} = game;
+    const { id } = game;
     if (!id) {
-        console.error('no game to initialize');
+        console.error("no game to initialize");
         return;
     }
 
     const gameStore = useGameStore();
 
-    const gameFromStore = await gameStore.getGame(id, true)
-    const {away, home, home_color: homeColor, away_color: awayColor, hammer_first_end} = gameFromStore
+    const gameFromStore = await gameStore.getGame(id, true);
+    const {
+        away,
+        home,
+        home_color: homeColor,
+        away_color: awayColor,
+        hammer_first_end,
+    } = gameFromStore;
 
     teamSelection.value = {
-        homeColor, 
-        awayColor, 
+        homeColor,
+        awayColor,
         home,
         away,
-    }
-    hammerFirstEndTeam.value = hammer_first_end
+    };
+    hammerFirstEndTeam.value = hammer_first_end;
     await fetchEndsForGame({
         gameId: id,
         homeId: home?.id,
-        awayId: away?.id
-    })
-}
+        awayId: away?.id,
+    });
+};
 
-const fetchEndsForGame = async ({gameId, homeId, awayId}) => {
-     const {client, fetchHandler} = useSupabaseFetch();;
-            const { data:ends, error } = await fetchHandler(() =>client
-                .from(TABLE_NAMES.ENDS)
-                .select('*')
-                .eq('game_id', gameId))
+const fetchEndsForGame = async ({ gameId, homeId, awayId }) => {
+    const { client, fetchHandler } = useSupabaseFetch();
+    const { data: ends, error } = await fetchHandler(() =>
+        client.from(TABLE_NAMES.ENDS).select("*").eq("game_id", gameId)
+    );
 
-      ends.forEach((end) => {
-        const {end_number: endNo, points_scored: points = 0, scoring_team_id: whoScored} = end;
+    ends.forEach((end) => {
+        const {
+            end_number: endNo,
+            points_scored: points = 0,
+            scoring_team_id: whoScored,
+        } = end;
         if (whoScored === homeId) {
             score.value[endNo].home = points;
         } else if (whoScored === awayId) {
-                score.value[endNo].away = points;
+            score.value[endNo].away = points;
         }
-      })
-}
+    });
+};
 
-const loading = ref(    )
+const loading = ref();
 
 onMounted(async () => {
     loading.value = true;
@@ -544,7 +726,7 @@ onMounted(async () => {
         await fetchGame(editedGame);
     } else {
         // Go to team select
-        view.value = views.TEAM_SELECT;
+        view.value = views.END_COUNT_SELECT;
     }
     loading.value = false;
 });
@@ -552,5 +734,69 @@ onMounted(async () => {
 const nav = ref(null);
 const { height: navHeight } = useElementSize(nav);
 
+const teamContainer = ref(null);
+const { width: teamContainerWidth } = useElementSize(teamContainer);
+
+const teamContainerMarginRight = computed(() => `100px`);
+
 const contentHeight = computed(() => `calc(100% - ${navHeight.value}px)`);
+
+const concede = (team) => {
+    for (let x = Number.parseInt(visible.value) + 1; x < endNumbers.value.length + 1; x++) {
+        score.value[x].home = "X";
+        score.value[x].away = "X";
+    }
+    scrollTo(endCount.value);
+};
+
+const goExtra = () => {
+    const lastEnd = endCount.value;
+    console.log("last end: ", lastEnd);
+    if (lastEnd + 1 > 12) return;
+    score.value[lastEnd + 1] = {
+        home: 0,
+        away: 0,
+    };
+    nextTick(() => {
+        scrollTo(lastEnd + 1);
+    });
+};
+
+const removeEnd = (end) => {
+    scrollTo(end - 1);
+    setTimeout(() => {
+        delete score.value[end];
+    }, 100);
+};
+
+const endCount = ref(10);
+
+watch(
+    endCount,
+    (scoreLength) => {
+        score.value = {};
+        if (!scoreLength) return;
+        console.log('score length: ', scoreLength)
+        Array.from({ length: scoreLength }, (_, i) => i + 1).forEach(
+            (i) => {
+                score.value[i] = {
+                    home: 0,
+                    away: 0,
+                };
+            }
+        );
+    },
+    { immediate: true }
+);
+
+const endNumbers = computed(() =>
+    Object.keys(score.value).map((e) => Number.parseInt(e))
+);
+
+const showExtraEnd = () => {
+    const shouldShow =
+        score.value[endCount.value].home !== "X" &&
+        homeTotal.value === awayTotal.value;
+    return shouldShow;
+};
 </script>

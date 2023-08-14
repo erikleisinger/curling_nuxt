@@ -68,6 +68,7 @@ body {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+    overscroll-behavior-x: contain;
     font-family: $font-family-secondary;
     -webkit-touch-callout: none; /* Safari */
     -webkit-user-select: none; /* Chrome */

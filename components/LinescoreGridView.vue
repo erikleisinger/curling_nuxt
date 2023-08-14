@@ -1,5 +1,5 @@
 <template>
-    <div class="linescore-grid__container" ref="nav">
+    <div class="linescore-grid__container"  :style="columns" ref="nav">
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
         >
@@ -71,12 +71,12 @@
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
+<style lang="scss" >
 .linescore-grid__container {
     // height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 2fr repeat(10, 1fr) 2fr;
+    // grid-template-columns: v-bind(columns);
     column-gap: 1px;
     background-color: $grey-4;
     .linescore-grid__container--item {
@@ -153,18 +153,22 @@ const props = defineProps<{
     selected: number
 }>();
 
-const ends = computed(() => Array.from({length: props.endCount}, (_, i) => i + 1));
+const ends = computed(() => Array.from({length: props.endCount}, (_, i) => i + 1))
 
 const emit = defineEmits(['select'])
 
 const homeTotal = computed(() =>
    ends.value.reduce((acc, current) => {
+         if (typeof props.score[current].home !== 'number') return acc
         return (acc += props.score[current].home);
     }, 0)
 );
 const awayTotal = computed(() =>
     ends.value.reduce((acc, current) => {
+        if (typeof props.score[current].away !== 'number') return acc
         return (acc += props.score[current].away);
     }, 0)
 );
+
+const columns = computed(() => `grid-template-columns: 2fr repeat(${ends.value.length}, 1fr) 2fr`)
 </script>

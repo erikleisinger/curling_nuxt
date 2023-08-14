@@ -2,10 +2,13 @@
     <Teleport to="body">
         <div class="outer__container" ref="container">
             <div class="pretty-shadow inner__container">
-               
-                    <q-inner-loading :showing="loading" color="primary" size="3em" class="z-top"/>
-              
-                
+                <q-inner-loading
+                    :showing="loading"
+                    color="primary"
+                    size="3em"
+                    class="z-top"
+                />
+
                 <div
                     class="row bg-deep-purple text-white pretty-shadow justify-between items-center q-px-xs"
                     style="
@@ -14,35 +17,42 @@
                         border-top-left-radius: inherit;
                     "
                 >
-              
-          
-                 <div class="col-grow row justify-between">
-                    <slot name="buttonLeft" v-bind:close="close">
-                              <q-btn flat round icon="arrow_back"  @click="close"/>
-                    </slot>
-                        <slot name="buttonRight" v-bind:close="close">
-                    <q-btn flat round icon="close"  @click="close"/>
+                    <div class="col-grow row justify-between">
+                        <slot name="buttonLeft" v-bind:close="close">
+                            <q-btn
+                                flat
+                                round
+                                icon="arrow_back"
+                                @click="close"
+                            />
                         </slot>
+                        <slot name="buttonRight" v-bind:close="close">
+                            <q-btn flat round icon="close" @click="close" />
+                        </slot>
+                    </div>
                 </div>
-                </div>
-                   <header class="pretty-shadow" style="position: relative; z-index: 1" ref="header">
-                    <slot name="header">
-
-                    </slot>
-                      </header>
-                <div class="content__container"  v-if="!transitioning">
-                   
+                <header
+                    class="pretty-shadow"
+                    style="position: relative; z-index: 1"
+                    ref="header"
+                >
+                    <slot name="header"> </slot>
+                </header>
+                <div class="content__container" v-if="!transitioning">
                     <slot @close="close" />
                 </div>
-                  <slot name="prependButton"/>
-                
+                <slot name="prependButton" />
+
+                <footer   ref="footer">
+                    <slot name="footer"/>
+                </footer>
             </div>
         </div>
     </Teleport>
 </template>
 <style lang="scss" scoped>
 [v-cloak] {
-  display: none;
+    display: none;
 }
 .outer__container {
     height: calc(100 * var(--vh, 1vh));
@@ -61,7 +71,7 @@
         .content__container {
             height: v-bind(contentHeight);
             overflow: auto;
-            position:relative;
+            position: relative;
         }
     }
 }
@@ -75,46 +85,53 @@ const props = defineProps({
         default: true,
     },
     loading: Boolean,
-})
+});
 
 const emit = defineEmits(["close"]);
 const container = ref(null);
 
 const keyframes = [
     {
-		transform: 'scale(0)',
-	},
+        transform: "scale(0)",
+    },
     {
-		transform: 'scale(1)',
-	}
-]
+        transform: "scale(1)",
+    },
+];
 
-const {reverse} = useAnimate(container, keyframes, {duration: 200, fill: 'both', easing: 'linear'});
-const transitioning = ref(true)
+const { reverse } = useAnimate(container, keyframes, {
+    duration: 200,
+    fill: "both",
+    easing: "linear",
+});
+const transitioning = ref(true);
 
 const timeout = () => {
-        return new Promise((resolve) => setTimeout(resolve, 250));
-      };
+    return new Promise((resolve) => setTimeout(resolve, 250));
+};
 
 const close = async () => {
-      transitioning.value = true;
+    transitioning.value = true;
     reverse();
     await timeout();
-    emit('close')
+    emit("close");
     transitioning.value = false;
-}
+};
 onBeforeMount(() => {
     transitioning.value = true;
-})
+});
 
 onMounted(async () => {
     await timeout();
     transitioning.value = false;
-})
-const header = ref(null)
-const {height: headerHeight} = useElementSize(header)
+});
+const header = ref(null);
+const { height: headerHeight } = useElementSize(header);
 
-const contentHeight = computed(() => `calc(100% - 3em - ${headerHeight.value}px)`)
+const footer = ref(null);
+const {height: footerHeight} = useElementSize(footer)
 
-
+const contentHeight = computed(
+    () => `calc(100% - 3em - ${headerHeight.value}px - ${footerHeight.value}px)`
+);
 </script>

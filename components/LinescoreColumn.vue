@@ -1,27 +1,57 @@
 <template>
     <div
-        class="scoreboard__end-row justify-center items-center" @click.prevent.stop="setTop"
+        class="scoreboard__end-row justify-center items-center"
+        @click.prevent.stop="setTop"
         v-memo="[score.home]"
     >
         <div class="inner row items-center justify-center q-pt-sm">
-            <div class="inner-scorecard text-center" >
+            <div class="inner-scorecard text-center">
                 {{ score.home }}
             </div>
         </div>
     </div>
+
     <div
-        class="scoreboard__end-row justify-center items-center" @click.prevent.stop="setBottom"
+        class="scoreboard__end-row justify-center items-center"
+        @click.prevent.stop="setBottom"
         v-memo="[score.away]"
     >
         <div class="inner row items-center justify-center q-pt-sm">
-            <div class="inner-scorecard text-center" >
+            <div class="inner-scorecard text-center">
                 {{ score.away }}
             </div>
         </div>
     </div>
+    <div class="extra__container" v-if="extra">
+        <q-btn icon="remove" round @click="emit('remove')"></q-btn>
+    </div>
+    <div class="shake__container" v-if="shakeable" ref="shaker">
+        <q-btn
+            :round="!isRevealed"
+            rounded
+            :color="isRevealed ? 'primary' : 'white'"
+            @click="handleShake"
+            no-wrap
+            ><q-icon
+                name="handshake"
+                :color="isRevealed ? 'white' : 'primary'"
+            />
+
+            <span class="shake-hands__text" :class="{isRevealed}">Shake hands?</span>
+            </q-btn
+        >
+    </div>
 </template>
 <style lang="scss" scoped>
+.shake-hands__text {
+    max-width: 0px;
+    transition: 0.2s all;
+    &.isRevealed {
+        max-width: 500px;
+    }
+}
 .scoreboard__end-row {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -32,7 +62,8 @@
     &:nth-child(2) {
         transform-origin: top;
     }
-    padding: var(--space-xxxxs);
+
+    padding: var(--space-md);
     .inner {
         border: 1px solid $grey-5;
         aspect-ratio: 1/1;
@@ -41,19 +72,47 @@
         font-size: calc(50%);
         line-height: 15vh;
         width: 100%;
-        font-size: 15vh;
+        font-size: 12vh;
         padding-top: 0.1em;
     }
 }
+.extra__container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 40px;
+
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.shake__container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 40px;
+
+    right: -1em;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>
 <script setup>
+import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 const props = defineProps({
     endno: Number,
+    extra: Boolean,
     modelValue: Object,
+    shakeable: Boolean,
     visible: Boolean,
 });
 
-const emit = defineEmits(["update:model-value", "visible"]);
+const emit = defineEmits(["shake", "remove", "update:model-value"]);
 
 const score = computed({
     get() {
@@ -86,4 +145,21 @@ const setBottom = () => {
         score.value.away += 1;
     }
 };
+
+const { isRevealed, reveal, confirm, cancel, onConfirm } = useConfirmDialog();
+
+const handleShake = () => {
+    if (!isRevealed.value) {
+        reveal();
+    } else {
+        confirm();
+    }
+};
+
+onConfirm(() => {
+    emit('shake')
+})
+
+const shaker = ref(null);
+onClickOutside(shaker, cancel)
 </script>

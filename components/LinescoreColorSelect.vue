@@ -3,7 +3,7 @@
         <div class="team-option__container">
             <div class="color__container">
                 <div class="color-selection__wrap">
-                <SelectColor v-model="selections.homeColor"/>
+                <SelectColor v-model="selections.homeColor" :prevent="[selections.awayColor]"/>
                 </div>
             </div>
             <div class="team__container">
@@ -21,7 +21,7 @@
         <div class="team-option__container">
             <div class="color__container">
                   <div class="color-selection__wrap">
-                <SelectColor v-model="selections.awayColor"/>
+                <SelectColor v-model="selections.awayColor" :prevent="[selections.homeColor]"/>
                 </div>
             </div>
             <div class="team__container">

@@ -6,7 +6,7 @@
                     clickable
                     :name="selected === homeId ? 'hardware' : 'o_hardware'"
                     :color="selected === homeId ? 'deep-purple' : 'grey-6'"
-                    @click="select(homeId)"
+                    @click="selected = homeId"
                     class="hammer-icon"
                     :class="{selected: selected === homeId}"
                 />
@@ -28,7 +28,7 @@
                 <q-icon
                     :name="selected === awayId ? 'hardware' : 'o_hardware'"
                     :color="selected === awayId ? 'deep-purple' : 'grey-6'"
-                    @click="select(awayId)"
+                    @click="selected = awayId"
                      class="hammer-icon"
                     :class="{selected: selected === awayId}"
                 />
@@ -87,7 +87,6 @@ $selected-hammer-height: 6em;
     }
 }
 .confirm-button__container {
-    // padding: var(--space-md);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -114,13 +113,9 @@ const selected = computed({
         return props.modelValue;
     },
     set(val) {
-        console.log("emit");
         emit("update:modelValue", val);
     },
 });
 
-const select = (id) => {
-    console.log("SELECT: ", id);
-    selected.value = id;
-};
+
 </script>
