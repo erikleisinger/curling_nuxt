@@ -4,7 +4,7 @@
             class="row justify-center items-center text-xl linescore-grid__container--item"
         >
             <div class="grid__column">
-                <div></div>
+                <div><div style="visibility: hidden">H</div></div>
                 <div class="row items-center team-avatar__container">
                     <Avataaar
                         style="height: 100%; width: 100%"
@@ -21,6 +21,7 @@
                     ></q-badge>
                     <q-badge :color="game?.home?.color" rounded></q-badge>
                 </div>
+                <slot name="header"/>
                 <div
                     class="row items-center team-avatar__container"
                     style="width: 1em"
@@ -49,22 +50,26 @@
             @click="emit('select', end)"
         >
             <div class="grid__column">
-                <div>{{ end }}</div>
-                <div>{{ score[end].home }}</div>
-                <div>{{ score[end].away }}</div>
+                <div class="end-column">{{ end }}</div>
+                <div class="score-column">{{ score[end]?.home ?? 0 }}</div>
+                <slot v-bind:end="end" name="row"/>
+                <div class="score-column">{{ score[end]?.away ?? 0 }}</div>
             </div>
         </div>
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
         >
-            <div class="grid__column full-width total">
-                <div class="row justify-center items-center">T</div>
+            <div class="grid__column final">
+                <div class="end-column">T</div>
                 <!-- :class="{ selected: awayTotal < homeTotal }" -->
-                <div class="row justify-center items-center">
+                <div class="score-column">
                     {{ homeTotal }}
                 </div>
+               
+                <slot name="footer"/>
+            
                 <!-- :class="{ selected: homeTotal < awayTotal }" -->
-                <div class="row justify-center items-center">
+                <div class="score-column">
                     {{ awayTotal }}
                 </div>
             </div>
@@ -92,11 +97,22 @@
 
         .grid__column {
             display: grid;
-            grid-template-rows: repeat(3, 33%);
+            grid-template-rows: repeat(5, auto);
             overflow: visible;
             height: 100%;
-            &.total {
-                // background-color: rgba(0, 0, 0, 0.1);
+            &.final {
+              
+                :not(.score-column):not(.end-column) {
+                 font-size: 6vw;
+                }
+            }
+            .end-column {
+                font-family: $font-family-main;
+                border-bottom: 1px solid $grey-4;
+                font-weight: bold;
+            }
+            .score-column {
+                font-size: 0.8em;
             }
             > div {
                 text-align: center;
@@ -159,14 +175,14 @@ const emit = defineEmits(['select'])
 
 const homeTotal = computed(() =>
    ends.value.reduce((acc, current) => {
-         if (typeof props.score[current].home !== 'number') return acc
-        return (acc += props.score[current].home);
+         if (typeof props.score[current]?.home !== 'number') return acc
+        return (acc += props.score[current]?.home);
     }, 0)
 );
 const awayTotal = computed(() =>
     ends.value.reduce((acc, current) => {
-        if (typeof props.score[current].away !== 'number') return acc
-        return (acc += props.score[current].away);
+        if (typeof props.score[current]?.away !== 'number') return acc
+        return (acc += props.score[current]?.away);
     }, 0)
 );
 

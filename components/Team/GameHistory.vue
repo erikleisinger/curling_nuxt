@@ -3,8 +3,11 @@
     <TeamGameResult   v-for="result in results"
             :key="result.id"
             :result="result"
-            @click="expand(result.id)"
-            :expanded="expanded === result.id"/>
+            :expanded="expanded === result.id"
+            @expand="expand(result.id)"
+    
+            
+            />
     </div>
     <div
         class="full-height relative-position row justify-center items-center"
@@ -49,6 +52,7 @@ const getTeamRecord = async (team_id_param) => {
     const client = useSupabaseClient();
     const { data } = await client.rpc("get_team_record", { team_id_param });
     if (data) results.value = data.map((d) => ({
+        end_count: d.end_count,
         id: d.id,
         home_avatar: props.team?.team_avatar,
         home_name: props.team?.name,

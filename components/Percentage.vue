@@ -2,15 +2,15 @@
     <div
         class="column"
             :class="{ 'column-reverse': reverse }"
-        style="width: 100%; padding-bottom: 16px"
+        style="width: inherit; padding-bottom: 16px"
         ref="el"
     >
         <div
-            class="row justify-between"
+            class="row justify-between no-wrap"
             :class="{ reverse }"
-            style="padding-bottom: 8px"
+            style="padding-bottom: 8px; width: 100%"
         >
-            <div style="font-weight: bold">{{ label }}</div>
+            <div style="font-weight: bold" class="truncate-text col-shrink label" :class="{reverse}">{{ label }}</div>
             <div style="font-weight: bold">{{ width }}%</div>
         </div>
         <div class="row justify-end" :class="{ reverse }">
@@ -18,7 +18,7 @@
         </div>
     </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .percent-wrapper {
     position: relative;
     border-radius: 8px;
@@ -41,7 +41,17 @@
         width: v-bind(widthComputed);
         box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
     }
+    
 }
+.label {
+        margin-right: var(--space-xs);
+        &:not(.reverse) {
+            
+        }
+        &.reverse {
+            margin-left: var(--space-xs);
+        }
+    }
 </style>
 <script setup>
 import {defineProps, ref, watch, computed} from 'vue'

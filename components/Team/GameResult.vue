@@ -1,7 +1,7 @@
 <template>
     <!-- @click="editGame(result.id)" -->
-    <div class="result__container--wrap" :class="{ expanded }">
-        <div class="result__container" ref="header">
+    <div class="result__container--wrap" :class="{ expanded }" >
+        <div class="result__container" ref="header" @click="emit('expand')">
             <div class="team__profile--container column no-wrap">
                 <div class="team-avatar__container">
                     <div class="team-avatar--wrap">
@@ -65,60 +65,366 @@
             enter-active-class="animated slideInDown"
             leave-active-class="animated slideOutUp"
         >
-            <div class="content__expandable" :class="{ expanded }">
-                <div class="h2h-container" v-if="scoreDetails?.length">
-                    <percentage
-                        :percent="getPercent('home_conversions')"
-                        :color="result.home_color"
-                        label="Hammer Conv"
-                    />
-                    <percentage
-                        :percent="getPercent('away_conversions')"
-                        :color="result.away_color"
-                        label="Hammer Conv"
-                        reverse
-                    />
+            <div class="content__expandable column" :class="{ expanded }">
+                <LinescoreGridView
+                    :game="{
+                        home: {
+                            id: 1,
+                            avatar: result.home_avatar,
+                            color: result.home_color,
+                        },
+                        away: {
+                            id: 2,
+                            avatar: result.away_avatar,
+                            color: result.away_color,
+                        },
+                    }"
+                    :endCount="result.end_count"
+                    :score="getScore"
+                    :selected="20"
+                    style="margin-top: 1em"
+
+                >
+                    <template v-slot:header>
+                        <div
+                            v-if="visibleStat === 'hammer'"
+                            style="visibility: hidden"
+                        >
+                            H
+                        </div>
+                        <div
+                            v-if="visibleStat === 'hammer'"
+                            style="visibility: hidden"
+                        >
+                            H
+                        </div>
+                        <div
+                            v-if="visibleStat === 'conversions'"
+                            style="visibility: hidden"
+                        >
+                            C
+                        </div>
+                        <div
+                            v-if="visibleStat === 'conversions'"
+                            style="visibility: hidden"
+                        >
+                            C
+                        </div>
+                        <div
+                            v-if="visibleStat === 'steals'"
+                            style="visibility: hidden"
+                        >
+                            S
+                        </div>
+                        <div
+                            v-if="visibleStat === 'steals'"
+                            style="visibility: hidden"
+                        >
+                            S
+                        </div>
+                        <div
+                            v-if="visibleStat === 'forces'"
+                            style="visibility: hidden"
+                        >
+                            F
+                        </div>
+                        <div
+                            v-if="visibleStat === 'forces'"
+                            style="visibility: hidden"
+                        >
+                            F
+                        </div>
+                    </template>
+                    <template v-slot:row="{ end }">
+                        <div v-if="visibleStat === 'hammer'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.home_hammer)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.home_hammer
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'hammer'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.away_hammer)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.away_hammer
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'conversions'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(
+                                        scoreDetails[end - 1]?.home_conversions
+                                    )
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.home_conversions
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'conversions'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(
+                                        scoreDetails[end - 1]?.away_conversions
+                                    )
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.away_conversions
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'steals'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.home_steals)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.home_steals
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'steals'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.away_steals)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.away_steals
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'forces'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.home_forces)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.home_forces
+                                    )
+                                "
+                            />
+                        </div>
+                        <div v-if="visibleStat === 'forces'">
+                            <q-icon
+                                size="6vw"
+                                :name="
+                                    getIcon(scoreDetails[end - 1]?.away_forces)
+                                "
+                                :color="
+                                    getIconColor(
+                                        scoreDetails[end - 1]?.away_forces
+                                    )
+                                "
+                            />
+                        </div>
+                    </template>
+                    <template v-slot:footer>
+                        <div
+                            v-if="visibleStat === 'hammer'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("home_hammer").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'hammer'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("away_hammer").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'conversions'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("home_conversions").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'conversions'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("away_conversions").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'steals'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("home_steals").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'steals'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("away_steals").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'forces'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("home_forces").toFixed() }}%
+                        </div>
+                        <div
+                            v-if="visibleStat === 'forces'"
+                            style="font-size: 6vw"
+                        >
+                            {{ getPercent("away_forces").toFixed() }}%
+                        </div>
+                    </template>
+                </LinescoreGridView>
+          
+                   
+                    <div
+                        class="h2h-container"
+                        v-if="scoreDetails?.length"
+                         :style="{order: visibleStat === 'conversions' ? 1 : 3}"
+                    >
+                     <div class="text-center text-bold h2h__header">Hammer conversion</div>
+                     <div class="text-center h2h__header text-sm text-italic">Scoring 2+ points with hammer</div>
+                        <div class="h2h-percentage--wrap">
+                            <percentage
+                                :percent="getPercent('home_conversions')"
+                                :color="result.home_color"
+                                label=""
+                                reverse
+                            />
+                            <div>
+                                <q-btn
+                                    flat
+                                    round
+                                    icon="visibility"
+                                    :color="
+                                        visibleStat === 'conversions'
+                                            ? 'primary'
+                                            : 'grey-9'
+                                    "
+                                    @click.prevent.stop="
+                                        showStat('conversions')
+                                    "
+                                />
+                            </div>
+                            <percentage
+                                :percent="getPercent('away_conversions')"
+                                :color="result.away_color"
+                                label=""
+                            />
+                        </div>
+                    </div>
+             
+                <div class="h2h-container"  v-if="scoreDetails?.length">
+                      <div class="text-center text-bold h2h__header">Force efficiency</div>
+                     <div class="text-center h2h__header text-sm text-italic">Without hammer, forcing opposition to 1</div>
+                    <div class="h2h-percentage--wrap">
+                        <percentage
+                            :percent="getPercent('home_forces')"
+                            :color="result.home_color"
+                            label=""
+                            reverse
+                        />
+                        <div>
+                            <q-btn
+                                flat
+                                round
+                                icon="visibility"
+                                :color="
+                                    visibleStat === 'forces'
+                                        ? 'primary'
+                                        : 'grey-9'
+                                "
+                                @click.prevent.stop="showStat('forces')"
+                            />
+                        </div>
+                        <percentage
+                            :percent="getPercent('away_forces')"
+                            :color="result.away_color"
+                            label=""
+                        />
+                    </div>
                 </div>
-                <div class="h2h-container" v-if="scoreDetails?.length">
-                    <percentage
-                        :percent="getPercent('home_forces')"
-                        :color="result.home_color"
-                        label="Force eff"
-                    />
-                    <percentage
-                        :percent="getPercent('away_forces')"
-                        :color="result.away_color"
-                        label="Force eff"
-                        reverse
-                    />
+                <div class="h2h-container" v-if="scoreDetails?.length"    >
+                       <div class="text-center text-bold h2h__header">Steal efficiency</div>
+                     <div class="text-center h2h__header text-sm text-italic">Scoring without hammer</div>
+                    <div class="h2h-percentage--wrap">
+                        <percentage
+                            :percent="getPercent('home_steals')"
+                            :color="result.home_color"
+                            label=""
+                            reverse
+                        />
+                        <div>
+                            <q-btn
+                                flat
+                                round
+                                icon="visibility"
+                                :color="
+                                    visibleStat === 'steals'
+                                        ? 'primary'
+                                        : 'grey-9'
+                                "
+                                @click.prevent.stop="showStat('steals')"
+                            />
+                        </div>
+                        <percentage
+                            :percent="getPercent('away_steals')"
+                            :color="result.away_color"
+                            label=""
+                        />
+                    </div>
                 </div>
-                <div class="h2h-container" v-if="scoreDetails?.length">
-                    <percentage
-                        :percent="getPercent('home_steals')"
-                        :color="result.home_color"
-                        label="Steal eff"
-                    />
-                    <percentage
-                        :percent="getPercent('away_steals')"
-                        :color="result.away_color"
-                        label="Steal eff"
-                        reverse
-                    />
+                <div class="h2h-container" v-if="scoreDetails?.length"  >
+                     <div class="text-center text-bold h2h__header">Hammer possession</div>
+                    <div class="h2h-percentage--wrap">
+                        <percentage
+                            :percent="getPercent('home_hammer')"
+                            :color="result.home_color"
+                            label=""
+                            reverse
+                        />
+                        <div>
+                            <q-btn
+                                flat
+                                round
+                                icon="visibility"
+                                :color="
+                                    visibleStat === 'hammer'
+                                        ? 'primary'
+                                        : 'grey-9'
+                                "
+                                @click.prevent.stop="showStat('hammer')"
+                            />
+                        </div>
+                        <percentage
+                            :percent="getPercent('away_hammer')"
+                            :color="result.away_color"
+                            label=""
+                        />
+                    </div>
                 </div>
-                <div class="h2h-container" v-if="scoreDetails?.length">
-                    <percentage
-                        :percent="getPercent('home_hammer')"
-                        :color="result.home_color"
-                        label="Hammer pos"
-                    />
-                    <percentage
-                        :percent="getPercent('away_hammer')"
-                        :color="result.away_color"
-                        label="Hammer pos"
-                        reverse
-                    />
-                </div>
-                <table class="score_detail_card" >
+                <table class="score_detail_card" v-if="false">
                     <thead>
                         <th>Sco</th>
                         <th>Ham</th>
@@ -260,13 +566,15 @@
 $result-height: 7vh;
 $columns: 20% 60% 20%;
 .result__container--wrap {
-    // padding: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    padding-top: var(--space-xs);
     width: min(600px, 100%);
-    // max-height: fit-content;
+    max-height: fit-content;
+    border-bottom: 1px solid $grey-3;
     // height: 100%;
     transition: all 1s;
     &.expanded {
-        // max-height: 100%;
+        max-height: unset;
     }
     .content__expandable {
         transition: all 0.3s;
@@ -339,9 +647,19 @@ $columns: 20% 60% 20%;
         font-size: 7vw;
     }
     .h2h-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-column-gap: 1em;
+        border: 1px solid $grey-4;
+        box-shadow: $pretty-shadow;
+        margin-top: var(--space-sm);
+        padding: var(--space-xs);
+        border-radius: 16px;
+        .h2h-percentage--wrap {
+            display: grid;
+            grid-template-columns: calc(50% - 40px) auto calc(50% - 40px);
+            grid-column-gap: 1em;
+        }
+        .h2h__header {
+            margin-bottom: calc(-1 * var(--space-xs));
+        }
     }
 }
 @keyframes expand {
@@ -365,6 +683,8 @@ const props = defineProps({
     expanded: Boolean,
     result: Object,
 });
+
+const emit = defineEmits(['expand'])
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -473,10 +793,57 @@ const getIconColor = (val) => {
 
 const getPercent = (key) => {
     const allItems = scoreDetails.value.filter((e) => e[key] !== null);
-    console.log(allItems, scoreDetails.value[0]);
     return (
         (allItems.filter((e) => e[key] === true)?.length / allItems.length) *
         100
     );
+};
+
+const getScore = computed(() => {
+    return Array.from(
+        { length: props.result.end_count },
+        (_, i) => i + 1
+    ).reduce((all, current, index) => {
+        console.log("index: ", index, scoreDetails.value[index]);
+        if (!scoreDetails.value[index]) {
+            return {
+                ...all,
+                [index + 1]: {
+                    home: "X",
+                    away: "X",
+                },
+            };
+        } else {
+            return {
+                ...all,
+                [index + 1]: {
+                    home:
+                        scoreDetails.value[index]?.points_scored === null
+                            ? "X"
+                            : scoreDetails.value[index]?.scoring_team_id ===
+                              scoreDetails.value[index]?.home_team
+                            ? scoreDetails.value[index]?.points_scored
+                            : 0,
+                    away:
+                        scoreDetails.value[index]?.points_scored === null
+                            ? "X"
+                            : scoreDetails.value[index]?.scoring_team_id ===
+                              scoreDetails.value[index]?.away_team
+                            ? scoreDetails.value[index]?.points_scored
+                            : 0,
+                },
+            };
+        }
+    }, {});
+});
+
+const visibleStat = ref(null);
+
+const showStat = (stat) => {
+    if (visibleStat.value === stat) {
+        visibleStat.value = null;
+    } else {
+        visibleStat.value = stat;
+    }
 };
 </script>
