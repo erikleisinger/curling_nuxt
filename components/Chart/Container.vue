@@ -1,18 +1,21 @@
 <template>
     
         <section name="hammer conversion" class="stats__section">
-            <div class="row items-center no-wrap">
-                <slot name="card"/>
+            <div class="row items-center no-wrap ">
+             
                 <div class="column">
                     <h2 class="text-md text-bold"><slot name="title"/></h2>
                     <h3 class="text-sm"><slot name="subtitle"/></h3>
                 </div>
+                <div class="col-grow row justify-end full-height">
+                   <slot name="card"/>
+                </div>
             </div>
-            <span ref="chartContainer" :id="`stats-scroller-${index}`" style="height: 100%">
-                  <transition-group appear :enter-active-class="`animated ${enterClass}`" :leave-active-class="`animated ${leaveClass}`"> 
+            <div ref="chartContainer" :id="`stats-scroller-${index}`" >
+                  <!-- <transition-group appear :enter-active-class="`animated ${enterClass}`" :leave-active-class="`animated ${leaveClass}`">  -->
             <slot/>
-                  </transition-group>
-            </span>
+                  <!-- </transition-group> -->
+            </div>
 
 
             <q-inner-loading color="deep-purple" :showing="loading" />
@@ -26,25 +29,19 @@ $section-margin: var(--space-xs);
          scroll-snap-align: center;
         overflow: hidden;
         display: grid;
-        grid-template-rows: 25% 75%;
-        height: 350px;
+        // grid-template-rows: 5vh 1fr;
+        // height: 350px;
         border-radius: 0px;
         box-shadow: $pretty-shadow;
         margin: $section-margin;
-        padding: var(--space-sm);
-        aspect-ratio: 3/2;
+        // padding: var(--space-sm);
+        // aspect-ratio: 1/1;
         position: relative;
         width: calc(100% - var(--space-md));
         @include sm {
             width: calc(50% - var(--space-md));
         }
-        :deep(.pinch-zoom-container) {
-            height: 100%!important;
-        }
-        :deep(canvas) {
-            height: 100%!important;
-            width: 100%!important;
-        }
+
     }
     .total__card--wrap {
         margin-bottom: var(--space-sm);

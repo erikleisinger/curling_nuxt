@@ -4,10 +4,10 @@
         <q-inner-loading color="purple" label="Loading stats..." :showing="loading"/>
         <!-- <ChartHammerPoints v-if="!loading"/> -->
 
-        <ChartTeamStatistics :teamId="teamId"/>
-          <ChartTeamStatistics :teamId="teamId"/>
-             <ChartTeamStatistics :teamId="teamId"/>
-                <ChartTeamStatistics :teamId="teamId"/>
+        <ChartTeamWinLoss :teamId="teamId" :wins="wins" :losses="losses" :ties="ties" v-if="!loading"/>
+          <ChartTeamPointsPerGame :teamId="teamId" v-if="!loading" :for="pointsForGame" :against="pointsAgainstGame"/>
+                <ChartTeamEndsPerGame :teamId="teamId" v-if="!loading" :for="endsForGame" :against="endsAgainstGame"/>
+                    <ChartTeamForceEfficiency :teamId="teamId" v-if="!loading" :for="forceWith" :against="forceWithout" :totalEnds="endsPlayed"/>
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -155,13 +155,12 @@
 <style lang="scss" scoped>
 $section-margin: var(--space-xs);
 .stats__container {
-    height: 100%;
+    // height: 100%;
     // padding-top: var(--space-xs);
     border-radius: 8px;
     overflow: auto;
-    scroll-snap-type: mandatory;
+    scroll-snap-type: y mandatory;
      scroll-snap-stop: always;
-     scroll-snap-points-y: repeat(350px);
 
     .total__card--wrap {
         margin-bottom: var(--space-sm);
@@ -507,17 +506,44 @@ const getWinsLossess = async () => {
     loadingRecord.value = false;
 };
 
+const pointsForGame = ref(0);
+const pointsAgainstGame = ref(0)
+const endsForGame = ref(0);
+const endsAgainstGame = ref(0);
+const endsPlayed = ref(0);
+const forceWith = ref(0);
+const forceWithout = ref(0)
+const getTeamRecord = async () => {
+ const client = useSupabaseClient();
+        const { data } = await client.rpc("get_team_game_statistics", {
+        team_id_param: props.teamId,
+        });
+
+        const [teamRecord] = data;
+        const {points_for_per_game, points_against_per_game, ends_against_per_game, ends_for_per_game, force_with_count, force_without_count, ends_played} = teamRecord
+
+            pointsForGame.value = points_for_per_game;
+            pointsAgainstGame.value = points_against_per_game
+            endsForGame.value = ends_for_per_game
+            endsAgainstGame.value = ends_against_per_game;
+            forceWith.value = force_with_count;
+            forceWithout.value = force_without_count;
+            endsPlayed.value = ends_played
+}
+
 const currentTeamId = computed(() => props.teamId);
-const loading = ref(false);
-// watchDebounced(
-//     currentTeamId,
-//     async () => {
-//         loading.value = true;
-//         await Promise.all([getWinsLossess()]);
-//         loading.value = false;
-//     },
-//     { debounce: 1, immediate: true }
-// );
+const loading = ref(true);
+watchDebounced(
+    currentTeamId,
+    async () => {
+        loading.value = true;
+        
+    await Promise.all([getTeamRecord(), getWinsLossess()])
+
+        loading.value = false;
+    },
+    { debounce: 1, immediate: true }
+);
 
 // Utils
 
