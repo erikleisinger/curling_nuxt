@@ -6,6 +6,8 @@
 
         <ChartTeamStatistics :teamId="teamId"/>
           <ChartTeamStatistics :teamId="teamId"/>
+             <ChartTeamStatistics :teamId="teamId"/>
+                <ChartTeamStatistics :teamId="teamId"/>
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -157,6 +159,9 @@ $section-margin: var(--space-xs);
     // padding-top: var(--space-xs);
     border-radius: 8px;
     overflow: auto;
+    scroll-snap-type: mandatory;
+     scroll-snap-stop: always;
+     scroll-snap-points-y: repeat(350px);
 
     .total__card--wrap {
         margin-bottom: var(--space-sm);
@@ -189,51 +194,51 @@ const { height: winLossChartHeight } = useElementSize(winLossChart);
 const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
 const disableScroll = ref(false);
-const { y, isScrolling, directions } = useScroll(statsContainer, {
-    behavior: "smooth",
-    throttle: 0.5,
-    onScroll: (val) => {
-        if (disableScroll.value) return;
+// const { y, isScrolling, directions } = useScroll(statsContainer, {
+//     behavior: "smooth",
+//     throttle: 0.5,
+//     onScroll: (val) => {
+//         if (disableScroll.value) return;
 
-        const { top: scrollingUp, bottom: scrollingDown } = directions;
-        let nextPos = null;
-        if (scrollingDown) {
-            const diff = y.value % containerHeight.value;
-            const shouldScroll = diff > containerHeight.value / 4;
-            if (shouldScroll) {
-                console.log("NEXT: ", y.value + (containerHeight.value - diff));
-                nextPos = y.value + (containerHeight.value - diff);
-            }
-        } else if (scrollingUp) {
-            console.log(y.value % containerHeight.value);
-            const shouldScroll =
-                y.value % containerHeight.value < containerHeight.value * 0.75;
-            if (shouldScroll) {
-                nextPos = y.value - (y.value % containerHeight.value);
-                console.log(
-                    "NEXT: ",
-                    y.value - (y.value % containerHeight.value)
-                );
-            }
-        }
+//         const { top: scrollingUp, bottom: scrollingDown } = directions;
+//         let nextPos = null;
+//         if (scrollingDown) {
+//             const diff = y.value % containerHeight.value;
+//             const shouldScroll = diff > containerHeight.value / 4;
+//             if (shouldScroll) {
+//                 console.log("NEXT: ", y.value + (containerHeight.value - diff));
+//                 nextPos = y.value + (containerHeight.value - diff);
+//             }
+//         } else if (scrollingUp) {
+//             console.log(y.value % containerHeight.value);
+//             const shouldScroll =
+//                 y.value % containerHeight.value < containerHeight.value * 0.75;
+//             if (shouldScroll) {
+//                 nextPos = y.value - (y.value % containerHeight.value);
+//                 console.log(
+//                     "NEXT: ",
+//                     y.value - (y.value % containerHeight.value)
+//                 );
+//             }
+//         }
 
-        // console.log("remainder: ", diff);
-        // console.log("scrolling up: ", directions.top);
-        // console.log("Y VALUE: ", y.value);
-        // console.log(shouldScroll);
-        if (nextPos !== null) {
-            disableScroll.value = true;
-            y.value = nextPos;
-        }
-    },
-    onStop: () => {
-        if (disableScroll.value) {
-            setTimeout(() => {
-                disableScroll.value = false;
-            }, 1000);
-        }
-    },
-});
+//         // console.log("remainder: ", diff);
+//         // console.log("scrolling up: ", directions.top);
+//         // console.log("Y VALUE: ", y.value);
+//         // console.log(shouldScroll);
+//         if (nextPos !== null) {
+//             disableScroll.value = true;
+//             y.value = nextPos;
+//         }
+//     },
+//     onStop: () => {
+//         if (disableScroll.value) {
+//             setTimeout(() => {
+//                 disableScroll.value = false;
+//             }, 1000);
+//         }
+//     },
+// });
 const { height: containerHeight } = useElementSize(statsContainer);
 
 const stats = ref(null);

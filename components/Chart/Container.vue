@@ -23,6 +23,7 @@ $section-margin: var(--space-xs);
 
 
     .stats__section {
+         scroll-snap-align: center;
         overflow: hidden;
         display: grid;
         grid-template-rows: 25% 75%;
