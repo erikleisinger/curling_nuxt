@@ -7,19 +7,20 @@ export const BADGE_BACKGROUNDS = {
 }   
 
 export const BADGE_TITLES = {
-    showoff: 'Show offs',
-    bandit: 'Kleptomaniacs',
+    showoff: 'Showoffs!',
+    bandit: 'Bandits',
     bulwark: 'Indomitable',
     minimalist: 'Minimalists',
-    survivalist: 'Survivalists  '
+    survivalist: 'Survivalists',
 }
+
 
 export const BADGE_FORMULAS = {
     showoff: (val) =>  `With hammer, scores 3+ points ${val.toFixed()}% of the time.`,
     bandit: (val) => `Without hammer, steals ${val.toFixed()}% of the time.`,
     bulwark: (val) => `Without hammer, opposition scores 2+ points only ${val.toFixed()}% of the time.`,
     minimalist: (val) => `With hammer, blanks ${val.toFixed()}% of the time.`,
-    survivalist: (val) => `With hammer, scores only 1 point ${val.toFixed()}% of the time.`
+    survivalist: (val) => `With hammer, scores 1 point ${val.toFixed()}% of the time.`
 }
 
 export const BADGE_DESCRIPTIONS = {

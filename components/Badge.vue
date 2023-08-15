@@ -1,13 +1,10 @@
 <template>
-    <div
-        class="badge__content--container z-max"
-        ref="badgeRef"
-        :class="{hover}"
-        @click="hover = true"
-    >
-<!-- float: hover ? 'left' : 'unset', -->
-        <div class="badge__container column no-wrap flex-shrink" :class="`${BADGE_BACKGROUNDS[badge]} ${hover ? 'hover' : ''}`">
-            <div style="height: 100%" class="badge__container--inner ">
+    <div class="badge__content--container">
+        <div
+            class="badge__container column no-wrap flex-shrink"
+            :class="`${BADGE_BACKGROUNDS[badge]}`"
+        >
+            <div style="height: 100%" class="badge__container--inner">
                 <svg
                     v-if="badge === 'bandit'"
                     xmlns="http://www.w3.org/2000/svg"
@@ -108,108 +105,39 @@
                     </g>
                 </svg>
             </div>
-         
-        </div>
-        
-  
-        <div v-if="hover" class="badge-description__container z-max">
-            <div class="badge-header">
-            <h2 class="text-lg text-bold truncate-text text-center">{{BADGE_TITLES[badge]}}</h2>
-            <h3 class="text-sm text-caption text-deep-purple text-center" style="margin-top: -0.1em; line-height: unset">
-                {{BADGE_FORMULAS[badge](props.raw)}}
-            </h3>
-            </div>
-            <p class="text-center">
-                {{description}}
-            </p>
         </div>
     </div>
 </template>
 <style lang="scss">
 $icon-height: 4em;
 .badge__content--container {
-        // margin: var(--space-xs);
-       transition: transform 0.3s;
-          
-     &.hover {
-        position: absolute;
-        z-index: $z-tooltip;
-        transform: scale(1.4);
-        // left: 0;
-        // right: 0;
-        margin: auto;
-        background-color: white;
-        // border-top-left-radius: 35%;
-        //   border-bottom-left-radius: 35%;
-        border-radius: 16px;
-          border: 1px solid rgba(0,0,0,0.2);
-          padding: var(--space-xs);
-        //   padding-right: 0px;
-          max-width: min(70%, 300px);
-          width: 60%;
-          left:0;
-          right:0;
-        //   max-width: 95vw;
-        // &:after {
-        //     content: v-bind(badgeTitle);
-        //     position: absolute;
-        //     bottom: -1.5em;
-        //     left:0;
-        //     right:0;
-        //     margin: auto;
-        //     text-align: center;
-        //     background-color:white;
-        //     border-radius: 8px;
-        //     border: 1px solid rgba(0,0,0,0.1);
-        //     font-size: 0.6em;
-        //     font-weight:bold;
-        //     box-shadow: $pretty-shadow;
-        // }
-    }
-    .badge-description__container {
-        font-size: var(--text-xs);
-        padding-right: var(--space-sm);
-        .badge-header {
-            margin-bottom: var(--space-sm);
+    .badge__container {
+        height: v-bind(height);
+        border-radius: 32px;
+        aspect-ratio: 1/1;
+        border: 3px solid white;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+            rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+        background-size: cover;
+        fill: rgb(0, 24, 49);
+        path {
+            fill: inherit;
         }
-     
-    }
-.badge__container {
-        //  float:left;
-    transition: transform 0.3s;
-    height: v-bind(height);
-    border-radius: 32px;
-    aspect-ratio: 1/1;
-    // padding: calc($icon-height * 0.1);
-    border: 3px solid white;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    // box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    background-size: cover;
- 
-    fill: rgb(0, 24, 49);
-    path {
-        fill: inherit;
-    }
-    svg {
-        fill: white;
-    }
-    .badge__container--inner {
-        padding: v-bind(padding);
-        border-radius: inherit;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-    }
-    &.hover {
-        margin: auto;
-        margin-bottom: var(--space-sm);
+        svg {
+            fill: white;
+        }
+        .badge__container--inner {
+            padding: v-bind(padding);
+            border-radius: inherit;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
     }
 }
-}
-
 </style>
 <script setup>
-import { BADGE_BACKGROUNDS, BADGE_DESCRIPTIONS, LOREM_IPSUM, BADGE_TITLES, BADGE_FORMULAS } from "@/constants/badges";
-import {onClickOutside} from '@vueuse/core'
+import {
+    BADGE_BACKGROUNDS
+} from "@/constants/badges";
 const props = defineProps({
     badge: {
         type: String,
@@ -217,18 +145,16 @@ const props = defineProps({
     },
     height: {
         type: String,
-        default: '4em'
+        default: "4em",
     },
     raw: Number,
 });
 
-const padding = computed(() => `calc(${props.height} * 0.1)`)
-const description = computed(() => BADGE_DESCRIPTIONS[props.badge] ?? LOREM_IPSUM)
+const padding = computed(() => `calc(${props.height} * 0.1)`);
 
-const badgeRef = ref(null);
-onClickOutside(badgeRef, () => hover.value = false)
+const description = computed(
+    () => BADGE_DESCRIPTIONS[props.badge] ?? LOREM_IPSUM
+);
 
 const badgeTitle = computed(() => `"${props.badge}"`);
-
-const hover = ref(false);
 </script>

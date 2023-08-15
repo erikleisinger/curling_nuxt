@@ -1,7 +1,7 @@
 <template>
     
         <section name="hammer conversion" class="stats__section">
-            <div class="row items-center no-wrap total__card--wrap">
+            <div class="row items-center no-wrap">
                 <slot name="card"/>
                 <div class="column">
                     <h2 class="text-md text-bold"><slot name="title"/></h2>
@@ -56,9 +56,11 @@ import {useSwipe, useRefHistory} from '@vueuse/core'
     const props = defineProps({
         loading: Boolean,
         index: Number,
+        zoomable: Boolean,
     })
     const pz = ref(null)
     onMounted(() => {
+        if (!props.zoomable) return;
          pz.value = new PinchZoom(document.querySelector(`#stats-scroller-${props.index}`), {
                 maxZoom: 3,
                 draggableUnzoomed: false,
@@ -67,7 +69,6 @@ import {useSwipe, useRefHistory} from '@vueuse/core'
     })
 
     onBeforeUnmount(() => {
-        console.log(pz.value.destroy)
         // pz.value.destroy
     })
   

@@ -2,15 +2,9 @@
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
         <q-inner-loading color="purple" label="Loading stats..." :showing="loading"/>
-        <!-- Badges  -->
-        <!-- <div class="row full-width q-px-sm" style="">
-            <Badge badge="showoff" v-if="showoff" :raw="showoff" />
-            <Badge badge="bandit" v-if="bandit" :raw="bandit" />
-            <Badge badge="bulwark" v-if="bulwark" :raw="bulwark" />
-            <Badge badge="minimalist" v-if="minimalist" :raw="minimalist"/>
-              <Badge badge="survivalist" v-if="survivor" :raw="survivor"/>
-        </div> -->
-        <ChartHammerPoints v-if="!loading"/>
+        <!-- <ChartHammerPoints v-if="!loading"/> -->
+
+        <ChartTeamStatistics :teamId="teamId"/>
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -530,16 +524,16 @@ const getWinsLossess = async () => {
 };
 
 const currentTeamId = computed(() => props.teamId);
-const loading = ref(true);
-watchDebounced(
-    currentTeamId,
-    async () => {
-        loading.value = true;
-        await Promise.all([getGameStats(), getWinsLossess()]);
-        loading.value = false;
-    },
-    { debounce: 1, immediate: true }
-);
+const loading = ref(false);
+// watchDebounced(
+//     currentTeamId,
+//     async () => {
+//         loading.value = true;
+//         await Promise.all([getWinsLossess()]);
+//         loading.value = false;
+//     },
+//     { debounce: 1, immediate: true }
+// );
 
 // Utils
 

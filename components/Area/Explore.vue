@@ -21,10 +21,10 @@
                         </template> 
                          <span class="text-bold">{{team?.name}}</span>
                          <template v-slot:subtitle>
-                            <div class="badge__container">
-                              <Badge badge="showoff"  :raw="5" height="2em" />
-            <Badge badge="bandit"  :raw="6" height="2em" />
-            </div>
+                    
+                              <ProfileBadges :teamId="team?.id"  />
+       
+
                          </template>    
                       
                     </ProfileCard>
