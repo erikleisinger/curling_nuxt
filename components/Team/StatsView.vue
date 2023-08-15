@@ -5,6 +5,7 @@
         <!-- <ChartHammerPoints v-if="!loading"/> -->
 
         <ChartTeamStatistics :teamId="teamId"/>
+          <ChartTeamStatistics :teamId="teamId"/>
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -152,33 +153,11 @@
 <style lang="scss" scoped>
 $section-margin: var(--space-xs);
 .stats__container {
+    height: 100%;
     // padding-top: var(--space-xs);
     border-radius: 8px;
-    aspect-ratio: 3/4;
     overflow: auto;
 
-    .stats__section {
-        display: grid;
-        grid-template-rows: 25% 75%;
-        height: calc(100% - $section-margin * 2);
-        border-radius: 0px;
-        box-shadow: $pretty-shadow;
-        margin: $section-margin;
-        padding: var(--space-sm);
-        aspect-ratio: 3/2;
-        position: relative;
-        width: calc(100% - var(--space-md));
-        @include sm {
-            width: calc(50% - var(--space-md));
-        }
-        :deep(.pinch-zoom-container) {
-            height: 100% !important;
-        }
-        canvas {
-            height: 75%;
-            width: 100%;
-        }
-    }
     .total__card--wrap {
         margin-bottom: var(--space-sm);
     }

@@ -7,7 +7,7 @@
     </div>
 </template>
 <style lang="scss" scoped>
-$width: 20vw;
+$width: min(20vw, 100px);
 .total__card {
     border-radius: 25%;
     border: 1px solid $grey-5;
@@ -24,15 +24,6 @@ $width: 20vw;
     .total__card--inner {
         position: relative;
         color: rgba(0, 0, 0, 0.8);
-        // &:after {
-        //     position: absolute;
-        //     content: "/10";
-        //     font-size: 0.3em !important;
-        //     bottom: 0.5em;
-        //     right: -1em;
-        //     margin-left: calc(var(--space-sm) * -1);
-        //     font-weight: normal;
-        // }
     }
 }
 </style>

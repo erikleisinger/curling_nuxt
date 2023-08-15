@@ -139,6 +139,8 @@ onMounted(async () => {
 
         },
         options: {
+            maintainAspectRatio: false,
+            aspectRatio: 3/2,
             elements: {
                 arc: [
                     {

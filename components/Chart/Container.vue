@@ -26,7 +26,7 @@ $section-margin: var(--space-xs);
         overflow: hidden;
         display: grid;
         grid-template-rows: 25% 75%;
-        height: calc(100% - $section-margin * 2);
+        height: 350px;
         border-radius: 0px;
         box-shadow: $pretty-shadow;
         margin: $section-margin;

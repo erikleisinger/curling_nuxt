@@ -24,7 +24,7 @@
             />
             <ProfileBadge
                 badge="minimalist"
-                v-if="minimalist"
+                v-if="minimalist"   
                 :raw="minimalist"
                 :height="height"
             />
@@ -32,6 +32,12 @@
                 badge="survivalist"
                 v-if="survivor"
                 :raw="survivor"
+                :height="height"
+            />
+             <ProfileBadge
+                badge="strategist"
+                v-if="strategist"
+                :raw="strategist"
                 :height="height"
             />
         </div>
@@ -78,6 +84,7 @@ const getBadges = async () => {
     showoff.value = null;
     strategist.value = null;
     survivor.value = null;
+    strategist.value = null;
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
         () => client.rpc("get_team_statistics").eq("id", props.teamId),
@@ -92,6 +99,7 @@ const getBadges = async () => {
     showoff.value = stats.showoff;
     strategist.value = stats.strategist;
     survivor.value = stats.survivor;
+    strategist.value = stats.strategist;
 };
 
 onMounted(() => {

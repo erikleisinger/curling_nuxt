@@ -82,13 +82,14 @@ body {
             font-style: italic;
         }
         .subtitle__container {
-            border: 1px solid rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(103, 58, 183, 0.3);;
             margin-top: var(--space-sm);
             margin-left: var(--space-md);
             margin-right: var(--space-md);
             padding: var(--space-xxs);
             border-radius: 8px;
-            background-color: rgba(255, 216, 116, 0.5);
+            background-color: rgba(103, 58, 183, 0.2);
+            color: rgb(35, 0, 96);
             .subtitle {
                 text-align: center;
             }
