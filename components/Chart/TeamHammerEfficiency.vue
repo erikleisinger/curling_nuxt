@@ -7,19 +7,18 @@
         </template>
         <!-- :style="{height: `${chartHeight}px`}" -->
         <div v-if="index === 0" key="chart-1" class="chart__container">
-            <div class="full-height row items-center">
-                <div>
-                    <h2 class="text-md text-bold">
-                        Force efficiency
-                    </h2>
-                               <h3 class="text-sm">Forcing opposition to take 1 point</h3>
-                    <!-- <h3 class="text-sm text-right" v-html="descriptionText" /> -->
-                </div>
-            </div>
             <div>
                 <canvas ref="chart1" />
             </div>
-            
+            <div class="full-height row items-center">
+                <div>
+                    <h2 class="text-md text-bold text-right">
+                        Hammer efficiency
+                    </h2>
+                    <h3 class="text-sm text-right">Scoring 2+ points with hammer</h3>
+                    <!-- <h3 class="text-sm text-right" v-html="descriptionText" /> -->
+                </div>
+            </div>
         </div>
         <div v-if="index === 1" key="chart-1">Stats 2</div>
     </ChartContainer>
@@ -28,7 +27,7 @@
 .chart__container {
     display: grid;
     grid-template-columns: 50% 50%;
-    padding-left: var(--space-md);
+    padding-right: var(--space-md);
 }
 </style>
 <script setup>
@@ -50,7 +49,7 @@ const TITLES = ["Games played", "Title 2"];
 const DESCRIPTIONS = ["", "It changed!"];
 
 const descriptionText = computed(() => {
-    return `Opposition forced in <span class="text-bold">${props.for} / ${props.totalEnds}</span> ends`
+    return `<span class="text-bold">${props.for} / ${props.totalEnds}</span> ends`
 });
 const components = ref([null, null]);
 const onSwipe = (direction) => {
@@ -111,7 +110,7 @@ onMounted(async () => {
             datasets: [
                 {
                     data: [percent, 100 - percent],
-                    backgroundColor: ["#2196f3", "rgba(0,0,0,0.1)"],
+                    backgroundColor: ["#00bcd4", "rgba(0,0,0,0.1)"],
                     borderAlign: "center",
                     borderColor: ["rgba(255, 255, 255 ,1)"],
                     borderRadius: [
@@ -205,8 +204,9 @@ onMounted(async () => {
                 },
             },
             cutout: "80%",
-            rotation: 45,
-            radius: '100%',
+            radius: "100%",
+            rotation: 135,
+            // circumference: (360 / 100) * Number.parseInt(percent),
             circumference: 360,
             animation: {
                 animateScale: true,
