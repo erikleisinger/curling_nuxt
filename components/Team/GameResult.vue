@@ -70,13 +70,13 @@
                     :game="{
                         home: {
                             id: 1,
-                            avatar: result.home_avatar,
-                            color: result.home_color,
+                            avatar: result.is_home_team ? result.home_avatar : result.away_avatar,
+                            color: result.is_home_team ? result.home_color : result.away_color,
                         },
                         away: {
                             id: 2,
-                            avatar: result.away_avatar,
-                            color: result.away_color,
+                            avatar: result.is_home_team ? result.away_avatar : result.home_avatar,
+                            color: result.is_home_team ? result.away_color : result.home_color,
                         },
                     }"
                     :endCount="Math.max(result.end_count, scoreDetails.length)"
@@ -873,8 +873,23 @@ const getScoreDetails = async () => {
     const { data } = await client.rpc("get_game_score_detailed", {
         game_id_param: props.result?.id,
     });
+    console.log(data)
+    scoreDetails.value = data.sort((a, b) => a.end_number - b.end_number).map((e) => {
+        const {is_home_team: isHome} = props.result;
+        return {
+            ...e,
+            away_conversions: isHome ? e.away_conversions : e.home_conversions,
+            away_forces: isHome ? e.away_forces : e.home_forces,
+            away_hammer: isHome ? e.away_hammer : e.home_hammer,
+            away_steals: isHome ? e.away_steals : e.home_steals,
+            home_conversions: isHome ? e.home_conversions : e.away_conversions,
+            home_forces: isHome ? e.home_forces : e.away_forces,
+            home_hammer: isHome ? e.home_hammer : e.away_hammer,
+            home_steals: isHome ? e.home_steals : e.away_steals,
 
-    scoreDetails.value = data.sort((a, b) => a.end_number - b.end_number);
+            
+        }
+    });
 };
 
 const isExpanded = computed(() => props.expanded);
