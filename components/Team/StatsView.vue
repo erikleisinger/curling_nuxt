@@ -1,16 +1,53 @@
 <template>
     <!-- -->
     <div ref="statsContainer" class="stats__container row">
-        <q-inner-loading color="purple" label="Loading stats..." :showing="loading"/>
+        <q-inner-loading
+            color="purple"
+            label="Loading stats..."
+            :showing="loading"
+        />
         <!-- <ChartHammerPoints v-if="!loading"/> -->
 
-        <ChartTeamWinLoss :teamId="teamId" :wins="wins" :losses="losses" :ties="ties" v-if="!loading"/>
-                              <ChartTeamPointsPerGame :teamId="teamId" v-if="!loading" :for="pointsForGame" :against="pointsAgainstGame"/>
-                <ChartTeamEndsPerGame :teamId="teamId" v-if="!loading" :for="endsForGame" :against="endsAgainstGame"/>
-                     <ChartTeamHammerEfficiency :teamId="teamId" v-if="!loading" :for="hammerConversions" :forces="forceWith" :steals="stealsWith"  :totalEnds="hammerEnds"/>
-                    <ChartTeamForceEfficiency :teamId="teamId" v-if="!loading" :for="forceWith" :against="forceWithout" :totalEnds="nonHammerEnds"/>
-                           <ChartTeamStealEfficiency :teamId="teamId" v-if="!loading" :for="stealsWithout"  :totalEnds="nonHammerEnds"/>
-
+        <ChartTeamWinLoss
+            :teamId="teamId"
+            :wins="wins"
+            :losses="losses"
+            :ties="ties"
+            v-if="!loading"
+        />
+        <ChartTeamPointsPerGame
+            :teamId="teamId"
+            v-if="!loading"
+            :for="pointsForGame"
+            :against="pointsAgainstGame"
+        />
+        <ChartTeamEndsPerGame
+            :teamId="teamId"
+            v-if="!loading"
+            :for="endsForGame"
+            :against="endsAgainstGame"
+        />
+        <ChartTeamHammerEfficiency
+            :teamId="teamId"
+            v-if="!loading"
+            :for="hammerConversions"
+            :forces="forceWith"
+            :steals="stealsWith"
+            :totalEnds="hammerEnds"
+        />
+        <ChartTeamForceEfficiency
+            :teamId="teamId"
+            v-if="!loading"
+            :for="forceWith"
+            :against="forceWithout"
+            :totalEnds="nonHammerEnds"
+        />
+        <ChartTeamStealEfficiency
+            :teamId="teamId"
+            v-if="!loading"
+            :for="stealsWithout"
+            :totalEnds="nonHammerEnds"
+        />
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -163,7 +200,7 @@ $section-margin: var(--space-xs);
     border-radius: 8px;
     overflow: auto;
     scroll-snap-type: y mandatory;
-     scroll-snap-stop: always;
+    scroll-snap-stop: always;
 
     .total__card--wrap {
         margin-bottom: var(--space-sm);
@@ -510,41 +547,55 @@ const getWinsLossess = async () => {
 };
 
 const pointsForGame = ref(0);
-const pointsAgainstGame = ref(0)
+const pointsAgainstGame = ref(0);
 const endsForGame = ref(0);
 const endsAgainstGame = ref(0);
 const endsPlayed = ref(0);
 const forceWith = ref(0);
-const forceWithout = ref(0)
-const nonHammerEnds = ref(0)
+const forceWithout = ref(0);
+const nonHammerEnds = ref(0);
 const hammerConversions = ref(0);
-const hammerEnds = ref(0)
-const blankEnds = ref(0)
-const stealsWith = ref(0)
-const stealsWithout = ref(0)
+const hammerEnds = ref(0);
+const blankEnds = ref(0);
+const stealsWith = ref(0);
+const stealsWithout = ref(0);
 const getTeamRecord = async () => {
- const client = useSupabaseClient();
-        const { data } = await client.rpc("get_team_game_statistics", {
+    const client = useSupabaseClient();
+    const { data } = await client.rpc("get_team_game_statistics", {
         team_id_param: props.teamId,
-        });
+    });
 
-        const [teamRecord] = data;
-        const {steals_with, steals_without, blank_ends,points_for_per_game, points_against_per_game, ends_against_per_game, ends_for_per_game, force_with_count, force_without_count, ends_played, non_hammer_ends, hammer_ends, hammer_conversions} = teamRecord
+    const [teamRecord] = data;
+    const {
+        steals_with,
+        steals_without,
+        blank_ends,
+        points_for_per_game,
+        points_against_per_game,
+        ends_against_per_game,
+        ends_for_per_game,
+        force_with_count,
+        force_without_count,
+        ends_played,
+        non_hammer_ends,
+        hammer_ends,
+        hammer_conversions,
+    } = teamRecord;
 
-            pointsForGame.value = points_for_per_game;
-            pointsAgainstGame.value = points_against_per_game
-            endsForGame.value = ends_for_per_game
-            endsAgainstGame.value = ends_against_per_game;
-            forceWith.value = force_with_count;
-            forceWithout.value = force_without_count;
-            endsPlayed.value = ends_played
-            nonHammerEnds.value = non_hammer_ends
-            hammerConversions.value = hammer_conversions
-            hammerEnds.value = hammer_ends
-            blankEnds.value = blank_ends
-            stealsWith.value = steals_with
-            stealsWithout.value = steals_without
-}
+    pointsForGame.value = points_for_per_game;
+    pointsAgainstGame.value = points_against_per_game;
+    endsForGame.value = ends_for_per_game;
+    endsAgainstGame.value = ends_against_per_game;
+    forceWith.value = force_with_count;
+    forceWithout.value = force_without_count;
+    endsPlayed.value = ends_played;
+    nonHammerEnds.value = non_hammer_ends;
+    hammerConversions.value = hammer_conversions;
+    hammerEnds.value = hammer_ends;
+    blankEnds.value = blank_ends;
+    stealsWith.value = steals_with;
+    stealsWithout.value = steals_without;
+};
 
 const currentTeamId = computed(() => props.teamId);
 const loading = ref(true);
@@ -552,8 +603,8 @@ watchDebounced(
     currentTeamId,
     async () => {
         loading.value = true;
-        
-    await Promise.all([getTeamRecord(), getWinsLossess()])
+
+        await Promise.all([getTeamRecord(), getWinsLossess()]);
 
         loading.value = false;
     },
