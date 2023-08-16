@@ -84,6 +84,7 @@ body {
         .subtitle__container {
             border: 1px solid rgba(103, 58, 183, 0.3);;
             margin-top: var(--space-sm);
+            margin-bottom: var(--space-sm);
             margin-left: var(--space-md);
             margin-right: var(--space-md);
             padding: var(--space-xxs);
