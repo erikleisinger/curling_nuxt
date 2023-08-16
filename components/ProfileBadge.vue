@@ -25,9 +25,9 @@
             <div class="subtitle__container">
                 <h3 class="text-sm subtitle">{{ BADGE_FORMULAS[badge](raw) }}</h3>
             </div>
-            <p class="description">
+            <!-- <p class="description">
                 {{ BADGE_DESCRIPTIONS[badge] }}
-            </p>
+            </p> -->
         </div>
     </Teleport>
 </template>
