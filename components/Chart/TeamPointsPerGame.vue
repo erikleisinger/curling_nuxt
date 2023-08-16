@@ -85,7 +85,7 @@ onMounted(async () => {
             datasets: [
                 {
                     data: chartData.value,
-                    backgroundColor: ["rgba(159, 90, 253, 1)", "#EE6055"],
+                    backgroundColor: ["#9f5afd", "#EE6055"],
                     borderAlign: "inner",
                     borderColor: ["rgba(255, 255, 255 ,1)"],
                     borderJoinStyle: "miter",

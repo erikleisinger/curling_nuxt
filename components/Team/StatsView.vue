@@ -5,10 +5,12 @@
         <!-- <ChartHammerPoints v-if="!loading"/> -->
 
         <ChartTeamWinLoss :teamId="teamId" :wins="wins" :losses="losses" :ties="ties" v-if="!loading"/>
-          <ChartTeamPointsPerGame :teamId="teamId" v-if="!loading" :for="pointsForGame" :against="pointsAgainstGame"/>
+                              <ChartTeamPointsPerGame :teamId="teamId" v-if="!loading" :for="pointsForGame" :against="pointsAgainstGame"/>
                 <ChartTeamEndsPerGame :teamId="teamId" v-if="!loading" :for="endsForGame" :against="endsAgainstGame"/>
-                     <ChartTeamHammerEfficiency :teamId="teamId" v-if="!loading" :for="hammerConversions"  :totalEnds="hammerEnds"/>
+                     <ChartTeamHammerEfficiency :teamId="teamId" v-if="!loading" :for="hammerConversions" :forces="forceWith" :steals="stealsWith"  :totalEnds="hammerEnds"/>
                     <ChartTeamForceEfficiency :teamId="teamId" v-if="!loading" :for="forceWith" :against="forceWithout" :totalEnds="nonHammerEnds"/>
+                           <ChartTeamStealEfficiency :teamId="teamId" v-if="!loading" :for="stealsWithout"  :totalEnds="nonHammerEnds"/>
+
 
         <!-- <section name="win loss tie" class="stats__section">
             <h2 class="text-md text-bold">Wins / Losses</h2>
@@ -517,6 +519,9 @@ const forceWithout = ref(0)
 const nonHammerEnds = ref(0)
 const hammerConversions = ref(0);
 const hammerEnds = ref(0)
+const blankEnds = ref(0)
+const stealsWith = ref(0)
+const stealsWithout = ref(0)
 const getTeamRecord = async () => {
  const client = useSupabaseClient();
         const { data } = await client.rpc("get_team_game_statistics", {
@@ -524,7 +529,7 @@ const getTeamRecord = async () => {
         });
 
         const [teamRecord] = data;
-        const {points_for_per_game, points_against_per_game, ends_against_per_game, ends_for_per_game, force_with_count, force_without_count, ends_played, non_hammer_ends, hammer_ends, hammer_conversions} = teamRecord
+        const {steals_with, steals_without, blank_ends,points_for_per_game, points_against_per_game, ends_against_per_game, ends_for_per_game, force_with_count, force_without_count, ends_played, non_hammer_ends, hammer_ends, hammer_conversions} = teamRecord
 
             pointsForGame.value = points_for_per_game;
             pointsAgainstGame.value = points_against_per_game
@@ -536,6 +541,9 @@ const getTeamRecord = async () => {
             nonHammerEnds.value = non_hammer_ends
             hammerConversions.value = hammer_conversions
             hammerEnds.value = hammer_ends
+            blankEnds.value = blank_ends
+            stealsWith.value = steals_with
+            stealsWithout.value = steals_without
 }
 
 const currentTeamId = computed(() => props.teamId);

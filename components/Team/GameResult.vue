@@ -873,7 +873,6 @@ const getScoreDetails = async () => {
     const { data } = await client.rpc("get_game_score_detailed", {
         game_id_param: props.result?.id,
     });
-    console.log(data)
     scoreDetails.value = data.sort((a, b) => a.end_number - b.end_number).map((e) => {
         const {is_home_team: isHome} = props.result;
         return {
