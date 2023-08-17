@@ -96,7 +96,7 @@
             />
 
             <div
-                class="scoreboard__score-container row no-wrap hide-scroll"
+                class="scoreboard__score-container row no-wrap "
                 id="scoreboard-linescore"
                 ref="scroller"
                 :style="{ height: contentHeight }"

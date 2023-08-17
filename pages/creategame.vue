@@ -6,7 +6,7 @@
             v-if="!showGameOptions"
         >
             <q-breadcrumbs class="text-grey" active-color="primary">
-                <template v-slot:separator>
+            <template v-slot:separator>
                     <q-icon
                         size="1.2em"
                         name="arrow_forward"

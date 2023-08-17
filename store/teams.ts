@@ -6,6 +6,7 @@ import { useNotificationStore } from "@/store/notification";
 import { useUserStore } from "@/store/user";
 import { DatabaseError } from "@/types/error";
 import { ErrorName } from "@/types/error";
+import GET_TEAMS from '@/queries/get_teams'
 
 export const useTeamStore = defineStore("team", {
     state: () => {
@@ -198,7 +199,8 @@ export const useTeamStore = defineStore("team", {
             const { data } = await fetchHandler(
                 () =>
                     client
-                        .rpc("get_teams_basic")
+                        .from(TABLE_NAMES.TEAMS)
+                        .select(GET_TEAMS)
                         .eq("profile_id", userStore.id),
                 { onError: "Error fetching teams" }
             );
@@ -238,11 +240,8 @@ export const useTeamStore = defineStore("team", {
         },
         async refreshTeam(teamId: number, shouldSort = false) {
             const { client, fetchHandler } = useSupabaseFetch();
-            //   const {data} = await fetchHandler(() => client
-            //     .rpc('get_team_detailed', {team_id_param: teamId}), {onError: 'Error refreshing team'})
-            // const { getQuery } = useDatabase();
             const { data } = await fetchHandler(
-                () => client.rpc("get_teams_basic").eq("id", teamId),
+                () => client.from(TABLE_NAMES.TEAMS).select(GET_TEAMS).eq("id", teamId),
                 { onError: "Error fetching teams" }
             );
             const [refreshedTeam] = data || [];

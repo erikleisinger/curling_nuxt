@@ -41,6 +41,4 @@ client.auth.onAuthStateChange((_, _session) => {
         refreshToken.value = _session?.refresh_token ?? null;
     }
 });
-
-
 </script>

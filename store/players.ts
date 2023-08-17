@@ -74,9 +74,6 @@ export const usePlayerStore = defineStore("players", {
     },
     async refreshPlayer(playerId: number, shouldSort = false) {
         const { client, fetchHandler } = useSupabaseFetch();
-        //   const {data} = await fetchHandler(() => client
-        //     .rpc('get_team_detailed', {team_id_param: teamId}), {onError: 'Error refreshing team'})
-        const { getQuery } = useDatabase();
         const { data } = await fetchHandler(
             () =>
                 client

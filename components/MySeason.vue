@@ -179,20 +179,8 @@ const stats = ref({
     avg_points_conceded: 2.75,
 });
 
-// const datasets = ref([]);
 const loading = ref(true);
 onMounted(async () => {
-    // const { client, fetchHandler } = useSupabaseFetch();
-    // const { data } = await fetchHandler(
-    //     () =>
-    //         client.rpc("get_team_stats", {
-    //             team_id_param: 22,
-    //         }),
-    //     { onError: "Error fetching game stats." }
-    // );
-
-    // const [s] = data || [];
-    // stats.value = s;
 
     datasets.value = [
         {
