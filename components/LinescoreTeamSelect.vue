@@ -2,45 +2,7 @@
 <!-- :class="{confirm: selections.home && selections.away}" -->
 <div class="linescore-teamselect__container" >
     <div class="inner__container" >
-    <transition
-        appear
-        enter-active-class="animated slideInRight"
-        leave-active-class="animated slideOutRight"
-    >
-        <ProfileCard
-            animated
-            :type="homeTeam ? 'team' : ''"
-            v-if="selections.home && selections.away"
-            :avatar="selections?.home?.team_avatar"
-        >
-            <span class="text-bold">
-                {{ selections?.home?.name }}
-            </span>
 
-        </ProfileCard>
-    </transition>
-       <transition
-        appear
-        enter-active-class="animated slideInLeft"
-        leave-active-class="animated slideOutLeft"
-    >
-       </transition>
-    <transition
-        appear
-        enter-active-class="animated slideInRight"
-        leave-active-class="animated slideOutRight"
-    >
-        <ProfileCard
-            animated
-            v-if="selections.away"
-            :avatar="selections?.away?.team_avatar"
-        >
-            <span class="text-bold">
-                {{ selections?.away?.name }}
-            </span>
-
-        </ProfileCard>
-    </transition>
     
 <KeepAlive>
 
@@ -110,12 +72,8 @@ const awayColor = ref(null);
 
 
 const onSelect = (_, _1, team) => {
-    if (!selections.value.home) {
-        selections.value.home = team;
-    } else if (!selections.value.away) {
-        selections.value.away = team;
-    }
-    if (selections.value.away && selections.value.home) emit('select')
+    selections.value.home = team;
+      emit('select')
 };
 
 const steps = {

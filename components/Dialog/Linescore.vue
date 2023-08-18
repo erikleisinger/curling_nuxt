@@ -385,11 +385,7 @@ const headerText = computed(() => {
     if (view.value === views.END_COUNT_SELECT){
         return 'Select number of ends'
    }else  if (view.value === views.TEAM_SELECT) {
-        if (!teamSelection.value.home) {
-            return "Select your team";
-        } else {
-            return "Select an opposition";
-        }
+         return "Select your team";
     } else if (view.value === views.COLOR_SELECT) {
         return "Select rock colors (optional)";
     } else if (view.value === views.HAMMER_SELECT) {
@@ -432,7 +428,10 @@ const onForwardArrowClick = useThrottleFn(() => {
 }, 100);
 
 const forwardArrowDisabled = computed(
-    () => view.value === views.HAMMER_SELECT && !hammerFirstEndTeam.value
+    () => {
+        // view.value === views.HAMMER_SELECT && !hammerFirstEndTeam.value
+        return false
+    }
 );
 
 /**
@@ -462,13 +461,7 @@ const showBackArrow = computed(() => {
 
 const onBackArrowClick = useThrottleFn(() => {
     if (view.value === views.TEAM_SELECT) {
-        if (teamSelection?.value?.away) {
-            teamSelection.value.away = null;
-        } else if (teamSelection?.value?.home) {
-            teamSelection.value.home = null;
-        } else {
-            view.value = views.END_COUNT_SELECT;
-        }
+         view.value = views.END_COUNT_SELECT;
     } else if (view.value === views.COLOR_SELECT) {
         view.value = views.TEAM_SELECT;
     } else if (view.value === views.HAMMER_SELECT) {

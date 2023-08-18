@@ -1,5 +1,6 @@
 <template>
     <!-- @click="editGame(result.id)" -->
+    <AreaSearch v-if="showSearch" @close="showSearch = false" @select="onSelect" globalOnly/>
     <div class="result__container--wrap" :class="{ expanded }">
         <div class="result__container" ref="header" @click="emit('expand')">
             <div class="team__profile--container column no-wrap">
@@ -56,7 +57,9 @@
                 </div>
 
                 <h2 class="text-sm truncate-text text-center">
-                    {{ result.away_name }}
+                    <span v-if="result.away_name">{{ result.away_name }}</span>
+                     <q-chip  v-else dense color="deep-purple"  text-color="white" class="text-bold q-mx-none" clickable icon="add" @click.stop="showSearch = true"><span >Add</span>
+      </q-chip>
                 </h2>
             </div>
         </div>
@@ -975,4 +978,10 @@ const showStat = (stat) => {
         visibleStat.value = stat;
     }
 };
+
+const showSearch = ref(false)
+const onSelect = (t) => {
+    console.log('SELECT: ', t)
+    showSearch.value = false;
+}
 </script>

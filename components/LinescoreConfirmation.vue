@@ -9,7 +9,7 @@
                         v-bind="parseAvatar(teamSelection?.home?.team_avatar)"
                     />
                 </div>
-                  <div class="text-center text-bold text-md">{{teamSelection.home?.name || 'Unnamed team'}}</div>
+                  <div class="text-center text-bold text-md">{{teamSelection.home?.name || 'Opposition team'}}</div>
             </div>
         </div>
         <div class="team-result__container">
@@ -27,7 +27,7 @@
                             v-bind="parseAvatar(teamSelection?.away?.team_avatar)"
                         />
                     </div>
-                    <div class="text-bold text-md text-center">{{teamSelection.away?.name || 'Unnamed team'}}</div>
+                    <div class="text-bold text-md text-center">{{teamSelection.away?.name || 'Opposition team'}}</div>
                 
             </div>
         </div>

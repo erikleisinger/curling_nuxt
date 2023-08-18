@@ -13,7 +13,7 @@
                     />
                 </div>
                 <div class="text-center text-bold text-md q-pt-sm">
-                    {{ selections.home?.name || "Unnamed team" }}
+                    {{ selections.home?.name || "Opposition team" }}
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
                     />
                 </div>
                 <div class="text-bold text-md text-center q-pt-sm">
-                    {{ selections.away?.name || "Unnamed team" }}
+                    {{ selections.away?.name || "Opposition team" }}
                 </div>
             </div>
         </div>

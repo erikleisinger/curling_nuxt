@@ -29,7 +29,7 @@
                       
                     </ProfileCard>
                 </div>
-                <div v-if="showSearch" class="search__container--floating">
+                <!-- <div v-if="showSearch" class="search__container--floating">
                     <q-input
                         rounded
                         outlined
@@ -57,22 +57,21 @@
                             />
                         </template>
                     </q-input>
-                </div>
-                <div class="row justify-center items-center q-mr-md">
+                </div> -->
+                 <div class="row justify-center items-center q-mr-md">
                     <q-btn
                         flat
                         round
                         icon="search"
                         color="grey-8"
-                        @click="toggleSearch"
+                        @click="showSearch = true"
                     />
                 </div>
+                <AreaSearch @select="onSelect" v-if="showSearch" @close="showSearch = false" />
+               
                 <!-- <q-btn flat dense icon="chevron_right" size="" color="grey-6" @click="goNext(1)" /> -->
             </div>
         </div>
-        <transition appear enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp">
-         <div v-if="showTeam">Team details</div>
-        </transition>
         </div>
               
         <nav>
@@ -96,7 +95,7 @@
            
                 <TeamStatsView
                     :teamId="team?.id"
-                    v-if="!showSearch && tab === 'stats'"
+                    v-if="team && tab === 'stats'"
                     key="stats"
                 />
                     <TeamGameHistory
@@ -104,10 +103,10 @@
                 :team="team"
                   key="gamehistory"
              
-                v-else-if="!showSearch && tab === 'history'"
+                v-else-if="team && tab === 'history'"
             />
 
-                <TeamList
+                <!-- <TeamList
                  v-else-if="!results"
                     :teams="teams"
                     @select="onSelect"
@@ -121,7 +120,7 @@
                     :teams="results"
                     @select="onSelectGlobal"
                     key="globalteams"
-               />
+               /> -->
           
         <!-- </transition> -->
     
@@ -193,7 +192,7 @@
 }
 </style>
 <script setup>
-import { useElementSize, useFocus, useSwipe, useThrottleFn} from "@vueuse/core";
+import { useElementSize, useThrottleFn} from "@vueuse/core";
 import { TABLE_QUERIES } from "@/constants/query";
 const tab = ref("stats");
 import { useTeamStore } from "@/store/teams";
@@ -201,71 +200,30 @@ const store = useTeamStore();
 
 const teams = computed(() => store.teams);
 
-const teamIndex = ref(null);
-const resultIndex = ref(null);
 
-const team = computed(() => {
-    if (teamIndex.value !== null) return teams.value[teamIndex.value]
-    if (resultIndex.value !== null && results.value) return results.value[resultIndex.value];
-    return null
-});
+const team = ref(null)
 
-const onSelect = (index) => {
-    if (!clickable.value) return;
-    teamIndex.value = index;
-    resultIndex.value = null
+const onSelect = (selectedTeam) => {
+    team.value = selectedTeam
     showSearch.value = false;
 };
-const onSelectGlobal = (index) => {
-    if (!clickable.value) return;
-    resultIndex.value = index;
-    teamIndex.value = null;
-    showSearch.value = false;
-}
+
 
 const index = ref(0);
 
 const swipe = ref(null);
 
-const showSearch = ref(true);
+const showSearch = ref(false);
 
 const inputRef = ref(null);
 
-const toggleGlobal = () => {
-    global.value = !global.value;
-    if (global.value) inputRef.value.focus();
-};
 
 const clickable = ref(true)
 
-const onFocus = ({type}) => {
-    nextTick(() => {
-        if (type === 'focusin') {
-            clickable.value = false;
-        } else {
-            clickable.value = true;
-        }
-    })
-    console.log('focused: ', val)
-}
 
 
 const global = ref(false);
 
-const goNext = (inc) => {
-    if (index.value + inc > teams.value.length || index.value + inc < 0) return;
-    index.value += inc;
-};
-const { direction } = useSwipe(swipe, {
-    onSwipe: useThrottleFn(() => {
-        if (direction.value === "left") {
-            goNext(+1);
-        } else {
-            goNext(-1);
-        }
-    }, 300),
-    threshold: 100,
-});
 
 const header = ref(null);
 const { height: headerHeight } = useElementSize(header);
@@ -275,67 +233,4 @@ const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`)
 const avatarHeader = ref(null);
 const { height: avatarHeight } = useElementSize(avatarHeader);
 
-/**
- * BEGIN SEARCH
- */
-const toggleSearch = useThrottleFn(() => {
-    if (!team.value) return;
-    showSearch.value = !showSearch.value;
-}, 500);
-
-const searchInput = ref(null);
-const results = ref(null);
-
-const search = () => {
-    if (!searchInput.value?.length) {
-        results.value = null;
-        return;
-    }
-    useSearch();
-};
-
-const query = `
-    id,
-    name,
-    team_avatar,
-    profile_id,
-    username:profile_id (username)
-`
-const useSearch = useThrottleFn(async () => {
-    const formatted = searchInput.value
-        .split(" ")
-        .map((val) => `${val}:*`)
-        .join(" | ");
-    const client = useSupabaseClient();
-
-    if (global.value) {
-        const { data } = await client
-            .from("teams")
-            .select(query)
-            .textSearch("name", formatted);
-        results.value = data.map((d) => ({...d, username: d.username?.username}));
-    } else {
-        const { user: userId } = useUser();
-        const { data } = await client
-            .from("teams")
-            .select(query)
-            .textSearch("name", formatted)
-            .eq("profile_id", userId.value);
-        results.value = data.map((d) => ({...d, username: d.username?.username}));
-    }
-}, 5000);
-
-/**
- * END SEARCH
- */
-
-/**
- * View team details
- */
-
-const showTeam = ref(false)
-
-const expandTeam = () => {
-    showTeam.value = !showTeam.value
-}
 </script>
