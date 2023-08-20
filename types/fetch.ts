@@ -22,9 +22,6 @@ export interface SupabaseShotReturn extends SupabaseReturn {
 export interface SupabaseGameReturn extends SupabaseReturn {
   data: Game[] | null;
 }
-export interface SupabaseShotTypeReturn extends SupabaseReturn {
-  data: ShotType[] | null;
-}
 export interface SupabaseRinkReturn extends SupabaseReturn {
     data: Rink[] | null;
   }

@@ -9,7 +9,6 @@
 }
 </style>
 <script setup lang="ts">
-import { useUserStore } from "@/store/user";
 import { PUBLIC_ROUTES } from "@/constants/routes";
 import {useEventListener, useScreenOrientation} from '@vueuse/core'
 

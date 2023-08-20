@@ -5,9 +5,6 @@ import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
 import DialogRinkEditor from '@/components/Dialog/RinkEditor.vue'
 import  DialogSheetEditor  from "@/components/Dialog/SheetEditor.vue";
 
-import  DialogShotTypeEditor  from "@/components/Dialog/ShotTypeEditor.vue";
-
-
 export const useEditorStore = defineStore("editor", {
     state: () => ({
         mousePos: {
@@ -92,14 +89,6 @@ export const useEditorStore = defineStore("editor", {
           }
         });
       },
-    toggleShotTypeDialog(edited) {
-      Dialog.create({
-        component: DialogShotTypeEditor,
-        componentProps: {
-          edited,
-        }
-      });
-    },
     toggleTeamViewer({team, open}) {
         if (open === false) {
             this.teamViewer.open = false;

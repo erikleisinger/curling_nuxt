@@ -11,14 +11,6 @@ export const useFormat = () => {
         };
       }
 
-    const formatShotTypeForSelection = (st) => {
-      const {id, name} = st;
-      return {
-        value: id,
-        label: name,
-      };
-    }
-
     const formatNumberWithSuffix = (i) => {
         var j = i % 10,
             k = i % 100;
@@ -38,5 +30,5 @@ export const useFormat = () => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    return {capitalizeFirstLetter,formatDate, formatPlayerForSelection, formatShotTypeForSelection, formatNumberWithSuffix}
+    return {capitalizeFirstLetter,formatDate, formatPlayerForSelection, formatNumberWithSuffix}
 }

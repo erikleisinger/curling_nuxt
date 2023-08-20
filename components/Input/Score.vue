@@ -94,7 +94,6 @@ import { computed, inject, onMounted, ref, watch } from "vue";
 import Line from "@/types/line";
 import Turn from "@/types/turn";
 import { useSessionStore } from "@/store/session";
-import { useShotTypeStore } from "@/store/shotTypes";
 import { useTeamStore } from "@/store/teams";
 import { TABLE_NAMES } from "@/constants/tables";
 import { toValue } from "@vueuse/core";
@@ -110,18 +109,6 @@ const active = ref(0);
 const { enumToSelectionOptions } = useDatabase();
 const lineOptions = enumToSelectionOptions(Line);
 const turnOptions = enumToSelectionOptions(Turn);
-
-// Shot types
-const shotTypeStore = useShotTypeStore();
-
-
-const shotTypeOptions = computed(() => {
-    const { formatShotTypeForSelection } = useFormat();
-    return [...shotTypeStore.shotTypes].map((st) =>
-        formatShotTypeForSelection(st)
-    );
-});
-
 
 // Disabled/loading state
 

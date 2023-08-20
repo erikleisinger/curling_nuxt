@@ -7,7 +7,6 @@ export default `
         id,
         username
     ),
-    skip_id,
     lead:lead_player_id (
         id,
         name,

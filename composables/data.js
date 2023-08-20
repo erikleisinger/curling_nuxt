@@ -2,7 +2,6 @@ import {useSessionStore} from "@/store/session";
 import {useTeamStore} from "@/store/teams";
 import {useGameStore} from "@/store/games";
 import {usePlayerStore} from "@/store/players";
-import {useShotTypeStore} from "@/store/shotTypes";
 import {useUserStore} from '@/store/user'
 import { useFriendStore } from "@/store/friends";
 import {useRinkStore} from '@/store/rinks'
@@ -10,7 +9,6 @@ import {useSheetStore} from '@/store/sheets'
 import {useSocialStore} from '@/store/social'
 
 export const useData = () => {
-    const shotTypeStore = useShotTypeStore();
     const teamStore = useTeamStore();
     const playerStore = usePlayerStore();
     const gameStore = useGameStore();
@@ -23,7 +21,6 @@ export const useData = () => {
 
   const initData = async () => {
       progress.value = 0
-      const {fetchShotTypes} = shotTypeStore
       const {fetchTeams} = teamStore;
       const {fetchPlayers} = playerStore;
       const {fetchGames} = gameStore
@@ -37,11 +34,8 @@ export const useData = () => {
 
       const operations = [
         () => fetchTeamRequests(),
-        () => fetchShotTypes(true),
-
         () => fetchPlayers(true),
         () => fetchGames(true),
-
         () => getFriends(true),
         () => fetchRinks(true),
         () => fetchSheets(true),
