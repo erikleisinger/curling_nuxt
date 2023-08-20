@@ -1,66 +1,111 @@
 <template>
     <!-- @click="editGame(result.id)" -->
-    <AreaSearch v-if="showSearch" @close="showSearch = false" @select="onSelect" globalOnly/>
+    <AreaSearch
+        v-if="showSearch"
+        @close="showSearch = false"
+        @select="onSelect"
+        globalOnly
+    />
     <div class="result__container--wrap" :class="{ expanded }">
-        <div class="result__container" ref="header" @click="emit('expand')">
-            <div class="team__profile--container column no-wrap">
-                <div class="team-avatar__container">
-                    <div class="team-avatar--wrap">
-                        <Avataaar v-bind="parseAvatar(result.home_avatar)" />
+        <div
+            class="result__header"
+            :style="{ backgroundImage }"
+            ref="container"
+        >
+            <div class="result__container" ref="header" @click="emit('expand')">
+                <div class="team__profile--container column no-wrap">
+                    <div class="team-avatar__container">
+                        <div class="team-avatar--wrap">
+                            <Avataaar
+                                v-bind="parseAvatar(result.home_avatar)"
+                            />
 
-                        <RockIcon
-                            :draggable="false"
-                            :color="result.home_color"
-                        />
+                            <RockIcon
+                                :draggable="false"
+                                :color="result.home_color"
+                            />
+                        </div>
+                    </div>
+
+                    <h2 class="text-sm truncate-text text-center">
+                        {{ result.home_name }}
+                    </h2>
+                </div>
+
+                <div class="row items-center full-width">
+                    <div
+                        class="row justify-around items-center text-xxxl full-width"
+                    >
+                        <div class="column justify-center items-center no-wrap">
+                            <div class="score">
+                                {{ result.home_points ?? 0 }}
+                            </div>
+                        </div>
+                        <div class="column justify-center items-center no-wrap">
+                            <div class="score">
+                                {{ result.away_points ?? 0 }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <h2 class="text-sm truncate-text text-center">
-                    {{ result.home_name }}
-                </h2>
-            </div>
-            <div class="row justify-around items-center text-xxxl">
-                <div class="column justify-center items-center no-wrap">
-                    <div class="score">{{ result.home_points ?? 0 }}</div>
-                    <!-- <q-icon
-                            name="check_circle"
-                            color="positive"
-                            size="xs"
-                            :style="{
-                                visibility: isVisible('home', result)
-                            }"
-                        /> -->
-                </div>
-                <div class="column justify-center items-center no-wrap">
-                    <div class="score">{{ result.away_points ?? 0 }}</div>
-                    <!-- <q-icon
-                            name="check_circle"
-                            color="positive"
-                            size="xs"
-                            :style="{
-                                visibility: isVisible('away', result)
-                            }"
-                        /> -->
+                <div class="team__profile--container column no-wrap">
+                    <div class="team-avatar__container">
+                        <div class="team-avatar--wrap">
+                            <Avataaar
+                                v-bind="parseAvatar(result.away_avatar)"
+                            />
+
+                            <RockIcon
+                                :draggable="false"
+                                :color="result.away_color"
+                            />
+                        </div>
+                    </div>
+
+                    <h2 class="text-sm truncate-text text-center">
+                        <span v-if="result.away_name">{{
+                            result.away_name
+                        }}</span>
+                        <q-chip
+                            v-else
+                            dense
+                            color="deep-purple"
+                            text-color="white"
+                            class="text-bold q-mx-none"
+                            clickable
+                            icon="add"
+                            @click.stop="showSearch = true"
+                            ><span>Add</span>
+                        </q-chip>
+                    </h2>
                 </div>
             </div>
 
-            <div class="team__profile--container column no-wrap">
-                <div class="team-avatar__container">
-                    <div class="team-avatar--wrap">
-                        <Avataaar v-bind="parseAvatar(result.away_avatar)" />
-
-                        <RockIcon
-                            :draggable="false"
-                            :color="result.away_color"
-                        />
+            <!-- League / Location -->
+            <div class="row justify-between q-pt-sm ">
+                <div class="column no-wrap q-mr-xs ">
+                    <div class="row no-wrap text-xs">
+                             <q-icon name="location_on" />
+                        <div class="truncate-text">
+                            Royal Canadian Curling Club
+                        </div>
+                   
+                    </div>
+                    <div class="row no-wrap text-xs">
+                            <q-icon name="crop_portrait" />
+                        <div class="truncate-text">Sheet A</div>
+                    
                     </div>
                 </div>
-
-                <h2 class="text-sm truncate-text text-center">
-                    <span v-if="result.away_name">{{ result.away_name }}</span>
-                     <q-chip  v-else dense color="deep-purple"  text-color="white" class="text-bold q-mx-none" clickable icon="add" @click.stop="showSearch = true"><span >Add</span>
-      </q-chip>
-                </h2>
+                <!-- <div class="column items-center justify-center">
+                    <div class="text-xs">July 1, 2023 at 1:30pm</div>
+                </div> -->
+                <div class="row no-wrap text-xs justify-end" v-if="result.event_name">
+                    <q-icon  name="emoji_events" />
+                    <div class="truncate-text">{{result.event_name}}</div>
+                    
+                </div>
             </div>
         </div>
         <transition
@@ -68,30 +113,48 @@
             enter-active-class="animated slideInDown"
             leave-active-class="animated slideOutUp"
         >
-            <div class="content__expandable column" :class="{ expanded }">
-                <LinescoreGridView
-                    :game="{
-                        home: {
-                            id: 1,
-                            avatar: result.is_home_team ? result.home_avatar : result.away_avatar,
-                            color: result.is_home_team ? result.home_color : result.away_color,
-                        },
-                        away: {
-                            id: 2,
-                            avatar: result.is_home_team ? result.away_avatar : result.home_avatar,
-                            color: result.is_home_team ? result.away_color : result.home_color,
-                        },
-                    }"
-                    :endCount="Math.max(result.end_count, scoreDetails.length)"
-                    :score="getScore"
-                    :selected="20"
-                    style="margin-top: 1em"
-             />
-
+            <div
+                class="content__expandable column"
+                :class="{ expanded }"
+                :style="{ backgroundColor }"
+            >
                 <div
-                    class="h2h-container"
-                    v-if="scoreDetails?.length"
+                    style="
+                        border-radius: 16px;
+                        overflow: hidden;
+                        margin-top: 1em;
+                    "
                 >
+                    <LinescoreGridView
+                        :game="{
+                            home: {
+                                id: 1,
+                                avatar: result.is_home_team
+                                    ? result.home_avatar
+                                    : result.away_avatar,
+                                color: result.is_home_team
+                                    ? result.home_color
+                                    : result.away_color,
+                            },
+                            away: {
+                                id: 2,
+                                avatar: result.is_home_team
+                                    ? result.away_avatar
+                                    : result.home_avatar,
+                                color: result.is_home_team
+                                    ? result.away_color
+                                    : result.home_color,
+                            },
+                        }"
+                        :endCount="
+                            Math.max(result.end_count, scoreDetails.length)
+                        "
+                        :score="getScore"
+                        :selected="20"
+                    />
+                </div>
+
+                <div class="h2h-container" v-if="scoreDetails?.length">
                     <div class="text-center text-bold h2h__header">
                         Hammer conversion
                     </div>
@@ -110,12 +173,10 @@
                                 flat
                                 round
                                 icon="visibility"
-                                :color="
-                                    showConversions
-                                        ? 'primary'
-                                        : 'grey-9'
+                                :color="showConversions ? 'primary' : 'grey-9'"
+                                @click.prevent.stop="
+                                    showConversions = !showConversions
                                 "
-                                @click.prevent.stop="showConversions = !showConversions"
                             />
                         </div>
                         <percentage
@@ -144,10 +205,16 @@
                                         color: result.away_color,
                                     },
                                 }"
-                               :endCount="Math.max(result.end_count, scoreDetails.length)"
+                                :endCount="
+                                    Math.max(
+                                        result.end_count,
+                                        scoreDetails.length
+                                    )
+                                "
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
+                                :transparent="true"
                             >
                                 <template v-slot:header>
                                     <div style="visibility: hidden">F</div>
@@ -192,12 +259,16 @@
                                 <template v-slot:footer>
                                     <div style="font-size: 6vw">
                                         {{
-                                            getPercent("home_conversions").toFixed()
+                                            getPercent(
+                                                "home_conversions"
+                                            ).toFixed()
                                         }}%
                                     </div>
                                     <div style="font-size: 6vw">
                                         {{
-                                            getPercent("away_conversions").toFixed()
+                                            getPercent(
+                                                "away_conversions"
+                                            ).toFixed()
                                         }}%
                                     </div>
                                 </template>
@@ -256,10 +327,16 @@
                                         color: result.away_color,
                                     },
                                 }"
-                             :endCount="Math.max(result.end_count, scoreDetails.length)"
+                                :endCount="
+                                    Math.max(
+                                        result.end_count,
+                                        scoreDetails.length
+                                    )
+                                "
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
+                                :transparent="true"
                             >
                                 <template v-slot:header>
                                     <div style="visibility: hidden">F</div>
@@ -366,10 +443,16 @@
                                         color: result.away_color,
                                     },
                                 }"
-                              :endCount="Math.max(result.end_count, scoreDetails.length)"
+                                :endCount="
+                                    Math.max(
+                                        result.end_count,
+                                        scoreDetails.length
+                                    )
+                                "
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
+                                :transparent="true"
                             >
                                 <template v-slot:header>
                                     <div style="visibility: hidden">F</div>
@@ -443,11 +526,7 @@
                                 flat
                                 round
                                 icon="visibility"
-                                :color="
-                                    showHammer
-                                        ? 'primary'
-                                        : 'grey-9'
-                                "
+                                :color="showHammer ? 'primary' : 'grey-9'"
                                 @click.prevent.stop="showHammer = !showHammer"
                             />
                         </div>
@@ -457,7 +536,7 @@
                             label=""
                         />
                     </div>
-                      <div style="overflow: hidden">
+                    <div style="overflow: hidden">
                         <transition
                             appear
                             enter-active-class="animated slideInDown"
@@ -477,10 +556,16 @@
                                         color: result.away_color,
                                     },
                                 }"
-                               :endCount="Math.max(result.end_count, scoreDetails.length)"
+                                :endCount="
+                                    Math.max(
+                                        result.end_count,
+                                        scoreDetails.length
+                                    )
+                                "
                                 :score="getScore"
                                 :selected="20"
                                 style="margin-top: 1em"
+                                :transparent="true"
                             >
                                 <template v-slot:header>
                                     <div style="visibility: hidden">F</div>
@@ -621,57 +706,6 @@
                         </tr>
                     </tbody>
                 </table>
-
-                <!-- <div>
-                    <div>Average points per end</div>
-                    <div class="head-to-head__container">
-                        <div class="h2h-team-result__container">Hi</div>
-                        <div class="h2h-chart__container">
-                            <ChartHeadToHead :datasets="datasets" />
-                        </div>
-                        <div class="h2h-team-result__container">Hi</div>
-                    </div>
-                </div>
-                <div>
-                    <div>Hammer conversion</div>
-                    <div class="head-to-head__container">
-                        <div class="h2h-team-result__container">Hi</div>
-                        <div class="h2h-chart__container">
-                            <ChartHeadToHead :datasets="datasets2" />
-                        </div>
-                        <div class="h2h-team-result__container">Hi</div>
-                    </div>
-                </div>
-                <div>
-                    <div>Stolen ends</div>
-                    <div class="head-to-head__container">
-                        <div class="h2h-team-result__container">Hi</div>
-                        <div class="h2h-chart__container">
-                            <ChartHeadToHead :datasets="datasets" />
-                        </div>
-                        <div class="h2h-team-result__container">Hi</div>
-                    </div>
-                </div>
-                <div>
-                    <div>Hammer possession</div>
-                    <div class="head-to-head__container">
-                        <div class="h2h-team-result__container">Hi</div>
-                        <div class="h2h-chart__container">
-                            <ChartHeadToHead :datasets="datasets" />
-                        </div>
-                        <div class="h2h-team-result__container">Hi</div>
-                    </div>
-                </div>
-                <div>
-                    <div>Hammer conversion</div>
-                    <div class="head-to-head__container">
-                        <div class="h2h-team-result__container">Hi</div>
-                        <div class="h2h-chart__container">
-                            <ChartHeadToHead :datasets="datasets" />
-                        </div>
-                        <div class="h2h-team-result__container">Hi</div>
-                    </div>
-                </div> -->
             </div>
         </transition>
     </div>
@@ -680,27 +714,43 @@
 $result-height: 7vh;
 $columns: 20% 60% 20%;
 .result__container--wrap {
-    padding-bottom: var(--space-xs);
-    padding-top: var(--space-xs);
-    width: min(600px, 100%);
+    border-radius: 16px;
+    // width: min(600px, 100%);
     max-height: fit-content;
-    border-bottom: 1px solid $grey-3;
+    border: 1px solid $grey-3;
+    margin-bottom: var(--space-sm);
+
     // height: 100%;
     transition: all 1s;
+    .result__header {
+        padding-bottom: var(--space-xs);
+        padding-top: var(--space-xs);
+        border-radius: inherit;
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+    }
     &.expanded {
         max-height: unset;
+        .result__header {
+            padding-bottom: var(--space-xs);
+            padding-top: var(--space-xs);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
     }
     .content__expandable {
         transition: all 0.3s;
         height: 0px;
         overflow: hidden;
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+     
         &.expanded {
             height: fit-content;
+               padding-bottom: var(--space-sm);
         }
-        // &:not(.expanded) {
-        //     animation: expand 1s linear forwards;
-        //     animation-direction: reverse;
-        // }
         .head-to-head__container {
             display: grid;
             grid-template-columns: $columns;
@@ -732,13 +782,15 @@ $columns: 20% 60% 20%;
     .result__container {
         display: grid;
         // grid-template-rows: 1fr auto;
-        padding-top: var(--space-sm);
+        // padding-top: var(--space-sm);
         grid-template-rows: 100%;
         grid-template-columns: $columns;
+        border-bottom: 1px solid $grey-3;
 
         position: relative;
 
         .team__profile--container {
+            justify-content: center;
             .team-avatar__container {
                 .team-avatar--wrap {
                     position: relative;
@@ -758,7 +810,7 @@ $columns: 20% 60% 20%;
     }
     .score {
         margin: auto !important;
-        font-size: 7vw;
+        font-size: min(7vw, 50px);
     }
     .h2h-container {
         border: 1px solid $grey-4;
@@ -766,6 +818,7 @@ $columns: 20% 60% 20%;
         margin-top: var(--space-sm);
         padding: var(--space-xs);
         border-radius: 16px;
+        background-color: rgba(255, 255, 255, 0.8);
         .h2h-percentage--wrap {
             display: grid;
             grid-template-columns: calc(50% - 40px) auto calc(50% - 40px);
@@ -876,22 +929,26 @@ const getScoreDetails = async () => {
     const { data } = await client.rpc("get_game_score_detailed", {
         game_id_param: props.result?.id,
     });
-    scoreDetails.value = data.sort((a, b) => a.end_number - b.end_number).map((e) => {
-        const {is_home_team: isHome} = props.result;
-        return {
-            ...e,
-            away_conversions: isHome ? e.away_conversions : e.home_conversions,
-            away_forces: isHome ? e.away_forces : e.home_forces,
-            away_hammer: isHome ? e.away_hammer : e.home_hammer,
-            away_steals: isHome ? e.away_steals : e.home_steals,
-            home_conversions: isHome ? e.home_conversions : e.away_conversions,
-            home_forces: isHome ? e.home_forces : e.away_forces,
-            home_hammer: isHome ? e.home_hammer : e.away_hammer,
-            home_steals: isHome ? e.home_steals : e.away_steals,
-
-            
-        }
-    });
+    scoreDetails.value = data
+        .sort((a, b) => a.end_number - b.end_number)
+        .map((e) => {
+            const { is_home_team: isHome } = props.result;
+            return {
+                ...e,
+                away_conversions: isHome
+                    ? e.away_conversions
+                    : e.home_conversions,
+                away_forces: isHome ? e.away_forces : e.home_forces,
+                away_hammer: isHome ? e.away_hammer : e.home_hammer,
+                away_steals: isHome ? e.away_steals : e.home_steals,
+                home_conversions: isHome
+                    ? e.home_conversions
+                    : e.away_conversions,
+                home_forces: isHome ? e.home_forces : e.away_forces,
+                home_hammer: isHome ? e.home_hammer : e.away_hammer,
+                home_steals: isHome ? e.home_steals : e.away_steals,
+            };
+        });
 };
 
 const isExpanded = computed(() => props.expanded);
@@ -929,7 +986,12 @@ const getPercent = (key) => {
 
 const getScore = computed(() => {
     return Array.from(
-        { length: Math.max(props.result.end_count, scoreDetails.value?.length) },
+        {
+            length: Math.max(
+                props.result.end_count,
+                scoreDetails.value?.length
+            ),
+        },
         (_, i) => i + 1
     ).reduce((all, current, index) => {
         if (!scoreDetails.value[index]) {
@@ -966,8 +1028,8 @@ const getScore = computed(() => {
 
 const showForces = ref(false);
 const showSteals = ref(false);
-const showHammer = ref(false)
-const showConversions = ref(false)
+const showHammer = ref(false);
+const showConversions = ref(false);
 
 const visibleStat = ref(null);
 
@@ -979,9 +1041,20 @@ const showStat = (stat) => {
     }
 };
 
-const showSearch = ref(false)
+const showSearch = ref(false);
 const onSelect = (t) => {
-    console.log('SELECT: ', t)
+    console.log("SELECT: ", t);
     showSearch.value = false;
-}
+};
+
+const container = ref(null);
+const { height: containerHeight, width: containerWidth } =
+    useElementBounding(container);
+
+const { getEventBackground, getEventColor } = useColor();
+
+const backgroundImage = computed(() =>
+    getEventBackground(props.result.event_color, containerHeight.value, containerWidth.value)
+);
+const backgroundColor = computed(() => getEventColor(props.result.event_color));
 </script>

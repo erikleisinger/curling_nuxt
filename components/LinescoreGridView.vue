@@ -2,6 +2,7 @@
     <div class="linescore-grid__container"  :style="columns" ref="nav">
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
+            :style="{backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)'}"
         >
             <div class="grid__column">
                 <div><div style="visibility: hidden">H</div></div>
@@ -46,6 +47,7 @@
             v-for="end in ends"
             :key="`${end}-label`"
             class="row justify-center items-center text-xl linescore-grid__container--item"
+              :style="{backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)'}"
             :class="{ selected: selected === end }"
             @click="emit('select', end)"
         >
@@ -58,6 +60,7 @@
         </div>
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
+              :style="{backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)'}"
         >
             <div class="grid__column final">
                 <div class="end-column">T</div>
@@ -83,10 +86,10 @@
     display: grid;
     // grid-template-columns: v-bind(columns);
     column-gap: 1px;
-    background-color: $grey-4;
+    // background-color: $grey-4;
     .linescore-grid__container--item {
         border-bottom: 1px solid $grey-4;
-        background-color: white;
+ 
         height: 100%;
         position: relative;
         &.selected {
@@ -167,6 +170,7 @@ const props = defineProps<{
     endCount: number;
     score: GameScore;
     selected: number
+    transparent?: Boolean,
 }>();
 
 const ends = computed(() => Array.from({length: props.endCount}, (_, i) => i + 1))

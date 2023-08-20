@@ -1,52 +1,29 @@
 <template>
     <div class="col-grow bg-white" style="height: 100%" ref="tableArea">
-        <slot/>
-        <!-- <RecycleScroller
+        <slot />
+        <q-virtual-scroll
             :items="teams"
-            :item-size="1"
-            :min-item-size="50"
-            height="100%"
-            :buffer="200"
-            key-field="id"
+            separator
             v-slot="{ item, index }"
             ref="scroller"
             v-if="teams?.length"
-        > -->
-        <q-virtual-scroll
-    :items="teams"
-    separator
-    v-slot="{ item, index }"
-        ref="scroller"
-            v-if="teams?.length"
-  >
-    
+            style="max-height: 100%"
+        >
             <div
                 :id="`team-table-item-${item.id}`"
                 @click="onClick(item, index)"
                 :class="{ focused: focused === item.id }"
                 class="team-item"
-                        
             >
                 <ProfileCard
                     :avatar="item.team_avatar"
-                     v-memo="[item.name, item.team_avatar]"
-           
-                
-                 
+                    v-memo="[item.name, item.team_avatar]"
                 >
-                <template v-slot:overline>
-                    Team
-                </template>
-                   {{item.name}}
-
+                    <template v-slot:overline> Team </template>
+                    {{ item.name }}
                 </ProfileCard>
-                   <!--     v-if="expanded !== item.id" -->
-                <!-- <div v-else style="height: calc(100% - 200px)">
-                    <TeamFull :team="item" /> -->
-                <!-- </div> -->
             </div>
         </q-virtual-scroll>
-        <!-- </RecycleScroller> -->
     </div>
     <DialogConfirmation
         v-if="itemToDelete"
@@ -78,8 +55,8 @@ const props = defineProps({
         tyoe: Array as Team[],
         default: [],
         required: false,
-    }
-})
+    },
+});
 
 const tableArea = ref(null);
 
@@ -102,29 +79,27 @@ const { y: scrollY } = useScroll(tableArea, {
     behavior: "smooth",
 });
 
-const scroller = ref(null)
+const scroller = ref(null);
 
 const scrollTo = async (index: number) => {
-    await new Promise((r) => setTimeout(r, 3))
+    await new Promise((r) => setTimeout(r, 3));
     scroller.value.scrollToItem(index);
-   
 };
 
 const focusOnTeam = () => {
     if (!focused.value) return;
     const teamId = focused.value;
     setTimeout(() => {
-         const elementId = `team-table-item-${teamId}`;
-    const element = document.getElementById(elementId);
-    console.dir(element);
-    if (!element) {
-        console.error(
-            "could not scroll to focused team: team element not found"
-        );
-        return;
-    }
-    const scrollPos = element?.offsetTop;
-    tableArea.value.scrollTop = scrollPos;
+        const elementId = `team-table-item-${teamId}`;
+        const element = document.getElementById(elementId);
+        if (!element) {
+            console.error(
+                "could not scroll to focused team: team element not found"
+            );
+            return;
+        }
+        const scrollPos = element?.offsetTop;
+        tableArea.value.scrollTop = scrollPos;
     }, 1000);
 };
 onMounted(() => {
@@ -138,15 +113,14 @@ watch(focused, () => {
 const expanded = ref(null);
 
 const onClick = (team: Team, index: number) => {
-    const teamId = team?.id
-    emit('select', index, teamId, team)
+    const teamId = team?.id;
+    emit("select", index, teamId, team);
     if (focused.value && teamId === focused.value) unsetFocus(teamId);
     if (expanded.value === teamId) {
         expanded.value = null;
     } else if (teamId) {
         expanded.value = teamId;
         // scrollTo(index);
-       
     }
 };
 
@@ -155,5 +129,5 @@ const unsetFocus = (teamId: number) => {
     navigationStore.setTeamFocus(null);
 };
 
-const emit = defineEmits(["update", 'select']);
+const emit = defineEmits(["update", "select"]);
 </script>

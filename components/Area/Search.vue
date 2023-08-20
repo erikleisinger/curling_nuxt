@@ -1,17 +1,17 @@
 <template>
-    
     <Teleport to="body">
-        <div class="search-container--floating  z-top" >
-            <div class="search__container--floating" >
+        <div class="search-container--floating z-top">
+            <div class="search__container--floating" ref="searchBar" >
                 <q-input
                     rounded
                     outlined
-                    label="Search for a team"
+                    :label="inputLabel"
                     color="deep-purple"
                     :hint="global ? 'Searching worldwide' : ''"
                     v-model="searchInput"
                     @keydown.enter="search"
                     clearable
+                    @clear="clearResults"
                 >
                     <template v-slot:before>
                         <q-btn
@@ -26,34 +26,17 @@
                         />
                     </template>
                     <template v-slot:after>
-    <q-btn flat round icon="search" @click="emit('close')"/>
+                        <q-btn
+                            flat
+                            round
+                            icon="search"
+                            @click="emit('close')"
+                        />
                     </template>
                 </q-input>
-            
-
-                <!-- <TeamList
-                v-else
-                    :teams="results"
-                    @select="onSelectGlobal"
-                    key="globalteams"
-               /> -->
             </div>
-            <div >
-                 <TeamList
-                 v-if="!global"
-                    :teams="teams"
-                    @select="handleSelect"
-                  
-                    key="myteams"
-                />
-                
-               
-                <TeamList
-                v-else
-                    :teams="results"
-                    @select="handleSelect"
-                    key="globalteams"
-               />
+            <div :style="{height: `calc(100% - ${searchBarHeight}px)`}">
+                <slot :results="results" />
             </div>
         </div>
     </Teleport>
@@ -67,12 +50,12 @@
     top: 0;
     bottom: 0;
     margin: auto;
-    background-color:white;
+    background-color: white;
     .search__container--floating {
         width: calc(100vw);
-           padding-right: var(--space-xs);
+        padding-right: var(--space-xs);
         padding-left: var(--space-xs);
-        margin-top: var(--space-md);
+        padding-top: var(--space-md);
         padding-bottom: var(--space-md);
 
         animation: expand 0.3s forwards;
@@ -104,16 +87,21 @@
 </style>
 <script setup>
 import { useTeamStore } from "@/store/teams";
-import {useThrottleFn} from '@vueuse/core'
+import { useElementBounding, useThrottleFn } from "@vueuse/core";
 
 const props = defineProps({
     globalOnly: Boolean,
+    inputLabel: String,
     onSelect: Function,
+    query: String,
+    queryField: {
+        type: String,
+        default: 'name'
+    },
+    tableName: String,
 });
 
-const emit = defineEmits(['close', 'select'])
-
-const searchVisible = ref(false);
+const emit = defineEmits(["close", "select"]);
 
 const searchInput = ref(null);
 const results = ref(null);
@@ -126,14 +114,6 @@ const search = () => {
     useSearch();
 };
 
-const query = `
-    id,
-    name,
-    team_avatar,
-    profile_id,
-    username:profile_id (username)
-`
-
 const useSearch = useThrottleFn(async () => {
     const formatted = searchInput.value
         .split(" ")
@@ -143,18 +123,24 @@ const useSearch = useThrottleFn(async () => {
 
     if (global.value) {
         const { data } = await client
-            .from("teams")
-            .select(query)
-            .textSearch("name", formatted);
-        results.value = data.map((d) => ({...d, username: d.username?.username}));
+            .from(props.tableName)
+            .select(props.query)
+            .textSearch(props.queryField, formatted);
+        results.value = data.map((d) => ({
+            ...d,
+            username: d.username?.username,
+        }));
     } else {
         const { user: userId } = useUser();
         const { data } = await client
-            .from("teams")
-            .select(query)
-            .textSearch("name", formatted)
+            .from(props.tableName)
+            .select(props.query)
+            .textSearch(props.queryField, formatted)
             .eq("profile_id", userId.value);
-        results.value = data.map((d) => ({...d, username: d.username?.username}));
+        results.value = data.map((d) => ({
+            ...d,
+            username: d.username?.username,
+        }));
     }
 }, 5000);
 
@@ -166,9 +152,8 @@ const toggleGlobal = () => {
 };
 
 const toggleSearch = () => {
-    searchVisible.value = !searchVisible.value;
     if (!props.globalOnly) global.value = false;
-}
+};
 
 const clickable = ref(true);
 
@@ -191,17 +176,22 @@ const resultIndex = ref(null);
 
 const handleSelect = (i) => {
     if (global.value) {
-        emit('select', results.value[i])
+        emit("select", results.value[i]);
     } else {
- emit('select', teams.value[i])
+        emit("select", teams.value[i]);
     }
-    searchVisible.value = false;
-   
-}
+};
 
 onMounted(() => {
     if (props.globalOnly) {
         global.value = true;
     }
-})
+});
+
+const clearResults = () => {
+    results.value = null;
+};
+
+const searchBar = ref(null);
+const {height: searchBarHeight} = useElementBounding(searchBar)
 </script>

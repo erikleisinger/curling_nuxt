@@ -62,7 +62,9 @@ const getTeamRecord = async (team_id_param) => {
         away_name: d.opposition_name,
         away_points: d.points_against,
         away_color: d.opposition_color,
-        is_home_team: d.is_home_team
+        is_home_team: d.is_home_team,
+        event_color: d.event_color,
+        event_name: d.event_name
     }));
 };
 const results = ref(null);
