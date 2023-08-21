@@ -1,5 +1,5 @@
 <template>
-    <Teleport to="body">
+    <!-- <Teleport to="body"> -->
         <div class="search-container--floating z-top">
             <div class="search__container--floating" ref="searchBar" >
                 <q-input
@@ -7,13 +7,13 @@
                     outlined
                     :label="inputLabel"
                     color="deep-purple"
-                    :hint="global ? 'Searching worldwide' : ''"
+                    :hint="global && !hideHint ? 'Searching worldwide' : ''"
                     v-model="searchInput"
                     @keydown.enter="search"
                     clearable
                     @clear="clearResults"
                 >
-                    <template v-slot:before>
+                    <template v-slot:before    v-if="!hideIcons">
                         <q-btn
                             flat
                             icon="public"
@@ -23,6 +23,7 @@
                             class="q-px-none q-mr-none"
                             size="lg"
                             @click.prevent="toggleGlobal"
+                         
                         />
                     </template>
                     <template v-slot:after>
@@ -31,30 +32,39 @@
                             round
                             icon="search"
                             @click="emit('close')"
+                            v-if="!hideIcons"
                         />
                     </template>
                 </q-input>
             </div>
-            <div :style="{height: `calc(100% - ${searchBarHeight}px)`}">
+            <!-- :style="{height: `calc(100% - ${searchBarHeight}px)`}" -->
+            <div class="search-results__container z-top" :style="{top: `${searchBarHeight}px`}">
                 <slot :results="results" />
             </div>
         </div>
-    </Teleport>
+    <!-- </Teleport> -->
 </template>
 <style lang="scss" scoped>
 .search-container--floating {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: calc(100 * var(--vh, 1vh));
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    background-color: white;
+    // position: absolute;
+    // left: 0;
+    // right: 0;
+    // height: calc(100 * var(--vh, 1vh));
+    // top: 0;
+    // bottom: 0;
+    // margin: auto;
+    // background-color: white;
+   width: 100%;
+   position: relative;
+    .search-results__container {
+        position: absolute;
+        width: 100%;
+        min-height: 400px;
+    }
     .search__container--floating {
-        width: calc(100vw);
-        padding-right: var(--space-xs);
-        padding-left: var(--space-xs);
+        width: inherit;
+        // padding-right: var(--space-xs);
+        // padding-left: var(--space-xs);
         padding-top: var(--space-md);
         padding-bottom: var(--space-md);
 
@@ -86,11 +96,12 @@
 }
 </style>
 <script setup>
-import { useTeamStore } from "@/store/teams";
 import { useElementBounding, useThrottleFn } from "@vueuse/core";
 
 const props = defineProps({
     globalOnly: Boolean,
+    hideHint: Boolean,
+    hideIcons: Boolean,
     inputLabel: String,
     onSelect: Function,
     query: String,
@@ -167,20 +178,7 @@ const onFocus = ({ type }) => {
     });
 };
 
-const store = useTeamStore();
 
-const teams = computed(() => store.teams);
-
-const teamIndex = ref(null);
-const resultIndex = ref(null);
-
-const handleSelect = (i) => {
-    if (global.value) {
-        emit("select", results.value[i]);
-    } else {
-        emit("select", teams.value[i]);
-    }
-};
 
 onMounted(() => {
     if (props.globalOnly) {

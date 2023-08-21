@@ -41,6 +41,8 @@
             </div>
         </template>
 
+        <LinescoreTimeSelect v-if="view === views.TIME_SELECT"/>
+
         <LinescoreEndCountSelect
             v-if="view === views.END_COUNT_SELECT"
             @select="view = views.TEAM_SELECT"
@@ -382,19 +384,15 @@ const teamSelection = ref({
 });
 
 const headerText = computed(() => {
-    if (view.value === views.END_COUNT_SELECT){
-        return 'Select number of ends'
-   }else  if (view.value === views.TEAM_SELECT) {
-         return "Select your team";
-    } else if (view.value === views.COLOR_SELECT) {
-        return "Select rock colors (optional)";
-    } else if (view.value === views.HAMMER_SELECT) {
-        return "Who won hammer for end 1?";
-    } else if (view.value === views.LINESCORE) {
-        return "Enter linescore";
-    } else if (view.value === views.CONFIRM) {
-        return "Review game";
-    }
+    return {
+        [views.TIME_SELECT]: 'Enter game time',
+        [views.END_COUNT_SELECT]: 'Select number of ends',
+        [views.TEAM_SELECT]: 'Select your team',
+        [views.COLOR_SELECT]: 'Select rock colors',
+        [views.HAMMER_SELECT]: 'Who won hammer for end 1?',
+        [views.LINESCORE]: 'Enter linescore',
+        [views.CONFIRM]: 'Review game'
+    }[view.value]
 });
 
 /**
@@ -407,14 +405,16 @@ const showForwardArrow = computed(() => {
         return teamSelection?.value?.home && teamSelection?.value?.away;
     }
     if (
-        [views.COLOR_SELECT, views.LINESCORE, views.HAMMER_SELECT].includes(
+        [views.TIME_SELECT, views.COLOR_SELECT, views.LINESCORE, views.HAMMER_SELECT].includes(
             view.value
         )
     )
         return true;
 });
 const onForwardArrowClick = useThrottleFn(() => {
-    if (view.value === views.TEAM_SELECT) {
+    if (view.value === views.TIME_SELECT) {
+        view.value = views.END_COUNT_SELECT
+    }else if (view.value === views.TEAM_SELECT) {
         if (teamSelection?.value?.away && teamSelection.value?.home) {
             view.value = views.COLOR_SELECT;
         }
@@ -449,6 +449,7 @@ const showBackArrow = computed(() => {
     // }
     if (
         [
+            views.END_COUNT_SELECT,
             views.TEAM_SELECT,
             views.COLOR_SELECT,
             views.HAMMER_SELECT,
@@ -460,7 +461,10 @@ const showBackArrow = computed(() => {
 });
 
 const onBackArrowClick = useThrottleFn(() => {
-    if (view.value === views.TEAM_SELECT) {
+    
+    if (view.value === views.END_COUNT_SELECT) {
+         view.value = views.TIME_SELECT;
+    } else if (view.value === views.TEAM_SELECT) {
          view.value = views.END_COUNT_SELECT;
     } else if (view.value === views.COLOR_SELECT) {
         view.value = views.TEAM_SELECT;
@@ -645,6 +649,7 @@ const rows = computed(() => {
 });
 
 const views = {
+    TIME_SELECT: 'timeselect',
     END_COUNT_SELECT: "endcountselect",
     TEAM_SELECT: "teamselect",
     COLOR_SELECT: "colorselect",
@@ -719,7 +724,7 @@ onMounted(async () => {
         await fetchGame(editedGame);
     } else {
         // Go to team select
-        view.value = views.END_COUNT_SELECT;
+        view.value = views.TIME_SELECT;
     }
     loading.value = false;
 });

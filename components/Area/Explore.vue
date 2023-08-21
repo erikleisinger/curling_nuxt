@@ -11,6 +11,7 @@
                         class="col-grow"
                         :style="{ opacity: showSearch ? '0' : '1' }"
                         ref="avatarHeader"
+                        v-if="!showSearch"
                     >
                         <ProfileCard
                             :avatar="team?.team_avatar"
@@ -27,7 +28,7 @@
                         </ProfileCard>
                     </div>
 
-                    <div class="row justify-center items-center q-mr-md">
+                    <div class="row justify-center items-center q-mr-md" v-if="!showSearch">
                         <q-btn
                             flat
                             round
@@ -80,7 +81,7 @@
         </nav>
     </header>
 
-    <main class="column select__section full-width no-wrap">
+    <main class="column select__section full-width no-wrap" v-show="!showSearch">
         <!-- <transition
             appear
             enter-active-class="animated slideInLeft"

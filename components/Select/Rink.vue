@@ -1,5 +1,22 @@
 <template>
-  <q-select
+    <AreaSearch
+        :globalOnly="true"
+        :hideIcons="true"
+        :hideHint="true"
+        inputLabel="Search for a rink"
+        :query="searchQuery"
+        tableName="rinks"
+         v-slot="{ results }"
+    >
+    <div v-for="result in results" :key="result.id" @click="setRink(result)">
+ 
+        <div>{{result.name}}</div>
+        <div class="text-sm">{{result.location}}</div>
+
+    </div>  
+
+    </AreaSearch>
+    <!-- <q-select
     outlined
     rounded
     :options="rinkOptions"
@@ -34,65 +51,73 @@
         <q-icon name="refresh" />
       </q-btn>
     </template>
-  </q-select>
+  </q-select> -->
 </template>
 <script setup lang="ts">
-import {useRinkStore} from "@/store/rinks";
+import { useRinkStore } from "@/store/rinks";
 import type Rink from "@/types/rink";
-type FilterFunction = (arg:Rink) => boolean
+type FilterFunction = (arg: Rink) => boolean;
 const props = defineProps<{
-  modelValue: number | null | undefined,
-  filter?: FilterFunction,
+    modelValue: number | null | undefined;
+    filter?: FilterFunction;
 }>();
 const emit = defineEmits(["update:modelValue"]);
 const editedRink = computed({
-  get() {
-    return props.modelValue;
-  },
-  set(val) {
-    emit("update:modelValue", val);
-  },
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit("update:modelValue", val);
+    },
 });
 const store = useRinkStore();
 const loadingRinks = ref(false);
-const {fetchRinks} = store;
+const { fetchRinks } = store;
 const getRinks = async (force: boolean) => {
-  loadingRinks.value = true;
-  await fetchRinks(force);
-  loadingRinks.value = false;
+    loadingRinks.value = true;
+    await fetchRinks(force);
+    loadingRinks.value = false;
 };
 
-const {formatPlayerForSelection} = useFormat();
+const { formatPlayerForSelection } = useFormat();
 const rinkOptions = computed(() => {
-  let rinks = [...store.rinks];
-  if (props.filter) {
-    rinks = rinks.filter(props.filter);
-  }
-  return rinks.map((d) => formatPlayerForSelection(d));
+    let rinks = [...store.rinks];
+    if (props.filter) {
+        rinks = rinks.filter(props.filter);
+    }
+    return rinks.map((d) => formatPlayerForSelection(d));
 });
-const {globalLoading} = useLoading();
+const { globalLoading } = useLoading();
 
-const input = ref('')
-const onInput = (e:string) => {
+const input = ref("");
+const onInput = (e: string) => {
     input.value = e;
-}
+};
 
-const rinkSelect = ref(null)
-const inserting = ref(false)
-const addRink= async () => {
+const rinkSelect = ref(null);
+const inserting = ref(false);
+const addRink = async () => {
     inserting.value = true;
-  const newRink = {
-    name: input.value
-  }
-  const rink = await store.insertRink(newRink);
-  editedRink.value = rink?.id;
-  
-  inserting.value = false
-  nextTick(() => {
-    rinkSelect.value.blur();
-  rinkSelect.value.hidePopup();
-  })
- 
+    const newRink = {
+        name: input.value,
+    };
+    const rink = await store.insertRink(newRink);
+    editedRink.value = rink?.id;
 
+    inserting.value = false;
+    nextTick(() => {
+        rinkSelect.value.blur();
+        rinkSelect.value.hidePopup();
+    });
+};
+
+const searchQuery = `
+                id,
+                name,
+                location
+                `;
+
+const setRink = (rink) => {
+    console.log('rink: ', rink)
 }
 </script>
