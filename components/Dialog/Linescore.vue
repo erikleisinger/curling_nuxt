@@ -459,12 +459,12 @@ const showBackArrow = computed(() => {
     // }
     if (
         [
-            views.DETAILS,
-            views.END_COUNT_SELECT,
+
             views.TEAM_SELECT,
             views.COLOR_SELECT,
             views.HAMMER_SELECT,
             views.LINESCORE,
+                        views.DETAILS,
             views.CONFIRM,
         ].includes(view.value)
     )

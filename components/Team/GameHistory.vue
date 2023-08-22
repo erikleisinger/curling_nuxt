@@ -64,7 +64,10 @@ const getTeamRecord = async (team_id_param) => {
         away_color: d.opposition_color,
         is_home_team: d.is_home_team,
         event_color: d.event_color,
-        event_name: d.event_name
+        event_name: d.event_name,
+        rink_name: d.rink_name,
+        sheet_name: d.sheet_name,
+        start_time: d.start_time
     }));
 };
 const results = ref(null);

@@ -88,13 +88,14 @@
                     <div class="row no-wrap text-xs">
                              <q-icon name="location_on" />
                         <div class="truncate-text">
-                            Royal Canadian Curling Club
+                            {{result.rink_name || 'Unknown rink'}}
                         </div>
                    
                     </div>
                     <div class="row no-wrap text-xs">
                             <q-icon name="crop_portrait" />
-                        <div class="truncate-text">Sheet A</div>
+                        <div class="truncate-text" v-if="result.sheet_name">Sheet {{result.sheet_name}}/{{numberToLetter(result.sheet_name)}}</div>
+                        <div class="truncate-text" v-else>Unknown sheet</div>
                     
                     </div>
                 </div>
@@ -846,6 +847,7 @@ import {
     useParentElement,
     watchDebounced,
 } from "@vueuse/core";
+import {numberToLetter} from '@/utils/sheets'
 const props = defineProps({
     expanded: Boolean,
     result: Object,

@@ -90,7 +90,7 @@
             >
                 <span v-if="!letters">{{ number }}</span>
                 <span v-else>{{
-                    String.fromCharCode(97 + number - 1).toUpperCase()
+                    numberToLetter(number)
                 }}</span>
             </div>
         </div>
@@ -139,6 +139,7 @@
 }
 </style>
 <script setup>
+import {numberToLetter} from '@/utils/sheets'
 const props = defineProps({
     rink: Object,
     sheet: Object,
