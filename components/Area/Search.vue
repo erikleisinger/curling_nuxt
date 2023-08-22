@@ -14,6 +14,7 @@
                     @clear="clearResults"
                 >
                     <template v-slot:before    v-if="!hideIcons">
+                        <slot name="before">
                         <q-btn
                             flat
                             icon="public"
@@ -25,6 +26,7 @@
                             @click.prevent="toggleGlobal"
                          
                         />
+                        </slot>
                     </template>
                     <template v-slot:after>
                         <q-btn
@@ -136,7 +138,8 @@ const useSearch = useThrottleFn(async () => {
         const { data } = await client
             .from(props.tableName)
             .select(props.query)
-            .textSearch(props.queryField, formatted);
+            .textSearch(props.queryField, formatted)
+            .order(props.queryField, {ascending: true})
         results.value = data.map((d) => ({
             ...d,
             username: d.username?.username,
@@ -147,7 +150,8 @@ const useSearch = useThrottleFn(async () => {
             .from(props.tableName)
             .select(props.query)
             .textSearch(props.queryField, formatted)
-            .eq("profile_id", userId.value);
+            .eq("profile_id", userId.value)
+            .order(props.queryField, {ascending: true})
         results.value = data.map((d) => ({
             ...d,
             username: d.username?.username,

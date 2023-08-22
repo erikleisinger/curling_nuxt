@@ -41,7 +41,7 @@
             </div>
         </template>
 
-        <LinescoreTimeSelect v-if="view === views.TIME_SELECT"/>
+
 
         <LinescoreEndCountSelect
             v-if="view === views.END_COUNT_SELECT"
@@ -231,6 +231,9 @@
             </div>
         </div>
 
+                <LinescoreTimeSelect v-if="view === views.DETAILS" v-model="start_time"/>
+                <LinescoreRinkAndSheet v-if="view === views.DETAILS" :rink="rink" @update:rink="rink = $event" :sheet="sheet" @update:sheet="sheet = $event"/>
+
         <LinescoreConfirmation
             :score="{ home: homeTotal, away: awayTotal }"
             :teamSelection="teamSelection"
@@ -383,9 +386,16 @@ const teamSelection = ref({
     awayColor: "red",
 });
 
+const dayjs = useDayjs();
+
+const start_time = ref(dayjs().format('YYYY MM DD hh mm a'))
+
+const rink = ref(null)
+const sheet = ref(null);
+
 const headerText = computed(() => {
     return {
-        [views.TIME_SELECT]: 'Enter game time',
+        [views.DETAILS]: 'Enter game details (optional)',
         [views.END_COUNT_SELECT]: 'Select number of ends',
         [views.TEAM_SELECT]: 'Select your team',
         [views.COLOR_SELECT]: 'Select rock colors',
@@ -405,16 +415,14 @@ const showForwardArrow = computed(() => {
         return teamSelection?.value?.home && teamSelection?.value?.away;
     }
     if (
-        [views.TIME_SELECT, views.COLOR_SELECT, views.LINESCORE, views.HAMMER_SELECT].includes(
+        [views.DETAILS, views.COLOR_SELECT, views.LINESCORE, views.HAMMER_SELECT].includes(
             view.value
         )
     )
         return true;
 });
 const onForwardArrowClick = useThrottleFn(() => {
-    if (view.value === views.TIME_SELECT) {
-        view.value = views.END_COUNT_SELECT
-    }else if (view.value === views.TEAM_SELECT) {
+    if (view.value === views.TEAM_SELECT) {
         if (teamSelection?.value?.away && teamSelection.value?.home) {
             view.value = views.COLOR_SELECT;
         }
@@ -423,8 +431,10 @@ const onForwardArrowClick = useThrottleFn(() => {
     } else if (view.value === views.HAMMER_SELECT) {
         view.value = views.LINESCORE;
     } else if (view.value === views.LINESCORE) {
-        view.value = views.CONFIRM;
-    }
+        view.value = views.DETAILS;
+    }else  if (view.value === views.DETAILS) {
+        view.value = views.CONFIRM
+    } 
 }, 100);
 
 const forwardArrowDisabled = computed(
@@ -449,6 +459,7 @@ const showBackArrow = computed(() => {
     // }
     if (
         [
+            views.DETAILS,
             views.END_COUNT_SELECT,
             views.TEAM_SELECT,
             views.COLOR_SELECT,
@@ -463,7 +474,7 @@ const showBackArrow = computed(() => {
 const onBackArrowClick = useThrottleFn(() => {
     
     if (view.value === views.END_COUNT_SELECT) {
-         view.value = views.TIME_SELECT;
+         view.value = views.DETAILS;
     } else if (view.value === views.TEAM_SELECT) {
          view.value = views.END_COUNT_SELECT;
     } else if (view.value === views.COLOR_SELECT) {
@@ -472,8 +483,11 @@ const onBackArrowClick = useThrottleFn(() => {
         view.value = views.COLOR_SELECT;
     } else if (view.value === views.LINESCORE) {
         view.value = views.HAMMER_SELECT;
+        
+    } else if (view.value === views.DETAILS){
+view.value = views.LINESCORE;
     } else if (view.value === views.CONFIRM) {
-        view.value = views.LINESCORE;
+        view.value = views.DETAILS;
     }
 }, 100);
 
@@ -571,12 +585,33 @@ const awayTotal = computed(() =>
 
 const editedId = ref(null);
 
+const getSheet = async () => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('sheets').select('id').eq('rink_id', rink.value?.id).eq('number', sheet.value)
+    const [sheetFromDb] = data || []
+    return sheetFromDb?.id
+}
+
+const createSheet = async (rink_id, sheet_number) => {
+ const client = useSupabaseClient();
+    const {data} = await client.from('sheets').upsert({rink_id, number: sheet_number}, {onConflict: 'rink_id, number'}).select('id')
+    const [sheetFromDb] = data || []
+    return sheetFromDb?.id
+}
+
 const save = async () => {
+
+
     const teamsAndColors = { ...teamSelection.value };
     const scoreCopy = { ...score.value };
     const hammerFirstEndCopy = hammerFirstEndTeam.value;
+    const rinkCopy = rink.value;
+    const sheetCopy = sheet.value
+    
+
 
     toggleLineScore({ open: false });
+    const sheetId = await createSheet(rinkCopy?.id, sheetCopy)
 
     const conceded = score.value[Object.keys(score.value).length].home === 'X';
 
@@ -588,7 +623,11 @@ const save = async () => {
         hammer_first_end: hammerFirstEndCopy,
         end_count: endCount.value,
         completed: true,
-        conceded
+        conceded,
+        start_time: dayjs(start_time.value, 'YYYY MM DD hh mm a').toISOString(),
+        rink_id: rink.value?.id,
+        sheet_id: sheetId
+
     };
 
     if (editedId.value) {
@@ -649,7 +688,7 @@ const rows = computed(() => {
 });
 
 const views = {
-    TIME_SELECT: 'timeselect',
+    DETAILS: 'timeselect',
     END_COUNT_SELECT: "endcountselect",
     TEAM_SELECT: "teamselect",
     COLOR_SELECT: "colorselect",
@@ -724,7 +763,7 @@ onMounted(async () => {
         await fetchGame(editedGame);
     } else {
         // Go to team select
-        view.value = views.TIME_SELECT;
+        view.value = views.END_COUNT_SELECT;
     }
     loading.value = false;
 });

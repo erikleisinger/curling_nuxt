@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     },
     dayjs: {
         locales: ["en"],
-        plugins: ["relativeTime", "timezone", "utc"],
+        plugins: ["relativeTime", "timezone", "utc", 'customParseFormat'],
         defaultLocale: "en",
     },
     devtools: { enabled: false },

@@ -16,7 +16,7 @@
         </main>
     </DialogFloating>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 $header-height: 2em;
 .result__container {
     display: grid;
