@@ -1,8 +1,6 @@
 <template>
-<h1 class="text-md text-bold title">Select a time</h1>
-    <div
-        class=" full-width  time__select row justify-around items-center"
-    >
+    <h1 class="text-md text-bold title">Select a time</h1>
+    <div class="full-width time__select row justify-around items-center">
         <div class="date-select__container">
             <q-popup-proxy
                 cover
@@ -30,9 +28,14 @@
 
         <div class="time-select__container">
             <div>
-                <input class="time__input" v-model="hour" type="number" max="12" />
+                <input
+                    class="time__input"
+                    v-model="hour"
+                    type="number"
+                    max="12"
+                />
             </div>
-            <div  class="text-center colon">:</div>
+            <div class="text-center colon">:</div>
             <div>
                 <input class="time__input" v-model="minute" />
             </div>
@@ -94,7 +97,7 @@ $date-container-bottom-height: $date-container-dimension / 4;
         padding-left: var(--space-sm);
         overflow: hidden;
         height: 100px;
-      
+
         div {
             display: flex;
             justify-content: center;
@@ -104,13 +107,13 @@ $date-container-bottom-height: $date-container-dimension / 4;
             display: grid;
             grid-template-rows: repeat(2, 1fr);
             margin-left: var(--space-sm);
-        
+
             .ampm__button {
-                height:100%;
+                height: 100%;
                 width: 100%;
                 padding-left: var(--space-sm);
-                   padding-right: var(--space-sm);
-                      transition: all 0.2s;
+                padding-right: var(--space-sm);
+                transition: all 0.2s;
                 &.selected {
                     background-color: $deep-purple;
                     color: white;
@@ -125,15 +128,21 @@ $date-container-bottom-height: $date-container-dimension / 4;
             width: 2.3ch;
             font-size: 2em;
             margin-bottom: var(--space-xxxs);
-             margin-top: var(--space-xxxs);
+            margin-top: var(--space-xxxs);
+            -moz-appearance: textfield;
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
             &:focus {
                 outline: none;
             }
         }
         .colon {
             font-size: 2em;
-             margin-bottom: var(--space-xxxs);
-               margin-top: var(--space-xxxxs);
+            margin-bottom: var(--space-xxxs);
+            margin-top: var(--space-xxxxs);
         }
     }
 }
@@ -147,13 +156,12 @@ const props = defineProps({
 const dayjs = useDayjs();
 
 onMounted(() => {
-    const time = dayjs(props.modelValue, 'YYYY MM DD hh mm a')
-    minute.value = time.minute();
-    hour.value = time.format('hh')
-    date.value = time.format('YYYY-MM-DD')
-    ampm.value = time.format('a')
-})
-
+    const time = dayjs(props.modelValue, "YYYY MM DD hh mm a");
+    minute.value = time.format('mm')
+    hour.value = time.format("hh");
+    date.value = time.format("YYYY-MM-DD");
+    ampm.value = time.format("a");
+});
 
 const date = ref(dayjs().format("YYYY-MM-DD"));
 const popup = ref(null);
@@ -164,15 +172,18 @@ const formattedMonth = computed(() => dayjs(date.value).format("MMM"));
 const emit = defineEmits(["selection", "update:modelValue"]);
 
 const ampm = ref("am");
-const minute = ref('00');
-const hour = ref('12');
+const minute = ref("00");
+const hour = ref("12");
 
-
-const formatted = computed(() => `${date.value} ${hour.value}:${minute.value} ${ampm.value}`)
+const formatted = computed(
+    () => `${date.value} ${hour.value}:${minute.value} ${ampm.value}`
+);
 
 watch(formatted, (val) => {
-    const utc  = dayjs(val)
-    emit('update:modelValue', utc.tz("America/Toronto", true).format('YYYY MM DD hh mm a'))
-})
-
+    const utc = dayjs(val);
+    emit(
+        "update:modelValue",
+        utc.tz("America/Toronto", true).format("YYYY MM DD hh mm a")
+    );
+});
 </script>
