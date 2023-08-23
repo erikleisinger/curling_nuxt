@@ -24,27 +24,19 @@
                     <div class="text-xs">
                         {{
                             selectedRink
-                                ? selectedRink.location
+                                ? selectedRink.city
                                 : "Click to search"
-                        }}
+                        }}{{selectedRink && `, ${selectedRink.province}`}}
                     </div>
                 </div>
             </div>
             <AreaSearch
                 v-if="showSearch"
-                :query="`
-                id,
-                name,
-                city,
-                province,
-                sheets
-                `"
-                tableName="rinks"
-                queryField="name"
-                globalOnly
+                :resourceTypes="['rink']"
                 inputLabel="Search for a rink"
+                @select="selectRink"
             >
-                <template v-slot="{ results }">
+                <!-- <template v-slot="{ results }">
                     <div class="rink-search__results" v-if="results?.length">
                         <div
                             v-for="result in results"
@@ -60,7 +52,7 @@
                             </div>
                         </div>
                     </div>
-                </template>
+                </template> -->
                 <template v-slot:before>
                     <q-btn
                         flat

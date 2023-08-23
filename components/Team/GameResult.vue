@@ -5,6 +5,12 @@
         @close="showSearch = false"
         @select="onSelect"
         globalOnly
+        tableName="teams"
+        :query="`
+        id,
+        name,
+        team_avatar
+        `"
     />
     <div class="result__container--wrap" :class="{ expanded }">
         <div

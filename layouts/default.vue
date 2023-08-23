@@ -1,9 +1,6 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
-    <q-layout view="hhh lpr fFf" v-else>
-        <q-header>
-            <slot name="header"/>
-        </q-header>
+    <q-layout view="hhh lpr fFf" v-else class="app-layout">
         <q-page-container class="page__container--global">
                 <slot />
         </q-page-container>
@@ -119,7 +116,25 @@
         <Banner />
     </q-layout>
 </template>
-<style lang="scss">
+<style lang="scss" >
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color:$deep-purple;
+    .q-page-container, .q-footer {
+        width: min(960px, 100vw);
+        background-color: white;
+    }
+    .q-footer {
+            left: 0;
+    right: 0;
+    margin: auto;
+    }
+    .q-page-container {
+        box-shadow: $pretty-shadow;
+    }
+}
 .page__container--global {
     height: calc(100 * var(--vh, 1vh));
 }
@@ -127,6 +142,7 @@
     display: grid;
     grid-template-rows: 3em;
     grid-template-columns: repeat(5, 20%);
+
     .bottom__nav--item {
         display: flex;
         justify-content: center;

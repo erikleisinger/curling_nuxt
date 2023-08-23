@@ -55,11 +55,14 @@
     display: none;
 }
 .outer__container {
-    height: calc(100 * var(--vh, 1vh));
-    width: 100vw;
+    height: min(calc(100 * var(--vh, 1vh)), 800px);
+    width: min(100vw, 500px);
     z-index: $z-dialog;
     position: absolute;
     top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
     transform-origin: bottom left;
     .inner__container {
         background-color: white;
