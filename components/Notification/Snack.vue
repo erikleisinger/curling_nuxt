@@ -1,7 +1,9 @@
 <template>
     <div class="notification"></div>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>
 <script setup lang="ts">
 import { Notification } from "@/types/notification";
 const props = defineProps<{
@@ -9,6 +11,8 @@ const props = defineProps<{
 }>();
 const $q = useQuasar();
 let activeNotification;
+
+const emit = defineEmits(['delete'])
 
 const setNotification = () => {
     const notificationColor =
@@ -24,6 +28,7 @@ const setNotification = () => {
             failed: 'error_outline'
         }[props.notification.state]
 
+
     const notificationToInsert = {
         group: false,
         spinner: props.notification.state === "pending",
@@ -35,7 +40,17 @@ const setNotification = () => {
             props.notification.state === "pending"
                 ? 0
                 : props.notification.timeout,
+        progress: true,
+        actions:  props.notification.state === 'pending' ? null : [
+            { label: 'Dismiss', color: 'white', noDismiss: false }
+        ],
+        onDismiss: () => {
+            emit('delete')
+        }
+
     };
+
+    console.log('to insert: ', notificationToInsert)
 
     if (!!activeNotification) {
         activeNotification(notificationToInsert);
