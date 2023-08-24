@@ -49,26 +49,8 @@ const { format } = useTime();
 const loading = ref(true);
 
 const getTeamRecord = async (team_id_param) => {
-    const client = useSupabaseClient();
-    const { data } = await client.rpc("get_team_record", { team_id_param });
-    if (data) results.value = data.map((d) => ({
-        end_count: d.end_count,
-        id: d.id,
-        home_avatar: props.team?.team_avatar,
-        home_name: props.team?.name,
-        home_points: d.points_for,
-        home_color: d.my_color,
-        away_avatar: d.opposition_avatar,
-        away_name: d.opposition_name,
-        away_points: d.points_against,
-        away_color: d.opposition_color,
-        is_home_team: d.is_home_team,
-        event_color: d.event_color,
-        event_name: d.event_name,
-        rink_name: d.rink_name,
-        sheet_name: d.sheet_name,
-        start_time: d.start_time
-    }));
+    const {getTeamGames} = useGame();
+    results.value = await getTeamGames(team_id_param)
 };
 const results = ref(null);
 

@@ -66,7 +66,7 @@ export const useUserStore = defineStore("user", {
                 firstName,
                 lastName
             });
-            await this.getUserTeams();
+            // await this.getUserTeams();
         },
         async getUserTeams() {
             const { client, fetchHandler } = useSupabaseFetch();

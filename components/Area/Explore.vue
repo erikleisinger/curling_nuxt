@@ -8,17 +8,40 @@
         />
 
     </header>
-    <Team v-else :team="team">
+    <Team v-else-if="resource?.resourcetype === 'team'" :team="resource">
         <template v-slot:appendButton>
             <q-btn
                 flat
                 round
-                icon="search"
+                icon="close"
                 color="grey-8"
                 @click="showSearch = true"
             />
         </template>
     </Team>
+    <Rink v-else-if="resource?.resourcetype === 'rink'" :rink="resource">
+        <template v-slot:appendButton>
+            <q-btn
+                flat
+                round
+                icon="close"
+                color="grey-8"
+                @click="showSearch = true"
+            />
+        </template>
+    </Rink>
+    <Event v-else-if="resource?.resourcetype === 'event'" :event="resource">
+        <template v-slot:appendButton>
+            <q-btn
+                flat
+                round
+                icon="close"
+                color="grey-8"
+                @click="showSearch = true"
+            />
+        </template>
+    </Event>
+        
 </template>
 <style lang="scss" scoped>
 .outer-header__container {
@@ -35,14 +58,16 @@ const store = useTeamStore();
 
 const teams = computed(() => store.teams);
 
-const team = ref(null);
+const resource = ref(null);
 
 const onSelect = (selection) => {
     if (selection.resourcetype === 'team') {
-    team.value = {
+    resource.value = {
         ...selection,
         team_avatar: selection.avatar
     }
+    } else {
+        resource.value = selection;
     }
 
     showSearch.value = false;

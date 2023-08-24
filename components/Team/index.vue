@@ -69,34 +69,7 @@
     height: 2em;
     margin-top: calc(-1 * var(--space-xs));
 }
-.search__container--floating {
-    position: absolute;
-    width: calc(100vw);
-    padding-right: 4em;
-    padding-left: var(--space-xs);
-    left: 0;
-    right: 0;
-    height: fit-content;
-    top: 0;
-    bottom: 0;
-    margin: auto;
 
-    animation: expand 0.3s forwards;
-    transform-origin: right;
-    :deep(.q-field) {
-        padding-bottom: 0px;
-    }
-    :deep(.q-field__before) {
-        padding-right: var(--space-xxxs);
-    }
-    :deep(.q-field__bottom) {
-        padding-top: var(--space-xxxs);
-        .q-field__messages {
-            color: $deep-purple;
-            font-weight: bold;
-        }
-    }
-}
 .select__section {
     height: v-bind(mainHeight);
     overflow: auto;
@@ -108,15 +81,6 @@
         position: sticky;
         top: 0;
         background-color: rgba(255, 255, 255, 0.98);
-    }
-}
-
-@keyframes expand {
-    0% {
-        transform: scaleX(0);
-    }
-    100% {
-        transform: scaleX(1);
     }
 }
 </style>
