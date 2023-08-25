@@ -1,4 +1,5 @@
 <template>
+
     <AreaSearch
         v-if="showSearch"
         :resourceTypes="['team']"
@@ -29,29 +30,34 @@
     </header>
     <main class="season-content__container" ref="seasonContainer">
         <div class="column teams__container" ref="teamContainer">
-            <div class="teams-title row" :class="{ mini: isMini }">
-                <span>My Teams</span
-                ><q-btn
+            <div class="teams-title column" :class="{ mini: isMini,  }" v-if="teams?.length">
+                <div class="row">
+                <span class="text-md text-bold">My Teams</span
+                >
+              
+                <q-btn
                     flat
                     round
                     :icon="editingTeams ? 'close' : 'edit'"
                     size="sm"
                     color="grey-7"
-                    @click="editingTeams = !editingTeams"
+                    @click="setView('manage')"
                 />
+                </div>
+                <div class="text-sm text-">Click a team to see only their games</div>
             </div>
             <div class="row no-wrap teams__scroller" :class="{ mini: isMini }">
-                <div
-                    class="column items-center no-wrap team__container"
-                    v-if="editingTeams || !teams?.length"
-                >
-                    <q-btn
-                        round
-                        icon="add"
-                        color="deep-purple"
-                        @click="showSearch = true"
-                    />
+
+                <!-- NO TEAMS --> 
+                <div v-if="!teams?.length" class="column full-width items-center">
+                    <div>Looks like you don't have any teams.</div>
+                    <div style="width: fit-content">
+                    <q-btn rounded color="deep-purple" icon="add" @click="showSearch = true">Add team</q-btn>
+                    </div>
                 </div>
+
+                <!-- TEAM LIST -->
+               
                 <div
                     v-for="team in teams"
                     :key="team.id"
@@ -59,13 +65,7 @@
                     @click="setVisibleTeam(team.id)"
                     :class="{ selected: visibleTeams.includes(team.id) }"
                 >
-                    <div
-                        class="team-delete__overlay row justify-center items-center"
-                        @click.stop="removeTeam(team)"
-                        v-if="editingTeams"
-                    >
-                        <q-btn flat round icon="delete" color="negative" />
-                    </div>
+                   
                     <div class="avatar-container">
                         <Avataaar v-bind="parseAvatar(team.team_avatar)" />
                     </div>
@@ -98,6 +98,7 @@
             </div>
         </div>
     </main>
+
 </template>
 <style lang="scss" scoped>
 .profile__wrap {
@@ -117,9 +118,6 @@
 
         .teams-title {
             margin: var(--space-xxs) var(--space-sm) 0px var(--space-sm);
-
-            font-weight: bold;
-            font-size: var(--text-md);
             transition: all 0.2s;
             overflow: hidden;
             &.mini {
@@ -191,7 +189,9 @@
 </style>
 <script setup>
 import { useUserStore } from "@/store/user";
+import {useUserTeamStore} from '@/store/user-teams'
 import {useNotificationStore} from '@/store/notification'
+import {useNavigationStore} from '@/store/navigation'
 import {
     useElementBounding,
     useScroll,
@@ -227,30 +227,12 @@ const visibleGames = computed(() => {
  * BEGIN games
  */
 
-const getUserTeams = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("team_profile_junction")
-        .select(
-            `
-        team:team_id (
-            id,
-            name,
-            team_avatar
-        )
-    `
-        )
-        .eq("profile_id", user.value.id);
-    if (!data || !data?.length) return [];
-    return data.map(({ team }) => team);
-};
-
 const games = ref([]);
 const teams = ref(null);
 
 const init = async () => {
       loading.value = true;
-    teams.value = await getUserTeams();
+    teams.value = useUserTeamStore().userTeams
     const teamIds = teams.value.map(({ id }) => id);
     if (!teamIds || !teamIds?.length) {
         games.value = [];
@@ -377,78 +359,14 @@ const expandItem = (id) => {
 };
 
 const editingTeams = ref(false);
-const removingTeam = ref(false);
-
-const removeTeam = async (team) => {
-    if (removingTeam.value) return;
-    const notStore = useNotificationStore();
-    removingTeam.value = true;
-    const {name, id} = team;
-    const notificationId = notStore.addNotification({
-        state: 'pending',
-        text: `Removing ${name} from your teams...`,
-        timeout: -1,
-    });
-    const {user:profile_id} = useUser();
-    const client = useSupabaseClient();
-    const {error} = await client.from('team_profile_junction').delete().eq('profile_id', profile_id.value).eq('team_id', id)
-
-    if (error) {
-        notStore.updateNotification(notificationId, {
-            state: 'failed',
-            text: `Error removing ${name} from your teams (code: ${error.code}).`,
-            timeout: 5000,
-        })
-    } else {
-         notStore.updateNotification(notificationId, {
-            state: 'completed',
-            text: `${name} was removed from your teams.`,
-            timeout: 5000,
-        })
-        await init();
-    }
-
-
-
-    removingTeam.value = false;
-    
-}
 
 const showSearch = ref(false);
-
-const addTeam = async (team) => {
-    const notStore = useNotificationStore();
-    const {name, id} = team;
-    const notificationId = notStore.addNotification({
-        state: 'pending',
-        text: `Adding ${name} to your teams...`,
-        timeout: -1,
-    });
-    const {user:profile_id} = useUser();
-    const client = useSupabaseClient();
-    const {error} = await client.from('team_profile_junction').upsert({profile_id: profile_id.value, team_id: id})
-
-    if (error) {
-        notStore.updateNotification(notificationId, {
-            state: 'failed',
-            text: `Error adding ${name} to your teams (code: ${error.code}).`,
-            timeout: 5000,
-        })
-    } else {
-         notStore.updateNotification(notificationId, {
-            state: 'completed',
-            text: `${name} was added to your teams.`,
-            timeout: 5000,
-        })
-            await init();
-    }
-
-
-
-}
 
 const selectTeam = (team) => {
     showSearch.value = false;
     addTeam(team)
+    editingTeams.value = false;
 };
+
+const {setView} = useNavigationStore();
 </script>

@@ -33,7 +33,7 @@
                 </div>
                 <header
                     class="pretty-shadow"
-                    style="position: relative; z-index: 1"
+                    style="position: relative; z-index: 1; height: fit-content"
                     ref="header"
                 >
                     <slot name="header"> </slot>

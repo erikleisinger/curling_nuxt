@@ -5,8 +5,8 @@
 </template>
 <script setup>
 import {useConfirmDialog} from '@vueuse/core'
-import {useEditorStore} from '@/store/editor'
-const {togglePlayerEditor} = useEditorStore();
+import {useDialogStore} from '@/store/dialog'
+const {togglePlayerEditor} = useDialogStore();
     const props = defineProps({
         id: String,
         username: String

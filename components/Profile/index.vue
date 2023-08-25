@@ -146,7 +146,6 @@
 </style>
 <script setup>
 import { useUserStore } from "@/store/user";
-import { useEditorStore } from "@/store/editor";
 import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
 import { useSocialStore } from "@/store/social";

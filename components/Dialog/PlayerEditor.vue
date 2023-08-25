@@ -11,10 +11,10 @@
     </DialogFloating>
 </template>
 <script setup lang="ts">
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import {usePlayerStore} from '@/store/players'
 
-const editorStore = useEditorStore();
+const editorStore = useDialogStore();
 const { togglePlayerEditor } = editorStore;
 const player = ref({});
 onBeforeMount(() => {

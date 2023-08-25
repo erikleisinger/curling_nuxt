@@ -156,7 +156,7 @@
 <script setup>
 import { useNavigationStore } from "@/store/navigation";
 import { VIEWS } from "@/constants/navigation";
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
 import {useSocialStore} from '@/store/social'
@@ -180,7 +180,7 @@ const createNewTeam = async () => {
         setView(VIEWS.MANAGE);
     });
 };
-    const editorStore = useEditorStore();
+    const editorStore = useDialogStore();
     const {toggleLineScore} = editorStore;
 const createNewPlayer = async () => {
     editorStore.togglePlayerEditor({open: true})

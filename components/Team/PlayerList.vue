@@ -86,7 +86,7 @@
     </q-item-section>
 </template>
 <script setup lang="ts">
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import { useTeamStore } from "@/store/teams";
 import { usePlayerStore } from "@/store/players";
 const props = defineProps({
@@ -109,7 +109,7 @@ const hasPlayers = () => {
 
 const openPlayerSelector = (position: string) => {
     const { addPlayerToTeam } = useTeamStore();
-    const editorStore = useEditorStore();
+    const editorStore = useDialogStore();
     editorStore.togglePlayerSelect({
         open: true,
         onSelect: (playerId: number) => {

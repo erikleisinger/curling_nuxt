@@ -26,7 +26,7 @@
 </template>
 <script setup>
 import {VALIDATION_RULES} from "@/constants/validation";
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import {useSheetStore} from "@/store/sheets";
 
 const props = defineProps({
@@ -51,5 +51,5 @@ const sheetOptions = computed(() => {
   });
 });
 
-const {toggleSheetDialog} = useEditorStore();
+const {toggleSheetDialog} = useDialogStore();
 </script>

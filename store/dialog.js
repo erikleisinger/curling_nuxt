@@ -5,13 +5,17 @@ import DialogGameEditor from "@/components/Dialog/GameEditor.vue";
 import DialogRinkEditor from '@/components/Dialog/RinkEditor.vue'
 import  DialogSheetEditor  from "@/components/Dialog/SheetEditor.vue";
 
-export const useEditorStore = defineStore("editor", {
+export const useDialogStore = defineStore("dialog", {
     state: () => ({
         mousePos: {
             x: 0,
             y: 0,
         },
-
+        globalSearch: {
+            open: false,
+            onSelect: null,
+            options: {}
+        },
         linescore: {
             open: false,
             editedGame: null,
@@ -41,6 +45,14 @@ export const useEditorStore = defineStore("editor", {
           edited,
         }
       });
+    },
+    toggleGlobalSearch({open, options = {}}) {
+        this.globalSearch.open = open;
+        if (open === true) {
+            this.globalSearch.options = options;
+        } else {
+            this.globalSearch.options = {}
+        }
     },
     toggleLineScore({open, editedGame = null}) {
         if (open === false || !editedGame) {

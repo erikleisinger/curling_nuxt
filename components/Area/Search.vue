@@ -12,10 +12,11 @@
                 clearable
                 @clear="clearResults"
                 :loading="loading"
+                bg-color="white"
             >
                 <!-- :hint="global && !hideHint ? 'Searching worldwide' : ''" -->
                 <template v-slot:before v-if="!hideIcons">
-                    <slot name="before"/>
+                    <slot name="before" />
                 </template>
                 <template v-slot:after>
                     <q-btn
@@ -24,94 +25,151 @@
                         icon="search"
                         @click="emit('close')"
                         v-if="!hideIcons"
+                        color="white"
                     />
                 </template>
             </q-input>
         </div>
         <!-- :style="{height: `calc(100% - ${searchBarHeight}px)`}" -->
-        <div
-            class="search-results__container z-top"
-            :style="{
-                top: `${searchBarY}px + ${searchBarHeight}px`,
-                maxHeight: `calc(100 * var(--vh, 1vh) - (${searchBarY}px + ${searchBarHeight}px + 32px))`,
-            }"
-            v-if="results"
-        >
-        <div v-if="!results?.length" style="height: 50px" class="row justify-center items-center">
-            No results.
-        </div>
-            <div v-for="result in results" :key="result.id" @click="emit('select', result)">
-                <div class="result__container">
-                    <!-- RINK result -->
-                       <div v-if="result.resourcetype === 'rink'" class="icon__wrap">
-                    <div
-                        v-if="result.resourcetype === 'rink'"
-                        class="row justify-center items-center icon__container"
-                    >
-                        <q-icon size="2em" name="location_on" color="red" />
-                    </div>
-                       </div>
-                    <div
-                        v-if="result.resourcetype === 'rink'"
-                        class="column justify-center"
-                    >
-                        <div class="text-bold">{{ result.name }}</div>
-                        <div class="text-sm">
-                            {{ `${result.city}, ${result.province}` }}
+        <transition appear name="expand-shrink" mode="out-in">
+            <div
+                class="search-results__container z-top"
+                :style="{
+                    top: `${searchBarY}px + ${searchBarHeight}px`,
+                    maxHeight: `calc(100 * var(--vh, 1vh) - (${searchBarY}px + ${searchBarHeight}px + 32px))`,
+                }"
+                v-if="results"
+            >
+                <div
+                    v-if="!results?.length"
+                    style="height: 50px"
+                    class="row justify-center items-center"
+                >
+                    No results.
+                </div>
+                <div
+                    v-for="result in results"
+                    :key="result.id"
+                    @click="emit('select', result)"
+                >
+                    <div class="result__container">
+                        <!-- RINK result -->
+                        <div
+                            v-if="result.resourcetype === 'rink'"
+                            class="icon__wrap"
+                        >
+                            <div
+                                v-if="result.resourcetype === 'rink'"
+                                class="row justify-center items-center icon__container"
+                            >
+                                <q-icon
+                                    size="2em"
+                                    name="location_on"
+                                    color="red"
+                                />
+                            </div>
                         </div>
-                    </div>
+                        <div
+                            v-if="result.resourcetype === 'rink'"
+                            class="column justify-center"
+                        >
+                            <div class="text-bold">{{ result.name }}</div>
+                            <div class="text-sm">
+                                {{ `${result.city}, ${result.province}` }}
+                            </div>
+                        </div>
 
-                    <!-- TEAM result -->
-                    <div v-if="result.resourcetype === 'team'">
+                        <!-- TEAM result -->
+                        <div v-if="result.resourcetype === 'team'">
+                            <Avataaar v-bind="parseAvatar(result.avatar)" />
+                        </div>
+                        <div
+                            v-if="result.resourcetype === 'team'"
+                            class="column justify-center"
+                        >
+                            <div class="text-sm">Team</div>
+                            <div class="text-bold">{{ result.name }}</div>
+                        </div>
+                        <!-- EVENT result -->
+                        <div
+                            v-if="result.resourcetype === 'event'"
+                            class="icon__wrap"
+                        >
+                            <div
+                                class="row justify-center items-center icon__container"
+                            >
+                                <q-icon
+                                    size="2em"
+                                    name="emoji_events"
+                                    color="yellow"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            v-if="result.resourcetype === 'event'"
+                            class="column justify-center"
+                        >
+                            <div class="text-bold">{{ result.name }}</div>
+                            <div class="text-sm">{{ result.loc }}</div>
+                            <div class="text-sm">
+                                {{ `${result.city}, ${result.province}` }}
+                            </div>
+                        </div>
+                         <!-- USER result -->
+                    <div v-if="result.resourcetype === 'profile'">
                         <Avataaar v-bind="parseAvatar(result.avatar)" />
                     </div>
                     <div
-                        v-if="result.resourcetype === 'team'"
+                        v-if="result.resourcetype === 'profile'"
                         class="column justify-center"
                     >
-                        <div class="text-sm">Team</div>
+                        <div class="text-sm">User</div>
                         <div class="text-bold">{{ result.name }}</div>
                     </div>
-                    <!-- EVENT result -->
-                    <div v-if="result.resourcetype === 'event'" class="icon__wrap">
-                    <div
-                       
-                        class="row justify-center items-center icon__container"
-                    >
-                        <q-icon size="2em" name="emoji_events" color="yellow" />
-                    </div>
-                    </div>
-                    <div
-                        v-if="result.resourcetype === 'event'"
-                        class="column justify-center"
-                    >
-                        <div class="text-bold">{{ result.name }}</div>
-                        <div class="text-sm">{{ result.loc }}</div>
-                        <div class="text-sm">
-                            {{ `${result.city}, ${result.province}` }}
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </transition>
     </div>
     <!-- </Teleport> -->
 </template>
 <style lang="scss" scoped>
+.expand-shrink-enter-active,
+.expand-shrink-leave-active {
+    transition: all 0.3s;
+    transform-origin: top;
+}
+
+.expand-shrink-enter-from {
+    transform-origin: top;
+    transform: scaleY(0);
+}
+.expand-shrink-enter-to {
+    transform: scaleY(1);
+}
+
+.expand-shrink-enter,
+.expand-shrink-leave-to {
+    transform-origin: top;
+    transform: scaleY(0);
+}
+
 .search-container--floating {
     width: 100%;
     position: relative;
-    padding: 0px var(--space-sm);
     .search-results__container {
         position: absolute;
-        width: 100%;
-        background-color: white;
+        width: calc(100% - var(--space-md) * 2);
+
         overflow: auto;
-        margin-left: calc(var(--space-sm) * -1);
+        margin: 0px var(--space-md);
+        border-radius: 16px;
         .result__container {
             display: grid;
             grid-template-columns: 50px 1fr;
-            padding: var(--space-xs);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: var(--space-sm);
+
             > div:nth-child(2) {
                 margin-left: 16px;
             }
@@ -122,15 +180,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-              .icon__container {
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
-            aspect-ratio: 1/1;
-            width: 100%;
-         
+            .icon__container {
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                border-radius: 50%;
+                aspect-ratio: 1/1;
+                width: 100%;
+            }
         }
-        }
-      
     }
     .search__container--floating {
         width: inherit;
@@ -138,6 +194,7 @@
         padding-bottom: var(--space-md);
         animation: expand 0.3s forwards;
         transform-origin: right;
+
         :deep(.q-field) {
             padding-bottom: 0px;
         }
@@ -189,7 +246,7 @@ const search = () => {
     useSearch();
 };
 
-const loading = ref(false)
+const loading = ref(false);
 
 const useSearch = useThrottleFn(async () => {
     loading.value = true;
@@ -205,60 +262,14 @@ const useSearch = useThrottleFn(async () => {
             searchquery: formatted,
         })
         .limit(25);
-
     results.value = data.reduce((all, current) => {
-        if (current.resourcetype === 'profile') return all;
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
         return [...all, current];
     }, []);
     loading.value = false;
-    // const { data } = await client
-    //     .from(props.tableName)
-    //     .select(`teams (
-    //         id,
-    //         name
-    //     ),
-    //     rinks (
-    //         id,
-    //         name
-    //     )`)
-    //     .textSearch('rinks.name', formatted)
-    //     .textSearch('teams.name', formatted)
 
-    //     .order('name', {ascending: true})
-    // results.value = data.map((d) => ({
-    //     ...d,
-    //     username: d.username?.username,
-    // }));
-    // } else {
-    //   const { user: userId } = useUser();
-    //  const {data} = await client.rpc('search_resources', {searchquery: formatted}).eq('profile_id', userId.value)
-    // console.log('data: ', data)
-
-    // const { data } = await client
-    //     .from(props.tableName)
-    //     .select(props.query)
-    //     .textSearch(props.queryField, formatted)
-    //     .eq("profile_id", userId.value)
-    //     .order(props.queryField, {ascending: true})
-    // results.value = data.map((d) => ({
-    //     ...d,
-    //     username: d.username?.username,
-    // }));
-    // }
 }, 100);
-
-// const global = ref(false);
-
-// const toggleGlobal = () => {
-//     if (props.globalOnly) return;
-//     global.value = !global.value;
-// };
-
-// const toggleSearch = () => {
-//     if (!props.globalOnly) global.value = false;
-// };
 
 const clickable = ref(true);
 
@@ -272,12 +283,6 @@ const onFocus = ({ type }) => {
     });
 };
 
-// onMounted(() => {
-//     if (props.globalOnly) {
-//         global.value = true;
-//     }
-// });
-
 const clearResults = () => {
     results.value = null;
 };
@@ -285,4 +290,13 @@ const clearResults = () => {
 const searchBar = ref(null);
 const { height: searchBarHeight, y: searchBarY } =
     useElementBounding(searchBar);
+
+ 
 </script>
+<script>
+   export default {
+    name: 'AreaSearch'
+
+  }
+</script>
+

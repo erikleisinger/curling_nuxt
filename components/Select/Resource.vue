@@ -72,7 +72,6 @@
 <script setup>
 import { useFocus, useElementBounding, useWindowSize } from "@vueuse/core";
 import { VALIDATION_RULES } from "@/constants/validation";
-import { useEditorStore } from "@/store/editor";
 
 
 const props = defineProps({

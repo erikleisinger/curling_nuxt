@@ -49,9 +49,6 @@ const setNotification = () => {
         }
 
     };
-
-    console.log('to insert: ', notificationToInsert)
-
     if (!!activeNotification) {
         activeNotification(notificationToInsert);
     } else {

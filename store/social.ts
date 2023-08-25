@@ -21,6 +21,12 @@ export const useSocialStore = defineStore("social", {
             requestee_profile_id: string;
             team_id: number;
         }) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Cancelling request...`,
+                timeout: 10000,
+            });
             const { user } = useUser();
             const requester_profile_id = user.value;
             const { client, fetchHandler } = useSupabaseFetch();
@@ -34,15 +40,28 @@ export const useSocialStore = defineStore("social", {
             );
 
             if (error) {
-                throw new DatabaseError({
-                    name: ErrorName.DELETE_ERROR,
-                    message: "Error canceling request",
-                    cause: error,
-                    fatal: true,
-                    table: TABLE_NAMES.TEAM_REQUESTS,
-                });
+                
+                notStore.updateNotification(
+                    notId,
+                    {
+                        state: "failed",
+                        text: `Error cancelling request: ${error.message} (code ${
+                            error?.code ?? "X"
+                        })`,
+                        timeout: 10000,
+                    }
+            );
+
             } else {
                 this.emitUpdate(team_id, null)
+                notStore.updateNotification(
+                    notId,
+                    {
+                        state: "completed",
+                        text: `Request cancelled.`,
+                        timeout: 10000,
+                    }
+            );
             }
             await this.fetchTeamRequests();
             const teamStore = useTeamStore();
@@ -70,6 +89,31 @@ export const useSocialStore = defineStore("social", {
                 return;
             }
             this.requestsToRespond = data ?? 0;
+        },
+        async getTeamRequestsByTeam(teamId: number) {
+            const client = useSupabaseClient();
+
+            const {data, error} = await client.from('team_requests').select(`
+                id, 
+                requester:requester_profile_id (
+                    id,
+                    username,
+                    first_name,
+                    last_name,
+                    avatar_url
+                ),
+                requestee:requestee_profile_id (
+                    id,
+                    username,
+                    first_name,
+                    last_name,
+                    avatar_url
+                ),
+                status,
+                team_id
+            `).eq('team_id', teamId)  
+
+            return data;
         },
         async getTeamRequestsByUser(profileId: string) {
             const client = useSupabaseClient();

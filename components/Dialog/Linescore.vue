@@ -362,7 +362,7 @@ $team-nav-margin: 6vh;
 }
 </style>
 <script setup lang="ts">
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import { useGameStore } from "@/store/games";
 
 import { usePlayerStore } from "@/store/players";
@@ -499,7 +499,7 @@ const confirmUnsaved = ref(false);
 
 const root = ref(null);
 
-const editorStore = useEditorStore();
+const editorStore = useDialogStore();
 const { toggleLineScore } = editorStore;
 
 const visible = ref(1);

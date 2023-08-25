@@ -1,10 +1,11 @@
 <template>
+
     <header class="outer-header__container" ref="header" v-if="showSearch">
         <AreaSearch
-            v-if="showSearch"
-            @close="showSearch = false"
-            @select="onSelect"
-            inputLabel="Search for a team, rink, or event"
+                v-if="showSearch"
+                @close="showSearch = false"
+                @select="onSelect"
+                inputLabel="Search for a team, rink, or event"
         />
 
     </header>
@@ -41,7 +42,7 @@
             />
         </template>
     </Event>
-        
+
 </template>
 <style lang="scss" scoped>
 .outer-header__container {

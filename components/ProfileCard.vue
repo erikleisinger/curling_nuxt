@@ -66,7 +66,7 @@
 </style>
 <script setup>
 import { parseAvatar } from "@/utils/avatar";
-import {useEditorStore} from '@/store/editor'
+import {useDialogStore} from '@/store/dialog'
 
 const props = defineProps({
     animated: Boolean,
@@ -93,7 +93,7 @@ const handleClick = () => {
         return;
     }
     if (!props.type || !props.viewable) return;
-    const editorStore = useEditorStore();
+    const editorStore = useDialogStore();
 
     if (props.type === 'team') {
         editorStore.toggleTeamViewer({open: true, team: props.item})

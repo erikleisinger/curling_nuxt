@@ -36,23 +36,6 @@
                 inputLabel="Search for a rink"
                 @select="selectRink"
             >
-                <!-- <template v-slot="{ results }">
-                    <div class="rink-search__results" v-if="results?.length">
-                        <div
-                            v-for="result in results"
-                            :key="result.id"
-                            class="result__container"
-                            @click="selectRink(result)"
-                        >
-                            <div>
-                                {{ result.name }}
-                            </div>
-                            <div class="text-xs">
-                                {{ result.city }}, {{result.province}}
-                            </div>
-                        </div>
-                    </div>
-                </template> -->
                 <template v-slot:before>
                     <q-btn
                         flat

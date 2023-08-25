@@ -189,7 +189,7 @@ $columns: 20% 60% 20%;
 
 </style>
 <script setup>
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import {
     useElementBounding,
     useElementSize,
@@ -215,7 +215,7 @@ const isVisible = (team, { home_points, away_points }) => {
 };
 
 const editGame = (gameId) => {
-    const editorStore = useEditorStore();
+    const editorStore = useDialogStore();
     editorStore.toggleLineScore({ open: true, editedGame: { id: gameId } });
 };
 

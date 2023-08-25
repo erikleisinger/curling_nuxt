@@ -2,30 +2,31 @@
     <q-chip
         ref="chipElement"
         rounded
-        :color="STATUS_COLORS[status] ?? 'white'"
+        :color="isRevealed ? 'negative' : STATUS_COLORS[status] ?? 'white'"
         :outline="!status"
-        :text-color="'deep-purple'"
+        :text-color="isRevealed ? 'white' : 'black'"
         clickable
         class="request-status__container text-sm"
-        @click="onChipClick"
+        @click="handleClick"
+    
     >
-        {{ status || "Read only" }}
+        <div v-if="!isRevealed">{{ TEXT[status] || "Read only" }}</div>
+        <div v-else>Cancel request?</div>
     </q-chip>
 </template>
 <script setup>
-import { useEventListener } from "@vueuse/core";
+import { useEventListener, useConfirmDialog, onClickOutside } from "@vueuse/core";
 import { useSocialStore } from "@/store/social";
 const props = defineProps({
-    initialStatus: String,
-    profileId: String,
+    canEdit: Boolean,
+    status: String,
+    requesteeId: String,
     resourceId: Number,
     resourceType: {
         type: String,
         default: "team",
     },
 });
-
-const status = ref(props.initialStatus);
 
 const ICONS = {
     accepted: "check",
@@ -39,26 +40,45 @@ const STATUS_COLORS = {
     rejected: "negative",
 };
 
-const chipElement = ref(null);
+const TEXT = {
+    pending: 'pending',
+    accepted: 'Accepted',
+    rejected: 'Rejected',
+}
 
-const onUpdate = ({ detail }) => {
-    const { status: newStatus } = detail;
-    status.value = newStatus;
-};
 
-useEventListener(window, `REQUEST_${props.resourceId}_UPDATED`, onUpdate);
 
-const onChipClick = () => {
-    if (!status.value) {
-        useSocialStore().sendTeamRequest({
-            requestee_profile_id: props.profileId,
-            team_id: props.resourceId,
-        });
-    } else if (status.value === "pending") {
+const emit = defineEmits(['cancel'])
+
+const doAction = () => {
+    if (!props.canEdit) return;
+    if (props.status === "pending") {
         useSocialStore().cancelTeamRequest({
-            requestee_profile_id: props.profileId,
+            requestee_profile_id: props.requesteeId,
             team_id: props.resourceId,
         });
+        emit('cancel')
     }
 };
+
+
+const {reveal, isRevealed, onConfirm, cancel, confirm, onCancel } = useConfirmDialog();
+
+onConfirm(() => {
+    doAction();
+})
+
+const handleClick = () => {
+ if (!isRevealed.value) {
+    reveal();
+    return;
+ }
+ confirm();
+}
+
+const chipElement = ref(null);
+
+onClickOutside(chipElement, cancel)
+
+
 </script>

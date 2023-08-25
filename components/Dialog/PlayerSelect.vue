@@ -21,11 +21,11 @@
     </DialogFloating>
 </template>
 <script setup>
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 
 const emit = defineEmits(["close", "select"]);
 
-const editorStore = useEditorStore();
+const editorStore = useDialogStore();
 const { togglePlayerEditor } = editorStore;
 const {onSelect} = editorStore.playerSelect;
 const handleSelect = async (e) => {

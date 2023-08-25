@@ -111,13 +111,13 @@ $header-height: 2em;
 }
 </style>
 <script setup lang="ts">
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import { useTeamStore } from "@/store/teams";
 import { useUserStore } from "@/store/user";
 import { parseAvatar } from "@/utils/avatar";
 import { useElementSize } from "@vueuse/core";
 import Team from "@/types/team";
-const editorStore = useEditorStore();
+const editorStore = useDialogStore();
 
 const tab = ref("stats");
 

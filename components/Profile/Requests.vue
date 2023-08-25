@@ -71,7 +71,7 @@
                     <!-- <span class="text-bold"
                         >@{{ request.requester_username }}</span
                     > -->
-                    has requested access to <TeamChip :name="request.team_name" :id="request.team_id"/></q-item-label
+                    has invited you to join <TeamChip :name="request.team_name" :id="request.team_id"/></q-item-label
                 >
                 <q-item-label caption>{{request.status}} {{
                     parseTimestamp(request.updated_at)

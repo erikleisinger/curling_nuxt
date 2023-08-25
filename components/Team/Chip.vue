@@ -5,8 +5,8 @@
 </template>
 <script setup>
 import {useConfirmDialog} from '@vueuse/core'
-import {useEditorStore} from '@/store/editor'
-const {toggleTeamViewer} = useEditorStore();
+import {useDialogStore} from '@/store/dialog'
+const {toggleTeamViewer} = useDialogStore();
     const props = defineProps({
         id: Number,
         name: String

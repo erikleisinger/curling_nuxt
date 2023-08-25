@@ -37,9 +37,9 @@
 </style>
 <script setup>
 import { useTeamStore } from "@/store/teams";
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 
-const { toggleLineScore } = useEditorStore();
+const { toggleLineScore } = useDialogStore();
 
 const props = defineProps({
     modelValue: Object,

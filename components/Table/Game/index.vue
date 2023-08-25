@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useSessionStore } from "@/store/session";
-import { useEditorStore } from "@/store/editor";
+import { useDialogStore } from "@/store/dialog";
 import { useGameStore } from "@/store/games";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useSwipe } from "@vueuse/core";
@@ -81,7 +81,7 @@ const selectGame = async (game: Game) => {
 };
 
 const edit = (game: Game) => {
-    const editorStore = useEditorStore();
+    const editorStore = useDialogStore();
     editorStore.toggleGameDialog({
         ...game,
         home: game.home.id,
@@ -99,7 +99,7 @@ const deleteGame = async (game: Game) => {
     itemToDelete.value = null;
 };
 
-const { toggleGameDialog } = useEditorStore();
+const { toggleGameDialog } = useDialogStore();
 
 const tableArea = ref(null);
 const { direction } = useSwipe(tableArea, {
