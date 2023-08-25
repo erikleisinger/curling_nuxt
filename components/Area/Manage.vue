@@ -41,7 +41,7 @@
     <ProfileCard
         v-for="team in teams"
         :key="team.id"
-        :avatar="team.team_avatar"
+        :item="team"
     >
         <template v-slot:overline> Team </template>
         {{ team.name }}
@@ -55,7 +55,11 @@
                 @click="handleRemove(team)"
                 :disable="removingTeam"
             />
+           
         </template>
+         <template v-slot:avatar>
+                <TeamAvatar :team="team"/>
+            </template>
     </ProfileCard>
 </template>
 <script setup>

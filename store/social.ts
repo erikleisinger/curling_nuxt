@@ -100,14 +100,14 @@ export const useSocialStore = defineStore("social", {
                     username,
                     first_name,
                     last_name,
-                    avatar_url
+                    avatar
                 ),
                 requestee:requestee_profile_id (
                     id,
                     username,
                     first_name,
                     last_name,
-                    avatar_url
+                    avatar
                 ),
                 status,
                 team_id

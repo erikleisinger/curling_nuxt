@@ -24,9 +24,10 @@
                 <div class="team__profile--container column no-wrap">
                     <div class="team-avatar__container">
                         <div class="team-avatar--wrap">
-                            <Avataaar
+                            <TeamAvatar :team="result"/>
+                            <!-- <Avataaar
                                 v-bind="parseAvatar(result.home_avatar)"
-                            />
+                            /> -->
 
                             <RockIcon
                                 :draggable="false"
@@ -60,9 +61,10 @@
                 <div class="team__profile--container column no-wrap">
                     <div class="team-avatar__container">
                         <div class="team-avatar--wrap">
-                            <Avataaar
+                            <TeamAvatar :team="result"/>
+                            <!-- <Avataaar
                                 v-bind="parseAvatar(result.away_avatar)"
-                            />
+                            /> -->
 
                             <RockIcon
                                 :draggable="false"

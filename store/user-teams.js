@@ -50,7 +50,9 @@ export const useUserTeamStore = defineStore("user-teams", {
                 team:team_id (
                     id,
                     name,
-                    team_avatar
+                    team_avatar,
+                    avatar_type,
+                    avatar_url
                 )
             `
                 )

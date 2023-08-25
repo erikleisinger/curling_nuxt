@@ -67,7 +67,8 @@
                 >
                    
                     <div class="avatar-container">
-                        <Avataaar v-bind="parseAvatar(team.team_avatar)" />
+                        <!-- <Avataaar v-bind="parseAvatar(team.team_avatar)" /> -->
+                        <TeamAvatar :team="team"/>
                     </div>
                     <div class="team-name truncate-text">{{ team.name }}</div>
                 </div>
@@ -156,6 +157,7 @@
                 .avatar-container {
                     width: 40px;
                     transition: all 0.2s;
+                  
                 }
                 &.selected {
                     background-color: rgba(255, 86, 252, 0.2);

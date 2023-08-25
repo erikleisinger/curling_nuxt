@@ -4,7 +4,6 @@
             <Avataaar
                 v-bind="parseAvatar(avatar)"
                 :class="{ animated__avatar: animated }"
-                @click="handleClick"
             />
         </slot>
 
@@ -29,9 +28,6 @@
     display: grid;
     grid-template-columns: 3em auto auto;
     padding: var(--space-sm);
-
-    // border-bottom: 1px solid $grey-3;
-
     .animated__avatar {
         animation: float 0.7s infinite linear;
         animation-direction: alternate;
@@ -40,6 +36,13 @@
         &:hover {
             animation: scale 0.3s forwards linear;
         }
+    }
+    .uploaded-avatar__container {
+        aspect-ratio: 1/1;
+        width: 100%;
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 50%;
+        overflow: hidden;
     }
 }
 
@@ -101,4 +104,8 @@ const handleClick = () => {
            editorStore.togglePlayerEditor({open: true, editedPlayer: props.item})
     }
 }
+
+
+
+
 </script>
