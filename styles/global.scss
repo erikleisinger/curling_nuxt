@@ -213,3 +213,22 @@ $screen-xl-min: 1920px;
         }
     }
 }
+
+.animated__avatar {
+    animation: float 0.7s infinite linear;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+
+    &:hover {
+        animation: scale 0.3s forwards linear;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(0.15em);
+    }
+}

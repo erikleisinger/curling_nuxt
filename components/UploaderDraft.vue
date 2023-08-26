@@ -9,7 +9,7 @@
 </template>
 <style lang="scss" scoped>
 .uploader {
-    opacity: 0;
+    opacity: 0!important;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -29,7 +29,7 @@ const emit = defineEmits("upload");
 
 const uploading = ref(false);
 const src = ref("");
-const files = ref();
+const files = ref(null);
 const fileUpload = ref(null);
 
 const compressFile = async (file) => {
@@ -46,18 +46,20 @@ const compressFile = async (file) => {
 };
 
 const handleUpload = async (e) => {
-    console.l
+    uploading.value = true;
     if (props.emitOnly) {
         const file = await createFile(e)
         emit('upload', file)
+        files.value = null
     } else {
 
     }
+    uploading.value = false;
 }
 
 const createFile = async (evt) => {
 files.value = evt.target.files;
-        uploading.value = true;
+    
 
         let file = files.value[0];
         file = await compressFile(file);
@@ -76,7 +78,7 @@ const MAX_AVATAR_FILE_SIZE = 35000;
 const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
     if (!files.value || files.value.length === 0) return;
-    uploading.value = true;
+
     const notStore = useNotificationStore();
     const notId = notStore.addNotification({
         state: "pending",

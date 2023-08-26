@@ -40,10 +40,8 @@
                 style="
                     width: 100px;
                     position: relative;
-                    height: 100px;
                     aspect-ratio: 1/1;
                 "
-                class="col-grow"
             >
                 <div
                     class="avatar-upload__overlay row items-center justify-center"
@@ -117,18 +115,21 @@
             <div
                 v-for="player in visiblePlayers.teamMembers"
                 :key="player.id"
-                class="row items-center justify-between no-wrap"
+                class="row items-center justify-between no-wrap player__container"
             >
-                <div
-                    class="row items-center no-wrap q-py-xs"
-                    style="overflow: hidden"
-                >
+                
                     <div
                         style="width: 50px"
-                        class="col-grow"
+                        class="member-avatar__wrap"
                         @click="handlePlayerAvatarClick(player)"
                     >
-                        <Avataaar v-bind="player.avatar" />
+                        <div
+                            style="width: inherit"
+                            class="member-avatar__container"
+                            :class="{ 'highlight': selectPlayerAvatarMode }"
+                        >
+                            <Avataaar v-bind="player.avatar" />
+                        </div>
                     </div>
                     <div class="q-ml-sm column col-shrink">
                         <div class="truncate-text full-width">
@@ -141,37 +142,38 @@
                             />
                         </div>
                     </div>
-                </div>
+            
                 <div v-if="!player.status" class="row no-wrap">
-                    <q-icon
-                        name="stars"
-                        :color="player.is_admin ? 'primary' : 'grey-4'"
-                        size="md"
-                        @click="toggleAdmin(player)"
-                        v-if="isEditing"
+                        <q-icon
+                            name="stars"
+                            :color="player.is_admin ? 'primary' : 'grey-4'"
+                            size="md"
+                            @click="toggleAdmin(player)"
+                            v-if="isEditing"
+                        />
+                        <q-icon
+                            name="delete"
+                            color="negative"
+                            size="md"
+                            @click="removePlayer(player.id)"
+                            v-if="
+                                !player.is_admin &&
+                                teamId &&
+                                isEditing &&
+                                !isOwner(player.id)
+                            "
+                        />
+                    </div>
+                    <RequestStatus
+                        v-else
+                        :requesteeId="player.id"
+                        :resourceId="teamId"
+                        :status="player.status"
+                        canEdit
+                        @cancel="cancelRequest(player.id)"
+                        :waiting="!teamId"
                     />
-                    <q-icon
-                        name="delete"
-                        color="negative"
-                        size="md"
-                        @click="removePlayer(player.id)"
-                        v-if="
-                            !player.is_admin &&
-                            teamId &&
-                            isEditing &&
-                            !isOwner(player.id)
-                        "
-                    />
-                </div>
-                <RequestStatus
-                    v-else
-                    :requesteeId="player.id"
-                    :resourceId="teamId"
-                    :status="player.status"
-                    canEdit
-                    @cancel="cancelRequest(player.id)"
-                    :waiting="!teamId"
-                />
+         
             </div>
             <!-- Add new player -->
             <div
@@ -242,10 +244,9 @@
 </template>
 <style lang="scss" scoped>
 $header-height: 2em;
-.result__container {
+.player__container {
     display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 30% 40% 30%;
+    grid-template-columns: 50px 1fr auto;
 }
 .team-viewer__wrap {
     display: grid;
@@ -265,7 +266,7 @@ $header-height: 2em;
 
     &.avataaar {
         margin-top: calc(100% * 0.05 * -1);
-        height: calc(100% + 100% * 0.05);
+        aspect-ratio: 1/1;
         width: calc(100% - 0.2em);
     }
     &.upload {
@@ -284,6 +285,27 @@ $header-height: 2em;
     border-radius: 50px;
     overflow: hidden;
 }
+.member-avatar__wrap {
+    position: relative;
+    aspect-ratio: 1/1;
+    overflow: visible;
+    .member-avatar__container {
+        overflow: visible;
+        transition: all 0.2s;
+        &.highlight {
+            transform: scale(1.1);
+            position: absolute;
+            top: 0;
+            z-index: 100;
+            box-shadow: $pretty-shadow;
+            border-radius: 50%;
+            cursor: pointer;
+            &:hover {
+                transform: scale(1.2);
+            }
+        }
+    }
+}
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
@@ -300,7 +322,7 @@ const tab = ref("stats");
 
 const { toggleTeamViewer, toggleGlobalSearch } = dialogStore;
 
-const {options} = dialogStore.teamViewer
+const { options } = dialogStore.teamViewer;
 
 const newTeamPlayers = ref([]);
 
@@ -370,7 +392,6 @@ const toggleAddPlayer = () => {
                 ...visiblePlayers.value.teamMembers,
                 ...visiblePlayers.value.teamFans,
             ].map(({ id }) => id),
-            
         },
     });
 };
@@ -566,6 +587,7 @@ const handlePlayerAvatarClick = async (player) => {
         if (errors) return;
         await getTeam(teamId);
     }
+    selectPlayerAvatarMode.value = false;
 };
 
 const saving = ref(false);

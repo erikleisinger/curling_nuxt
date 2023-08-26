@@ -28,15 +28,7 @@
     display: grid;
     grid-template-columns: 3em auto auto;
     padding: var(--space-sm);
-    .animated__avatar {
-        animation: float 0.7s infinite linear;
-        animation-direction: alternate;
-        animation-iteration-count: infinite;
-
-        &:hover {
-            animation: scale 0.3s forwards linear;
-        }
-    }
+    
     .uploaded-avatar__container {
         aspect-ratio: 1/1;
         width: 100%;
@@ -46,14 +38,7 @@
     }
 }
 
-@keyframes float {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(0.15em);
-    }
-}
+
 
 @keyframes scale {
     0% {
