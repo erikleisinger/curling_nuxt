@@ -136,19 +136,19 @@
                         v-for="game in visibleGames"
                         :key="game.id"
                         :result="game"
-                        @click="expandItem(game.id)"
+                        @expand="expandItem(game.id)"
                         :expanded="expanded === game.id"
                     >
-                        <div
+                        <!-- <div
                             style="
                                 position: absolute;
                                 height: 100%;
                                 width: 100%;
-                                pointer-events: all;
+                             
                                 z-index: 1;
                             "
                             @click="viewTeam"
-                        />
+                        /> -->
                     </TeamGameResult>
                 </q-pull-to-refresh>
             </q-infinite-scroll>

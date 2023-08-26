@@ -1,151 +1,190 @@
 <template>
-<div style="position: relative">
-    <slot/>
-    <AreaSearch
-        v-if="showSearch"
-        @close="showSearch = false"
-        @select="onSelect"
-        globalOnly
-        tableName="teams"
-        :query="`
-        id,
-        name,
-        team_avatar
-        `"
-    />
-    <div class="result__container--wrap" :class="{ expanded }">
-        <div
-            class="result__header"
-            :style="{ backgroundImage }"
-
-            ref="container"
-        >
-            <div class="result__container"  @click="emit('expand')">
-                <div class="team__profile--container column no-wrap">
-                    <div class="team-avatar__container">
-                        <div class="team-avatar--wrap">
-                            <TeamAvatar :team="{
-                                 team_avatar: result.home_avatar,
-                                avatar_type: result.home_avatar_type,
-                                avatar_url: result.home_avatar_url
-                            }"/>
-                            <!-- <Avataaar
-                                v-bind="parseAvatar(result.home_avatar)"
-                            /> -->
-
-                            <RockIcon
-                                :draggable="false"
-                                :color="result.home_color"
-                            />
-                        </div>
-                    </div>
-
-                    <h2 class="text-sm truncate-text text-center">
-                        {{ result.home_name }}
-                    </h2>
-                </div>
-
-                <div class="row items-center full-width">
-                    <div
-                        class="row justify-around items-center text-xxxl full-width"
-                    >
-                        <div class="column justify-center items-center no-wrap">
-                            <div class="score">
-                                {{ result.home_points ?? 0 }}
+    <div style="position: relative">
+        <div class="result__container--wrap" :class="{ expanded }">
+            <div
+                class="result__header"
+                :style="{ backgroundImage }"
+                ref="container"
+            >
+                <div class="result__container" @click="emit('expand')">
+                    <div class="team__profile--container column no-wrap">
+                        <div
+                            class="team-avatar__container"
+                            @click.stop.prevent="onAvatarClick(result.home_id)"
+                        >
+                            <div class="team-avatar--wrap">
+                                <TeamAvatar
+                                    :team="{
+                                        team_avatar: result.home_avatar,
+                                        avatar_type: result.home_avatar_type,
+                                        avatar_url: result.home_avatar_url,
+                                    }"
+                                />
+                                <RockIcon
+                                    :draggable="false"
+                                    :color="result.home_color"
+                                />
                             </div>
                         </div>
-                        <div class="column justify-center items-center no-wrap">
-                            <div class="score">
-                                {{ result.away_points ?? 0 }}
+
+                        <h2
+                            class="text-sm truncate-text text-center col-grow row items-center"
+                        >
+                            {{ result.home_name }}
+                        </h2>
+                    </div>
+
+                    <div class="row items-center full-width">
+                        <div
+                            class="row justify-around items-center text-xxxl full-width"
+                        >
+                            <div
+                                class="column justify-center items-center no-wrap"
+                            >
+                                <div class="score">
+                                    {{ result.home_points ?? 0 }}
+                                </div>
+                            </div>
+                            <div
+                                class="column justify-center items-center no-wrap"
+                            >
+                                <div class="score">
+                                    {{ result.away_points ?? 0 }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="team__profile--container column no-wrap">
-                    <div class="team-avatar__container">
-                        <div class="team-avatar--wrap">
-                            <TeamAvatar :team="{
-                                team_avatar: result.away_avatar,
-                                avatar_type: result.away_avatar_type,
-                                avatar_url: result.away_avatar_url
-                            }"/>
-                            <!-- <Avataaar
-                                v-bind="parseAvatar(result.away_avatar)"
-                            /> -->
-
-                            <RockIcon
-                                :draggable="false"
-                                :color="result.away_color"
-                            />
+                    <div class="team__profile--container column no-wrap">
+                        <div class="team-avatar__container">
+                            <div
+                                class="team-avatar--wrap"
+                                @click.stop.prevent="
+                                    onAvatarClick(result.away_id)
+                                "
+                            >
+                                <TeamAvatar
+                                    :team="{
+                                        team_avatar: result.away_avatar,
+                                        avatar_type: result.away_avatar_type,
+                                        avatar_url: result.away_avatar_url,
+                                    }"
+                                />
+                                <RockIcon
+                                    :draggable="false"
+                                    :color="result.away_color"
+                                />
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h2 class="text-sm truncate-text text-center">
+                                <span v-if="result.away_name">{{
+                                    result.away_name
+                                }}</span>
+                            </h2>
+                            <q-chip
+                                v-if="!result.away_id"
+                                dense
+                                color="deep-purple"
+                                text-color="white"
+                                class="text-bold"
+                                clickable
+                                icon="add"
+                                @click.stop="
+                                    toggleGlobalSearch({
+                                        open: true,
+                                        options: {
+                                            resourceTypes: ['team'],
+                                            inputLabel:
+                                                'Invite an opposition team',
+                                            filterIds: [userId],
+                                            callback: selectTeam,
+                                        },
+                                    })
+                                "
+                                ><span>Invite team</span>
+                            </q-chip>
                         </div>
                     </div>
-
-                    <h2 class="text-sm truncate-text text-center">
-                        <span v-if="result.away_name">{{
-                            result.away_name
-                        }}</span>
-                        <q-chip
-                            v-else
-                            dense
-                            color="deep-purple"
-                            text-color="white"
-                            class="text-bold q-mx-none"
-                            clickable
-                            icon="add"
-                            @click.stop="showSearch = true"
-                            ><span>Add</span>
-                        </q-chip>
-                    </h2>
                 </div>
-            </div>
 
-            <!-- League / Location -->
-            <div class="row justify-between q-pt-sm ">
-                <div class="column no-wrap q-mr-xs ">
-                    <div class="row no-wrap text-xs">
-                             <q-icon name="location_on" />
-                        <div class="truncate-text">
-                            {{result.rink_name || 'Unknown rink'}}
-                        </div>
-                   
+                <!-- League / Location -->
+                <div
+                    class="column items-center q-pt-sm game-details"
+                    v-if="
+                        result.rink_name ||
+                        result.sheet_name ||
+                        result.event_name ||
+                        result.start_time
+                    "
+                >
+                    <div class="text-xs">
+                        {{ format(toTimezone(result.start_time)) }}
                     </div>
-                    <div class="row no-wrap text-xs">
+                    <div class="row no-wrap q-mr-xs items-center">
+                        <div
+                            class="row no-wrap text-xs q-ml-sm"
+                            v-if="result.rink_name"
+                        >
+                            <q-icon name="location_on" color="red" />
+                            <div class="truncate-text">
+                                {{ result.rink_name }}
+                            </div>
+                        </div>
+                        <div
+                            class="row no-wrap text-xs q-ml-sm"
+                            v-if="result.sheet_name"
+                        >
                             <q-icon name="crop_portrait" />
-                        <div class="truncate-text" v-if="result.sheet_name">Sheet {{result.sheet_name}}/{{numberToLetter(result.sheet_name)}}</div>
-                        <div class="truncate-text" v-else>Unknown sheet</div>
-                    
+                            <div class="truncate-text" v-if="result.sheet_name">
+                                Sheet {{ result.sheet_name }}/{{
+                                    numberToLetter(result.sheet_name)
+                                }}
+                            </div>
+                            <div class="truncate-text" v-else>
+                                Unknown sheet
+                            </div>
+                        </div>
+                        <div
+                            class="row no-wrap text-xs justify-end q-ml-sm"
+                            v-if="result.event_name"
+                        >
+                            <q-icon name="emoji_events" color="yellow" />
+                            <div class="truncate-text">
+                                {{ result.event_name }}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!-- <div class="column items-center justify-center">
-                    <div class="text-xs">July 1, 2023 at 1:30pm</div>
-                </div> -->
-                <div class="row no-wrap text-xs justify-end" v-if="result.event_name">
-                    <q-icon  name="emoji_events" />
-                    <div class="truncate-text">{{result.event_name}}</div>
-                    
-                </div>
             </div>
+            <transition
+                appear
+                enter-active-class="animated slideInDown"
+                leave-active-class="animated slideOutUp"
+            >
+                <TeamGameResultDetails v-if="expanded" :result="props.result" />
+            </transition>
         </div>
-        <transition
-            appear
-            enter-active-class="animated slideInDown"
-            leave-active-class="animated slideOutUp"
-        >
-            <TeamGameResultDetails v-if="expanded" :result="props.result"/>
-        </transition>
-    </div>
     </div>
 </template>
 <style lang="scss" scoped>
-$result-height: 7vh;
-$columns: 20% 60% 20%;
+$result-height: 50px;
+$columns: 30% 40% 30%;
 .result__container--wrap {
     border-radius: 16px;
     max-height: fit-content;
     border: 1px solid $grey-3;
     margin-bottom: var(--space-sm);
     transition: all 1s;
+    position: relative;
+    .start-time--floating {
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: auto;
+        text-align: center;
+        font-size: var(--text-xs);
+    }
     .result__header {
         padding-bottom: var(--space-xs);
         padding-top: var(--space-xs);
@@ -192,11 +231,9 @@ $columns: 20% 60% 20%;
     }
     .score {
         margin: auto !important;
-        font-size: min(7vw, 50px);
+        font-size: 35px;
     }
-  
 }
-
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
@@ -206,7 +243,12 @@ import {
     useParentElement,
     watchDebounced,
 } from "@vueuse/core";
-import {numberToLetter} from '@/utils/sheets'
+import { numberToLetter } from "@/utils/sheets";
+
+const dialogStore = useDialogStore();
+
+const { toggleGlobalSearch } = dialogStore;
+
 const props = defineProps({
     expanded: Boolean,
     result: Object,
@@ -225,13 +267,7 @@ const isVisible = (team, { home_points, away_points }) => {
 };
 
 const editGame = (gameId) => {
-    const editorStore = useDialogStore();
-    editorStore.toggleLineScore({ open: true, editedGame: { id: gameId } });
-};
-
-const showSearch = ref(false);
-const onSelect = (t) => {
-    showSearch.value = false;
+    dialogStore.toggleLineScore({ open: true, editedGame: { id: gameId } });
 };
 
 const container = ref(null);
@@ -240,9 +276,29 @@ const { height: containerHeight, width: containerWidth } =
 
 const { getEventBackground } = useColor();
 
-const backgroundImage = ref(null)
+const backgroundImage = ref(null);
 
 watch(containerHeight, () => {
-     backgroundImage.value = getEventBackground(props.result.event_color, containerHeight.value, containerWidth.value);
-})
+    backgroundImage.value = getEventBackground(
+        props.result.event_color,
+        containerHeight.value,
+        containerWidth.value
+    );
+});
+
+const onAvatarClick = (id) => {
+    if (!id) {
+        console.log("NO ID");
+        return;
+    }
+    dialogStore.toggleTeamViewer({ open: true, team: { id } });
+};
+
+const { format, toTimezone } = useTime();
+
+const { user: userId } = useUser();
+
+const selectTeam = (selection) => {
+    console.log("selection: ", selection);
+};
 </script>

@@ -19,7 +19,7 @@ export const useTime = () => {
         }
     }
 
-    const format = (date:string, format:string = 'MMMM D, YYYY h:mm A') => {
+    const format = (date:string, format:string = 'MMMM D, YYYY [at] h:mm A') => {
         const dayjs = useDayjs()
         return dayjs(date).format(format)
     }

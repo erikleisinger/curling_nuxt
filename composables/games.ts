@@ -1,7 +1,7 @@
 export const useGame = () => {
     const getTeamGames = async (team_ids_param: number[], start: number = 0, end: number = 5) => {
         const client = useSupabaseClient();
-        const { data } = await client.rpc("get_team_record", { team_ids_param }).range(start, end);
+        const { data } = await client.rpc("get_team_record", { team_ids_param }).range(start, end).order('start_time', {ascending: false});
         if (data) return data?.map((d) => ({
             ...d,
             end_count: d.end_count,
