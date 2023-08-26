@@ -25,14 +25,10 @@
                           <TeamAvatar :team="gameParams.away?.id ? gameParams.away : {}"/>
                     </div>
                     <div class="text-bold text-md text-center">{{gameParams.away?.name || 'Opposition team'}}</div>
-                    <!-- <div v-if="gameParams.away?.id"> -->
                 
             </div>
         </div>
     </div>
-    <!-- <div class="confirm-button__container">
-        <q-btn rounded size="xl" color="deep-purple" @click="emit('save')">Confirm & Save</q-btn>
-    </div> -->
     </div>
 </template>
 <style lang="scss" scoped>

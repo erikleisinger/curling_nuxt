@@ -20,7 +20,7 @@
                     color="positive"
                     square
                     :disable="nextDisabled"
-                    @click="changeView(+1)"
+                    @click="handleNext"
                     >{{
                         view === views.CONFIRM ? "Confirm & save" : "next"
                     }}</q-btn
@@ -126,7 +126,7 @@
                             icon="check"
                             no-wrap
                             class="col-grow q-pa-none"
-                            @click="onNextClick"
+                            @click="changeView(+1)"
                             ><span class="q-pl-xs">Done</span></q-btn
                         >
                     </div>
@@ -403,6 +403,15 @@ const nextDisabled = computed(() => {
     return false;
 });
 
+const handleNext = () => {
+    if (view.value !== views.CONFIRM) {
+        changeView(+1);
+        return;
+    } else if (view.value === views.CONFIRM) {
+        save();
+    }
+}
+
 const confirmUnsaved = ref(false);
 
 /**
@@ -472,10 +481,9 @@ const save = async () => {
 
     const gameToCreate = {
         home: params?.home?.id,
-        away: params?.away?.id,
         home_color: params?.homeColor,
         away_color: params?.awayColor,
-        hammer_first_end: params?.hammerFirstEndTeam,
+        hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
         end_count: endCount.value,
         completed: true,
         conceded,
@@ -483,6 +491,12 @@ const save = async () => {
         rink_id: rink.value?.id,
         sheet_id: sheetId,
     };
+
+    if (!!params?.away?.id) {
+        gameToCreate.pending_away = params.away.id;
+    } else {
+        gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
+    }
 
     if (editedId.value) {
         gameToCreate.id = editedId.value;
