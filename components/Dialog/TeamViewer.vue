@@ -381,7 +381,7 @@
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
-import { useSocialStore } from "@/store/social";
+import { useTeamRequestStore } from "@/store/team-requests";
 import { useTeamStore } from "@/store/teams";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useUserStore } from "@/store/user";
@@ -457,8 +457,8 @@ onMounted(async () => {
  */
 
 const getPendingRequests = async () => {
-    const socialStore = useSocialStore();
-    const requests = await socialStore.getTeamRequestsByTeam(teamId);
+    const teamRequestStore = useTeamRequestStore();
+    const requests = await teamRequestStore.getTeamRequestsByTeam(teamId);
     teamPlayers.value = [
         ...teamPlayers.value,
         ...requests.reduce((all, current) => {
@@ -616,8 +616,8 @@ const toggleAddPlayer = () => {
 };
 
 const inviteUser = async (user) => {
-    const socialStore = useSocialStore();
-    await socialStore.sendTeamRequest({
+    const teamRequestStore = useTeamRequestStore();
+    await teamRequestStore.sendTeamRequest({
         requestee_profile_id: user.profile_id,
         team_id: teamId,
     });

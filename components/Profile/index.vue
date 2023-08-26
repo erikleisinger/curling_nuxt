@@ -148,7 +148,7 @@
 import { useUserStore } from "@/store/user";
 import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
-import { useSocialStore } from "@/store/social";
+import { useTeamRequestStore } from "@/store/team-requests";
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 
 const { logout } = useSession();
@@ -244,6 +244,6 @@ const addFriend = async () => {
  * Team requests
  */
 
-const socialStore = useSocialStore();
-const requestsNotifications = computed(() => socialStore.requestsToRespond);
+const teamRequestStore = useTeamRequestStore();
+const requestsNotifications = computed(() => teamRequestStore.requestsToRespond);
 </script>

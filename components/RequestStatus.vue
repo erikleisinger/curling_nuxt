@@ -17,7 +17,7 @@
 </template>
 <script setup>
 import { useEventListener, useConfirmDialog, onClickOutside } from "@vueuse/core";
-import { useSocialStore } from "@/store/social";
+import { useTeamRequestStore } from "@/store/team-requests";
 const props = defineProps({
     canEdit: Boolean,
     status: String,
@@ -55,7 +55,7 @@ const emit = defineEmits(['cancel'])
 const doAction = () => {
     if (!props.canEdit) return;
     if (props.status === "pending") {
-        useSocialStore().cancelTeamRequest({
+        useTeamRequestStore().cancelTeamRequest({
             requestee_profile_id: props.requesteeId,
             team_id: props.resourceId,
         });

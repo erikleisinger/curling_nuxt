@@ -172,7 +172,7 @@
 </style>
 <script setup lang="ts">
 import { BasicTeamRequest, RequestRole } from "@/types/request";
-import { useSocialStore } from "@/store/social";
+import { useTeamRequestStore } from "@/store/team-requests";
 import { useThrottleFn } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
 
@@ -339,9 +339,9 @@ onMounted(async () => {
         .subscribe();
 });
 
-const socialStore = useSocialStore();
+const teamRequestStore = useTeamRequestStore();
 
-const { updateTeamRequestStatus } = socialStore;
+const { updateTeamRequestStatus } = teamRequestStore;
 
 const cancelRequest = async ({
     team_id,
@@ -350,7 +350,7 @@ const cancelRequest = async ({
     team_id: number;
     requestee_profile_id: string;
 }) => {
-    await socialStore.cancelTeamRequest({ team_id, requestee_profile_id });
+    await teamRequestStore.cancelTeamRequest({ team_id, requestee_profile_id });
 
     // emit("update", {
     //     teamId: team_id,

@@ -6,7 +6,7 @@ import {useUserStore} from '@/store/user'
 import { useFriendStore } from "@/store/friends";
 import {useRinkStore} from '@/store/rinks'
 import {useSheetStore} from '@/store/sheets'
-import {useSocialStore} from '@/store/social'
+import {useTeamRequestStore} from 'store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
 
 export const useData = () => {
@@ -17,7 +17,7 @@ export const useData = () => {
     const userStore = useUserStore();
     const rinkStore = useRinkStore();
     const sheetStore = useSheetStore()
-    const socialStore = useSocialStore();
+    const teamRequestStore = useTeamRequestStore();
     const userTeamStore = useUserTeamStore();
   const progress = ref(0)
 
@@ -30,7 +30,7 @@ export const useData = () => {
       const {getCurrentUser} = userStore;
       const {fetchRinks} = rinkStore;
       const {fetchSheets} = sheetStore;
-      const {fetchTeamRequests } = socialStore
+      const {fetchTeamRequests } = teamRequestStore
       const {fetchUserTeams} = userTeamStore;
 
       await getCurrentUser()

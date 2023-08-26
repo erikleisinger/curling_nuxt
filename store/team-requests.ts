@@ -5,7 +5,7 @@ import { useTeamStore } from "@/store/teams";
 import { DatabaseError, ErrorName } from "@/types/error";
 import { useNotificationStore } from "@/store/notification";
 
-export const useSocialStore = defineStore("social", {
+export const useTeamRequestStore = defineStore("team-request", {
     state: () => {
         return {
             requestsToRespond: 0,

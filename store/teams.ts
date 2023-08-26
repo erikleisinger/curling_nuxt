@@ -4,7 +4,7 @@ import type Team from "@/types/team";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
 import { useUserStore } from "@/store/user";
-import {useSocialStore} from '@/store/social'
+import {useTeamRequestStore} from '@/store/team-requests'
 import { DatabaseError } from "@/types/error";
 import { ErrorName } from "@/types/error";
 import GET_TEAMS from "@/queries/get_teams";
@@ -244,14 +244,11 @@ export const useTeamStore = defineStore("team", {
                 this.teams.splice(index, 1, newTeam);
             }
             this.sortTeams();
-            console.log(newPlayerIds)
             if (newPlayerIds?.length) {
-                console.log('SENDING REQUESTS')
-                const socialStore = useSocialStore();
-                console.log('SOCIAL STORE: ', socialStore)
+                const teamRequestStore = useTeamRequestStore();
                 await Promise.all(
                     newPlayerIds.map(
-                        (id) => socialStore.sendTeamRequest({requestee_profile_id: id, team_id: teamId})
+                        (id) => teamRequestStore.sendTeamRequest({requestee_profile_id: id, team_id: teamId})
                     )
                 );
             }
