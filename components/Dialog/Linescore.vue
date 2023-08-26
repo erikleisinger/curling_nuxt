@@ -33,7 +33,7 @@
         </template>
 
         <!-- STEP 1: Game params -->
-        <LinescoreTeamSelect
+        <LinescoreGameParams
             v-if="view === views.GAME_PARAMS"
             @select="view = views.COLOR_SELECT"
             v-model="gameParams"
@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <LinescoreGameParams
+        <LinescoreTimeSelect
             v-if="view === views.DETAILS"
             v-model="start_time"
         />
