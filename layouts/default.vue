@@ -159,7 +159,7 @@ import { VIEWS } from "@/constants/navigation";
 import { useDialogStore } from "@/store/dialog";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useTeamStore } from "@/store/teams";
-import {useTeamRequestStore} from '@/store/social'
+import {useTeamRequestStore} from '@/store/team-requests'
 import {onClickOutside} from '@vueuse/core'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);

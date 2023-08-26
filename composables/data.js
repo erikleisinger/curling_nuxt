@@ -6,7 +6,7 @@ import {useUserStore} from '@/store/user'
 import { useFriendStore } from "@/store/friends";
 import {useRinkStore} from '@/store/rinks'
 import {useSheetStore} from '@/store/sheets'
-import {useTeamRequestStore} from 'store/team-requests'
+import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
 
 export const useData = () => {
