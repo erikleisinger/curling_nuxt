@@ -23,12 +23,19 @@
                 icon="search"
                 color="white"
                 text-color="primary"
+              
                 @click="
                     toggleGlobalSearch({
                         open: true,
+                        
                         options: {
+                            resourceTypes: ['team'],
                             inputLabel: 'Add team to my teams',
-                            callback: addTeam,
+                            filterIds: teams.map(({id}) => id),
+                            callback: onAppendClick,
+                            append: 'Select',
+                            appendCallback: onSelect,
+                            persistent: true
                         },
                     })
                 "
@@ -72,6 +79,24 @@ const { toggleGlobalSearch, toggleTeamViewer } = dialogStore;
 const store = useUserTeamStore();
 
 const { removeTeam, addTeam } = store;
+
+const onSelect = (team) => {
+    const {user: userId} = useUser();
+    if (!team.profile_id) return;
+    if (team?.profile_id === userId.value) {
+        addTeam({team, type:'member', is_admin:false})
+    } else {
+         addTeam({team, type:'fan', is_admin:false})
+    }
+    toggleGlobalSearch({open: false})
+}
+
+const onAppendClick = (team) => {
+    console.log('team: ', team)
+    //  toggleGlobalSearch({open:false})
+    toggleTeamViewer({open: true, team, options: {priority: true}})
+   
+}
 
 const teams = computed(() => store.userTeams);
 

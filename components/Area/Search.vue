@@ -40,7 +40,10 @@
                 }"
                 v-if="results"
             >
-                <div v-if="!results?.length" class="result__container no-grid row justify-center">
+                <div
+                    v-if="!results?.length"
+                    class="result__container no-grid row justify-center"
+                >
                     No results.
                 </div>
                 <div
@@ -55,7 +58,6 @@
                             class="icon__wrap"
                         >
                             <div
-                                v-if="result.resourcetype === 'rink'"
                                 class="row justify-center items-center icon__container"
                             >
                                 <q-icon
@@ -74,6 +76,9 @@
                                 {{ `${result.city}, ${result.province}` }}
                             </div>
                         </div>
+                        <div v-if="result.resourcetype === 'rink'">
+                            <slot name="append" v-bind:result="result" />
+                        </div>
 
                         <!-- TEAM result -->
                         <div v-if="result.resourcetype === 'team'">
@@ -85,6 +90,9 @@
                         >
                             <div class="text-sm">Team</div>
                             <div class="text-bold">{{ result.name }}</div>
+                        </div>
+                        <div v-if="result.resourcetype === 'team'">
+                            <slot name="append" v-bind:result="result" />
                         </div>
                         <!-- EVENT result -->
                         <div
@@ -111,16 +119,20 @@
                                 {{ `${result.city}, ${result.province}` }}
                             </div>
                         </div>
+                        <div v-if="result.resourcetype === 'event'">
+                            <slot name="append" v-bind:result="result" />
+                        </div>
                         <!-- USER result -->
+
                         <div v-if="result.resourcetype === 'profile'">
                             <Avataaar v-bind="parseAvatar(result.avatar)" />
                         </div>
-                        <div
-                            v-if="result.resourcetype === 'profile'"
-                            class="column justify-center"
-                        >
+                        <div class="column justify-center"  v-if="result.resourcetype === 'profile'">
                             <div class="text-sm">User</div>
                             <div class="text-bold">{{ result.name }}</div>
+                        </div>
+                        <div v-if="result.resourcetype === 'profile'">
+                            <slot name="append" v-bind:result="result" />
                         </div>
                     </div>
                 </div>
@@ -161,7 +173,6 @@
         margin: 0px var(--space-md);
         border-radius: 16px;
         .result__container {
-
             background-color: rgba(255, 255, 255, 0.8);
             padding: var(--space-sm);
 
@@ -170,7 +181,7 @@
             }
             &:not(.no-grid) {
                 display: grid;
-                grid-template-columns: 50px 1fr;
+                grid-template-columns: 50px 1fr auto;
             }
         }
         .icon__wrap {

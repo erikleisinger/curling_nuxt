@@ -1,6 +1,6 @@
 <template>
     <Teleport to="body">
-        <div class="outer__container" ref="container">
+        <div class="outer__container" :class="{'z-top': priority}" ref="container">
             <div class="pretty-shadow inner__container">
                 <q-inner-loading
                     :showing="loading"
@@ -88,6 +88,7 @@ const props = defineProps({
         default: true,
     },
     loading: Boolean,
+    priority: Boolean,
 });
 
 const emit = defineEmits(["close"]);

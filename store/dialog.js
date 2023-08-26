@@ -30,7 +30,8 @@ export const useDialogStore = defineStore("dialog", {
         },
         teamViewer: {
             open: false,
-            team: null
+            team: null,
+            options: {}
         }
         
     }),
@@ -101,13 +102,15 @@ export const useDialogStore = defineStore("dialog", {
           }
         });
       },
-    toggleTeamViewer({team, open}) {
+    toggleTeamViewer({team, open, options = {}}) {
         if (open === false) {
             this.teamViewer.open = false;
             this.teamViewer.team = null
+            this.teamViewer.options = {};
         } else {
             this.teamViewer.open = true;
             this.teamViewer.team = team
+            this.teamViewer.options = options;
         }
     }
   },

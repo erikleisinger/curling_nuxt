@@ -6,6 +6,11 @@
     <template v-slot:before>
         <q-btn flat round icon="close" color="white" @click="close"/>
     </template>
+    <template v-slot:append="{result: selection}" v-if="options.append && options.appendCallback">
+        <div class="full-height row justify-center items-center">
+            <q-btn flat @click.stop.prevent="options.appendCallback(selection)">{{options.append}}</q-btn>
+        </div>
+    </template>
         </AreaSearch>
 </div>
         </div>
@@ -53,7 +58,8 @@ const close = () => {
 
 const onSelect = (selection) => {
     if (options?.callback) options.callback(selection);
-    close();
+    if (!options.persistent)    close();
+
 }
 
 </script>

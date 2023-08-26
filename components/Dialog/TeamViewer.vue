@@ -1,5 +1,5 @@
 <template>
-      <DialogConfirmation
+    <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
         cancelButtonText="Cancel"
@@ -12,7 +12,7 @@
         <!-- -->
         Are you sure you want to close? All unsaved changes will be lost.
     </DialogConfirmation>
-    <DialogFloating >
+    <DialogFloating :priority="!!options.priority">
         <template v-slot:buttonLeft>
             <div>
                 <q-btn
@@ -31,17 +31,10 @@
                     @click="onSave"
                 />
             </div>
-            
         </template>
-         <template v-slot:buttonRight>
-                 <q-btn
-                    flat
-                    round
-                    icon="close"
-                 
-                    @click="confirmUnsaved = true"
-                />
-             </template>
+        <template v-slot:buttonRight>
+            <q-btn flat round icon="close" @click="handleClose" />
+        </template>
         <header class="column items-center header no-wrap">
             <div
                 style="
@@ -162,7 +155,12 @@
                         color="negative"
                         size="md"
                         @click="removePlayer(player.id)"
-                        v-if="!player.is_admin && teamId && isEditing && !isOwner(player.id)"
+                        v-if="
+                            !player.is_admin &&
+                            teamId &&
+                            isEditing &&
+                            !isOwner(player.id)
+                        "
                     />
                 </div>
                 <RequestStatus
@@ -296,11 +294,13 @@ import { useUserStore } from "@/store/user";
 import { parseAvatar } from "@/utils/avatar";
 import { useElementSize } from "@vueuse/core";
 import Team from "@/types/team";
-const editorStore = useDialogStore();
+const dialogStore = useDialogStore();
 
 const tab = ref("stats");
 
-const { toggleTeamViewer, toggleGlobalSearch } = editorStore;
+const { toggleTeamViewer, toggleGlobalSearch } = dialogStore;
+
+const {options} = dialogStore.teamViewer
 
 const newTeamPlayers = ref([]);
 
@@ -331,7 +331,7 @@ const loading = ref(false);
 
 const teamStore = useTeamStore();
 
-const teamId = editorStore.teamViewer.team?.id;
+const teamId = dialogStore.teamViewer.team?.id;
 
 const team = ref({
     name: null,
@@ -370,6 +370,7 @@ const toggleAddPlayer = () => {
                 ...visiblePlayers.value.teamMembers,
                 ...visiblePlayers.value.teamFans,
             ].map(({ id }) => id),
+            
         },
     });
 };
@@ -439,13 +440,14 @@ const getTeam = async (teamId) => {
     const [fetchedTeam] = data;
     team.value = fetchedTeam;
 
-    if (fetchedTeam?.avatar_type === "upload") await getAvatar();
+    if (fetchedTeam?.avatar_type === "upload" && fetchedTeam?.avatar_url)
+        await getAvatar();
 };
 
 onBeforeMount(async () => {
     // team.value =
     //     teamStore.teams.find((t) => t.id === teamId) ||
-    //     editorStore.teamViewer.team;
+    //     dialogStore.teamViewer.team;
 });
 
 const canEdit = computed(() => {
@@ -525,18 +527,16 @@ const showFans = ref(false);
 
 const newTeamAvatar = ref(null);
 
-const pendingAvatar = ref(null)
+const pendingAvatar = ref(null);
 
 const onAvatarUpload = async ({ file, path }) => {
- 
-        pendingAvatar.value = {
-            file,
-            path
-        }
-        const url = URL.createObjectURL(file);
-        team.value.avatar_type = "upload";
-        avatarUrl.value = url;
-    
+    pendingAvatar.value = {
+        file,
+        path,
+    };
+    const url = URL.createObjectURL(file);
+    team.value.avatar_type = "upload";
+    avatarUrl.value = url;
 };
 
 const avatarUrl = ref(null);
@@ -568,37 +568,47 @@ const handlePlayerAvatarClick = async (player) => {
     }
 };
 
-const saving = ref(false)
+const saving = ref(false);
 
 const saveNewTeam = async () => {
-   
     const newTeam = await teamStore.insertTeam(
         team.value,
         newTeamPlayers.value.map(({ profile_id }) => profile_id)
     );
-    if (!newTeam) return false
+    if (!newTeam) return false;
 
-    if (team.value.avatar_type === 'upload' && pendingAvatar.value) {
-        const successful = await teamStore.uploadAvatarToTeam(pendingAvatar.value.path, pendingAvatar.value.file, newTeam?.id)
-        if (!successful) return false
-
+    if (team.value.avatar_type === "upload" && pendingAvatar.value) {
+        const successful = await teamStore.uploadAvatarToTeam(
+            pendingAvatar.value.path,
+            pendingAvatar.value.file,
+            newTeam?.id
+        );
+        if (!successful) return false;
     }
-    return newTeam
+    return newTeam;
 };
 
 const onSave = async () => {
-     saving.value = true;
-        const newTeam = await saveNewTeam();
-        if (newTeam) {
-            await useUserTeamStore().fetchUserTeams(true);
-            toggleTeamViewer({open: false})
-            setTimeout(() => {
-                toggleTeamViewer({open: true, team: newTeam})
-            },10)
-        }
- 
-      saving.value = true;
+    saving.value = true;
+    const newTeam = await saveNewTeam();
+    if (newTeam) {
+        await useUserTeamStore().fetchUserTeams(true);
+        toggleTeamViewer({ open: false });
+        setTimeout(() => {
+            toggleTeamViewer({ open: true, team: newTeam });
+        }, 10);
+    }
+
+    saving.value = true;
 };
 
-const confirmUnsaved = ref(false)
+const confirmUnsaved = ref(false);
+
+const handleClose = () => {
+    if (teamId && isEditing.value) {
+        confirmUnsaved.value = true;
+    } else {
+        toggleTeamViewer({ open: false });
+    }
+};
 </script>

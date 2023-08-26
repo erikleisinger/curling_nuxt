@@ -9,7 +9,7 @@ export const useUserTeamStore = defineStore("user-teams", {
         };
     },
     actions: {
-        async addTeam(team) {
+        async addTeam({team, type = 'fan', is_admin = false}) {
             const notStore = useNotificationStore();
             const { name, id } = team;
             const notificationId = notStore.addNotification({
@@ -21,7 +21,7 @@ export const useUserTeamStore = defineStore("user-teams", {
             const client = useSupabaseClient();
             const { error } = await client
                 .from("team_profile_junction")
-                .upsert({ profile_id: profile_id.value, team_id: id });
+                .upsert({ profile_id: profile_id.value, team_id: id, type, is_admin });
 
             if (error) {
                 notStore.updateNotification(notificationId, {
