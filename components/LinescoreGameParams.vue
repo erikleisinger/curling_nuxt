@@ -1,7 +1,7 @@
 <template>
     <h1 class="text-md text-bold title">Select a time</h1>
-    <div class="full-width time__select row justify-around items-center">
-        <div class="date-select__container">
+    <div class="full-width time__select row items-center">
+        <div class="date-select__container q-mr-md q-ml-sm">
             <q-popup-proxy
                 cover
                 transition-show="scale"
@@ -59,7 +59,7 @@
     </div>
 </template>
 <style lang="scss" scoped>
-$date-container-dimension: 5em;
+$date-container-dimension: 70px;
 $date-container-bottom-height: $date-container-dimension / 4;
 .title {
     margin: 0px var(--space-md);
@@ -82,7 +82,7 @@ $date-container-bottom-height: $date-container-dimension / 4;
         .date {
             padding-top: 0.3em;
             font-size: calc(
-                ($date-container-dimension) - $date-container-bottom-height
+                $date-container-dimension / 2
             );
             line-height: 0;
         }
@@ -96,7 +96,7 @@ $date-container-bottom-height: $date-container-dimension / 4;
         box-shadow: $pretty-shadow;
         padding-left: var(--space-sm);
         overflow: hidden;
-        height: 100px;
+        height: $date-container-dimension;
 
         div {
             display: flex;
@@ -106,7 +106,8 @@ $date-container-bottom-height: $date-container-dimension / 4;
         .ampm {
             display: grid;
             grid-template-rows: repeat(2, 1fr);
-            margin-left: var(--space-sm);
+            margin-left: var(--space-xs);
+            padding-right: calc(3 * var(--space-xs));
 
             .ampm__button {
                 height: 100%;

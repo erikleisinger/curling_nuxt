@@ -6,7 +6,7 @@
         <q-img :src="avatarUrl" spinner-color="white" height="100%" v-if="avatarUrl"></q-img>
     </div>
     <Avataaar
-        v-else
+        v-else-if="avatarType === 'avataaar'"
         v-bind="typeof avatar === 'string' ? parseAvatar(avatar) : avatar"
     />
 </template>
@@ -29,15 +29,9 @@ const props = defineProps({
 const storage = useStorageStore();
 
 const avatarUrl = computed(() => storage.teamAvatars[props.team.id])
-// const avatarUrl = ref(null)
 
 const fetchAvatar = async (path) => {
     storage.getTeamAvatar(props.team.id, path)
-    //  const client = useSupabaseClient();
-    // const { data } = await client.storage.from("Avatars").download(path);
-    // const url = URL.createObjectURL(data);
-    // avatarUrl.value = url;
-// };
 };
 
 const avatar = ref(null);
@@ -52,7 +46,8 @@ const getAvatar = async () => {
     }
 };
 
-onMounted(() => {
+watch(() => props.team, (val) => {
+    if (!val?.avatar_type) return;
     getAvatar();
-});
+}, {immediate: true})
 </script>

@@ -1,5 +1,4 @@
 <template>
-
     <AreaSearch
         v-if="showSearch"
         :resourceTypes="['team']"
@@ -12,96 +11,154 @@
         </template>
     </AreaSearch>
     <header ref="header">
-        <div class="profile__wrap full-width">
-            <ProfileCard :avatar="user.avatar">
-                {{ user.firstName }} {{ user.lastName }}
-                <template v-slot:subtitle> @{{ user.username }} </template>
-                <template v-slot:append>
-                    <q-btn
-                        flat
-                        round
-                        icon="logout"
-                        @click="logout"
-                        color="deep-purple"
-                    />
-                </template>
-            </ProfileCard>
+        <div class="q-pa-lg bg-primary">
+            <h1 class="text-xl text-bold full-width text-center text-white">
+                2023-2024 Season
+            </h1>
+            <h2 class="text-md full-width text-center">
+                <ProfileChip :id="user.id" :username="user.username" />
+            </h2>
         </div>
+        <q-tabs
+            dense
+            stretch
+            active-bg-color="primary"
+            active-color="white"
+            indicator-color="white"
+            v-model="tab"
+        >
+            <q-tab name="overview" label="Overview" style="width: 33.34%" />
+            <q-tab
+                name="games"
+                label="Games"
+                style="width: 33.34%"
+                :disable="!teams?.length"
+            />
+            <q-tab
+                name="stats"
+                label="Stats"
+                style="width: 33.34%"
+                :disable="!teams?.length"
+            />
+        </q-tabs>
     </header>
     <main class="season-content__container" ref="seasonContainer">
-        <div class="column teams__container" ref="teamContainer">
-            <div class="teams-title column" :class="{ mini: isMini,  }" v-if="teams?.length">
+        <div
+            class="column teams__container"
+            ref="teamContainer"
+            v-if="tab == 'stats'"
+        >
+            <div
+                class="teams-title column"
+                :class="{ mini: isMini }"
+                v-if="teams?.length"
+            >
                 <div class="row">
-                <span class="text-md text-bold">My Teams</span
-                >
-              
-                <q-btn
-                    flat
-                    round
-                    :icon="editingTeams ? 'close' : 'edit'"
-                    size="sm"
-                    color="grey-7"
-                    @click="setView('manage')"
-                />
+                    <span class="text-md text-bold" v-if="tab === 'overview'"
+                        >My Teams</span
+                    >
+                    <!-- <span class="text-sm" v-if="tab === 'games'"
+                        >Click a team to show only their games.</span
+                    > -->
+
+                    <!-- <q-btn
+                        flat
+                        round
+                        :icon="editingTeams ? 'close' : 'edit'"
+                        size="sm"
+                        color="grey-7"
+                        @click="setView('manage')"
+                    /> -->
                 </div>
-                <div class="text-sm text-">Click a team to see only their games</div>
             </div>
             <div class="row no-wrap teams__scroller" :class="{ mini: isMini }">
-
-                <!-- NO TEAMS --> 
-                <div v-if="!teams?.length" class="column full-width items-center">
+                <!-- NO TEAMS -->
+                <div
+                    v-if="!teams?.length"
+                    class="column full-width items-center"
+                >
                     <div>Looks like you don't have any teams.</div>
                     <div style="width: fit-content">
-                    <q-btn rounded color="deep-purple" icon="add" @click="showSearch = true">Add team</q-btn>
+                        <q-btn
+                            rounded
+                            color="deep-purple"
+                            icon="add"
+                            @click="showSearch = true"
+                            >Add team</q-btn
+                        >
                     </div>
                 </div>
 
                 <!-- TEAM LIST -->
-               
+
                 <div
                     v-for="team in teams"
                     :key="team.id"
                     class="column items-center no-wrap team__container"
-                    @click="setVisibleTeam(team.id)"
+                    @click="handleTeamClick(team)"
                     :class="{ selected: visibleTeams.includes(team.id) }"
                 >
-                   
                     <div class="avatar-container">
-                        <!-- <Avataaar v-bind="parseAvatar(team.team_avatar)" /> -->
-                        <TeamAvatar :team="team"/>
+                        <TeamAvatar :team="team" />
                     </div>
                     <div class="team-name truncate-text">{{ team.name }}</div>
                 </div>
             </div>
         </div>
-        <!--  -->
-        <div :style="{ height: scrollerHeight }" v-bind="containerProps">
-            <!--  -->
-            <div v-bind="wrapperProps">
-                <TeamGameResult
-                    v-for="{ data: game } in list"
-                    :key="game.id"
-                    :result="game"
-                    @click="expandItem(game.id)"
-                    :expanded="expanded === game.id"
-                >
-                    <div
-                        style="
-                            position: absolute;
-                            height: 100%;
-                            width: 100%;
-                            pointer-events: all;
-                            z-index: 1;
-                        "
-                        @click="viewTeam"
-                    />
-                </TeamGameResult>
-            </div>
+        <div v-if="tab === 'overview'" :style="{ height: scrollerHeight }">
+           
+            <ChartTeamWinLoss
+                :wins="filteredRecord?.wins ?? 0"
+                :losses="filteredRecord?.lossess ?? 0"
+                :ties="filteredRecord?.ties ?? 0"
+                v-if="!loading"
+                
+            />
+           
+            <AreaManage/>
+        </div>
+        <div :style="{ height: scrollerHeight }" class="game-result__container" v-if="tab === 'games'">
+            <q-infinite-scroll
+                @load="scrollLoad"
+                :offset="1"
+                :scroll-target="seasonContainer"
+            >
+                <template v-slot:loading>
+                    <div class="row justify-center q-my-md">
+                        <q-spinner-dots
+                            color="primary"
+                            size="40px"
+                        ></q-spinner-dots>
+                    </div>
+                </template>
+                <q-pull-to-refresh @refresh="refreshGames">
+                    <TeamGameResult
+                        v-for="game in visibleGames"
+                        :key="game.id"
+                        :result="game"
+                        @click="expandItem(game.id)"
+                        :expanded="expanded === game.id"
+                    >
+                        <div
+                            style="
+                                position: absolute;
+                                height: 100%;
+                                width: 100%;
+                                pointer-events: all;
+                                z-index: 1;
+                            "
+                            @click="viewTeam"
+                        />
+                    </TeamGameResult>
+                </q-pull-to-refresh>
+            </q-infinite-scroll>
         </div>
     </main>
-
 </template>
 <style lang="scss" scoped>
+.game-result__container {
+    padding: var(--space-md) 0px;
+}
 .profile__wrap {
     padding: var(--space-sm);
     border-bottom: 1px solid $grey-4;
@@ -110,12 +167,13 @@
     height: v-bind(mainHeight);
     overflow: auto;
     position: relative;
+    max-width: 100%;
     .teams__container {
         position: sticky;
         top: 0;
         z-index: 1;
         background-color: white;
-        width: 100vw;
+        width: 100%;
 
         .teams-title {
             margin: var(--space-xxs) var(--space-sm) 0px var(--space-sm);
@@ -157,7 +215,6 @@
                 .avatar-container {
                     width: 40px;
                     transition: all 0.2s;
-                  
                 }
                 &.selected {
                     background-color: rgba(255, 86, 252, 0.2);
@@ -191,16 +248,16 @@
 </style>
 <script setup>
 import { useUserStore } from "@/store/user";
-import {useUserTeamStore} from '@/store/user-teams'
-import {useNotificationStore} from '@/store/notification'
-import {useNavigationStore} from '@/store/navigation'
-import {
-    useElementBounding,
-    useScroll,
-    useThrottleFn,
-    useVirtualList,
-} from "@vueuse/core";
+import { useDialogStore } from "@/store/dialog";
+import { useUserTeamStore } from "@/store/user-teams";
+import { useNotificationStore } from "@/store/notification";
+import { useNavigationStore } from "@/store/navigation";
+import { useElementBounding, useScroll, useThrottleFn } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
+
+const userTeamStore = useUserTeamStore();
+
+const tab = ref("overview");
 
 const loading = ref(false);
 
@@ -226,35 +283,140 @@ const visibleGames = computed(() => {
 });
 
 /**
+ * team record
+ */
+
+const wins = ref(0);
+const losses = ref(0);
+const ties = ref(0);
+
+const winLossRecord = ref([]);
+
+const filteredRecord = computed(() => {
+
+    const defaultRecord = {
+            wins: 0,
+            losses: 0,
+            ties: 0,
+        }
+    if (!winLossRecord?.value?.length || !teams.value.length) return defaultRecord;
+    return winLossRecord?.value.reduce(
+        (all, current) => {
+            if (
+                !visibleTeams?.value?.length ||
+                visibleTeams.value?.includes(current.team_id)
+            )
+                return {
+                    wins: (all.wins += current.wins),
+                    losses: (all.losses += current.losses),
+                    ties: (all.ties += current.ties),
+                };
+            return all;
+        },
+        defaultRecord
+        
+    );
+});
+
+const getWinsLossess = async () => {
+    const { client, fetchHandler } = useSupabaseFetch();
+    const { data } = await fetchHandler(
+        () =>
+            client.rpc("get_team_wins", {
+                team_ids_param: teams.value.map(({ id }) => id),
+            }),
+        { onError: "Error fetching data" }
+    );
+    // data.forEach((team) => {
+    //     wins.value += team.wins;
+    //     losses.value += team.losses;
+    //     ties.value += team.ties;
+    // })
+
+    winLossRecord.value = data;
+};
+
+/**
  * BEGIN games
  */
 
 const games = ref([]);
-const teams = ref(null);
 
-const init = async () => {
-      loading.value = true;
-    teams.value = useUserTeamStore().userTeams
-    const teamIds = teams.value.map(({ id }) => id);
-    if (!teamIds || !teamIds?.length) {
-        games.value = [];
-        return;
-    }
-    const { getTeamGames } = useGame();
+const teams = computed(() => userTeamStore.userTeams)
 
-    const gameResults = await Promise.all(
-        teamIds.map((id) => getTeamGames(id))
-    );
-    games.value = gameResults.flat().reduce((all, current) => {
+const setGames = (gamesToSet) => {
+    games.value = gamesToSet.reduce((all, current) => {
         if (all.some(({ id }) => id === current.id)) return all;
         return [...all, current];
     }, []);
+};
+
+const init = async () => {
+    loading.value = true;
+    const teamIds = teams.value.map(({ id }) => id);
+    if (!teamIds || !teamIds?.length) {
+        games.value = [];
+    } else {
+    const gameResults = await getPaginatedGames();
+    setGames(gameResults);
+    await getWinsLossess();
+    }
+
     loading.value = false;
-}
+};
+
+const fetchingGames = ref(false);
+const startIndex = ref(null);
+const endIndex = ref(null);
+
+const paginationEnd = ref(false);
+
+const PAGINATION_SIZE = 5;
+
+const getPaginatedGames = useThrottleFn(async () => {
+    if (fetchingGames.value || paginationEnd.value) return []
+    fetchingGames.value = true;
+
+    if (startIndex.value === null) {
+        startIndex.value = 0;
+    } else {
+        startIndex.value += PAGINATION_SIZE;
+    }
+    if (endIndex.value === null) {
+        endIndex.value = 5;
+    } else {
+        endIndex.value += PAGINATION_SIZE;
+    }
+
+    const { getTeamGames } = useGame();
+
+    const teamIds = teams.value.map(({ id }) => id);
+
+    const gameResults = await getTeamGames(
+        teamIds,
+        startIndex.value,
+        endIndex.value
+    );
+    if (!gameResults.length) paginationEnd.value = true;
+    fetchingGames.value = false;
+    return gameResults;
+}, 100);
 
 onMounted(async () => {
-  init();
+    init();
 });
+
+watch(teams, () => {
+    getWinsLossess();
+}, {deep: true})
+
+const refreshGames = async (done) => {
+    startIndex.value = null;
+    endIndex.value = null;
+    const gameResults = await getPaginatedGames();
+    setGames(gameResults);
+    done();
+};
 
 /**
  * END games
@@ -331,19 +493,18 @@ const setMini = useThrottleFn((bool) => {
     if (isMini.value) editingTeams.value = false;
 }, 100);
 
-const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(
-    visibleGames,
-    {
-        itemHeight: 125,
-        overscan: 3,
-    }
-);
+const seasonContainer = ref(null);
 
-const { y } = useScroll(containerProps?.ref, {
-    onScroll: () => {
+const scrollLoad = async (index, done) => {
+    const gameResults = await getPaginatedGames();
+    setGames([...games.value, ...gameResults]);
+    done();
+};
+
+const { arrivedState, y } = useScroll(seasonContainer, {
+    onScroll: async () => {
         const mini = y.value > 100;
-        if (mini == isMini.value) return;
-        setMini(y.value > 100);
+        if (mini !== isMini.value) setMini(y.value > 100);
     },
 });
 
@@ -366,9 +527,18 @@ const showSearch = ref(false);
 
 const selectTeam = (team) => {
     showSearch.value = false;
-    addTeam(team)
+    addTeam(team);
     editingTeams.value = false;
 };
 
-const {setView} = useNavigationStore();
+const { setView } = useNavigationStore();
+
+const handleTeamClick = (team) => {
+    // setVisibleTeam(team.id);
+    //     if (tab.value === 'games') {
+    //  setVisibleTeam(team.id)
+    //     } else if (tab.value === 'overview') {
+    //         useDialogStore().toggleTeamViewer({open: true, team})
+    //     }
+};
 </script>

@@ -51,9 +51,11 @@
 
         <!-- BEGIN SHEET SELECTION -->
 
-        <div class="row no-wrap justify-between items-center" v-if="rink">
+        <div class="row no-wrap justify-between " v-if="rink">
             <h2 class="text-md text-bold">Select a sheet</h2>
-            <q-toggle v-model="letters" label="Letters" />
+       
+            <q-toggle v-model="letters" label="Letters" dense />
+         
         </div>
         <div class="row" v-if="rink">
             <div

@@ -13,6 +13,7 @@
                 @clear="clearResults"
                 :loading="loading"
                 bg-color="white"
+                autofocus
             >
                 <!-- :hint="global && !hideHint ? 'Searching worldwide' : ''" -->
                 <template v-slot:before v-if="!hideIcons">
@@ -235,6 +236,10 @@ import { useElementBounding, useThrottleFn } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
 
 const props = defineProps({
+    restrictIds: {
+        type: Array,
+        default: []
+    },
     filterIds: {
         type: Array,
         default: [],
@@ -280,10 +285,13 @@ const useSearch = useThrottleFn(async () => {
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
         if (
-            props.filterIds.includes(current.id) ||
-            props.filterIds.includes(current.profile_id)
+            props.filterIds.length && 
+            (props.filterIds.includes(current.id) ||
+            props.filterIds.includes(current.profile_id))
         )
             return all;
+        
+        if (props.restrictIds?.length && (!props.restrictIds.includes(current.id) && !props.restrictIds.includes(current.profile_id))) return all;
         return [...all, current];
     }, []);
     loading.value = false;

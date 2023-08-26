@@ -103,12 +103,6 @@ $header-height: 2em;
     grid-template-rows: 100%;
     grid-template-columns: 30% 40% 30%;
 }
-.team-viewer__wrap {
-    display: grid;
-    grid-template-rows: 2em calc(40% - $header-height / 2) calc(
-            60% - $header-height / 2
-        );
-}
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";

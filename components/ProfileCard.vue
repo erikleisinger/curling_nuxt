@@ -1,5 +1,5 @@
 <template>
-    <div class="profile__container">
+    <div class="profile__container" @click="handleClick">
         <slot name="avatar">
             <Avataaar
                 v-bind="parseAvatar(avatar)"

@@ -34,7 +34,6 @@ import Chart from "chart.js/auto";
 
 const props = defineProps({
     losses: Number,
-    teamId: Number,
     ties: Number,
     wins: Number,
 });
@@ -63,10 +62,9 @@ const chartData = ref([
         percent: 0,
     },
 ]);
+const chart = ref(null)
 
-const gamesCount = ref(0);
-
-onMounted(async () => {
+const setChartData = () => {
     const { wins, losses, ties } = props;
     chartData.value = [
         {
@@ -82,10 +80,11 @@ onMounted(async () => {
             percent: (losses / (wins + losses + ties)) * 100,
         },
     ];
+}
 
-    gamesCount.value = wins + losses + ties;
-
-    var chart = new Chart(chart1.value, {
+onMounted(async () => {
+    setChartData();
+    const newChart = new Chart(chart1.value, {
         type: "doughnut",
         data: {
             labels: ["Win", "Draw", "Loss"],
@@ -189,5 +188,17 @@ onMounted(async () => {
             },
         },
     });
+
+    Object.seal(newChart);
+    chart.value = newChart;
 });
+
+const record = computed(() => ({wins: props.wins, losses: props.losses, ties: props.ties}))
+watch(record, () => {
+    setChartData();
+    chart.value.data.datasets.forEach((dataset) => {
+        dataset.data = chartData.value
+    })
+    chart.value.update('none');
+}, {deep: true})
 </script>

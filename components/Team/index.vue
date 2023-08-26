@@ -1,8 +1,9 @@
 <template>
 
 <header ref="header">
-        <div class="team__content--container">
-            <div class="team-header__container" >
+        <div class="team__content--container row ">
+            <slot name="prepend"/>
+            <div class="team-header__container col-grow" >
                 <div class="row justify-between no-wrap">
                     <div
                         style="
@@ -12,7 +13,7 @@
                         class="col-grow"
                     >
                         <ProfileCard
-                            :avatar="team?.team_avatar"
+                            :avatar="typeof team?.team_avatar === 'object' ? JSON.stringify(team?.team_avatar) : team?.team_avatar"
                             type="team"
                             animated
                             viewable
@@ -27,11 +28,12 @@
                     </div>
 
                     <div class="row justify-center items-center q-mr-md">
-                        <slot name="appendButton"/>
+                        <slot name="append"/>
                     </div>
                    
                 </div>
             </div>
+                 <slot name="appendButton"/>
         </div>
 
         <nav>

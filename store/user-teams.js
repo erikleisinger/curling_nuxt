@@ -9,7 +9,7 @@ export const useUserTeamStore = defineStore("user-teams", {
         };
     },
     actions: {
-        async addTeam({team, type = 'fan', is_admin = false}) {
+        async addTeam({ team, type = "fan", is_admin = false }) {
             const notStore = useNotificationStore();
             const { name, id } = team;
             const notificationId = notStore.addNotification({
@@ -21,7 +21,12 @@ export const useUserTeamStore = defineStore("user-teams", {
             const client = useSupabaseClient();
             const { error } = await client
                 .from("team_profile_junction")
-                .upsert({ profile_id: profile_id.value, team_id: id, type, is_admin });
+                .upsert({
+                    profile_id: profile_id.value,
+                    team_id: id,
+                    type,
+                    is_admin,
+                });
 
             if (error) {
                 notStore.updateNotification(notificationId, {
@@ -53,7 +58,8 @@ export const useUserTeamStore = defineStore("user-teams", {
                     team_avatar,
                     avatar_type,
                     avatar_url
-                )
+                    ),
+                    type
             `
                 )
                 .eq("profile_id", userId.value);
@@ -62,9 +68,10 @@ export const useUserTeamStore = defineStore("user-teams", {
                 return;
             }
             this.userTeams = data.map((e) => {
-                const { is_admin, team, ...rest } = e;
+                const { is_admin, type, team, ...rest } = e;
                 return {
                     is_admin,
+                    type,
                     ...team,
                 };
             });
@@ -99,7 +106,6 @@ export const useUserTeamStore = defineStore("user-teams", {
                 });
                 await this.fetchUserTeams(true);
             }
-         
         },
         async updateTeamProfile(id, updates) {
             const notStore = useNotificationStore();
@@ -111,9 +117,9 @@ export const useUserTeamStore = defineStore("user-teams", {
             const client = useSupabaseClient();
             const { data, error } = await client
                 .from("team_profile_junction")
-                .update({...updates, position: 'lead'})
-                .select('is_admin')
-                .eq("id", id)
+                .update({ ...updates, position: "lead" })
+                .select("is_admin")
+                .eq("id", id);
             if (error) {
                 notStore.updateNotification(notificationId, {
                     state: "failed",
@@ -127,7 +133,7 @@ export const useUserTeamStore = defineStore("user-teams", {
                     timeout: 5000,
                 });
             }
-            await this.fetchUserTeams(true);  
+            await this.fetchUserTeams(true);
         },
     },
 });

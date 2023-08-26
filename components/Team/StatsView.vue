@@ -239,7 +239,6 @@ const { height: containerHeight } = useElementSize(statsContainer);
 const stats = ref(null);
 
 const getMedalStyle = (score) => {
-    console.log("medal style: ", score);
     if (Number.isNaN(score)) return "white";
     if (score > 5) {
         return {
@@ -265,13 +264,16 @@ const getWinsLossess = async () => {
     const { data } = await fetchHandler(
         () =>
             client.rpc("get_team_wins", {
-                team_id_param: props.teamId,
+                team_ids_param: [props.teamId],
             }),
         { onError: "Error fetching data" }
     );
-    wins.value = data.wins;
-    losses.value = data.losses;
-    ties.value = data.ties;
+    data.forEach((team) => {
+        wins.value += team.wins;
+        losses.value += team.losses;
+        ties.value += team.ties;
+    })
+
     loadingRecord.value = false;
 };
 

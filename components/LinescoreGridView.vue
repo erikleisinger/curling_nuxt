@@ -7,11 +7,11 @@
             <div class="grid__column">
                 <div><div style="visibility: hidden">H</div></div>
                 <div class="row items-center team-avatar__container">
-                    <Avataaar
+                    <TeamAvatar
                         style="height: 100%; width: 100%"
-                        v-bind="parseAvatar(game.home?.avatar)"
-                    >
-                    </Avataaar>
+                        :team="game?.home"
+                    />
+            
                     <q-badge
                         class="hammer__badge"
                         color="deep-purple"
@@ -20,16 +20,16 @@
                     >
                         <q-icon name="hardware" color="white"></q-icon
                     ></q-badge>
-                    <q-badge :color="game?.home?.color" rounded></q-badge>
+                    <q-badge :color="game?.homeColor" rounded> <q-icon name="circle" :color="game?.homeColor"/></q-badge>
                 </div>
                 <slot name="header"/>
                 <div
                     class="row items-center team-avatar__container"
                     style="width: 1em"
                 >
-                    <Avataaar
+                    <TeamAvatar
                         style="height: 100%; width: 100%"
-                        v-bind="parseAvatar(game.away?.avatar)"
+                        :team="game?.away"
                     />
                     <q-badge
                         class="hammer__badge"
@@ -39,7 +39,7 @@
                     >
                         <q-icon name="hardware" color="white"></q-icon
                     ></q-badge>
-                    <q-badge :color="game?.away?.color" rounded></q-badge>
+                    <q-badge :color="game?.awayColor" rounded><q-icon name="circle" :color="game?.awayColor"/></q-badge>
                 </div>
             </div>
         </div>
@@ -47,7 +47,6 @@
             v-for="end in ends"
             :key="`${end}-label`"
             class="row justify-center items-center text-xl linescore-grid__container--item"
-              :style="{backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)'}"
             :class="{ selected: selected === end }"
             @click="emit('select', end)"
         >
@@ -60,7 +59,6 @@
         </div>
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
-              :style="{backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)'}"
         >
             <div class="grid__column final">
                 <div class="end-column">T</div>
@@ -126,14 +124,17 @@
                 .q-badge {
                     position: absolute;
 
-                    right: 0;
+           
                     &.hammer__badge {
-                        top: 0;
+                        bottom: -2px;
                         padding: 2px;
-                        right: -2px;
+                        right: -4px;
                     }
                     &:not(.hammer__badge) {
-                        bottom: 0.4em;
+                        bottom: 0;
+                          padding: 0px;
+                            left: -2px;
+                      
                     }
                 }
             }

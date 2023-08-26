@@ -1,60 +1,55 @@
 <template>
-
-    <header class="outer-header__container" ref="header" v-if="showSearch">
-        <AreaSearch
-                v-if="showSearch"
-                @close="showSearch = false"
-                @select="onSelect"
-                inputLabel="Search for a team, rink, or event"
-        />
-
-    </header>
-    <Team v-else-if="resource?.resourcetype === 'team'" :team="resource">
+    <Team v-if="resource?.resourcetype === 'team'" :team="resource">
         <template v-slot:appendButton>
             <q-btn
                 flat
                 round
-                icon="close"
+                icon="search"
                 color="grey-8"
-                @click="showSearch = true"
+                @click="toggleSearch"
             />
         </template>
     </Team>
-    <Rink v-else-if="resource?.resourcetype === 'rink'" :rink="resource">
+    <Rink v-if="resource?.resourcetype === 'rink'" :rink="resource">
         <template v-slot:appendButton>
             <q-btn
                 flat
                 round
                 icon="close"
                 color="grey-8"
-                @click="showSearch = true"
+                @click="toggleSearch"
             />
         </template>
     </Rink>
-    <Event v-else-if="resource?.resourcetype === 'event'" :event="resource">
+    <Event v-if="resource?.resourcetype === 'event'" :event="resource">
         <template v-slot:appendButton>
             <q-btn
                 flat
                 round
                 icon="close"
                 color="grey-8"
-                @click="showSearch = true"
+                @click="toggleSearch"
             />
         </template>
     </Event>
 
 </template>
 <style lang="scss" scoped>
-.outer-header__container {
-    box-shadow: $pretty-shadow;
+// .outer-header__container {
+//     position: fixed;
+//     top: 0;
+//     box-shadow: $pretty-shadow;
+//     z-index: 1;
+//     width: 100%;
 
-}
+// }
 </style>
 <script setup>
 import { useElementSize, useThrottleFn } from "@vueuse/core";
 import { TABLE_QUERIES } from "@/constants/query";
 const tab = ref("stats");
 import { useTeamStore } from "@/store/teams";
+import {useDialogStore} from '@/store/dialog'
 const store = useTeamStore();
 
 const teams = computed(() => store.teams);
@@ -93,4 +88,20 @@ const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`);
 
 const avatarHeader = ref(null);
 const { height: avatarHeight } = useElementSize(avatarHeader);
+
+const {toggleGlobalSearch} = useDialogStore();
+
+const toggleSearch = () => {
+    toggleGlobalSearch({
+        open: true, 
+        options: {
+            inputLabel: 'Search for a team, player, rink, or event',
+            callback: onSelect,
+        }
+    })
+}
+
+onMounted(() => {
+    toggleSearch();
+})
 </script>

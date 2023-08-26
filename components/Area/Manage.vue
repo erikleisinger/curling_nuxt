@@ -1,12 +1,13 @@
 <template>
     <h1 class="text-md text-bold q-pa-md row justify-between items-center">
-        <div>Manage Teams</div>
+        <div>My Teams</div>
         <q-fab
             direction="down"
             dense
             padding="8px"
             :persistent="false"
             icon="add"
+            color="primary"
             vertical-actions-align="right"
         >
             <q-fab-action
@@ -32,27 +33,30 @@
                             resourceTypes: ['team'],
                             inputLabel: 'Add team to my teams',
                             filterIds: teams.map(({id}) => id),
-                            callback: onAppendClick,
-                            append: 'Select',
-                            appendCallback: onSelect,
+                            callback: onOptionClick,
+                            
                             persistent: true
                         },
                     })
                 "
                 no-wrap
             >
+            <!-- append: 'Select', -->
+                            <!-- appendCallback: onSelect, -->
                 Search for a team
             </q-fab-action>
         </q-fab>
     </h1>
+    <div    v-for="team in teams"
+        :key="team.id" class="team">
     <ProfileCard
-        v-for="team in teams"
-        :key="team.id"
+        type="team"
         :item="team"
+        :onClick="() => toggleTeamViewer({open: true, team})"
     >
-        <template v-slot:overline> Team </template>
+       
         {{ team.name }}
-        <template v-slot:append>
+        <!-- <template v-slot:append>
             <q-btn flat round :icon="team.is_admin ? 'edit' : 'visibility'" color="primary"  @click="toggleTeamViewer({open: true, team})"/>
             <q-btn
                 flat
@@ -63,12 +67,22 @@
                 :disable="removingTeam"
             />
            
-        </template>
+        </template> -->
          <template v-slot:avatar>
                 <TeamAvatar :team="team"/>
             </template>
     </ProfileCard>
+    </div>
 </template>
+<style lang="scss" scoped>
+    .team {
+        border-bottom: 1px solid $grey-4;
+        cursor: pointer;
+        &:hover {
+            background-color: rgba(103, 58, 183, 0.2);
+        }
+    }
+</style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import { useDialogStore } from "@/store/dialog";
@@ -91,10 +105,8 @@ const onSelect = (team) => {
     toggleGlobalSearch({open: false})
 }
 
-const onAppendClick = (team) => {
-    console.log('team: ', team)
-    //  toggleGlobalSearch({open:false})
-    toggleTeamViewer({open: true, team, options: {priority: true}})
+const onOptionClick = (team) => {
+    toggleTeamViewer({open: true, team, options: {priority: true, readOnly: true}})
    
 }
 
