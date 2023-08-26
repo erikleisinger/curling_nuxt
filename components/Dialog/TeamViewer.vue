@@ -1,5 +1,18 @@
 <template>
-    <DialogFloating @close="toggleTeamViewer({ open: false })">
+      <DialogConfirmation
+        v-if="!!confirmUnsaved"
+        confirmButtonText="Discard"
+        cancelButtonText="Cancel"
+        @confirm="toggleTeamViewer({ open: false })"
+        @close="confirmUnsaved = false"
+        cancelColor=""
+        confirmColor="negative"
+    >
+        <!--  -->
+        <!-- -->
+        Are you sure you want to close? All unsaved changes will be lost.
+    </DialogConfirmation>
+    <DialogFloating >
         <template v-slot:buttonLeft>
             <div>
                 <q-btn
@@ -15,12 +28,30 @@
                     round
                     icon="save"
                     v-if="isEditing"
-                    @click="isEditing = !isEditing"
+                    @click="onSave"
                 />
             </div>
+            
         </template>
+         <template v-slot:buttonRight>
+                 <q-btn
+                    flat
+                    round
+                    icon="close"
+                 
+                    @click="confirmUnsaved = true"
+                />
+             </template>
         <header class="column items-center header no-wrap">
-            <div style="width: 100px; position: relative; height: 100px; aspect-ratio: 1/1" class="col-grow">
+            <div
+                style="
+                    width: 100px;
+                    position: relative;
+                    height: 100px;
+                    aspect-ratio: 1/1;
+                "
+                class="col-grow"
+            >
                 <div
                     class="avatar-upload__overlay row items-center justify-center"
                     v-if="isEditing"
@@ -47,6 +78,7 @@
                                 @upload="onAvatarUpload"
                                 resourceType="team"
                                 :resourceId="teamId"
+                                :emitOnly="true"
                             />
                             Upload new image
                         </q-fab-action>
@@ -92,11 +124,18 @@
             <div
                 v-for="player in visiblePlayers.teamMembers"
                 :key="player.id"
-                class="row items-center justify-between no-wrap "
+                class="row items-center justify-between no-wrap"
             >
-                <div class="row items-center no-wrap q-py-xs" style="overflow: hidden">
-                    <div style="width: 50px" class="col-grow" @click="handlePlayerAvatarClick(player)">
-                        <Avataaar v-bind="player.avatar"/>
+                <div
+                    class="row items-center no-wrap q-py-xs"
+                    style="overflow: hidden"
+                >
+                    <div
+                        style="width: 50px"
+                        class="col-grow"
+                        @click="handlePlayerAvatarClick(player)"
+                    >
+                        <Avataaar v-bind="player.avatar" />
                     </div>
                     <div class="q-ml-sm column col-shrink">
                         <div class="truncate-text full-width">
@@ -123,7 +162,7 @@
                         color="negative"
                         size="md"
                         @click="removePlayer(player.id)"
-                        v-if="isEditing && !isOwner(player.id)"
+                        v-if="!player.is_admin && teamId && isEditing && !isOwner(player.id)"
                     />
                 </div>
                 <RequestStatus
@@ -133,6 +172,7 @@
                     :status="player.status"
                     canEdit
                     @cancel="cancelRequest(player.id)"
+                    :waiting="!teamId"
                 />
             </div>
             <!-- Add new player -->
@@ -241,8 +281,8 @@ $header-height: 2em;
 .avatar-uploaded__container {
     width: 100px;
     aspect-ratio: 1/1;
-    background-color: rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 50px;
     overflow: hidden;
 }
@@ -262,15 +302,18 @@ const tab = ref("stats");
 
 const { toggleTeamViewer, toggleGlobalSearch } = editorStore;
 
-const toggleAddPlayer = () => {
-    toggleGlobalSearch({
-        open: true,
-        options: {
-            inputLabel: "Search for a user to add",
-            resourceTypes: ["profile"],
-            callback: inviteUser,
-        },
-    });
+const newTeamPlayers = ref([]);
+
+const handleGlobalSelect = (player) => {
+    if (teamId) {
+        inviteUser(player);
+    } else {
+        newTeamPlayers.value.push({
+            ...player,
+            username: player.name,
+            status: "pending",
+        });
+    }
 };
 
 const inviteUser = async (user) => {
@@ -303,24 +346,58 @@ const visiblePlayers = computed(() => {
         teamFans: [],
     };
     teamPlayers.value.forEach((player) => {
-        if (isEditing.value && player.status === "pending") return;
+        // if (isEditing.value && player.status === "pending") return;
         if (player.type === "fan") {
             obj.teamFans.push(player);
         } else {
             obj.teamMembers.push(player);
         }
     });
+    if (!teamId) {
+        obj.teamMembers = [...obj.teamMembers, ...newTeamPlayers.value];
+    }
     return obj;
 });
+
+const toggleAddPlayer = () => {
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: "Search for a user to add",
+            resourceTypes: ["profile"],
+            callback: handleGlobalSelect,
+            filterIds: [
+                ...visiblePlayers.value.teamMembers,
+                ...visiblePlayers.value.teamFans,
+            ].map(({ id }) => id),
+        },
+    });
+};
+
+const userStore = useUserStore();
 
 const teamPlayers = ref([]);
 
 const getPlayers = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("team_profile_junction")
-        .select(
-            `
+    if (!teamId) {
+        teamPlayers.value = [
+            {
+                rowId: 0,
+                id: userStore.id,
+                is_admin: true,
+                type: "member",
+                avatar: userStore.avatar ? JSON.parse(userStore.avatar) : null,
+                username: userStore.username,
+                first_name: userStore.firstName,
+                last_name: userStore.lastName,
+            },
+        ];
+    } else {
+        const client = useSupabaseClient();
+        const { data } = await client
+            .from("team_profile_junction")
+            .select(
+                `
         id,
         position,
         is_admin,
@@ -333,14 +410,15 @@ const getPlayers = async () => {
         ),
         type
     `
-        )
-        .eq("team_id", teamId);
-    teamPlayers.value = data.map((p) => ({
-        rowId: p.id,
-        ...p,
-        ...p.user,
-        status: null,
-    }));
+            )
+            .eq("team_id", teamId);
+        teamPlayers.value = data.map((p) => ({
+            rowId: p.id,
+            ...p,
+            ...p.user,
+            status: null,
+        }));
+    }
 };
 
 const getTeam = async (teamId) => {
@@ -397,6 +475,7 @@ const getPendingRequests = async () => {
 onMounted(async () => {
     if (!teamId) {
         isEditing.value = true;
+        getPlayers();
         return;
     }
     await getTeam(teamId);
@@ -404,10 +483,9 @@ onMounted(async () => {
     getPendingRequests();
 });
 
-const userStore = useUserStore();
-
 const togglingAdmin = ref(false);
 const toggleAdmin = async (player) => {
+    if (!teamId) return;
     const { rowId, id, is_admin } = player;
     if (isOwner(id)) return;
 
@@ -445,8 +523,20 @@ const isOwner = (profile_id) => {
 
 const showFans = ref(false);
 
-const onAvatarUpload = async () => {
-    await getTeam(teamId);
+const newTeamAvatar = ref(null);
+
+const pendingAvatar = ref(null)
+
+const onAvatarUpload = async ({ file, path }) => {
+ 
+        pendingAvatar.value = {
+            file,
+            path
+        }
+        const url = URL.createObjectURL(file);
+        team.value.avatar_type = "upload";
+        avatarUrl.value = url;
+    
 };
 
 const avatarUrl = ref(null);
@@ -460,17 +550,55 @@ const getAvatar = async () => {
     avatarUrl.value = url;
 };
 
-const selectPlayerAvatarMode = ref(false)
+const selectPlayerAvatarMode = ref(false);
 const handlePlayerAvatarClick = async (player) => {
     if (!selectPlayerAvatarMode.value) return;
-    console.log('player: ', player)
-    const client = useSupabaseClient();
-     const { errors} = await client
-        .from("teams")
-        .update({ avatar_type: "avataaar", team_avatar: player.avatar })
-        .eq("id", teamId);
+    if (!teamId) {
+        team.value.team_avatar = player.avatar;
+        team.value.avatar_type = "avataaar";
+    } else {
+        const client = useSupabaseClient();
+        const { errors } = await client
+            .from("teams")
+            .update({ avatar_type: "avataaar", team_avatar: player.avatar })
+            .eq("id", teamId);
 
-    if (errors) return;
-    await getTeam(teamId)
-}
+        if (errors) return;
+        await getTeam(teamId);
+    }
+};
+
+const saving = ref(false)
+
+const saveNewTeam = async () => {
+   
+    const newTeam = await teamStore.insertTeam(
+        team.value,
+        newTeamPlayers.value.map(({ profile_id }) => profile_id)
+    );
+    if (!newTeam) return false
+
+    if (team.value.avatar_type === 'upload' && pendingAvatar.value) {
+        const successful = await teamStore.uploadAvatarToTeam(pendingAvatar.value.path, pendingAvatar.value.file, newTeam?.id)
+        if (!successful) return false
+
+    }
+    return newTeam
+};
+
+const onSave = async () => {
+     saving.value = true;
+        const newTeam = await saveNewTeam();
+        if (newTeam) {
+            await useUserTeamStore().fetchUserTeams(true);
+            toggleTeamViewer({open: false})
+            setTimeout(() => {
+                toggleTeamViewer({open: true, team: newTeam})
+            },10)
+        }
+ 
+      saving.value = true;
+};
+
+const confirmUnsaved = ref(false)
 </script>

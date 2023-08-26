@@ -4,9 +4,10 @@ import type Team from "@/types/team";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
 import { useUserStore } from "@/store/user";
+import {useSocialStore} from '@/store/social'
 import { DatabaseError } from "@/types/error";
 import { ErrorName } from "@/types/error";
-import GET_TEAMS from '@/queries/get_teams'
+import GET_TEAMS from "@/queries/get_teams";
 
 export const useTeamStore = defineStore("team", {
     state: () => {
@@ -123,7 +124,6 @@ export const useTeamStore = defineStore("team", {
             const [team] = data || [];
             const { id } = team || {};
             if (!id) {
-                console.error("error creating new team: no id returned");
                 notStore.updateNotification(notId, {
                     state: "failed",
                     text: "error creating new team: no id returned",
@@ -208,10 +208,15 @@ export const useTeamStore = defineStore("team", {
             this.teams = data;
             this.sortTeams();
         },
-        async insertTeam(team: Team) {
+        async insertTeam(team: Team, newPlayerIds: string[]) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                text: team.id ? "Updating team..." : "Creating team...",
+                state: "pending",
+            });
             const { client, fetchHandler } = useSupabaseFetch();
             const { getQuery } = useDatabase();
-            const { data } = await fetchHandler(
+            const { data, errors } = await fetchHandler(
                 () =>
                     client
                         .from(TABLE_NAMES.TEAMS)
@@ -220,15 +225,51 @@ export const useTeamStore = defineStore("team", {
                 { onError: "Error creating team" }
             );
             const [newTeam] = data || [];
-            if (newTeam) {
-                const index = this.teams.findIndex((g) => g.id === newTeam.id);
-                if (index === -1) {
-                    this.teams.push(newTeam);
-                } else {
-                    this.teams.splice(index, 1, newTeam);
-                }
-                this.sortTeams();
+            if (!newTeam || errors) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `Failed to ${team.id ? "update" : "create"} team. ${
+                        errors ? `(code: ${errors.code})` : ""
+                    }`,
+                });
+                return false;
             }
+
+            const { id: teamId } = newTeam;
+
+            const index = this.teams.findIndex((g) => g.id === newTeam.id);
+            if (index === -1) {
+                this.teams.push(newTeam);
+            } else {
+                this.teams.splice(index, 1, newTeam);
+            }
+            this.sortTeams();
+            console.log(newPlayerIds)
+            if (newPlayerIds?.length) {
+                console.log('SENDING REQUESTS')
+                const socialStore = useSocialStore();
+                console.log('SOCIAL STORE: ', socialStore)
+                await Promise.all(
+                    newPlayerIds.map(
+                        (id) => socialStore.sendTeamRequest({requestee_profile_id: id, team_id: teamId})
+                    )
+                );
+            }
+            notStore.updateNotification(notId, {
+                state: "completed",
+                text: `Team ${team.id ? "updated" : "created"}!`,
+            });
+            return newTeam;
+        },
+        async insertTeamProfileJunction(team_id: number, profile_id: string) {
+            const client = useSupabaseClient();
+
+            await client.from("team_profile_junction").insert({
+                profile_id,
+                team_id,
+                is_admin: false,
+                type: "member",
+            });
         },
         insertTeamIntoStore(team: Team) {
             const index = this.teams.findIndex((g) => g.id === team.id);
@@ -241,7 +282,11 @@ export const useTeamStore = defineStore("team", {
         async refreshTeam(teamId: number, shouldSort = false) {
             const { client, fetchHandler } = useSupabaseFetch();
             const { data } = await fetchHandler(
-                () => client.from(TABLE_NAMES.TEAMS).select(GET_TEAMS).eq("id", teamId),
+                () =>
+                    client
+                        .from(TABLE_NAMES.TEAMS)
+                        .select(GET_TEAMS)
+                        .eq("id", teamId),
                 { onError: "Error fetching teams" }
             );
             const [refreshedTeam] = data || [];
@@ -316,6 +361,44 @@ export const useTeamStore = defineStore("team", {
             }
             const team = await this.refreshTeam(teamId);
             if (team) this.insertTeamIntoStore(team);
+        },
+        async uploadAvatarToTeam(fileName: string, file: File, teamId: number) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                text: "Uploading avatar...",
+                state: "pending",
+            });
+            const client = useSupabaseClient();
+
+            const { errors } = await client.storage
+                .from("Avatars")
+                .upload(fileName, file);
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `error uploading avatar (code: ${errors.code})`,
+                });
+                return false;
+            }
+
+            const { errors: errors2 } = await client
+                .from("teams")
+                .update({ avatar_type: "upload", avatar_url: fileName })
+                .eq("id", teamId);
+
+            if (errors2) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `error uploading avatar (code: ${errors2.code})`,
+                });
+                return false;
+            } else {
+                notStore.updateNotification(notId, {
+                    state: "completed",
+                    text: `Avatar uploaded!`,
+                });
+                return true;
+            }
         },
     },
 });

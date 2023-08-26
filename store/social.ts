@@ -84,10 +84,8 @@ export const useSocialStore = defineStore("social", {
                 client.rpc("get_team_request_count_to_respond")
             );
 
-            if (error) {
-                console.error("ERROR GETTING REQUESTS: ", error);
-                return;
-            }
+            if (error) return;
+            
             this.requestsToRespond = data ?? 0;
         },
         async getTeamRequestsByTeam(teamId: number) {
@@ -129,6 +127,7 @@ export const useSocialStore = defineStore("social", {
             requestee_profile_id: string;
             team_id: number;
         }) {
+
             const { user: userId } = useUser();
             const requester_profile_id = userId.value;
             const { client, fetchHandler } = useSupabaseFetch();

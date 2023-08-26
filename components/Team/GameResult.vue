@@ -24,7 +24,11 @@
                 <div class="team__profile--container column no-wrap">
                     <div class="team-avatar__container">
                         <div class="team-avatar--wrap">
-                            <TeamAvatar :team="result"/>
+                            <TeamAvatar :team="{
+                                 team_avatar: result.home_avatar,
+                                avatar_type: result.home_avatar_type,
+                                avatar_url: result.home_avatar_url
+                            }"/>
                             <!-- <Avataaar
                                 v-bind="parseAvatar(result.home_avatar)"
                             /> -->
@@ -61,7 +65,11 @@
                 <div class="team__profile--container column no-wrap">
                     <div class="team-avatar__container">
                         <div class="team-avatar--wrap">
-                            <TeamAvatar :team="result"/>
+                            <TeamAvatar :team="{
+                                team_avatar: result.away_avatar,
+                                avatar_type: result.away_avatar_type,
+                                avatar_url: result.away_avatar_url
+                            }"/>
                             <!-- <Avataaar
                                 v-bind="parseAvatar(result.away_avatar)"
                             /> -->

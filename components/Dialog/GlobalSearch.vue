@@ -2,7 +2,7 @@
     <q-dialog v-model="isOpen" persistent  maximized>
 <div class=" global-search__container row justify-center full-width full-height">
     <div class="global-search__inner">
-        <AreaSearch :inputLabel="options.inputLabel"  @select="onSelect" :resourceTypes="options.resourceTypes ?? []">
+        <AreaSearch :inputLabel="options.inputLabel"  @select="onSelect" :resourceTypes="options.resourceTypes ?? []" :filterIds="options.filterIds">
     <template v-slot:before>
         <q-btn flat round icon="close" color="white" @click="close"/>
     </template>

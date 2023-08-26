@@ -3,13 +3,11 @@
         v-if="avatarType === 'upload' && avatarUrl"
         class="uploaded-avatar__container"
     >
-        <q-img :src="avatarUrl" spinner-color="white" height="100%"></q-img>
+        <q-img :src="avatarUrl" spinner-color="white" height="100%" v-if="avatarUrl"></q-img>
     </div>
     <Avataaar
         v-else
-        v-bind="parseAvatar(avatar)"
-        :class="{ animated__avatar: animated }"
-        @click="handleClick"
+        v-bind="typeof avatar === 'string' ? parseAvatar(avatar) : avatar"
     />
 </template>
 <style lang="scss" scoped>
@@ -23,17 +21,23 @@
     }
 </style>
 <script setup>
+import {useStorageStore} from '@/store/storage'
 const props = defineProps({
     team: Object,
 });
 
-const avatarUrl = ref(null);
+const storage = useStorageStore();
+
+const avatarUrl = computed(() => storage.teamAvatars[props.team.id])
+// const avatarUrl = ref(null)
 
 const fetchAvatar = async (path) => {
-    const client = useSupabaseClient();
-    const { data } = await client.storage.from("Avatars").download(path);
-    const url = URL.createObjectURL(data);
-    avatarUrl.value = url;
+    storage.getTeamAvatar(props.team.id, path)
+    //  const client = useSupabaseClient();
+    // const { data } = await client.storage.from("Avatars").download(path);
+    // const url = URL.createObjectURL(data);
+    // avatarUrl.value = url;
+// };
 };
 
 const avatar = ref(null);

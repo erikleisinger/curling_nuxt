@@ -2,7 +2,7 @@
     <q-chip
         ref="chipElement"
         rounded
-        :color="isRevealed ? 'negative' : STATUS_COLORS[status] ?? 'white'"
+        :color="!isRevealed ? STATUS_COLORS[status] ?? 'white' : waiting ? 'primary' : 'negative'"
         :outline="!status"
         :text-color="isRevealed ? 'white' : 'black'"
         clickable
@@ -11,7 +11,8 @@
     
     >
         <div v-if="!isRevealed">{{ TEXT[status] || "Read only" }}</div>
-        <div v-else>Cancel request?</div>
+        <div v-else-if="!waiting">Cancel request?</div>
+        <div v-else>Invitation will be sent</div>
     </q-chip>
 </template>
 <script setup>
@@ -26,6 +27,7 @@ const props = defineProps({
         type: String,
         default: "team",
     },
+    waiting: Boolean,
 });
 
 const ICONS = {
@@ -73,7 +75,12 @@ const handleClick = () => {
     reveal();
     return;
  }
+ if (props.waiting) {
+    cancel();
+ } else {
  confirm();
+ }
+
 }
 
 const chipElement = ref(null);

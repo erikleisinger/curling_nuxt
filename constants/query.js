@@ -89,6 +89,8 @@ export const TABLE_QUERIES = {
         profile_id
     ),
     team_avatar,
+    avatar_type,
+    avatar_url,
     username:profile_id (
         username
     )

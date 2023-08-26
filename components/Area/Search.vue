@@ -40,11 +40,7 @@
                 }"
                 v-if="results"
             >
-                <div
-                    v-if="!results?.length"
-                    style="height: 50px"
-                    class="row justify-center items-center"
-                >
+                <div v-if="!results?.length" class="result__container no-grid row justify-center">
                     No results.
                 </div>
                 <div
@@ -115,17 +111,17 @@
                                 {{ `${result.city}, ${result.province}` }}
                             </div>
                         </div>
-                         <!-- USER result -->
-                    <div v-if="result.resourcetype === 'profile'">
-                        <Avataaar v-bind="parseAvatar(result.avatar)" />
-                    </div>
-                    <div
-                        v-if="result.resourcetype === 'profile'"
-                        class="column justify-center"
-                    >
-                        <div class="text-sm">User</div>
-                        <div class="text-bold">{{ result.name }}</div>
-                    </div>
+                        <!-- USER result -->
+                        <div v-if="result.resourcetype === 'profile'">
+                            <Avataaar v-bind="parseAvatar(result.avatar)" />
+                        </div>
+                        <div
+                            v-if="result.resourcetype === 'profile'"
+                            class="column justify-center"
+                        >
+                            <div class="text-sm">User</div>
+                            <div class="text-bold">{{ result.name }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,13 +161,16 @@
         margin: 0px var(--space-md);
         border-radius: 16px;
         .result__container {
-            display: grid;
-            grid-template-columns: 50px 1fr;
+
             background-color: rgba(255, 255, 255, 0.8);
             padding: var(--space-sm);
 
             > div:nth-child(2) {
                 margin-left: 16px;
+            }
+            &:not(.no-grid) {
+                display: grid;
+                grid-template-columns: 50px 1fr;
             }
         }
         .icon__wrap {
@@ -225,6 +224,10 @@ import { useElementBounding, useThrottleFn } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
 
 const props = defineProps({
+    filterIds: {
+        type: Array,
+        default: [],
+    },
     globalOnly: Boolean,
     hideHint: Boolean,
     hideIcons: Boolean,
@@ -265,10 +268,14 @@ const useSearch = useThrottleFn(async () => {
     results.value = data.reduce((all, current) => {
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
+        if (
+            props.filterIds.includes(current.id) ||
+            props.filterIds.includes(current.profile_id)
+        )
+            return all;
         return [...all, current];
     }, []);
     loading.value = false;
-
 }, 100);
 
 const clickable = ref(true);
@@ -290,13 +297,9 @@ const clearResults = () => {
 const searchBar = ref(null);
 const { height: searchBarHeight, y: searchBarY } =
     useElementBounding(searchBar);
-
- 
 </script>
 <script>
-   export default {
-    name: 'AreaSearch'
-
-  }
+export default {
+    name: "AreaSearch",
+};
 </script>
-

@@ -47,7 +47,7 @@ export const useUserTeamStore = defineStore("user-teams", {
                 .select(
                     `
                     is_admin,
-                team:team_id (
+                    team:team_id (
                     id,
                     name,
                     team_avatar,
