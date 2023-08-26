@@ -1,0 +1,43 @@
+import { defineStore } from "pinia";
+import { BasicTeamRequest, RequestStatus } from "@/types/request";
+import { TABLE_NAMES } from "@/constants/tables";
+import { useTeamStore } from "@/store/teams";
+import { DatabaseError, ErrorName } from "@/types/error";
+import { useNotificationStore } from "@/store/notification";
+import Team from '@/types/team'
+
+export const useGameRequestStore = defineStore("game-requests", {
+    state: () => {
+        return {
+            requestsToRespond: 0,
+        } as {
+            requestsToRespond: number;
+        };
+    },
+    actions: {
+        async sendGameRequest(team: Team, game_id: number) {
+            const {id, name} = team;
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: 'pending',
+                text: `Inviting ${name} to be opposition...`,
+            })
+            const client = useSupabaseClient();
+            const {errors} = await client.from('game_requests').insert({
+                team_id: id,
+                game_id
+            })
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: 'failed',
+                    text: `Error inviting ${team} (code: ${errors.code})`,
+                })
+            } else {
+                notStore.updateNotification(notId, {
+                    state: 'completed',
+                    text: `Invitation sent to ${name}.`
+                })
+            }
+        }
+    }
+})

@@ -37,7 +37,10 @@ export const useNotificationStore = defineStore("notification", {
             if (!updates || !Object.keys(updates)?.length) return;
             const notification = this.notifications[id];
             if (!notification) return;
-            Object.assign(notification, updates);
+            Object.assign(notification, {
+                ...updates,
+                timeout: updates.timeout || 5000
+            });
         },
         clearNotification(id: number) {
             delete this.notifications[id];

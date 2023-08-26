@@ -54,7 +54,6 @@
     }
 </style>
 <script setup>
-import {defineProps, ref, watch, computed} from 'vue'
 import {useElementVisibility} from '@vueuse/core'
 const props = defineProps({
     color: String,

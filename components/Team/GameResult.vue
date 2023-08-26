@@ -83,7 +83,7 @@
                                 }}</span>
                             </h2>
                             <q-chip
-                                v-if="!result.away_id"
+                                v-if="!result.away_id && !result.pending_away"
                                 dense
                                 color="deep-purple"
                                 text-color="white"
@@ -237,6 +237,7 @@ $columns: 30% 40% 30%;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {useGameRequestStore} from '@/store/game-requests'
 import {
     useElementBounding,
     useElementSize,
@@ -298,7 +299,11 @@ const { format, toTimezone } = useTime();
 
 const { user: userId } = useUser();
 
-const selectTeam = (selection) => {
-    console.log("selection: ", selection);
+const selectTeam = async (team) => {
+    await useGameRequestStore().sendGameRequest(team, props.result.id);
+    const {getGameResult} = useGame();
+    const result = getGameResult([props.result.home_id], props.result.id)
+    console.log('updated game: ', result)
+    
 };
 </script>
