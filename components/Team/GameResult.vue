@@ -1,11 +1,18 @@
 <template>
     <div style="position: relative">
+ 
         <div class="result__container--wrap" :class="{ expanded }">
+       
             <div
                 class="result__header"
                 :style="{ backgroundImage }"
                 ref="container"
             >
+                        <div class="game-request-response__container row no-wrap" v-if="isAuthorized(result.pending_away)">
+                            <div class="text-bold">Pending game invitation</div>
+                            <q-btn color="positive" class="q-mx-sm" @click="respondToRequest(true)">Accept</q-btn>
+                            <q-btn color="negative" @click="respondToRequest(false)">Reject</q-btn>
+                        </div>
                 <div class="result__container" @click="emit('expand')">
                     <div class="team__profile--container column no-wrap">
                         <div
@@ -76,14 +83,14 @@
                                 />
                             </div>
                         </div>
-                        <div class="text-center">
+                        <div class="text-center" >
                             <h2 class="text-sm truncate-text text-center">
                                 <span v-if="result.away_name">{{
                                     result.away_name
                                 }}</span>
                             </h2>
                             <q-chip
-                                v-if="!result.away_id && !result.pending_away"
+                                v-if="isAuthorized(result.home_id) && !result.away_id && !result.pending_away"
                                 dense
                                 color="deep-purple"
                                 text-color="white"
@@ -104,6 +111,18 @@
                                 "
                                 ><span>Invite team</span>
                             </q-chip>
+                            <RequestStatus
+                                @click.stop.prevent
+                                v-else-if="isAuthorized(result.home_id) && 
+                                    !result.away_id && result.pending_away
+                                "
+                                resourceType="game"
+                                :resourceId="result.id"
+                                :requesteeId="result.pending_away"
+                                :status="'pending'"
+                                canEdit
+                                @cancel="updateResult"
+                            />
                         </div>
                     </div>
                 </div>
@@ -191,6 +210,10 @@ $columns: 30% 40% 30%;
         border-radius: inherit;
         padding-left: var(--space-sm);
         padding-right: var(--space-sm);
+        .game-request-response__container {
+            margin: 0px var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
     }
     &.expanded {
         max-height: unset;
@@ -237,7 +260,8 @@ $columns: 30% 40% 30%;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import {useGameRequestStore} from '@/store/game-requests'
+import { useUserTeamStore } from "@/store/user-teams";
+import { useGameRequestStore } from "@/store/game-requests";
 import {
     useElementBounding,
     useElementSize,
@@ -255,7 +279,7 @@ const props = defineProps({
     result: Object,
 });
 
-const emit = defineEmits(["expand"]);
+const emit = defineEmits(["expand", "update", 'remove']);
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -299,11 +323,33 @@ const { format, toTimezone } = useTime();
 
 const { user: userId } = useUser();
 
+const updateResult = async () => {
+    const { getGameResult } = useGame();
+    const [result] = await getGameResult(
+        [props.result.home_id],
+        props.result.id
+    );
+    emit("update", result);
+};
+
 const selectTeam = async (team) => {
     await useGameRequestStore().sendGameRequest(team, props.result.id);
-    const {getGameResult} = useGame();
-    const result = getGameResult([props.result.home_id], props.result.id)
-    console.log('updated game: ', result)
-    
+    updateResult();
+};
+
+const respondToRequest = async (accepted) => {
+    await useGameRequestStore().updateGameRequestStatus({team_id: props.result.pending_away, game_id: props.result.id, status: accepted ? 'accepted' : 'rejected' });
+    if (accepted) {
+  updateResult();
+    } else {
+        emit('remove')
+    }
+  
+}
+
+const isAuthorized = (teamId) => {
+    return useUserTeamStore().userTeams.some(
+        ({ id, type }) => id === teamId && type === "member"
+    );
 };
 </script>

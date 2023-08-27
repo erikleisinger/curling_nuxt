@@ -15,6 +15,28 @@ export const useGameRequestStore = defineStore("game-requests", {
         };
     },
     actions: {
+        async cancelGameRequest({team_id, game_id} : {team_id: number, game_id: number}) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: 'pending',
+                text: `Cancelling invitation...`,
+            })
+            const client = useSupabaseClient();
+            const {errors} = await client.from('game_requests').delete().eq('game_id', game_id).eq('team_id', team_id).eq('status', 'pending');
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: 'failed',
+                    text: `Error cancelling invitation (code: ${errors.code})`,
+                })
+                return false;
+            } else {
+                notStore.updateNotification(notId, {
+                    state: 'completed',
+                    text: `Invitation cancelled.`
+                })
+                return true
+            }
+        },
         async sendGameRequest(team: Team, game_id: number) {
             const {id, name} = team;
             const notStore = useNotificationStore();
@@ -38,6 +60,28 @@ export const useGameRequestStore = defineStore("game-requests", {
                     text: `Invitation sent to ${name}.`
                 })
             }
-        }
+        },
+        async updateGameRequestStatus({team_id, game_id, status} : {team_id: number, game_id: number, status: string}) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: 'pending',
+                text: `${status === 'accepted' ? 'Accepting' : status === 'rejected' ? 'Rejecting' : 'Responding to'} invitation..`,
+            })
+            const client = useSupabaseClient();
+            const {errors} = await client.from('game_requests').update({status}).eq('game_id', game_id).eq('team_id', team_id)
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: 'failed',
+                    text: `Error ${status === 'accepted' ? 'Accepting' : status === 'rejected' ? 'Rejecting' : 'Responding to'} invitation (code: ${errors.code})`,
+                })
+                return false;
+            } else {
+                notStore.updateNotification(notId, {
+                    state: 'completed',
+                    text: `Invitation ${status === 'accepted' ? 'accepted!' : status === 'rejected' ? 'rejected.' : 'response sent.'}`
+                })
+                return true
+            }
+        },
     }
 })

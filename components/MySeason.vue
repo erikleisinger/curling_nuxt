@@ -119,9 +119,11 @@
         </div>
         <div :style="{ height: scrollerHeight }" class="game-result__container" v-if="tab === 'games'">
             <q-infinite-scroll
+            :disable="visibleGames.length < 4"
                 @load="scrollLoad"
-                :offset="1"
+                :offset="20"
                 :scroll-target="seasonContainer"
+                
             >
                 <template v-slot:loading>
                     <div class="row justify-center q-my-md">
@@ -131,13 +133,15 @@
                         ></q-spinner-dots>
                     </div>
                 </template>
-                <q-pull-to-refresh @refresh="refreshGames">
+                <q-pull-to-refresh @refresh="refreshGames" :scroll-target="seasonContainer">
                     <TeamGameResult
                         v-for="game in visibleGames"
                         :key="game.id"
                         :result="game"
                         @expand="expandItem(game.id)"
                         :expanded="expanded === game.id"
+                        @update="updateResult($event, game.id)"
+                        @remove="removeResult(game.id)"
                     >
                         <!-- <div
                             style="
@@ -152,6 +156,8 @@
                     </TeamGameResult>
                 </q-pull-to-refresh>
             </q-infinite-scroll>
+
+            <!-- <q-btn v-else @click="refreshGames">Refresh</q-btn> -->
         </div>
     </main>
 </template>
@@ -410,17 +416,32 @@ watch(teams, () => {
     getWinsLossess();
 }, {deep: true})
 
+/**
+ * update games
+ */
+
 const refreshGames = async (done) => {
     startIndex.value = null;
     endIndex.value = null;
     const gameResults = await getPaginatedGames();
+    console.log(gameResults)
     setGames(gameResults);
     done();
 };
 
-/**
- * END games
- */
+
+const updateResult = (updatedResult, gameId) => {
+    const index = games.value.findIndex(({id}) => id === gameId);
+    if (index === -1) return;
+    games.value.splice(index, 1, updatedResult)
+}
+
+const removeResult = (gameId) => {
+     const index = games.value.findIndex(({id}) => id === gameId);
+     if (index === -1) return;
+    games.value.splice(index, 1)
+}
+
 
 /**
  * BEGIN element height calculations
@@ -496,6 +517,9 @@ const setMini = useThrottleFn((bool) => {
 const seasonContainer = ref(null);
 
 const scrollLoad = async (index, done) => {
+    console.log(seasonContainer.value.scrollTop)
+    if (seasonContainer.value.scrollTop === 0) return;
+ 
     const gameResults = await getPaginatedGames();
     setGames([...games.value, ...gameResults]);
     done();
