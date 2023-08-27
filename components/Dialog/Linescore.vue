@@ -68,6 +68,7 @@
                 :score="score"
                 :selected="visible"
                 @select="scrollTo"
+                :colorCode="false"
             />
 
             <div

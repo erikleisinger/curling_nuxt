@@ -6,6 +6,7 @@
                 :endCount="Math.max(result.end_count, scoreDetails.length)"
                 :score="score"
                 :selected="0"
+                :colorCode="false"
             />
         </div>
         <div class="row">

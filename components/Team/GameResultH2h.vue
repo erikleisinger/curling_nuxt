@@ -19,87 +19,85 @@
                     flat
                     round
                     icon="visibility"
-                    :color="expand ? 'primary' : 'grey-9'"
-                    @click.prevent.stop="expand = !expand"
+                    :color="expanded ? 'primary' : 'grey-9'"
+                    @click.prevent.stop="expanded = !expanded"
                 />
             </div>
             <percentage
                 :percent="awayPercent"
                 :color="game.awayColor"
                 label=""
-                  v-if="!loading"
+                v-if="!loading"
             />
         </div>
-         <div style="overflow: hidden">
-                <transition
-                    appear
-                    enter-active-class="animated slideInDown"
-                    leave-active-class="animated slideOutUp"
+         <div class="details-container"  :class="{expanded}">
+            <KeepAlive>
+                <LinescoreGridView
+                    :game="game"
+                    :endCount="endCount"
+                    :score="score"
+                    :selected="0"
+                    class="grid-container"
+                    :transparent="true"
+                    colorCode
+                    v-if="expanded"
                 >
-                    <LinescoreGridView
-                        v-if="expand"
-                        :game="game"
-                        :endCount="endCount"
-                        :score="score"
-                        :selected="0"
-                        class="grid-container"
-                        :transparent="true"
-                        colorCode
-                    >
-                        <template v-slot:header>
-                            <!-- <div style="visibility: hidden">F</div>
+                    <template v-slot:header>
+                        <!-- <div style="visibility: hidden">F</div>
                             <div style="visibility: hidden">F</div> -->
-                        </template>
-                        <template v-slot:row="{ end }">
-                            <div class="score-column color-column">
-                                <q-icon
-                                    class="scoreboard__icon"
-                                    :name="
-                                        getIcon(
-                                            score[end - 1]
-                                                ?.home_conversions
-                                        )
-                                    "
-                                    :color="
-                                        getIconColor(
-                                            score[end - 1]
-                                                ?.home_conversions
-                                        )
-                                    "
-                                />
-                            </div>
-                            <div class="score-column color-column">
-                                <q-icon
-                                    class="scoreboard__icon"
-                                    :name="
-                                        getIcon(
-                                            score[end - 1]
-                                                ?.away_conversions
-                                        )
-                                    "
-                                    :color="
-                                        getIconColor(
-                                            score[end - 1]
-                                                ?.away_conversions
-                                        )
-                                    "
-                                />
-                            </div>
-                        </template>
-                        <template v-slot:footer>
-                            <div class="score-column color-column">
-                                {{ homePercent.toFixed() }}%
-                            </div>
-                            <div class="score-column color-column">
-                                {{ awayPercent.toFixed() }}%
-                            </div>
-                        </template>
-                    </LinescoreGridView>
-                </transition>
+                    </template>
+                    <template v-slot:row="{ end }">
+                        <div class="score-column color-column">
+                            <q-icon
+                                class="scoreboard__icon"
+                                :name="
+                                    getIcon(score[end - 1]?.home_conversions)
+                                "
+                                :color="
+                                    getIconColor(
+                                        score[end - 1]?.home_conversions
+                                    )
+                                "
+                            />
+                        </div>
+                        <div class="score-column color-column">
+                            <q-icon
+                                class="scoreboard__icon"
+                                :name="
+                                    getIcon(score[end - 1]?.away_conversions)
+                                "
+                                :color="
+                                    getIconColor(
+                                        score[end - 1]?.away_conversions
+                                    )
+                                "
+                            />
+                        </div>
+                    </template>
+                    <template v-slot:footer>
+                        <div class="score-column color-column">
+                            {{ homePercent.toFixed() }}%
+                        </div>
+                        <div class="score-column color-column">
+                            {{ awayPercent.toFixed() }}%
+                        </div>
+                    </template>
+                </LinescoreGridView>
+            </KeepAlive>
             </div>
     </div>
 </template>
 <style lang="scss" scoped>
+.expandDown-enter-active,
+.expandDown-leave-active {
+  transition: max-height 1s, opacity 1s;
+}
+
+.expandDown-enter,
+.expandDown-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
 .h2h-container {
     border: 1px solid $grey-4;
     box-shadow: $pretty-shadow;
@@ -124,16 +122,24 @@
     }
     .grid-container {
         margin: var(--space-xs) 0px;
+     
     }
-
+    .details-container {
+        overflow: hidden;
+        transition: all 0.4s;
+        max-height: 0px;
+        &.expanded {
+            max-height: 1000px;
+        }
+    }
 }
 </style>
 <script setup lang="ts">
 import { GameScoreInfo, GameScore } from "@/types/game";
 
-type GameTeamType = 'home' | 'away'
+type GameTeamType = "home" | "away";
 
-type StatType = 'conversions' | 'forces' | 'hammer' | 'steals'
+type StatType = "conversions" | "forces" | "hammer" | "steals";
 
 const props = defineProps<{
     game: GameScoreInfo;
@@ -144,28 +150,34 @@ const props = defineProps<{
     title: string;
 }>();
 
-
-const expand = ref(false)
+const expanded = ref(false);
 
 const homePercent = ref(0);
 const awayPercent = ref(0);
 
-const loading = ref(true)
+const loading = ref(true);
 
 const getPercents = () => {
-    const totals = Object.entries(props.score).reduce((all, [endNumber, value]) => {
-        return {
-            home: all.home + (value[`home_${props.stat}`] === true ? 1 : 0),
-            homeEndCount: all.homeEndCount + (typeof value[`home_${props.stat}`] === 'boolean' ? 1 : 0),
-            away: all.away + (value[`away_${props.stat}`] === true ? 1 : 0),
-            awayEndCount: all.awayEndCount + (typeof value[`away_${props.stat}`] === 'boolean' ? 1 : 0)
+    const totals = Object.entries(props.score).reduce(
+        (all, [endNumber, value]) => {
+            return {
+                home: all.home + (value[`home_${props.stat}`] === true ? 1 : 0),
+                homeEndCount:
+                    all.homeEndCount +
+                    (typeof value[`home_${props.stat}`] === "boolean" ? 1 : 0),
+                away: all.away + (value[`away_${props.stat}`] === true ? 1 : 0),
+                awayEndCount:
+                    all.awayEndCount +
+                    (typeof value[`away_${props.stat}`] === "boolean" ? 1 : 0),
+            };
+        },
+        {
+            home: 0,
+            homeEndCount: 0,
+            away: 0,
+            awayEndCount: 0,
         }
-    }, {
-        home: 0,
-        homeEndCount: 0,
-        away: 0,
-        awayEndCount: 0,
-    })
+    );
 
     homePercent.value = (totals.home / totals.homeEndCount) * 100;
     awayPercent.value = (totals.away / totals.awayEndCount) * 100;
@@ -173,7 +185,7 @@ const getPercents = () => {
 };
 onBeforeMount(() => {
     getPercents();
-})
+});
 
 const getIcon = (val: boolean) => {
     if (val === true) {
@@ -192,8 +204,4 @@ const getIconColor = (val: boolean) => {
     }
     return "";
 };
-
-
-
 </script>
-
