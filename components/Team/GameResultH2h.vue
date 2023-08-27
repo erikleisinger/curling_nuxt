@@ -43,8 +43,6 @@
                     v-if="expanded"
                 >
                     <template v-slot:header>
-                        <!-- <div style="visibility: hidden">F</div>
-                            <div style="visibility: hidden">F</div> -->
                     </template>
                     <template v-slot:row="{ end }">
                         <div class="score-column color-column">

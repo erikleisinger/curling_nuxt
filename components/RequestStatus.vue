@@ -3,17 +3,17 @@
         ref="chipElement"
         rounded
         :color="
-            !isRevealed
-                ? STATUS_COLORS[status] ?? 'white'
-                : waiting
-                ? 'primary'
-                : 'negative'
+        isRevealed ? 'negative' : 
+            STATUS_COLORS[status]
         "
-        :outline="!status"
-        :text-color="isRevealed ? 'white' : 'black'"
+        :outline="status === 'pending'"
+        :text-color="isRevealed ? 'white' : TEXT_COLOR[status]"
         clickable
         class="request-status__container text-sm"
         @click="handleClick"
+        dense
+        size="md"
+        :icon="ICONS[status]"
     >
         <div v-if="!isRevealed">{{ TEXT[status] || "Read only" }}</div>
         <div v-else-if="!waiting">Cancel request?</div>
@@ -42,21 +42,27 @@ const props = defineProps({
 
 const ICONS = {
     accepted: "check",
-    pending: "question_mark",
+    pending: "sym_o_outgoing_mail",
     rejected: "close",
 };
 
 const STATUS_COLORS = {
     accepted: "positive",
-    pending: "warning",
+    pending: "",
     rejected: "negative",
 };
 
 const TEXT = {
-    pending: "Pending",
-    accepted: "Accepted",
-    rejected: "Rejected",
+    pending: "Invitation sent",
+    accepted: "Accepted invite",
+    rejected: "Rejected invite", 
 };
+
+const TEXT_COLOR = {
+    pending: 'primary',
+    accepted: 'white',
+    rejected: 'white'
+}
 
 const emit = defineEmits(["cancel"]);
 

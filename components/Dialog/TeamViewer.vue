@@ -12,40 +12,39 @@
         <!-- -->
         Are you sure you want to close? All unsaved changes will be lost.
     </DialogConfirmation>
-    <DialogFloating :priority="!!options.priority" :loading="saving || loading">
+    <DialogFloating
+        :priority="!!options.priority"
+        :loading="saving || loading"
+        maxHeight="700px"
+        maxWidth="500px"
+    >
         <template v-slot:title>
-           
-                {{
-                    !teamId
-                        ? "Create team"
-                        : !isEditing
-                        ? "View team"
-                        : "Edit team"
-                }}
-   
+            {{
+                !teamId ? "Create team" : !isEditing ? "View team" : "Edit team"
+            }}
         </template>
 
         <template v-slot:footer v-if="!loading">
             <div class="row justify-end team-viewer__footer" v-if="isEditing">
-                <q-btn
+                <!-- <q-btn
                     unelevated
                     color="negative"
                     class="'col-6'"
                     icon="delete_outline"
                     label="discard"
-                  :class="`col-${12 / footerButtonsLength}`"
+                    :class="`col-${12 / footerButtonsLength}`"
                     @click="discardChanges"
                     square
                     :disable="saving"
                     v-if="teamId"
-                />
+                /> -->
                 <q-btn
                     unelevated
                     color="positive"
-                     :class="`col-${12 / footerButtonsLength}`"
+                    class="col-12"
                     icon="save"
                     label="save"
-                    :size="$q.screen.sm ? 'lg' : 'md'"
+                    size="lg"
                     @click="onSave"
                     square
                     :disable="saving"
@@ -77,7 +76,7 @@
                     :size="
                         $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
                     "
-                       @click="addToMyTeams('member')"
+                    @click="addToMyTeams('member')"
                     square
                     v-if="!isOnTeam"
                 />
@@ -102,7 +101,7 @@
                     :size="
                         $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
                     "
-                    @click="isEditing = true"
+                    @click="toggleEditing"
                     v-if="canEdit"
                     square
                 />
@@ -157,7 +156,11 @@
                     </q-fab>
                 </div>
                 <Avataaar
-                    v-bind="typeof team?.team_avatar === 'object' ? team?.team_avatar : parseAvatar(team?.team_avatar)"
+                    v-bind="
+                        typeof team?.team_avatar === 'object'
+                            ? team?.team_avatar
+                            : parseAvatar(team?.team_avatar)
+                    "
                     v-if="team?.avatar_type === 'avataaar'"
                 />
                 <div
@@ -184,10 +187,13 @@
             </div>
         </header>
         <main class="q-px-md">
+            <div class="text-md text-bold q-my-md q-mx-sm">
+                Team members ({{ visiblePlayers?.teamMembers?.length }})
+            </div>
             <div
                 v-for="player in visiblePlayers.teamMembers"
                 :key="player.id"
-                class="row items-center justify-between no-wrap player__container"
+                class="row items-center player__container"
             >
                 <div
                     style="width: 50px"
@@ -197,14 +203,27 @@
                     <div
                         style="width: inherit"
                         class="member-avatar__container"
-                        :class="{ highlight: selectPlayerAvatarMode }"
                     >
-                        <Avataaar v-bind="player.avatar" />
+                        <div
+                            class="avatar-highlight--helper"
+                            :class="{
+                                'help--highlight help--animation':
+                                    selectPlayerAvatarMode,
+                            }"
+                        />
+                        <Avataaar
+                            v-bind="player.avatar"
+                            class="player-avatar"
+                            :class="{
+                                'help--animation': selectPlayerAvatarMode,
+                            }"
+                        />
                     </div>
                 </div>
-                <div class="q-ml-sm column col-shrink">
-                    <div class="truncate-text full-width">
+                <div class="q-ml-sm" style="display: inherit">
+                    <div class="truncate-text">
                         {{ player.first_name }} {{ player.last_name }}
+                        <!-- <span class="text-sm">@{{player.username}}</span> -->
                     </div>
                     <div>
                         <ProfileChip
@@ -214,15 +233,37 @@
                     </div>
                 </div>
 
-                <div v-if="!player.status" class="row no-wrap">
-                    <q-icon
+                <div class="column items-end">
+                    <div v-if="!player.status">
+                        <TeamPositionChip
+                            :canEdit="isEditing"
+                            position="skip"
+                            v-model="player.position"
+                        />
+                    </div>
+                    <div v-if="!player.status">
+                        <TeamAdminChip
+                            :canEdit="isEditing && player.id !== userStore.id"
+                            v-model="player.is_admin"
+                            v-if="isEditing || player.is_admin"
+                        />
+                    </div>
+
+                    <!-- <q-btn flat round icon="edit" color="grey-8" v-if="isEditing" @click="toggleEditPlayer"/> -->
+
+                    <!-- <div class="column" v-if="isEditing">
+                         <q-btn dense color="primary" v-if="!player.is_admin" icon="stars" rounded>Make admin</q-btn>
+                           <q-btn dense color="negative" v-else icon="stars" rounded>Remove admin</q-btn>
+                    </div> -->
+
+                    <!-- <q-icon
                         name="stars"
-                        :color="player.is_admin ? 'primary' : 'grey-4'"
+                        color="grey-4"
                         size="md"
-                        @click="toggleAdmin(player)"
+                    
                         v-if="isEditing"
-                    />
-                    <q-icon
+                    /> -->
+                    <!-- <q-icon
                         name="delete"
                         color="negative"
                         size="md"
@@ -233,30 +274,31 @@
                             isEditing &&
                             !isOwner(player.id)
                         "
+                    /> -->
+                    <RequestStatus
+                        v-else
+                        :requesteeId="player.id"
+                        :resourceId="teamId"
+                        :status="player.status"
+                        canEdit
+                        @cancel="cancelRequest(player.id)"
+                        :waiting="!teamId"
                     />
                 </div>
-                <RequestStatus
-                    v-else
-                    :requesteeId="player.id"
-                    :resourceId="teamId"
-                    :status="player.status"
-                    canEdit
-                    @cancel="cancelRequest(player.id)"
-                    :waiting="!teamId"
-                />
             </div>
             <!-- Add new player -->
-            <div
-                class="row items-center justify-between"
-                @click="toggleAddPlayer"
-                v-if="isEditing"
-            >
+            <div class="row items-center justify-between" v-if="isEditing">
                 <div class="row items-center">
                     <div
                         style="width: 50px; aspect-ratio: 1/1"
                         class="row items-center justify-center"
                     >
-                        <q-btn flat round icon="add" color="primary" />
+                        <q-btn
+                            round
+                            icon="add"
+                            color="primary"
+                            @click="toggleAddPlayer"
+                        />
                     </div>
                     <div class="q-ml-sm column justify-center">
                         <div>Add new player</div>
@@ -264,12 +306,7 @@
                 </div>
             </div>
 
-            <div
-                class="q-mx-sm q-my-md row"
-                @click="showFans = !showFans"
-              
-            >
-              <!-- v-if="!isEditing" -->
+            <div class="q-mx-sm q-my-md row" @click="showFans = !showFans">
                 <div class="text-md text-bold">
                     Followers ({{ visiblePlayers?.teamFans?.length }})
                 </div>
@@ -286,22 +323,45 @@
                 <div
                     v-for="player in visiblePlayers.teamFans"
                     :key="player.id"
-                    class="row items-center justify-between"
+                    class="row items-center justify-between player__container"
                 >
-                    <div class="row items-center">
-                        <div style="width: 50px">
-                            <Avataaar />
-                        </div>
-                        <div class="q-ml-sm column">
-                            <div>
-                                {{ player.first_name }} {{ player.last_name }}
-                            </div>
-                            <ProfileChip
-                                :id="player.id"
-                                :username="player.username"
-                            />
-                        </div>
+                       <div
+                    style="width: 50px"
+                    class="member-avatar__wrap"
+                    @click="handlePlayerAvatarClick(player)"
+                >
+                    <div
+                        style="width: inherit"
+                        class="member-avatar__container"
+                    >
+                        <div
+                            class="avatar-highlight--helper"
+                            :class="{
+                                'help--highlight help--animation':
+                                    selectPlayerAvatarMode,
+                            }"
+                        />
+                        <Avataaar
+                            v-bind="player.avatar"
+                            class="player-avatar"
+                            :class="{
+                                'help--animation': selectPlayerAvatarMode,
+                            }"
+                        />
                     </div>
+                </div>
+                <div class="q-ml-sm" style="display: inherit">
+                    <div class="truncate-text">
+                        {{ player.first_name }} {{ player.last_name }}
+                        <!-- <span class="text-sm">@{{player.username}}</span> -->
+                    </div>
+                    <div>
+                        <ProfileChip
+                            :id="player.id"
+                            :username="player.username"
+                        />
+                    </div>
+                </div>
                 </div>
             </div>
         </main>
@@ -314,9 +374,13 @@
     </DialogFloating>
 </template>
 <style lang="scss" scoped>
+.selection__menu {
+    background-color: rgba(0, 0, 0, 0.5);
+}
 .player__container {
     display: grid;
-    grid-template-columns: 50px 1fr auto;
+    grid-template-columns: 50px auto max-content;
+    max-width: 100%;
 }
 .header {
     height: fit-content;
@@ -357,25 +421,34 @@
     .member-avatar__container {
         overflow: visible;
         transition: all 0.2s;
-        &.highlight {
-            transform: scale(1.1);
-            position: absolute;
-            top: 0;
-            z-index: 100;
-            box-shadow: $pretty-shadow;
-            border-radius: 50%;
-            cursor: pointer;
-            &:hover {
-                transform: scale(1.2);
+        cursor: pointer;
+        &:hover {
+            transform: scale(1.2);
+            .help--animation {
+                animation: unset;
+            }
+        }
+
+        &:not(:hover) {
+            .avatar-highlight--helper {
+                height: 80%;
+                bottom: 0;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 80%;
+                position: absolute;
+                border-radius: 50%;
             }
         }
     }
 }
 .team-viewer__footer {
     :deep(.q-btn) {
-         &:not(:nth-child(1)) {
-            border-left: 1px solid rgba(0,0,0,0.2);
-         }   
+        &:not(:nth-child(1)) {
+            border-left: 1px solid rgba(0, 0, 0, 0.2);
+        }
     }
 }
 </style>
@@ -387,6 +460,7 @@ import { useUserTeamStore } from "@/store/user-teams";
 import { useUserStore } from "@/store/user";
 import { parseAvatar } from "@/utils/avatar";
 import Team from "@/types/team";
+import { vElementHover } from "@vueuse/components";
 const dialogStore = useDialogStore();
 
 const tab = ref("stats");
@@ -406,6 +480,7 @@ const teamStore = useTeamStore();
 
 const loading = ref(false);
 const isEditing = ref(false);
+const editing = ref(null);
 const confirmUnsaved = ref(false);
 const { options } = dialogStore.teamViewer;
 const teamId = dialogStore.teamViewer.team?.id;
@@ -434,6 +509,18 @@ const visiblePlayers = computed(() => {
     }
     return obj;
 });
+
+/**
+ * EDITING PLAYERS
+ */
+
+const toggleEditPlayer = (id) => {
+    if (editing.value === id) {
+        editing.value = null;
+    } else {
+        editing.value = id;
+    }
+};
 
 /**
  * INIT
@@ -546,10 +633,8 @@ const getTeam = async (teamId) => {
 const $q = useQuasar();
 
 const canEdit = computed(() => {
-    return (
-        teamPlayers.value.some(
-            (tp) => tp.id === userStore.id && tp.is_admin === true
-        ) || team?.value?.profile_id === useUserStore().id
+    return teamPlayers.value.some(
+        (tp) => tp.id === userStore.id && tp.is_admin === true
     );
 });
 
@@ -577,14 +662,14 @@ const footerButtonsLength = computed(() => {
  */
 
 const addToMyTeams = async (type: string) => {
-    console.log('add')
+    console.log("add");
     loading.value = true;
-    const is_admin = type === 'fan' ? false : !!isOwner.value
-    await useUserTeamStore().addTeam({team: team.value, type, is_admin  })
+    const is_admin = type === "fan" ? false : !!isOwner.value;
+    await useUserTeamStore().addTeam({ team: team.value, type, is_admin });
     await getPlayers();
     await useUserTeamStore().fetchUserTeams(true);
     loading.value = false;
-}
+};
 
 const newTeamPlayers = ref([]);
 
@@ -631,7 +716,7 @@ const cancelRequest = (userId) => {
 };
 
 const removePlayer = async (userId) => {
-    console.log('remove')
+    console.log("remove");
     loading.value = true;
     const client = useSupabaseClient();
     const { errors } = await client
@@ -663,6 +748,11 @@ const toggleAdmin = async (player) => {
     });
     await getPlayers();
     togglingAdmin.value = false;
+};
+
+const toggleEditing = () => {
+    if (!canEdit.value) return;
+    isEditing.value = !isEditing.value;
 };
 
 /**
@@ -723,13 +813,19 @@ const onSave = async () => {
     saving.value = true;
     const newTeam = await saveNewTeam();
     if (newTeam) {
-
         toggleTeamViewer({ open: false });
         setTimeout(() => {
-            toggleTeamViewer({ open: true, team: newTeam, options: {priority: options.priority, readOnly: options.readOnly} });
+            toggleTeamViewer({
+                open: true,
+                team: newTeam,
+                options: {
+                    priority: options.priority,
+                    readOnly: options.readOnly,
+                },
+            });
         }, 10);
     }
-            await useUserTeamStore().fetchUserTeams(true);
+    await useUserTeamStore().fetchUserTeams(true);
 
     saving.value = false;
 };
@@ -737,7 +833,12 @@ const onSave = async () => {
 const saveNewTeam = async () => {
     const newTeam = await teamStore.insertTeam(
         team.value,
-        newTeamPlayers.value.map(({ profile_id }) => profile_id)
+        newTeamPlayers.value.map(({ profile_id }) => profile_id),
+        teamPlayers.value.map((player) => ({
+            id: player.id,
+            is_admin: player.is_admin,
+            position: player.position,
+        }))
     );
     if (!newTeam) return false;
 

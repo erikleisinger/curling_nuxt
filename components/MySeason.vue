@@ -165,7 +165,9 @@
 </template>
 <style lang="scss" scoped>
 .game-result__container {
-    padding: var(--space-md) 0px;
+    padding: var(--space-sm) 0px;
+    max-width: 600px;
+    margin: auto;
 }
 .profile__wrap {
     padding: var(--space-sm);
@@ -176,6 +178,7 @@
     overflow: auto;
     position: relative;
     max-width: 100%;
+    // background-color: rgba(31, 0, 24, 0.2);
     .teams__container {
         position: sticky;
         top: 0;

@@ -1,8 +1,9 @@
 <template>
 <div style="margin-top: -20%; margin-left: -4%">
-<div style="position:relative; height: 100%; width: 100%;" class="column justify-center" >
+<div style="position:relative; height: 100%; width: 100%; background: transparent" class="column justify-center" >
 <svg
     viewBox='0 0 264 280'
+    style="stroke: none"
     version='1.1'
     xmlns='http://www.w3.org/2000/svg'
     xmlns:xlink='http://www.w3.org/1999/xlink'>

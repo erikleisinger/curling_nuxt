@@ -208,7 +208,7 @@ export const useTeamStore = defineStore("team", {
             this.teams = data;
             this.sortTeams();
         },
-        async insertTeam(team: Team, newPlayerIds: string[]) {
+        async insertTeam(team: Team, newPlayerIds: string[], updatedPlayers: {id: number, [key: string]:string | number}[]) {
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({
                 text: team.id ? "Updating team..." : "Creating team...",
@@ -249,6 +249,14 @@ export const useTeamStore = defineStore("team", {
                 await Promise.all(
                     newPlayerIds.map(
                         (id) => teamRequestStore.sendTeamRequest({requestee_profile_id: id, team_id: teamId})
+                    )
+                );
+            }
+
+            if (updatedPlayers?.length) {
+                await Promise.all(
+                    updatedPlayers.map(
+                        (player) => this.updateTeamPlayer(player)
                     )
                 );
             }
@@ -358,6 +366,33 @@ export const useTeamStore = defineStore("team", {
             }
             const team = await this.refreshTeam(teamId);
             if (team) this.insertTeamIntoStore(team);
+        },
+        async updateTeamPlayer(updatedPlayer: {id: number, [key: string]: string | number}) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                text: "Updating player...",
+                state: "pending",
+            });
+            const {id, ...rest} = updatedPlayer;
+
+            const client = useSupabaseClient();
+
+            const { errors } = await client.from('team_profile_junction').update(rest).eq('profile_id', id);
+
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `Error updating player (code: ${errors.code})`,
+                });
+                return false;
+            } else {
+                notStore.updateNotification(notId, {
+                    state: "completed",
+                    text: `Player updated!`,
+                });
+                return true;
+            }
+
         },
         async uploadAvatarToTeam(fileName: string, file: File, teamId: number) {
             const notStore = useNotificationStore();

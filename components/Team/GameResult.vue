@@ -1,5 +1,5 @@
 <template>
-    <div style="position: relative">
+    <div style="position: relative full-width">
  
         <div class="result__container--wrap" :class="{ expanded }">
        
@@ -35,7 +35,7 @@
                         </div>
 
                         <h2
-                            class="text-sm truncate-text text-center col-grow row items-center"
+                            class="text-sm truncate-text text-center col-grow row items-center justify-center"
                         >
                             {{ result.home_name }}
                         </h2>
@@ -176,6 +176,7 @@
                     </div>
                 </div>
             </div>
+            <div style="overflow:hidden">
             <transition
                 appear
                 enter-active-class="animated slideInDown"
@@ -183,19 +184,22 @@
             >
                 <TeamGameResultDetails v-if="expanded" :result="props.result" />
             </transition>
+            </div>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
 $result-height: 50px;
-$columns: 30% 40% 30%;
+$columns: 1fr 120px 1fr;
 .result__container--wrap {
     border-radius: 16px;
     max-height: fit-content;
     border: 1px solid $grey-3;
-    margin-bottom: var(--space-sm);
+    box-sizing: border-box;
     transition: all 1s;
     position: relative;
+    overflow: hidden;
+        margin-bottom: var(--space-sm);
     .start-time--floating {
         position: absolute;
         left: 0;
@@ -210,6 +214,9 @@ $columns: 30% 40% 30%;
         border-radius: inherit;
         padding-left: var(--space-sm);
         padding-right: var(--space-sm);
+        z-index: 1;
+        width: 100%;
+        box-sizing: border-box;
         .game-request-response__container {
             margin: 0px var(--space-sm);
             margin-bottom: var(--space-md);
@@ -230,7 +237,8 @@ $columns: 30% 40% 30%;
         grid-template-rows: 100%;
         grid-template-columns: $columns;
         border-bottom: 1px solid $grey-3;
-
+        max-width: 600px;
+        margin: auto;
         position: relative;
 
         .team__profile--container {

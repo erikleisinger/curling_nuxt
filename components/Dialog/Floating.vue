@@ -1,5 +1,6 @@
 <template>
     <Teleport to="body">
+        <div class="overlay"/>
         <div
             class="outer__container"
             :class="{ 'z-top': priority }"
@@ -16,9 +17,7 @@
                 <div
                     class="row bg-deep-purple text-white pretty-shadow justify-between items-center q-px-xs top-bar"
                 >
-                   
-                        
-                        <!-- <slot name="buttonLeft" v-bind:close="close">
+                    <!-- <slot name="buttonLeft" v-bind:close="close">
                             <q-btn
                                 flat
                                 round
@@ -26,16 +25,14 @@
                                 @click="close"
                             />
                         </slot> -->
-                      
-                             <div class="row items-center text-md text-bold" >
-  <slot name="title" />
-                             </div>
-            
 
-                        <slot name="buttonRight" v-bind:close="close">
-                            <q-btn flat round icon="close" @click="close" />
-                        </slot>
-                 
+                    <div class="row items-center text-md text-bold">
+                        <slot name="title" />
+                    </div>
+
+                    <slot name="buttonRight" v-bind:close="close">
+                        <q-btn flat round icon="close" @click="close" />
+                    </slot>
                 </div>
                 <header
                     class="pretty-shadow"
@@ -57,21 +54,32 @@
     </Teleport>
 </template>
 <style lang="scss" scoped>
+.overlay {
+    height: calc(100 * var(--vh, 1vh));
+    width: 100vw;
+    background-color: rgba(0,0,0,0.7);
+    top: 0;
+    position: absolute;
+    z-index: $z-tooltip;
+}
 [v-cloak] {
     display: none;
 }
 .outer__container {
-    height: min(calc(100 * var(--vh, 1vh)), 1000px);
-    width: min(100vw, 700px);
+    height: calc(100 * var(--vh, 1vh));
+    width: 100vw;
     z-index: $z-dialog;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    bottom: 0;
     margin: auto;
     transform-origin: bottom left;
+    max-height: v-bind(maxHeight);
+    max-width: v-bind(maxWidth);
     .inner__container {
-        background-color: white;
+
         pointer-events: all;
         border-radius: 16px;
         height: calc(100% - var(--space-xs) * 2);
@@ -85,6 +93,7 @@
             overflow: auto;
             position: relative;
             width: 100%;
+                    background-color: white;
         }
         .top-bar {
             height: 3em;
@@ -118,6 +127,14 @@ const props = defineProps({
     },
     loading: Boolean,
     priority: Boolean,
+    maxWidth: {
+        type: String,
+        default: '700px'
+    },
+    maxHeight: {
+        type: String,
+        default: '1000px'
+    }
 });
 
 const emit = defineEmits(["close"]);
@@ -154,40 +171,32 @@ onBeforeMount(() => {
     transitioning.value = true;
 });
 
-
-let headerHeight = ref(0)
-let footerHeight = ref(0)
+let headerHeight = ref(0);
+let footerHeight = ref(0);
 const header = ref(null);
 
-const mounted = ref(null)
-
+const mounted = ref(null);
 
 const footer = ref(null);
 onMounted(async () => {
     await timeout();
     transitioning.value = false;
     nextTick(() => {
-const { height } = useElementSize(header);
-headerHeight = height;
-const { height: footerH } = useElementBounding(footer);
-footerHeight = footerH;
-mounted.value = true;
-    })
-   
+        const { height } = useElementSize(header);
+        headerHeight = height;
+        const { height: footerH } = useElementBounding(footer);
+        footerHeight = footerH;
+        mounted.value = true;
+    });
 });
-
-
 
 const $q = useQuasar();
 
-const contentHeight = computed(
-    () => {
-        if (!mounted.value) return '0px'
-        const topBarHeight = $q.screen.sm ? '4em' : '3em'
-        return `calc(100% - ${topBarHeight} - ${headerHeight.value}px - ${footerHeight.value}px)`
-    }
-);
+const contentHeight = computed(() => {
+    if (!mounted.value) return "0px";
+    const topBarHeight = $q.screen.sm ? "4em" : "3em";
+    return `calc(100% - ${topBarHeight} - ${headerHeight.value}px - ${footerHeight.value}px)`;
+});
 
 const slots = useSlots();
-
 </script>

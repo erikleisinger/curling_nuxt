@@ -232,3 +232,27 @@ $screen-xl-min: 1920px;
         transform: translateY(0.15em);
     }
 }
+
+$help-animation: attention 2s infinite linear;
+
+.help--animation {
+    animation: $help-animation;
+}
+
+.help--highlight {
+    box-shadow: 0 0 2px #fff, 0 0 10px #fff, 0 0 10px #ffeb3b, 0 0 10px #ffeb3b,
+        0 0 5px #ffeb3b, 0 0 30px #ffeb3b;
+}
+
+@keyframes attention {
+    0% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.1)
+    }
+     100% {
+        transform: scale(1)
+    }
+}

@@ -50,14 +50,6 @@
     </div>
 </template>
 <style lang="scss" scoped>
-$columns: 20% 60% 20%;
-.result__container--wrap {
-    border-radius: 16px;
-    max-height: fit-content;
-    border: 1px solid $grey-3;
-    margin-bottom: var(--space-sm);
-    transition: all 1s;
-
     .content__expandable {
         transition: all 0.3s;
         height: 0px;
@@ -66,15 +58,14 @@ $columns: 20% 60% 20%;
         padding-right: var(--space-sm);
         border-bottom-left-radius: inherit;
         border-bottom-right-radius: inherit;
-
         height: fit-content;
         padding-bottom: var(--space-sm);
+        background-color: white;
     }
     .score {
         margin: auto !important;
         font-size: min(7vw, 50px);
     }
-}
 </style>
 <script setup>
 const props = defineProps({
