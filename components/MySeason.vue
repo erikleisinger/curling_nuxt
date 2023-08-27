@@ -190,7 +190,7 @@ overflow: auto;
     border-bottom: 1px solid $grey-4;
 }
 .season-content__container {
-    // height: v-bind(mainHeight);
+    min-height: v-bind(mainHeight);
     overflow: auto;
     position: relative;
     max-width: 100%;

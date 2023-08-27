@@ -44,7 +44,6 @@
                     class="col-12"
                     icon="save"
                     label="save"
-                    size="lg"
                     @click="onSave"
                     square
                     :disable="saving"
@@ -323,45 +322,22 @@
                 <div
                     v-for="player in visiblePlayers.teamFans"
                     :key="player.id"
-                    class="row items-center justify-between player__container"
+                    class="row items-center justify-between"
                 >
-                       <div
-                    style="width: 50px"
-                    class="member-avatar__wrap"
-                    @click="handlePlayerAvatarClick(player)"
-                >
-                    <div
-                        style="width: inherit"
-                        class="member-avatar__container"
-                    >
-                        <div
-                            class="avatar-highlight--helper"
-                            :class="{
-                                'help--highlight help--animation':
-                                    selectPlayerAvatarMode,
-                            }"
-                        />
-                        <Avataaar
-                            v-bind="player.avatar"
-                            class="player-avatar"
-                            :class="{
-                                'help--animation': selectPlayerAvatarMode,
-                            }"
-                        />
+                    <div class="row items-center">
+                        <div style="width: 50px">
+                            <Avataaar />
+                        </div>
+                        <div class="q-ml-sm column">
+                            <div>
+                                {{ player.first_name }} {{ player.last_name }}
+                            </div>
+                            <ProfileChip
+                                :id="player.id"
+                                :username="player.username"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div class="q-ml-sm" style="display: inherit">
-                    <div class="truncate-text">
-                        {{ player.first_name }} {{ player.last_name }}
-                        <!-- <span class="text-sm">@{{player.username}}</span> -->
-                    </div>
-                    <div>
-                        <ProfileChip
-                            :id="player.id"
-                            :username="player.username"
-                        />
-                    </div>
-                </div>
                 </div>
             </div>
         </main>
@@ -527,6 +503,7 @@ const toggleEditPlayer = (id) => {
  */
 
 onMounted(async () => {
+
     loading.value = true;
     if (!teamId) {
         isEditing.value = true;
@@ -536,6 +513,7 @@ onMounted(async () => {
         await getPlayers();
         await getPendingRequests();
     }
+        console.log(userStore.id)
     loading.value = false;
 });
 
@@ -571,8 +549,8 @@ const getPlayers = async () => {
                 type: "member",
                 avatar: userStore.avatar ? JSON.parse(userStore.avatar) : null,
                 username: userStore.username,
-                first_name: userStore.firstName,
-                last_name: userStore.lastName,
+                first_name: userStore.first_name,
+                last_name: userStore.last_name,
             },
         ];
     } else {
@@ -600,6 +578,7 @@ const getPlayers = async () => {
             ...p,
             ...p.user,
             status: null,
+            avatar: p.avatar ? JSON.parse(p.avatar) : {}
         }));
     }
 };
@@ -662,9 +641,8 @@ const footerButtonsLength = computed(() => {
  */
 
 const addToMyTeams = async (type: string) => {
-    console.log("add");
     loading.value = true;
-    const is_admin = type === "fan" ? false : !!isOwner.value;
+    const is_admin = type === "fan" ? false : !!isOwner(userStore.id);
     await useUserTeamStore().addTeam({ team: team.value, type, is_admin });
     await getPlayers();
     await useUserTeamStore().fetchUserTeams(true);

@@ -1,19 +1,14 @@
 import { defineStore } from "pinia";
-import { BasicPlayer } from "@/types/player";
 import { useNotificationStore } from "@/store/notification";
 export const useUserStore = defineStore("user", {
     state: () => {
         return {
             avatar: null,
             email: null,
-            firstName: null,
+            first_name: null,
             friendId: null,
             id: null,
-            lastName: null,
-            player: {
-                id: null,
-                name: null,
-            },
+            last_name: null,
             showNumbers: false,
             timezone: "America/Toronto",
             username: null,
@@ -21,11 +16,10 @@ export const useUserStore = defineStore("user", {
         } as {
             avatar: string | null;
             email: string | null;
-            firstName: string | null;
+            first_name: string | null;
             friendId: string | null;
             id: string | null;
-            lastName: string | null;
-            player: BasicPlayer | null;
+            last_name: string | null;
             showNumbers: boolean;
             timezone: string;
             username: string | null;

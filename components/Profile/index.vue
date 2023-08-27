@@ -1,6 +1,6 @@
 <template>
 <div class="profile__scroll">
-    <ProfileCard :avatar="!user.avatar ? '' : JSON.stringify(user.avatar)">
+    <ProfileCard :avatar="JSON.stringify({...profileAvatar})">
            {{ user.first_name }} {{ user.last_name }}
         <template v-slot:subtitle> @{{ user.username }} </template>
         <template v-slot:append>
@@ -180,6 +180,8 @@ const store = useUserStore();
 
 const user = ref({})
 
+const profileAvatar = ref({})
+
 const getUser = () => {
 const {
         id,
@@ -200,8 +202,9 @@ const {
         player,
         first_name,
         last_name,
-        avatar: parseAvatar(avatar),
+        avatar: avatar ? parseAvatar(avatar) : {},
     }
+    profileAvatar.value = avatar ? parseAvatar(avatar) : {}
 }
 
 onBeforeMount(() => {
