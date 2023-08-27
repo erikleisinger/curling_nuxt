@@ -27,18 +27,20 @@
             indicator-color="white"
             v-model="tab"
         >
-            <q-tab name="overview" label="Overview" style="width: 33.34%" />
-            <q-tab
+            <q-route-tab name="overview" label="Overview" style="width: 33.34%" to="#overview" />
+            <q-route-tab
                 name="games"
                 label="Games"
                 style="width: 33.34%"
                 :disable="!teams?.length"
+                to="#games"
             />
-            <q-tab
+            <q-route-tab
                 name="stats"
                 label="Stats"
                 style="width: 33.34%"
                 :disable="!teams?.length"
+                to="#stats"
             />
         </q-tabs>
     </header>
@@ -357,8 +359,18 @@ const setGames = (gamesToSet) => {
     }, []);
 };
 
+const setTab = () => {
+    const route = useRoute();
+    if (!route.hash) {
+        navigateTo('#overview')
+    }
+    console.log(route.hash)
+
+}
+
 const init = async () => {
     loading.value = true;
+    setTab();
     const teamIds = teams.value.map(({ id }) => id);
     if (!teamIds || !teamIds?.length) {
         games.value = [];

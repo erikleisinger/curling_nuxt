@@ -32,4 +32,42 @@ export interface GamePlayerJunction {
     away_skip_id?: number,
     home_skip_id?: number,
 }
+
+interface GameScoreTeam {
+    id: number;
+    team_avatar: string | null;
+    avatar_url: string | null;
+    avatar_type: string | null;
+}
+
+export interface GameScoreInfo {
+    home: GameScoreTeam;
+    away: GameScoreTeam;
+    homeColor: string;
+    awayColor: string;
+    hammerFirstEnd: number;
+}
+
+interface EndScore {
+    home: number;
+    away: number;
+}
+
+interface EndResult extends EndScore {
+    away_conversions?: number | null;
+    away_forces?: number | null;
+    away_hammer?: number | null;
+    away_steals?: number | null;
+    home_conversions?: number | null;
+    home_forces?: number | null;
+    home_hammer?: number | null;
+    home_steals?: number | null;
+}
+
+export interface GameScore {
+    [key: number]: EndScore | EndResult;
+}
+
+7
+
 export default Game

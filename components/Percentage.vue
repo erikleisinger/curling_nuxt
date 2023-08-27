@@ -54,7 +54,7 @@
     }
 </style>
 <script setup>
-import {useElementVisibility} from '@vueuse/core'
+// import {useElementVisibility} from '@vueuse/core'
 const props = defineProps({
     color: String,
     percent: Number,
@@ -71,20 +71,23 @@ const width = ref(0)
 const widthComputed = computed(() => `${width.value}%`);
 const left = computed(() => (props.reverse ? "unset" : 0));
 const right = computed(() => (props.reverse ? 0 : "unset"));
-const el = ref(null)
-const targetVisible = useElementVisibility(el)
+// const el = ref(null)
+// const targetVisible = useElementVisibility(el)
  const {upTick} = useAnimate();
      const {getColor} = useColor();
 
 const rendered = ref(false)
-
-
-watch(targetVisible, (val) => {
-    if (!val || (props.static && rendered.value)) return;
-    width.value = 0;
-    rendered.value = true;
+onMounted(() => {
     upTick(width, props.percent);
-}, {immediate:true})
+})
+
+
+// watch(targetVisible, (val) => {
+//     if (!val || (props.static && rendered.value)) return;
+//     width.value = 0;
+//     rendered.value = true;
+//     upTick(width, props.percent);
+// }, {immediate:true})
 
 
 
