@@ -30,7 +30,9 @@
            emit('update:modelValue', val)
        }
    })
- const options = Object.keys(props.features)
+
+   const featureOptions = {...props.features, null: null}
+ const options = Object.keys(featureOptions)
    const goToFeature = (inc) => {
     const currentIndex = options.findIndex((o) => o === feature.value)
     if (currentIndex + inc < 0 || currentIndex + inc > options.length - 1) return;

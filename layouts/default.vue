@@ -90,10 +90,10 @@
                 </div>
                              <div class="bottom__nav--item">
                     <ButtonNav
-                        label="Manage"
-                        :selected="view === VIEWS.MANAGE"
-                        :onClick="() => setView(VIEWS.MANAGE)"
-                        icon="groups_2"
+                        label="Notifications"
+                        :selected="view === VIEWS.NOTIFICATIONS"
+                        :onClick="() => setView(VIEWS.NOTIFICATIONS)"
+                        icon="notifications"
                         size="3em"
                         class="col-grow"
                     >
@@ -176,9 +176,9 @@ const createNewTeam = async () => {
     actionOpen.value = false;
     const id = await teamStore.createBlankTeam();
     navStore.setTeamFocus(id);
-    nextTick(() => {
-        setView(VIEWS.MANAGE);
-    });
+    // nextTick(() => {
+    //     setView(VIEWS.NOTIFICATIONS);
+    // });
 };
     const editorStore = useDialogStore();
     const {toggleLineScore} = editorStore;

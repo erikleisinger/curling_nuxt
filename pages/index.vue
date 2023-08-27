@@ -3,7 +3,7 @@
         <AreaExplore v-if="view === VIEWS.EXPLORE" key="explore"/>
         <Profile v-else-if="view === VIEWS.SETTINGS" key="settings"/>
         <MySeason v-else-if="view === VIEWS.SEASON" key="season"/>
-        <AreaManage v-else-if="view === VIEWS.MANAGE" key="manage"/>
+        <AreaNotifications v-else-if="view === VIEWS.NOTIFICATIONS" key="manage"/>
 
 
         <DialogTeamViewer v-if="isTeamViewerOpen" />

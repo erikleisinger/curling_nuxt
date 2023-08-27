@@ -1,7 +1,7 @@
 export const VIEWS = {
     SEASON: "season",
 
-    MANAGE: "manage",
+    NOTIFICATIONS: "notifications",
     EXPLORE: "explore",
     SETTINGS: "settings",
 };

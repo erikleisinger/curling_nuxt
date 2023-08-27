@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { BasicPlayer } from "@/types/player";
+import { useNotificationStore } from "@/store/notification";
 export const useUserStore = defineStore("user", {
     state: () => {
         return {
@@ -39,33 +40,21 @@ export const useUserStore = defineStore("user", {
 
             const { id: profileId, email = null } = sesh.data.user || {};
             this.setEmail(email);
-            const { data: user } = await fetchHandler(
-                () => client.rpc("get_profile", {profile_id_param: profileId}),
+            const { data } = await fetchHandler(
+                () => client.from("profiles").select(`
+                    id, 
+                    timezone,
+                    friend_id,
+                    username,
+                    first_name,
+                    last_name,
+                    avatar
+                `).eq('id', profileId),
                 { onError: "Error getting current user" }
             );
+            const [user] = data;
             if (!user) return;
-
-            const {
-                timezone,
-                id,
-                friend_id: friendId,
-                username,
-                player,
-                first_name: firstName,
-                last_name: lastName
-            } = user || {};
-            const { f1: player_id, f2: name, f3: avatar } = player || {};
-            this.setData({
-                timezone,
-                id,
-                friendId,
-                username,
-                avatar,
-                email,
-                player: { id: player_id, name },
-                firstName,
-                lastName
-            });
+            Object.assign(this, user);
             // await this.getUserTeams();
         },
         async getUserTeams() {
@@ -92,19 +81,7 @@ export const useUserStore = defineStore("user", {
         setEmail(email: string | null) {
             this.email = email;
         },
-        setData(data: {
-            timezone: string | null;
-            id: string | null;
-            friendId: string | null;
-            username: string | null;
-            avatar: string | null;
-            email: string | null;
-            player: { id: number | null; name: string | null };
-            firstName: string | null;
-            lastName: string | null;
-        }) {
-            Object.assign(this, data);
-        },
+
         setFriendId(id: string) {
             this.friendId = id;
         },
@@ -121,5 +98,32 @@ export const useUserStore = defineStore("user", {
         toggleShowNumbers() {
             this.showNumbers = !this.showNumbers;
         },
-    },
+        async updateUserAvatar(newAvatar) {
+            const avatar = typeof newAvatar === 'object' ? JSON.stringify(newAvatar) : newAvatar;
+
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: 'pending',
+                text: `Updating avatar...`,
+            })
+            console.log(newAvatar, this.id)
+
+            const client = useSupabaseClient();
+            const {errors} = await client.from('profiles').update({avatar}).eq('id', this.id)
+
+            if (errors) {
+                notStore.updateNotification(notId, {
+                    state: 'failed',
+                    text: `Error updating avatar (code: ${errors.code})`
+                })
+            } else {
+                notStore.updateNotification(notId, {
+                    state: 'completed',
+                    text: `Avatar updated!`
+                })
+                await this.getCurrentUser();
+            }
+
+        }
+    }, 
 });

@@ -1,6 +1,7 @@
 <template>
-    <ProfileCard :avatar="user.avatar">
-           {{ user.firstName }} {{ user.lastName }}
+<div class="profile__scroll">
+    <ProfileCard :avatar="!user.avatar ? '' : JSON.stringify(user.avatar)">
+           {{ user.first_name }} {{ user.last_name }}
         <template v-slot:subtitle> @{{ user.username }} </template>
         <template v-slot:append>
             <q-btn
@@ -12,7 +13,7 @@
             />
         </template>
     </ProfileCard>
-    <nav class="bg-white">
+    <nav class="bg-white profile__nav">
         <q-tabs
             v-model="tab"
             inline-label
@@ -24,9 +25,9 @@
             class="profile__tabs text-deep-purple"
         >
             <q-tab
-                :label="TAB_NAMES.REQUESTS.label"
-                :name="TAB_NAMES.REQUESTS.value"
-                icon="textsms"
+                :label="TAB_NAMES.PLAYER.label"
+                :name="TAB_NAMES.PLAYER.value"
+                icon="face"
             >
                 <q-badge
                     color="red"
@@ -50,7 +51,7 @@
             <label for="timezone" class="label">Timezone</label>
             <div id="timezone">{{ user.timezone }}</div>
         </section>
-        <section name="timezone" class="section">
+        <!-- <section name="timezone" class="section">
             <label for="friendId" class="label">Friend ID</label>
             <div class="row no-wrap items-center">
                 <div id="friendId" class="friend__id">
@@ -84,16 +85,24 @@
                     </template>
                 </q-input>
             </div>
-        </section>
+        </section> -->
     </main>
-    <main
-        class="main-content__wrap"
-        v-else-if="tab === TAB_NAMES.REQUESTS.value"
-    >
-        <ProfileRequests />
-    </main>
+
+        
+        <PlayerGenerator v-else-if="tab === TAB_NAMES.PLAYER.value && user.id" role="main" v-model="user.avatar" :onSave="updateAvatar"/>
+
+</div>
 </template>
 <style lang="scss" scoped>
+.profile__scroll {
+    height: 100%;
+    overflow: auto;
+    .profile__nav {
+        position: sticky;
+        top: 0;
+        z-index: $z-tools;
+    }
+}
 .profile__header--container {
     padding: var(--space-xs) var(--space-xxxs);
     position: relative;
@@ -111,7 +120,7 @@
     }
 
     background-color: white;
-    height: calc(100% - 48px);
+    // height: calc(100% - 48px);
     overflow-x: hidden;
     overflow-y: auto;
     max-width: 100%;
@@ -150,13 +159,14 @@ import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
+import {parseAvatar} from '@/utils/avatar'
 
 const { logout } = useSession();
 
 const TAB_NAMES = ref({
-    REQUESTS: {
-        label: "Requests",
-        value: "requests",
+    PLAYER: {
+        label: "Player",
+        value: "player",
     },
     SETTINGS: {
         label: "Settings",
@@ -164,32 +174,39 @@ const TAB_NAMES = ref({
     },
 });
 
-const tab = ref("requests");
+const tab = ref("player");
 
 const store = useUserStore();
 
-const user = computed(() => {
-    const {
+const user = ref({})
+
+const getUser = () => {
+const {
         id,
         timezone,
         friendId,
         username,
         player,
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         avatar,
     } = store;
-    return {
+
+    user.value = {
         id,
         timezone,
         friendId,
         username,
         player,
-        firstName,
-        lastName,
-        avatar,
-    };
-});
+        first_name,
+        last_name,
+        avatar: parseAvatar(avatar),
+    }
+}
+
+onBeforeMount(() => {
+    getUser();
+})
 
 const { toTimezone } = useTime();
 
@@ -246,4 +263,25 @@ const addFriend = async () => {
 
 const teamRequestStore = useTeamRequestStore();
 const requestsNotifications = computed(() => teamRequestStore.requestsToRespond);
+
+
+
+/**
+ * Avatar save
+ */
+
+const updatingAvatar = ref(false)
+const updateAvatar = async () => {
+    updatingAvatar.value = true;
+    await store.updateUserAvatar(user.value.avatar)
+    getUser();
+    updatingAvatar.value = false;
+}
+
 </script>
+<script>
+export default {
+    name: "Profile",
+};
+</script>
+
