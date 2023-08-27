@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import {useStorage} from '@vueuse/core'
 import {useDebounceFn} from '@vueuse/core'
 
 
@@ -9,8 +8,6 @@ const processQueue = useDebounceFn(async ({fetchQueue, setFetch, teamAvatars}) =
         setFetch(false)
         return;
     }
-
-
 
     const {teamId, avatarUrl} = fetchQueue.shift();
 

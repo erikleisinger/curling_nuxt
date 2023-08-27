@@ -22,6 +22,7 @@
                             <div class="team-avatar--wrap">
                                 <TeamAvatar
                                     :team="{
+                                        id: result.home_id,
                                         team_avatar: result.home_avatar,
                                         avatar_type: result.home_avatar_type,
                                         avatar_url: result.home_avatar_url,
@@ -72,6 +73,7 @@
                             >
                                 <TeamAvatar
                                     :team="{
+                                        id: result.away_id,
                                         team_avatar: result.away_avatar,
                                         avatar_type: result.away_avatar_type,
                                         avatar_url: result.away_avatar_url,

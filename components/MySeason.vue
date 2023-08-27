@@ -10,6 +10,7 @@
             <q-btn flat round icon="close" @click="showSearch = false" />
         </template>
     </AreaSearch>
+    <div class="season__wrap" ref="seasonContainer">
     <header ref="header">
         <div class="q-pa-lg bg-primary">
             <h1 class="text-xl text-bold full-width text-center text-white">
@@ -19,6 +20,9 @@
                 <ProfileChip :id="user.id" :username="user.username" />
             </h2>
         </div>
+        
+    </header>
+    <nav class="season__tabs">
         <q-tabs
             dense
             stretch
@@ -26,6 +30,7 @@
             active-color="white"
             indicator-color="white"
             v-model="tab"
+      
         >
             <q-route-tab name="overview" label="Overview" style="width: 33.34%" to="#overview" />
             <q-route-tab
@@ -43,8 +48,8 @@
                 to="#stats"
             />
         </q-tabs>
-    </header>
-    <main class="season-content__container" ref="seasonContainer">
+    </nav>
+    <main class="season-content__container" >
         <div
             class="column teams__container"
             ref="teamContainer"
@@ -162,8 +167,19 @@
             <!-- <q-btn v-else @click="refreshGames">Refresh</q-btn> -->
         </div>
     </main>
+    </div>
 </template>
 <style lang="scss" scoped>
+.season__wrap {
+height: 100%;
+overflow: auto;
+.season__tabs {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: $z-tools;
+}
+}
 .game-result__container {
     padding: var(--space-sm) 0px;
     max-width: 600px;
@@ -174,7 +190,7 @@
     border-bottom: 1px solid $grey-4;
 }
 .season-content__container {
-    height: v-bind(mainHeight);
+    // height: v-bind(mainHeight);
     overflow: auto;
     position: relative;
     max-width: 100%;
