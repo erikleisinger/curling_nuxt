@@ -10,7 +10,7 @@
                     <ButtonNav
                         label="Season"
                         :selected="view === VIEWS.SEASON"
-                        :onClick="() => setView(VIEWS.SEASON)"
+                        :onClick="goTo('season')"
                         icon="home"
                         size="3em"
                         class="col-grow"
@@ -192,5 +192,10 @@ const fab = ref(null)
 onClickOutside(fab, () => {
     actionOpen.value = false;
 })
+
+const goTo = (view) => {
+    navigateTo('/')
+    setView(view)
+}
 
 </script>

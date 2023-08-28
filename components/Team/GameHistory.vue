@@ -50,7 +50,8 @@ const loading = ref(true);
 
 const getTeamRecord = async (team_id_param) => {
     const {getTeamGames} = useGame();
-    results.value = await getTeamGames(team_id_param)
+    const games = await getTeamGames([team_id_param])
+    results.value = games;
 };
 const results = ref(null);
 

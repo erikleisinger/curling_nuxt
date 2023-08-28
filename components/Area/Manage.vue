@@ -59,6 +59,7 @@
         </q-fab>
         </div>
     </h1>
+
     <div v-for="team in teams" :key="team.id" class="team">
         <ProfileCard
             type="team"
@@ -66,18 +67,6 @@
             :onClick="() => toggleTeamViewer({ open: true, team })"
         >
             {{ team.name }}
-            <!-- <template v-slot:append>
-            <q-btn flat round :icon="team.is_admin ? 'edit' : 'visibility'" color="primary"  @click="toggleTeamViewer({open: true, team})"/>
-            <q-btn
-                flat
-                round
-                icon="delete"
-                color="negative"
-                @click="handleRemove(team)"
-                :disable="removingTeam"
-            />
-           
-        </template> -->
             <template v-slot:avatar>
                 <TeamAvatar :team="team" />
             </template>

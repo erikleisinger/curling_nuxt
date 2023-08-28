@@ -520,6 +520,8 @@ const createGame = async ({ game, score }) => {
         game?.away,
         gameId
     );
+
+    console.log('ends: ',ends)
     if (editedId.value) {
         await gameStore.bulkUpdateGameEnds(ends);
     } else {

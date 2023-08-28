@@ -1,64 +1,16 @@
 <template>
-    <ChartContainer @swipe="onSwipe" :index="index">
-        <template v-slot:card>
-        </template>
-        <div v-if="index === 0" key="chart-1" class="chart__container">
-            <h2 class="text-md text-left text-bold q-pl-sm">
-                Hammer efficiency
-            </h2>
-
-            <div class="stats__grid--container">
-                <div class="inner-stat">
-                    <h2 class="text-sm">Conversions</h2>
-                    <div>{{ props.for }}</div>
-                </div>
-                <div class="inner-stat">
-                    <h2 class="text-sm">Forces</h2>
-                    <div>{{ forces }}</div>
-                </div>
-                <div class="inner-stat">
-                    <h2 class="text-sm">Steals</h2>
-                    <div>{{ steals }}</div>
-                </div>
-                <div class="inner-stat">
-                    <h2 class="text-sm">Total ends</h2>
-                    <div>{{ totalEnds }}</div>
-                </div>
-                <div class="chart-inner__floating">
-                    <canvas ref="chart1" />
-                </div>
-            </div>
+    <div class="chart__container">
+        <div class="chart__inner">
+            <canvas ref="chart1" />
         </div>
-        <div v-if="index === 1" key="chart-1">Stats 2</div>
-    </ChartContainer>
+    </div>
 </template>
 <style lang="scss" scoped>
 .chart__container {
-    display: grid;
-    grid-template-rows: 3em 1fr;
-    padding: var(--space-md);
-    .chart-inner__floating {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-    }
-    .stats__grid--container {
-        display: grid;
-        position: relative;
-        grid-template-columns: repeat(2, 50%);
-        grid-template-rows: repeat(2, 50%);
-        .inner-stat {
-            padding: var(--space-sm);
-            &:nth-child(even) {
-                text-align: right;
-            }
-            div {
-                font-weight: bold;
-            }
-        }
+    height: v-bind(formattedHeight);
+    width: v-bind(formattedHeight);
+    .chart__inner {
+        margin: -10px;
     }
 }
 </style>
@@ -68,13 +20,18 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const props = defineProps({
-    
     for: Number,
     forces: Number,
     steals: Number,
     teamId: Number,
     totalEnds: Number,
+    height: {
+        type: Number,
+        default: 60,
+    },
 });
+
+const formattedHeight = computed(() => `${props.height}px`);
 
 const index = ref(0);
 
@@ -86,16 +43,6 @@ const descriptionText = computed(() => {
     return `<span class="text-bold">${props.for} / ${props.totalEnds}</span> ends`;
 });
 const components = ref([null, null]);
-const onSwipe = (direction) => {
-    const inc =
-        {
-            left: 1,
-            right: -1,
-        }[direction] || null;
-    if (index.value + inc < 0 || index.value + inc >= components.value.length)
-        return;
-    index.value += inc;
-};
 const chart1 = ref(null);
 
 const { height: chartHeight } = useElementSize(chart1);
@@ -147,7 +94,7 @@ onMounted(async () => {
                     borderAlign: "center",
                     borderColor: ["rgba(255, 255, 255 ,1)"],
                     borderRadius: [16, 0],
-                    borderWidth: 0,
+                    borderWidth: 2,
                     spacing: -1,
                 },
             ],
@@ -164,20 +111,16 @@ onMounted(async () => {
                     const y = chart.getDatasetMeta(0).data[0].y;
 
                     const text = `${percent}%`;
-                    ctx.fillText(text, x, y + 5);
+                      ctx.fillText(text, x, y + props.height / 11);
                     ctx.textAlign = "center";
-                    ctx.font = "bold 20px sans-serif";
+                    ctx.font = `bold calc(${props.height}px / 4.5) sans-serif`;
                 },
             },
             // new radiusBackground()
         ],
-        options: {
-            backgroundColor: "rgba(0,0,0,0.4)",
-            maintainAspectRatio: false,
-            aspectRatio: 2,
-            radiusBackground: {
-                color: "red", // Set your color per instance if you like
-            },
+         options: {
+            maintainAspectRatio: true,
+            aspectRatio: 1,
             elements: {
                 arc: [
                     {
@@ -189,53 +132,24 @@ onMounted(async () => {
                 padding: 16,
             },
             plugins: {
-                doughnutBackground: {
-                    color: "red",
-                },
-                datalabels: {
-                    color: "white",
-                    font: {
-                        size: 18,
-                        family: '"Hind", sans-serif',
-                        weight: "bold",
-                    },
-                    clamp: true,
-                    anchor: "center",
-
-                    formatter: (value, context) => {
-                        return value.toFixed(1);
-                    },
-                },
                 legend: {
                     display: false,
-                    fullSize: false,
-                    align: "center",
-                    labels: {
-                        font: {
-                            size: 8,
-                        },
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        useBorderRadius: true,
-                        borderRadius: 50,
-                    },
-                    position: "bottom",
+                    
                 },
                 tooltip: {
-                    enabled: false,
                     usePointStyle: true,
                     callbacks: {
-                        label: ({ raw }) => {
-                            const formatted = raw.toFixed(1);
-                            return `${formatted} points`;
+                        label: (val) => {
+                            const { raw, parsed } = val;
+                            return `${parsed} game${
+                                parsed === 1 ? "" : "s"
+                            } - ${raw.percent.toFixed()}%`;
                         },
                     },
                 },
             },
-            cutout: "80%",
-            radius: "75%",
-            rotation: 135,
-            // circumference: (360 / 100) * Number.parseInt(percent),
+            cutout: "65%",
+            rotation: -90,
             circumference: 360,
             animation: {
                 animateScale: true,

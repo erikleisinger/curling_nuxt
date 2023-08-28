@@ -66,6 +66,8 @@ const onSelect = (selection) => {
         resource.value = selection;
     }
 
+    console.log('resource: ', resource)
+
     showSearch.value = false;
 };
 

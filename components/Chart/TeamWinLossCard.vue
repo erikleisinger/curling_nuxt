@@ -1,21 +1,31 @@
 <template>
-        <div class="chart__container">
-  
-            <div class="chart__inner">
+    <ChartContainer :index="index">
+        <!-- <template v-slot:title>{{ TITLES[index] }}</template>
+        <template v-slot:subtitle>{{ DESCRIPTIONS[index] }}</template> -->
+        <template v-slot:card>
+            <!-- <StatsAggregateCard :score="gamesCount"/> -->
+        </template>
+        <div v-if="index === 0" key="chart-1" class="chart__container">
+            <div class="full-height row items-center">
+                <div>
+                    <h2 class="text-md text-bold">Games played</h2>
+                    <h3 class="text-sm">
+                        {{ wins }} wins, {{ losses }} losses, {{ ties }} ties
+                    </h3>
+                </div>
+            </div>
+            <div>
                 <canvas ref="chart1" />
             </div>
         </div>
+        <div v-if="index === 1" key="chart-1">Stats 2</div>
+    </ChartContainer>
 </template>
 <style lang="scss" scoped>
-
 .chart__container {
-    height: v-bind(formattedHeight);
-    width: v-bind(formattedHeight);
-    .chart__inner {
-margin: -10px;
-    }
-    
-
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding-left: var(--space-md);
 }
 </style>
 <script setup>
@@ -26,13 +36,7 @@ const props = defineProps({
     losses: Number,
     ties: Number,
     wins: Number,
-    height: {
-        type: Number,
-        default: 60
-    }
 });
-
-const formattedHeight = computed(() => `${props.height}px`)
 
 const index = ref(0);
 
@@ -92,9 +96,9 @@ onMounted(async () => {
                         "#F0C808",
                         "#EE6055",
                     ],
-                    // borderAlign: "inner",
+                    borderAlign: "inner",
                     borderColor: ["rgba(255, 255, 255 ,1)"],
-                    // borderJoinStyle: "miter",
+                    borderJoinStyle: "miter",
                     borderRadius: [
                         {
                             outerEnd: 0,
@@ -116,29 +120,27 @@ onMounted(async () => {
             {
                 id: "centerText",
                 afterDatasetDraw(chart, args, pluginOptions) {
-                    return;
                     const { ctx, data } = chart;
 
                     ctx.save();
                     const x = chart.getDatasetMeta(0).data[0].x;
                     const y = chart.getDatasetMeta(0).data[0].y;
-                    // console.log(data)
-                    // const totalGames = data.datasets[0].data.reduce(
-                    //     (all, c) => {
-                    //         return all + c.value;
-                    //     },
-                    //     0
-                    // );
+                    const totalGames = data.datasets[0].data.reduce(
+                        (all, c) => {
+                            return all + c.value;
+                        },
+                        0
+                    );
 
-                    ctx.fillText(props.wins, x, y + props.height / 8);
+                    ctx.fillText(totalGames, x, y + 12.5);
                     ctx.textAlign = "center";
-                    ctx.font = `bold calc(${props.height}px / 3) sans-serif`;
+                    ctx.font = "bold 40px sans-serif";
                 },
             },
         ],
         options: {
-            maintainAspectRatio: true,
-            aspectRatio: 1,
+            maintainAspectRatio: false,
+            aspectRatio: 2,
             elements: {
                 arc: [
                     {
@@ -152,7 +154,19 @@ onMounted(async () => {
             plugins: {
                 legend: {
                     display: false,
-                    
+                    fullSize: false,
+                    align: "center",
+                    labels: {
+                        font: {
+                            size: 16,
+                        },
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        useBorderRadius: true,
+                        borderRadius: 50,
+                        padding: 15,
+                    },
+                    position: "right",
                 },
                 tooltip: {
                     usePointStyle: true,
@@ -166,7 +180,7 @@ onMounted(async () => {
                     },
                 },
             },
-            cutout: "50%",
+            cutout: "75%",
             rotation: -90,
             circumference: 360,
             animation: {

@@ -279,7 +279,7 @@
                         :requesteeId="player.id"
                         :resourceId="teamId"
                         :status="player.status"
-                        canEdit
+                        :canEdit="isEditing"
                         @cancel="cancelRequest(player.id)"
                         :waiting="!teamId"
                     />
@@ -305,7 +305,7 @@
                 </div>
             </div>
 
-            <div class="q-mx-sm q-my-md row" @click="showFans = !showFans">
+            <!-- <div class="q-mx-sm q-my-md row" @click="showFans = !showFans">
                 <div class="text-md text-bold">
                     Followers ({{ visiblePlayers?.teamFans?.length }})
                 </div>
@@ -339,7 +339,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </main>
         <!-- <template v-slot:prependButton>
               <RequestStatus v-if="request && !canEdit" :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/> -->
@@ -512,6 +512,7 @@ onMounted(async () => {
         await getTeam(teamId);
         await getPlayers();
         await getPendingRequests();
+        console.log(teamPlayers.value)
     }
         console.log(userStore.id)
     loading.value = false;
@@ -524,6 +525,7 @@ onMounted(async () => {
 const getPendingRequests = async () => {
     const teamRequestStore = useTeamRequestStore();
     const requests = await teamRequestStore.getTeamRequestsByTeam(teamId);
+    console.log(requests)
     teamPlayers.value = [
         ...teamPlayers.value,
         ...requests.reduce((all, current) => {
@@ -532,6 +534,7 @@ const getPendingRequests = async () => {
                 ...all,
                 {
                     ...current.requestee,
+                    avatar: current.requestee.avatar ? JSON.parse(current.requestee.avatar) : {},
                     status: "pending",
                 },
             ];
@@ -573,12 +576,14 @@ const getPlayers = async () => {
     `
             )
             .eq("team_id", teamId);
+
+            console.log(data)
         teamPlayers.value = data.map((p) => ({
             rowId: p.id,
             ...p,
             ...p.user,
             status: null,
-            avatar: p.avatar ? JSON.parse(p.avatar) : {}
+            avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {}
         }));
     }
 };

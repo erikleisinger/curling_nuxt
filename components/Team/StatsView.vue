@@ -8,14 +8,14 @@
         />
         <!-- <ChartHammerPoints v-if="!loading"/> -->
 
-        <ChartTeamWinLoss
+        <ChartTeamWinLossCard
             :teamId="teamId"
             :wins="wins"
             :losses="losses"
             :ties="ties"
             v-if="!loading"
         />
-        <ChartTeamPointsPerGame
+        <ChartTeamPointsPerGameCard
             :teamId="teamId"
             v-if="!loading"
             :for="pointsForGame"
@@ -27,7 +27,7 @@
             :for="endsForGame"
             :against="endsAgainstGame"
         />
-        <ChartTeamHammerEfficiency
+        <ChartTeamHammerEfficiencyCard
             :teamId="teamId"
             v-if="!loading"
             :for="hammerConversions"

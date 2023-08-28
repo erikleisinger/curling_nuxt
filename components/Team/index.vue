@@ -1,5 +1,4 @@
 <template>
-
 <header ref="header">
         <div class="team__content--container row ">
             <slot name="prepend"/>
