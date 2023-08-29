@@ -8,9 +8,21 @@
         cancelColor=""
         confirmColor="negative"
     >
-        <!--  -->
-        <!-- -->
         Are you sure you want to close? All unsaved changes will be lost.
+    </DialogConfirmation>
+    <DialogConfirmation
+        v-if="!!playerToRemove"
+        confirmButtonText="Leave team"
+        cancelButtonText="Cancel"
+        @confirm="removePlayer"
+        @close="playerToRemove = false"
+        cancelColor=""
+        confirmColor="negative"
+    >
+
+       Are you sure you want to remove {{playerToRemove?.name}} from the team?
+  
+    
     </DialogConfirmation>
     <DialogFloating
         :priority="!!options.priority"
@@ -23,93 +35,76 @@
                 !teamId ? "Create team" : !isEditing ? "View team" : "Edit team"
             }}
         </template>
-
-        <template v-slot:footer v-if="!loading">
-            <div class="row justify-end team-viewer__footer" v-if="isEditing">
-                <!-- <q-btn
-                    unelevated
-                    color="negative"
-                    class="'col-6'"
-                    icon="delete_outline"
-                    label="discard"
-                    :class="`col-${12 / footerButtonsLength}`"
-                    @click="discardChanges"
-                    square
-                    :disable="saving"
-                    v-if="teamId"
-                /> -->
-                <q-btn
-                    unelevated
-                    color="positive"
-                    class="col-12"
-                    icon="save"
-                    label="save"
-                    @click="onSave"
-                    square
-                    :disable="saving"
-                />
-            </div>
+        <template v-slot:header>
             <div
-                class="row justify-between full-width no-wrap team-viewer__footer"
-                v-else-if="!isEditing"
+                class="request-notification__header"
+                v-if="pendingUserRequest || pendingUserInvite"
             >
-                <q-btn
-                    unelevated
-                    color="primary"
-                    :class="`col-${12 / footerButtonsLength}`"
-                    icon="group_add"
-                    label="Follow team"
-                    :size="
-                        $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
-                    "
-                    @click="addToMyTeams('fan')"
-                    square
-                    v-if="!isOnTeam"
-                />
-                <q-btn
-                    unelevated
-                    color="primary"
-                    :class="`col-${12 / footerButtonsLength}`"
-                    icon="group_add"
-                    label="Join team"
-                    :size="
-                        $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
-                    "
-                    @click="addToMyTeams('member')"
-                    square
-                    v-if="!isOnTeam"
-                />
-                <q-btn
-                    unelevated
-                    :class="`col-${12 / footerButtonsLength}`"
-                    icon="group_remove"
-                    label="Leave team"
-                    :size="
-                        $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
-                    "
-                    @click="removePlayer(userStore.id)"
-                    square
-                    v-if="isOnTeam"
-                />
-                <q-btn
-                    unelevated
-                    color="positive"
-                    :class="`col-${12 / footerButtonsLength}`"
-                    icon="edit"
-                    label="edit"
-                    :size="
-                        $q.screen.sm || footerButtonsLength === 1 ? 'lg' : 'md'
-                    "
-                    @click="toggleEditing"
-                    v-if="canEdit"
-                    square
-                />
+                <div v-if="pendingUserInvite" class="column">
+                    <div class="q-mb-sm">
+                        {{ team.name }} has invited you to join their team.
+                    </div>
+                    <div class="row justify-between">
+                        <q-btn color="negative" @click="respondToRequest(pendingUserInvite.requestId, 'rejected')">Reject</q-btn>
+                        <q-btn color="positive" @click="respondToRequest(pendingUserInvite.requestId, 'accepted')">Accept</q-btn>
+                    </div>
+                </div>
+                <div v-else-if="pendingUserRequest">
+                    Your request to join {{ team.name }} has been sent and is
+                    waiting for team response.
+                </div>
             </div>
         </template>
-
         <template v-slot:buttonRight>
             <q-btn flat round icon="close" @click="handleClose" />
         </template>
+        <div class="menu-button__wrap">
+            <q-fab
+                direction="down"
+                dense
+                padding="8px"
+                :persistent="false"
+                icon="more_vert"
+                color="primary"
+                vertical-actions-align="left"
+                flat
+                v-model="menuOpen"
+            >
+           
+             
+                <q-fab-action
+                    color="primary"
+                    @click="isEditing = true"
+                    icon="edit"
+                    label="Edit team"
+                    v-if="canEdit"
+                />
+                     <q-fab-action
+                    color="primary"
+                       @click="toggleAddPlayer"
+                    icon="person_add"
+                    label="Invite player"
+                    v-if="canEdit"
+                />
+                <q-fab-action
+                    color="primary"
+                    icon="mail"
+                    label="Request to join"
+                    v-if="!isOnTeam && !pendingUserRequest"
+                    @click="requestToJoin"
+                />
+                <q-fab-action
+                    color="secondary"
+                    icon="person_remove"
+                    label="Leave team"
+                    v-if="isOnTeam && canRemovePlayer(userStore.id)"
+                    @click="playerToRemove = {
+                        id: userStore.id,
+                        name: 'yourself'
+                    }"
+                />
+            </q-fab>
+        </div>
         <header class="column items-center header no-wrap">
             <div style="width: 100px; position: relative; aspect-ratio: 1/1">
                 <div
@@ -194,6 +189,17 @@
                 :key="player.id"
                 class="row items-center player__container"
             >
+            <div v-if="isEditing">
+                
+                <q-btn icon="person_remove" color="red" flat round @click="playerToRemove = {
+                    id: player.id,
+                    name: `${player.first_name} ${player.last_name}`
+                }" :disable="!canRemovePlayer(player.id)">
+                    <q-tooltip v-if="!canRemovePlayer(player.id)">
+                        Can't remove the only admin on the team
+                    </q-tooltip>
+                </q-btn>S
+            </div>
                 <div
                     style="width: 50px"
                     class="member-avatar__wrap"
@@ -233,96 +239,43 @@
                 </div>
 
                 <div class="column items-end">
-                    <div v-if="!player.status">
-                        <TeamPositionChip
-                            :canEdit="isEditing"
-                            position="skip"
-                            v-model="player.position"
-                        />
-                    </div>
-                    <div v-if="!player.status">
-                        <TeamAdminChip
-                            :canEdit="isEditing && player.id !== userStore.id"
-                            v-model="player.is_admin"
-                            v-if="isEditing || player.is_admin"
-                        />
-                    </div>
-
-                    <!-- <q-btn flat round icon="edit" color="grey-8" v-if="isEditing" @click="toggleEditPlayer"/> -->
-
-                    <!-- <div class="column" v-if="isEditing">
-                         <q-btn dense color="primary" v-if="!player.is_admin" icon="stars" rounded>Make admin</q-btn>
-                           <q-btn dense color="negative" v-else icon="stars" rounded>Remove admin</q-btn>
-                    </div> -->
-
-                    <!-- <q-icon
-                        name="stars"
-                        color="grey-4"
-                        size="md"
-                    
-                        v-if="isEditing"
-                    /> -->
-                    <!-- <q-icon
-                        name="delete"
-                        color="negative"
-                        size="md"
-                        @click="removePlayer(player.id)"
-                        v-if="
-                            !player.is_admin &&
-                            teamId &&
-                            isEditing &&
-                            !isOwner(player.id)
-                        "
-                    /> -->
-                    <RequestStatus
-                        v-else
-                        :requesteeId="player.id"
-                        :resourceId="teamId"
-                        :status="player.status"
+                    <TeamPositionChip
                         :canEdit="isEditing"
-                        @cancel="cancelRequest(player.id)"
-                        :waiting="!teamId"
+                        position="skip"
+                        v-model="player.position"
+                    />
+
+                    <TeamAdminChip
+                        :canEdit="isEditing && player.id !== userStore.id"
+                        v-model="player.is_admin"
+                        v-if="isEditing || player.is_admin"
                     />
                 </div>
             </div>
-            <!-- Add new player -->
-            <div class="row items-center justify-between" v-if="isEditing">
-                <div class="row items-center">
-                    <div
-                        style="width: 50px; aspect-ratio: 1/1"
-                        class="row items-center justify-center"
-                    >
-                        <q-btn
-                            round
-                            icon="add"
-                            color="primary"
-                            @click="toggleAddPlayer"
-                        />
-                    </div>
-                    <div class="q-ml-sm column justify-center">
-                        <div>Add new player</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- <div class="q-mx-sm q-my-md row" @click="showFans = !showFans">
-                <div class="text-md text-bold">
-                    Followers ({{ visiblePlayers?.teamFans?.length }})
-                </div>
+
+            <div
+                class="q-mx-sm q-my-md row"
+                @click="showPendingInvites = !showPendingInvites"
+                v-if="canEdit"
+            >
+                <div class="text-md text-bold">Pending Invitations ({{pendingInvites?.length}})</div>
                 <div>
                     <q-icon
-                        :name="showFans ? 'expand_less' : 'expand_more'"
+                        :name="
+                            showPendingInvites ? 'expand_less' : 'expand_more'
+                        "
                         color="primary"
                         dense
                         size="sm"
                     />
                 </div>
             </div>
-            <div v-if="showFans">
+            <div v-if="showPendingInvites && canEdit">
                 <div
-                    v-for="player in visiblePlayers.teamFans"
+                    v-for="player in pendingInvites"
                     :key="player.id"
-                    class="row items-center justify-between"
+                    class="row items-end justify-between"
                 >
                     <div class="row items-center">
                         <div style="width: 50px">
@@ -338,24 +291,89 @@
                             />
                         </div>
                     </div>
+                    <div class="row items-center">
+                        <InvitationStatus
+                        resourceType="team"
+                        :canEdit="canEdit"
+                        :invitation="player"
+                        @cancel="cancelInvite(player.id)"
+                        />
+                    </div>
                 </div>
-            </div> -->
+            </div>
+            <div
+                class="q-mx-sm q-my-md row"
+                @click="showRequests = !showRequests"
+                v-if="canEdit"
+            >
+                <div class="text-md text-bold">Requests to join ({{pendingRequests?.length}})</div>
+                <div>
+                    <q-icon
+                        :name="showRequests ? 'expand_less' : 'expand_more'"
+                        color="primary"
+                        dense
+                        size="sm"
+                    />
+                </div>
+            </div>
+            <div v-if="canEdit && showRequests">
+                <div
+                    v-for="player in pendingRequests"
+                    :key="player.id"
+                    class="row items-end justify-between"
+                >
+                    <div class="row items-center">
+                        <div style="width: 50px">
+                            <Avataaar />
+                        </div>
+                        <div class="q-ml-sm column">
+                            <div>
+                                {{ player.first_name }} {{ player.last_name }}
+                            </div>
+                            <ProfileChip
+                                :id="player.id"
+                                :username="player.username"
+                            />
+                        </div>
+                    </div>
+                    <div class="row items-center">
+             
+                        <q-btn dense rounded icon="close" color="red" stretch @click="respondToRequest(player.requestId, 'rejected')"/>
+                                   <q-btn dense rounded icon="check" color="green" stretch class="q-ml-sm" @click="respondToRequest(player.requestId, 'accepted')"/>
+                       
+                    </div>
+                </div>
+            </div>
         </main>
-        <!-- <template v-slot:prependButton>
-              <RequestStatus v-if="request && !canEdit" :initialStatus="request.status" :profileId="team.profile_id" :resourceId="team.id"  resourceType="team"/> -->
-        <!-- </template> -->
-        <!-- <main :style="`height: calc(100% - ${height}px); overflow: auto`">
-            <TeamPlayerList :item="team" />
-        </main> -->
+        <template v-slot:footer v-if="isEditing">
+            <div class="row full-width">
+            <q-btn color="red" stretch @click="discardChanges" icon="close" class="col-6" size="lg"/>
+            <q-btn color="green" stretch @click="saveNewTeam" icon="check" class="col-6" size="lg"/>
+            </div>
+        </template>
     </DialogFloating>
 </template>
 <style lang="scss" scoped>
+.request-notification__header {
+    background-color: $green;
+    color: white;
+    display: flex;
+    justify-content: center;
+    padding: var(--space-sm);
+    font-weight: bold;
+}
+.menu-button__wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: var(--space-sm);
+}
 .selection__menu {
     background-color: rgba(0, 0, 0, 0.5);
 }
 .player__container {
     display: grid;
-    grid-template-columns: 50px auto max-content;
+    grid-template-columns: min-content 50px auto max-content;
     max-width: 100%;
 }
 .header {
@@ -443,6 +461,10 @@ const tab = ref("stats");
 
 const { toggleTeamViewer, toggleGlobalSearch } = dialogStore;
 
+const teamRequestStore = useTeamRequestStore();
+
+const { sendTeamRequest, updateTeamRequestStatus } = teamRequestStore;
+
 /**
  * STORES
  */
@@ -458,6 +480,8 @@ const loading = ref(false);
 const isEditing = ref(false);
 const editing = ref(null);
 const confirmUnsaved = ref(false);
+const playerToRemove = ref(false);
+const menuOpen = ref(false)
 const { options } = dialogStore.teamViewer;
 const teamId = dialogStore.teamViewer.team?.id;
 const team = ref({
@@ -466,19 +490,15 @@ const team = ref({
 });
 const teamPlayers = ref([]);
 
-const showFans = ref(true);
+const showPendingInvites = ref(true);
+const showRequests = ref(true);
 
 const visiblePlayers = computed(() => {
     const obj = {
         teamMembers: [],
-        teamFans: [],
     };
     teamPlayers.value.forEach((player) => {
-        if (player.type === "fan") {
-            obj.teamFans.push(player);
-        } else {
-            obj.teamMembers.push(player);
-        }
+        obj.teamMembers.push(player);
     });
     if (!teamId) {
         obj.teamMembers = [...obj.teamMembers, ...newTeamPlayers.value];
@@ -486,24 +506,12 @@ const visiblePlayers = computed(() => {
     return obj;
 });
 
-/**
- * EDITING PLAYERS
- */
-
-const toggleEditPlayer = (id) => {
-    if (editing.value === id) {
-        editing.value = null;
-    } else {
-        editing.value = id;
-    }
-};
 
 /**
  * INIT
  */
 
 onMounted(async () => {
-
     loading.value = true;
     if (!teamId) {
         isEditing.value = true;
@@ -512,9 +520,7 @@ onMounted(async () => {
         await getTeam(teamId);
         await getPlayers();
         await getPendingRequests();
-        console.log(teamPlayers.value)
     }
-        console.log(userStore.id)
     loading.value = false;
 });
 
@@ -522,24 +528,54 @@ onMounted(async () => {
  * FETCH
  */
 
+const pendingInvites = ref([]);
+const pendingRequests = ref([]);
+
 const getPendingRequests = async () => {
-    const teamRequestStore = useTeamRequestStore();
-    const requests = await teamRequestStore.getTeamRequestsByTeam(teamId);
-    console.log(requests)
-    teamPlayers.value = [
-        ...teamPlayers.value,
-        ...requests.reduce((all, current) => {
+    const fetchedRequests = await teamRequestStore.getTeamRequestsByTeam(
+        teamId
+    );
+    const { invs, reqs } = fetchedRequests.reduce(
+        (all, current) => {
             if (current.status === "accepted") return all;
-            return [
-                ...all,
-                {
-                    ...current.requestee,
-                    avatar: current.requestee.avatar ? JSON.parse(current.requestee.avatar) : {},
-                    status: "pending",
-                },
-            ];
-        }, []),
-    ];
+            console.log(current);
+            if (current?.requestee && current.requestee?.id) {
+                return {
+                    ...all,
+                    invs: [
+                        ...all.invs,
+                        {
+                            requestId: current.id,
+                            ...current.requestee,
+                            avatar: current.requestee.avatar
+                                ? JSON.parse(current.requestee.avatar)
+                                : {},
+                            status: "pending",
+                        },
+                    ],
+                };
+            } else if (current.requester) {
+                return {
+                    ...all,
+                    reqs: [
+                        ...all.reqs,
+                        {
+                            requestId: current.id,
+                            ...current.requester,
+                            avatar: current.requester.avatar
+                                ? JSON.parse(current.requester.avatar)
+                                : {},
+                            status: "pending",
+                        },
+                    ],
+                };
+            }
+            return all;
+        },
+        { invs: [], reqs: [] }
+    );
+    pendingInvites.value = invs;
+    pendingRequests.value = reqs;
 };
 
 const getPlayers = async () => {
@@ -577,13 +613,12 @@ const getPlayers = async () => {
             )
             .eq("team_id", teamId);
 
-            console.log(data)
         teamPlayers.value = data.map((p) => ({
             rowId: p.id,
             ...p,
             ...p.user,
             status: null,
-            avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {}
+            avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {},
         }));
     }
 };
@@ -626,39 +661,41 @@ const isOnTeam = computed(() =>
     teamPlayers.value.some(({ id }) => id === userStore.id)
 );
 
+const canRemovePlayer = (userId: string) => {
+    const memberEntry = teamPlayers.value.find(({id}) => id === userId)
+    if (!memberEntry) return true;
+    if (!memberEntry.is_admin) return true;
+    return teamPlayers.value.filter(({is_admin}) => !!is_admin)?.length > 1;
+}
+
+const pendingUserRequest = computed(() =>
+    pendingRequests.value.find(({ id }) => id === userStore.id)
+);
+const pendingUserInvite = computed(() =>
+    pendingInvites.value.find(({ id }) => id === userStore.id)
+);
+
+const respondToRequest = async (id, status: string) => {
+    await updateTeamRequestStatus({id, status})
+    getPlayers();
+    getPendingRequests();
+}
+
 const isOwner = (profile_id) => {
     if (!teamId) return false;
     return team.value?.owner?.id === profile_id;
 };
 
-const footerButtonsLength = computed(() => {
-    if (!canEdit.value) return 1;
-    if (isEditing.value) {
-        if (teamId) return 2;
-        return 1;
-    }
-    if (options.readOnly || isOnTeam.value) return 2;
-    return 3;
-});
-
 /**
  * ADD/REMOVE PLAYERS
  */
-
-const addToMyTeams = async (type: string) => {
-    loading.value = true;
-    const is_admin = type === "fan" ? false : !!isOwner(userStore.id);
-    await useUserTeamStore().addTeam({ team: team.value, type, is_admin });
-    await getPlayers();
-    await useUserTeamStore().fetchUserTeams(true);
-    loading.value = false;
-};
 
 const newTeamPlayers = ref([]);
 
 const handleGlobalSelect = (player) => {
     if (teamId) {
-        inviteUser(player);
+        const { profile_id } = player;
+        inviteUser(profile_id);
     } else {
         newTeamPlayers.value.push({
             ...player,
@@ -675,18 +712,24 @@ const toggleAddPlayer = () => {
             inputLabel: "Search for a user to add",
             resourceTypes: ["profile"],
             callback: handleGlobalSelect,
-            filterIds: [
-                ...visiblePlayers.value.teamMembers,
-                ...visiblePlayers.value.teamFans,
-            ].map(({ id }) => id),
+            filterIds: [...visiblePlayers.value.teamMembers].map(
+                ({ id }) => id
+            ),
         },
     });
 };
 
-const inviteUser = async (user) => {
-    const teamRequestStore = useTeamRequestStore();
-    await teamRequestStore.sendTeamRequest({
-        requestee_profile_id: user.profile_id,
+const inviteUser = async (userId) => {
+    await sendTeamRequest({
+        requestee_profile_id: userId,
+        team_id: teamId,
+    });
+    getPendingRequests();
+};
+
+const requestToJoin = async () => {
+    await sendTeamRequest({
+        requester_profile_id: userStore.id,
         team_id: teamId,
     });
     getPendingRequests();
@@ -697,20 +740,27 @@ const cancelRequest = (userId) => {
     if (index === -1) return;
     teamPlayers.value.splice(index, 1);
 };
+const cancelInvite = (userId) => {
+    const index = pendingInvites.value.findIndex(({ id }) => id === userId);
+    if (index === -1) return;
+    pendingInvites.value.splice(index, 1);
+};
 
-const removePlayer = async (userId) => {
-    console.log("remove");
+
+const removePlayer = async () => {
+    if (!playerToRemove?.value) return;
     loading.value = true;
     const client = useSupabaseClient();
     const { errors } = await client
         .from("team_profile_junction")
         .delete()
-        .eq("profile_id", userId)
+        .eq("profile_id", playerToRemove.value?.id)
         .eq("team_id", teamId);
     if (errors) console.error(errors);
     await getPlayers();
     if (userId === userStore.id) await useUserTeamStore().fetchUserTeams(true);
     loading.value = false;
+    playerToRemove.value = null;
 };
 
 /**
@@ -833,12 +883,16 @@ const saveNewTeam = async () => {
         );
         if (!successful) return false;
     }
+    isEditing.value = false;
     return newTeam;
 };
 
 const discardChanges = () => {
     isEditing.value = false;
-    getTeam(teamId);
+    toggleTeamViewer({ open: false });
+    nextTick(() => {
+       toggleTeamViewer({ open: true, team: team.value }); 
+    })
 };
 
 const handleClose = () => {

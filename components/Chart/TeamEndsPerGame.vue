@@ -81,7 +81,6 @@ onMounted(async () => {
         id: "centerText",
         afterDataSetDraw(chart, args, pluginOptions) {
             const { ctx } = chart;
-            console.log(chart.getDatasetMeta(0));
             ctx.save();
         },
     };
@@ -166,7 +165,7 @@ onMounted(async () => {
                     callbacks: {
                         label: (val) => {
                             const { dataIndex, raw } = val;
-                            console.log(val);
+
                             const formatted = raw.toFixed(1);
                             return `${formatted} points`;
                         },

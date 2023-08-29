@@ -17,7 +17,10 @@
                     2023-2024 Season
                 </h1>
                 <h2 class="text-md full-width text-center">
-                    <ProfileChip :id="user.id" :username="user.username" />
+                    <ProfileChip
+                        :id="userStore.id"
+                        :username="userStore.username"
+                    />
                 </h2>
             </div>
         </header>
@@ -122,7 +125,8 @@
                     </div>
                 </div>
             </div>
-            <div v-if="tab === 'overview'" :style="{ height: scrollerHeight }">
+            <!-- :style="{ height: scrollerHeight }" -->
+            <div v-if="tab === 'overview'" style="height: 100%">
                 <div class="team-table__item">
                     <div class="text-center">Team</div>
                     <div class="text-center">WLT</div>
@@ -135,43 +139,126 @@
                     :key="team.id"
                     class="team-table__item"
                 >
-                    <ProfileCard
-                        type="team"
-                        :item="team"
-                        :onClick="() => toggleTeamViewer({ open: true, team })"
-                    >
+                    <ProfileCard type="team" :item="team">
                         {{ team.name }}
                         <template v-slot:avatar>
+                            <!-- <div @click="toggleTeamViewer({ open: true, team })"> -->
                             <TeamAvatar :team="team" />
+                            <!-- </div> -->
                         </template>
                         <template v-slot:append> </template>
                     </ProfileCard>
-                    <div class="row justify-center">
+                    <div class="row justify-center"  v-if="team?.record">
                         <ChartTeamWinLoss
-                            v-if="team.record"
+                            v-if="!!team?.stats?.games_played"
                             :wins="team.record?.wins ?? 0"
                             :losses="team.record?.losses ?? 0"
                             :ties="team.record?.ties ?? 0"
                         />
                     </div>
-                    <div class="row justify-center"    v-if="$q.screen.gt.xs && team.stats">
+                    <div
+                        class="row justify-center"
+                        v-if="$q.screen.gt.xs"
+                    >
                         <ChartTeamPointsPerGame
+                        v-if="!!team?.stats?.games_played"
                             :for="team.stats.points_for_per_game"
                             :against="team.stats.points_against_per_game"
-                         
                             :labels="false"
                         />
                     </div>
-                    <div class="row justify-center"   v-if="$q.screen.gt.xs && team.stats">
+                    <div
+                        class="row justify-center"
+                        v-if="$q.screen.gt.xs"
+                    >
                         <ChartTeamHammerEfficiency
+                        v-if="!!team?.stats?.ends_played"
                             :for="team.stats.hammer_conversions"
                             :totalEnds="team.stats.hammer_ends"
-                          
                         />
                     </div>
                     <div class="row items-center q-px-sm justify-center">
-                        <q-btn icon="read_more" flat round color="primary" @click="viewTeam(team.id)" />
+                        <q-btn
+                            icon="read_more"
+                            flat
+                            round
+                            color="primary"
+                            @click="viewTeam(team.id)"
+                        />
                     </div>
+                </div>
+                <div class="team-table__item">
+                    <ProfileCard>
+                        Add team
+                        <template v-slot:avatar>
+                            <q-fab
+                                direction="down"
+                                dense
+                                padding="8px"
+                                :persistent="false"
+                                icon="add"
+                                color="primary"
+                                vertical-actions-align="left"
+                             
+                               
+                            > 
+                            <!-- :class="{
+                                    'help--highlight help--animation':
+                                        helpElement === addButtonContainer &&
+                                        !teams.length,
+                                }" -->
+                                <q-fab-action
+                                    rounded
+                                    color="primary"
+                                    icon="add"
+                                    @click="toggleTeamViewer({ open: true })"
+                                    no-wrap
+                                    ref="buttonOption"
+                                    style="width: fit-content"
+                                
+                                >
+                                    <!-- :class="{
+                                        'help--highlight help--animation':
+                                            !teams.length,
+                                    }" -->
+                                    Create new team
+                                </q-fab-action>
+                                <!-- <q-fab-action
+                                    rounded
+                                    icon="search"
+                                    color="white"
+                                    text-color="primary"
+                                    @click="
+                                        toggleGlobalSearch({
+                                            open: true,
+
+                                            options: {
+                                                resourceTypes: ['team'],
+                                                inputLabel:
+                                                    'Add team to my teams',
+                                                filterIds: teams.map(
+                                                    ({ id }) => id
+                                                ),
+                                                callback: onOptionClick,
+
+                                                persistent: true,
+                                            },
+                                        })
+                                    "
+                                    no-wrap
+                                    :class="{
+                                        'help--highlight help--animation':
+                                            !teams.length,
+                                    }"
+                                >
+                                
+                                    Search for a team
+                                </q-fab-action> -->
+                            </q-fab>
+                            <!-- </div> -->
+                        </template>
+                        <template v-slot:append> </template>
+                    </ProfileCard>
                 </div>
                 <!-- <AreaManage /> -->
             </div>
@@ -283,6 +370,7 @@ $col-width: 80px;
 }
 .season-content__container {
     min-height: v-bind(mainHeight);
+    height: v-bind(mainHeight);
     overflow: auto;
     position: relative;
     max-width: 100%;
@@ -377,8 +465,9 @@ import { parseAvatar } from "@/utils/avatar";
 const $q = useQuasar();
 
 const viewTeam = (teamId) => {
-    return navigateTo(`/teams/${teamId}`, {replace: true})
-}
+    console.log('view team: ', teamId)
+    return navigateTo(`teams/${teamId}`);
+};
 
 const userTeamStore = useUserTeamStore();
 
@@ -458,28 +547,6 @@ const ties = ref(0);
 
 const winLossRecord = ref([]);
 
-// const filteredRecord = computed(() => {
-//     const defaultRecord = {
-//         wins: 0,
-//         losses: 0,
-//         ties: 0,
-//     };
-//     if (!winLossRecord?.value?.length || !teams.value.length)
-//         return defaultRecord;
-//     return winLossRecord?.value.reduce((all, current) => {
-//         if (
-//             !visibleTeams?.value?.length ||
-//             visibleTeams.value?.includes(current.team_id)
-//         )
-//             return {
-//                 wins: (all.wins += current.wins),
-//                 losses: (all.losses += current.losses),
-//                 ties: (all.ties += current.ties),
-//             };
-//         return all;
-//     }, defaultRecord);
-// });
-
 const getWinsLosses = async () => {
     const { client, fetchHandler } = useSupabaseFetch();
     const { data } = await fetchHandler(
@@ -489,11 +556,6 @@ const getWinsLosses = async () => {
             }),
         { onError: "Error fetching data" }
     );
-    // data.forEach((team) => {
-    //     wins.value += team.wins;
-    //     losses.value += team.losses;
-    //     ties.value += team.ties;
-    // })
     data.forEach((record) => {
         const index = teams.value.findIndex(({ id }) => id === record.team_id);
         if (index === -1) return;
@@ -521,17 +583,10 @@ const setGames = (gamesToSet) => {
     }, []);
 };
 
-const setTab = () => {
-    const route = useRoute();
-    if (!route.hash) {
-        navigateTo("#overview");
-    }
-    console.log(route.hash);
-};
 
 const init = async () => {
     loading.value = true;
-    setTab();
+
     const teamIds = teams.value.map(({ id }) => id);
     if (!teamIds || !teamIds?.length) {
         games.value = [];
@@ -566,20 +621,6 @@ const getTeamRecord = async (team_id) => {
         ...teams.value[index],
         stats,
     });
-
-    // pointsForGame.value = points_for_per_game;
-    // pointsAgainstGame.value = points_against_per_game;
-    // endsForGame.value = ends_for_per_game;
-    // endsAgainstGame.value = ends_against_per_game;
-    // forceWith.value = force_with_count;
-    // forceWithout.value = force_without_count;
-    // endsPlayed.value = ends_played;
-    // nonHammerEnds.value = non_hammer_ends;
-    // hammerConversions.value = hammer_conversions;
-    // hammerEnds.value = hammer_ends;
-    // blankEnds.value = blank_ends;
-    // stealsWith.value = steals_with;
-    // stealsWithout.value = steals_without;
 };
 
 const fetchingGames = ref(false);
@@ -622,14 +663,6 @@ const getPaginatedGames = useThrottleFn(async () => {
 onMounted(async () => {
     init();
 });
-
-// watch(
-//     teams,
-//     () => {
-//         getWinsLossess();
-//     },
-//     { deep: true }
-// );
 
 /**
  * update games
@@ -679,28 +712,6 @@ const scrollerHeight = computed(
  */
 
 const userStore = useUserStore();
-const user = computed(() => {
-    const {
-        id,
-        timezone,
-        friendId,
-        username,
-        player,
-        firstName,
-        lastName,
-        avatar,
-    } = userStore;
-    return {
-        id,
-        timezone,
-        friendId,
-        username,
-        player,
-        firstName,
-        lastName,
-        avatar,
-    };
-});
 
 /**
  * END profile information

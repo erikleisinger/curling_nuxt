@@ -199,7 +199,8 @@ $section-margin: var(--space-xs);
     // padding-top: var(--space-xs);
     border-radius: 8px;
     overflow: auto;
-    scroll-snap-type: y mandatory;
+    // scroll-snap-type: y mandatory;
+
     // scroll-snap-stop: always;
 
     .total__card--wrap {

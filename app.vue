@@ -2,6 +2,12 @@
 <!-- <VitePwaManifest/> -->
     <NuxtPage />
     <NotificationHandler/>
+        <DialogTeamViewer v-if="isTeamViewerOpen" />
+        <DialogPlayerEditor v-if="isPlayerEditorOpen" />
+        <DialogLinescore v-if="isLinescoreOpen"/>
+
+        <DialogPlayerSelect v-if="isPlayerSelectOpen" />
+          <DialogGlobalSearch v-if="isGlobalSearchOpen" />
 </template>
 <style lang="scss">
 #__nuxt {
@@ -11,6 +17,7 @@
 <script setup lang="ts">
 import { PUBLIC_ROUTES } from "@/constants/routes";
 import {useEventListener, useScreenOrientation} from '@vueuse/core'
+import { useDialogStore } from "@/store/dialog";
 
 const setVh = () => {
 const vh = window.innerHeight * 0.01;
@@ -23,6 +30,7 @@ onMounted(async () => {
 })
 
 onBeforeMount(async () => {
+    console.log('befre moint')
     const route = useRoute();
     const user = useSupabaseUser();
     if (!PUBLIC_ROUTES.includes(route.fullPath) && user.value && route.name !== 'gateway')   
@@ -38,4 +46,10 @@ client.auth.onAuthStateChange((_, _session) => {
         refreshToken.value = _session?.refresh_token ?? null;
     }
 });
+const dialogStore = useDialogStore()
+const isLinescoreOpen = computed(() => dialogStore.linescore.open);
+const isPlayerEditorOpen = computed(() => dialogStore.playerEditor.open);
+const isPlayerSelectOpen = computed(() => dialogStore.playerSelect.open);
+const isTeamViewerOpen = computed(() => dialogStore.teamViewer.open);
+const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 </script>

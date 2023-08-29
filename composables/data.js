@@ -30,15 +30,13 @@ export const useData = () => {
       const {getCurrentUser} = userStore;
       const {fetchRinks} = rinkStore;
       const {fetchSheets} = sheetStore;
-      const {fetchTeamRequests } = teamRequestStore
       const {fetchUserTeams} = userTeamStore;
 
       await getCurrentUser()
 
       const operations = [
         () => fetchUserTeams(true),
-        // () => fetchTeamRequests(),
-        () => fetchPlayers(true),
+        // () => fetchPlayers(true),
         // () => fetchGames(true),
         // () => getFriends(true),
         // () => fetchRinks(true),

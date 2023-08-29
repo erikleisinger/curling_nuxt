@@ -1,5 +1,5 @@
 <template>
- <!-- <NuxtLayout> -->
+ <NuxtLayout>
      <Team v-if="team && !loading" :team="team">
         <!-- <template v-slot:appendButton>
             <q-btn
@@ -11,7 +11,8 @@
             /> -->
         <!-- </template> -->
     </Team>
- <!-- </NuxtLayout> -->
+    <div v-else/>
+ </NuxtLayout>
 </template>
 <script setup>
     const route = useRoute();

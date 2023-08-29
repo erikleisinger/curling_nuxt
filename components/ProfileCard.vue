@@ -1,11 +1,14 @@
 <template>
-    <div class="profile__container" @click="handleClick">
-        <slot name="avatar">
+    <div class="profile__container">
+        <div @click="handleClick">
+        <slot name="avatar"  >
             <Avataaar
                 v-bind="parseAvatar(avatar)"
                 :class="{ animated__avatar: animated }"
+                
             />
         </slot>
+        </div>
 
         <div
             class="truncate-text col-auto q-pl-xs q-ml-xs column justify-center text-md column no-wrap" style="overflow: visible"
@@ -76,14 +79,18 @@ const typeName = ref(
 const slots = useSlots();
 
 const handleClick = () => {
+    console.log('handle click')
     if (props.onClick) {
         props.onClick();
         return;
     }
+  
     if (!props.type || !props.viewable) return;
     const editorStore = useDialogStore();
+      console.log('clicking')
 
     if (props.type === 'team') {
+        console.log('toggling viewer')
         editorStore.toggleTeamViewer({open: true, team: props.item})
     } else if (props.type === 'player') {
            editorStore.togglePlayerEditor({open: true, editedPlayer: props.item})

@@ -66,7 +66,9 @@ const onSelect = (selection) => {
         resource.value = selection;
     }
 
-    console.log('resource: ', resource)
+    if (selection.resourcetype === 'team') {
+        return navigateTo(`/teams/${selection.id}`)
+    }
 
     showSearch.value = false;
 };

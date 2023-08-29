@@ -10,7 +10,7 @@
                     <ButtonNav
                         label="Season"
                         :selected="view === VIEWS.SEASON"
-                        :onClick="goTo('season')"
+                        :onClick="() => goTo('season')"
                         icon="home"
                         size="3em"
                         class="col-grow"
@@ -108,7 +108,7 @@
                         size="3em"
                         class="col-grow"
                     >
-                <q-badge color="red" floating v-if="requests" rounded/>
+                <!-- <q-badge color="red" floating v-if="requests" rounded/> -->
                     </ButtonNav>
                 </div>
             </q-toolbar>
@@ -121,7 +121,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color:$deep-purple;
+    background-color:rgba(0,0,0,0.05);
     .q-page-container, .q-footer {
         width: min(960px, 100vw);
         background-color: white;
@@ -171,22 +171,8 @@ const { setView } = navStore;
 const view = computed(() => navStore.view);
 
 const actionOpen = ref(false);
-const createNewTeam = async () => {
-    const teamStore = useTeamStore();
-    actionOpen.value = false;
-    const id = await teamStore.createBlankTeam();
-    navStore.setTeamFocus(id);
-    // nextTick(() => {
-    //     setView(VIEWS.NOTIFICATIONS);
-    // });
-};
-    const editorStore = useDialogStore();
-    const {toggleLineScore} = editorStore;
-const createNewPlayer = async () => {
-    editorStore.togglePlayerEditor({open: true})
-};
-const teamRequestStore = useTeamRequestStore();
-const requests = computed(() => teamRequestStore.requestsToRespond)
+const editorStore = useDialogStore();
+const {toggleLineScore} = editorStore;
 
 const fab = ref(null)
 onClickOutside(fab, () => {
