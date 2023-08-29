@@ -79,7 +79,6 @@ const typeName = ref(
 const slots = useSlots();
 
 const handleClick = () => {
-    console.log('handle click')
     if (props.onClick) {
         props.onClick();
         return;
@@ -87,10 +86,8 @@ const handleClick = () => {
   
     if (!props.type || !props.viewable) return;
     const editorStore = useDialogStore();
-      console.log('clicking')
 
     if (props.type === 'team') {
-        console.log('toggling viewer')
         editorStore.toggleTeamViewer({open: true, team: props.item})
     } else if (props.type === 'player') {
            editorStore.togglePlayerEditor({open: true, editedPlayer: props.item})

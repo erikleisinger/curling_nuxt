@@ -5,7 +5,7 @@
         :loading="loading"
     >
 
-        <template v-slot:footer>
+        <template v-slot:footer v-if="view !== views.NO_TEAM">
             <div class="row">
                 <q-btn
                     class="col-6"
@@ -33,6 +33,17 @@
             <q-btn flat round icon="close" @click="confirmUnsaved = true" />
         </template>
 
+        <div v-if="view === views.NO_TEAM" class="full-height full-width row justify-center q-pa-md" style="box-sizing: border-box">
+           <div class="column">
+            <h1>You aren't on a team!</h1>
+            <div>You may only enter linescores for teams on which you are a member.</div>
+                   <div class="full-width column items-center q-mt-md">
+                    <q-btn rounded color="primary" @click="createTeam">Create new team</q-btn>
+                    <q-btn class="q-mt-md" rounded color="primary" @click="searchForTeam">Search existing teams</q-btn>
+                   </div>
+           </div>
+        </div>  
+
         <!-- STEP 1: Game params -->
         <LinescoreTeamSelect
             v-if="view === views.HOME_SELECT"
@@ -40,6 +51,9 @@
             :restrictIds="userTeams.map(({id}) => id)"
         >
         Select your team
+        <template v-slot:subtitle>
+            You may only select teams on which you are a member.
+        </template>
         </LinescoreTeamSelect>
          <LinescoreTeamSelect
             v-if="view === views.AWAY_SELECT"
@@ -279,6 +293,7 @@ $team-nav-margin: 6vh;
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
 import { useGameStore } from "@/store/games";
+import {useGameRequestStore} from '@/store/game-requests'
 import {useUserTeamStore} from '@/store/user-teams'
 import {useUserStore} from '@/store/user'
 import {
@@ -296,7 +311,7 @@ import {views} from '@/constants/linescore'
 
 const dayjs = useDayjs();
 const dialogStore = useDialogStore();
-const { toggleLineScore } = dialogStore;
+const { toggleLineScore, toggleTeamViewer, toggleGlobalSearch } = dialogStore;
 
 /**
  * Game variables
@@ -433,6 +448,7 @@ const changeView = useThrottleFn((inc) => {
 });
 
 const nextDisabled = computed(() => {
+    if (view.value === views.NO_TEAM) return true;
     if (view.value === views.HOME_SELECT) {
         return !gameParams.value.home?.id
     } else if (view.value === views.AWAY_SELECT) {
@@ -514,56 +530,55 @@ const save = async () => {
     const rinkCopy = rink.value;
     const sheetCopy = sheet.value;
 
-    let shouldShowInvitation = false
+    let shouldSendInvitation = false
 
-    if (params.away?.id && !userTeams.value.some(({id}) => id === params?.away?.id)) shouldShowInvitation = true;
+    if (params.away?.id && !userTeams.value.some(({id}) => id === params?.away?.id)) shouldSendInvitation = true;
 
 
 
 
     toggleLineScore({ open: false });
-    // const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
+    const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
-    // const conceded = score.value[Object.keys(score.value).length].home === "X";
+    const conceded = score.value[Object.keys(score.value).length].home === "X";
 
-    // const gameToCreate = {
-    //     home: params?.home?.id,
-    //     home_color: params?.homeColor,
-    //     away_color: params?.awayColor,
-    //     hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
-    //     end_count: endCount.value,
-    //     completed: true,
-    //     conceded,
-    //     start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
-    //     rink_id: rink.value?.id,
-    //     sheet_id: sheetId,
-    // };
+    const gameToCreate = {
+        home: params?.home?.id,
+        home_color: params?.homeColor,
+        away_color: params?.awayColor,
+        hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
+        end_count: endCount.value,
+        completed: true,
+        conceded,
+        start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
+        rink_id: rink.value?.id,
+        sheet_id: sheetId,
+    };
 
-    // if (!!params?.away?.id) {
-    //     gameToCreate.pending_away = params.away.id;
-    // } else {
-    //     gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
-    // }
+    if (!!params?.away?.id) {
+        gameToCreate.pending_away = params.away.id;
+    } else {
+        gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
+    }
 
-    // if (editedId.value) {
-    //     gameToCreate.id = editedId.value;
-    // }
+    if (editedId.value) {
+        gameToCreate.id = editedId.value;
+    }
 
-    // await createGame({
-    //     game: gameToCreate,
-    //     score: scoreCopy,
-    // });
+    const gameId = await createGame({
+        game: gameToCreate,
+        score: scoreCopy,
+    });
 
-    if (shouldShowInvitation) {
-        console.log('SHOWING INVITATION')
-        showInvitation.value = true;
+    if (shouldSendInvitation) {
+        useGameRequestStore().sendGameRequest(params.away, gameId)
     }
 };
 
 const createGame = async ({ game, score }) => {
     const gameStore = useGameStore();
     const gameId = await gameStore.insertGame(game);
-    if (!gameId) return;
+    if (!gameId) return null;
     const ends = generateEnds(
         score,
         game?.hammer_first_end,
@@ -576,6 +591,7 @@ const createGame = async ({ game, score }) => {
     } else {
         await gameStore.createGameEnds(ends);
     }
+    return gameId;
 };
 
 /**
@@ -644,7 +660,12 @@ onMounted(async () => {
         editedId.value = editedGame.id;
         await fetchGame(editedGame);
     } else {
-        view.value = views.HOME_SELECT;
+        if (!userTeams.value.length) {
+            view.value = views.NO_TEAM
+        } else {
+       view.value = views.HOME_SELECT;
+        }
+ 
         // view.value = views.CONFIRM
     }
     loading.value = false;
@@ -710,4 +731,26 @@ const userTeamStore = useUserTeamStore();
 const userTeams = computed(() => userTeamStore.userTeams)
 
 const userStore = useUserStore();
+
+const createTeam = () => {
+    toggleLineScore({open:false});
+    nextTick(() => {
+        toggleTeamViewer({open: true})
+    })
+}
+const searchForTeam = () => {
+    toggleLineScore({open:false});
+    nextTick(() => {
+        toggleGlobalSearch({
+            open: true,
+            options: {
+                resourceTypes: ['team'],
+                inputLabel: 'Search for a team to join',
+                callback: (team) => {
+                    toggleTeamViewer({open: true, team})
+                }
+            }
+        })
+    })
+}
 </script>

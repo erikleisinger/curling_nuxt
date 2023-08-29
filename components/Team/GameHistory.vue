@@ -5,6 +5,7 @@
             :result="result"
             :expanded="expanded === result.id"
             @expand="expand(result.id)"
+            @update="updateResult"
     
             
             />
@@ -75,6 +76,13 @@ const expand = (id) => {
     } else {
         expanded.value = id;
     }
+}
+
+const updateResult = (newResult) => {
+    const {id} = newResult;
+    const index = results.value.findIndex((res) => res.id === id)
+    if (index === -1) return;
+    results.value.splice(index, 1, newResult)
 }
 
 

@@ -322,10 +322,8 @@ watch(containerHeight, () => {
 });
 
 const onAvatarClick = (id) => {
-    if (!id) {
-        console.log("NO ID");
-        return;
-    }
+    if (!id) return;
+    
     dialogStore.toggleTeamViewer({ open: true, team: { id } });
 };
 

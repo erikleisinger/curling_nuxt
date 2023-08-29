@@ -187,7 +187,7 @@
                         />
                     </div>
                 </div>
-                <div class="team-table__item">
+                <div class="team-table__item" style="overflow: visible">
                     <ProfileCard>
                         Add team
                         <template v-slot:avatar>
@@ -215,45 +215,50 @@
                                     no-wrap
                                     ref="buttonOption"
                                     style="width: fit-content"
+                                    label="Create new team"
                                 
                                 >
                                     <!-- :class="{
                                         'help--highlight help--animation':
                                             !teams.length,
                                     }" -->
-                                    Create new team
+                                   
                                 </q-fab-action>
-                                <!-- <q-fab-action
+                                <q-fab-action
                                     rounded
                                     icon="search"
                                     color="white"
                                     text-color="primary"
+                                    label="Search for a team to join"
                                     @click="
                                         toggleGlobalSearch({
                                             open: true,
-
                                             options: {
                                                 resourceTypes: ['team'],
                                                 inputLabel:
-                                                    'Add team to my teams',
+                                                    'Search for a team to join',
                                                 filterIds: teams.map(
                                                     ({ id }) => id
                                                 ),
-                                                callback: onOptionClick,
+                                                callback: (team) => {
+                                              
+                                                    toggleTeamViewer({open: true, team, options: {priority: true}})
+                                                },
 
                                                 persistent: true,
                                             },
                                         })
                                     "
                                     no-wrap
-                                    :class="{
+                                    
+                                >
+                                <!-- :class="{
                                         'help--highlight help--animation':
                                             !teams.length,
-                                    }"
-                                >
+                                    }" -->
                                 
-                                    Search for a team
-                                </q-fab-action> -->
+                                  
+                                </q-fab-action>
                             </q-fab>
                             <!-- </div> -->
                         </template>
@@ -465,13 +470,12 @@ import { parseAvatar } from "@/utils/avatar";
 const $q = useQuasar();
 
 const viewTeam = (teamId) => {
-    console.log('view team: ', teamId)
     return navigateTo(`teams/${teamId}`);
 };
 
 const userTeamStore = useUserTeamStore();
 
-const { toggleTeamViewer } = useDialogStore();
+const { toggleTeamViewer, toggleGlobalSearch } = useDialogStore();
 const { format, toTimezone } = useTime();
 
 const tab = ref("overview");
@@ -601,12 +605,10 @@ const init = async () => {
 };
 
 const getTeamRecords = async () => {
-    console.log(teams.value);
     await Promise.all(teams.value.map(({ id }) => getTeamRecord(id)));
 };
 const getTeamRecord = async (team_id) => {
-    console.log("GETTING RECORD: ", team_id);
-    const client = useSupabaseClient();
+ const client = useSupabaseClient();
 
     const { data } = await client.rpc("get_team_game_statistics", {
         team_id_param: team_id,
@@ -672,7 +674,6 @@ const refreshGames = async (done) => {
     startIndex.value = null;
     endIndex.value = null;
     const gameResults = await getPaginatedGames();
-    console.log(gameResults);
     setGames(gameResults);
     done();
 };
@@ -741,7 +742,6 @@ const setMini = useThrottleFn((bool) => {
 const seasonContainer = ref(null);
 
 const scrollLoad = async (index, done) => {
-    console.log(seasonContainer.value.scrollTop);
     if (seasonContainer.value.scrollTop === 0) return;
 
     const gameResults = await getPaginatedGames();

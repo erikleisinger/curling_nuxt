@@ -45,11 +45,11 @@ export const useGameRequestStore = defineStore("game-requests", {
                 text: `Inviting ${name} to be opposition...`,
             })
             const client = useSupabaseClient();
-            const {errors} = await client.from('game_requests').insert({
+            const {error} = await client.from('game_requests').insert({
                 team_id: id,
                 game_id
             })
-            if (errors) {
+            if (error) {
                 notStore.updateNotification(notId, {
                     state: 'failed',
                     text: `Error inviting ${team} (code: ${errors.code})`,

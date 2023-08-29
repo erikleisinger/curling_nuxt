@@ -1,4 +1,5 @@
 export const views = {
+    NO_TEAM: 'noteam',  
     HOME_SELECT: "homeselect",
     AWAY_SELECT: "awayselect",
     HAMMER_SELECT: 'hammerselect',

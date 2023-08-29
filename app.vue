@@ -30,7 +30,6 @@ onMounted(async () => {
 })
 
 onBeforeMount(async () => {
-    console.log('befre moint')
     const route = useRoute();
     const user = useSupabaseUser();
     if (!PUBLIC_ROUTES.includes(route.fullPath) && user.value && route.name !== 'gateway')   

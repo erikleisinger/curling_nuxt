@@ -47,7 +47,11 @@ const getAvatar = async () => {
 };
 
 watch(() => props.team, (val) => {
-    if (!val?.avatar_type) return;
+    if (!val?.avatar_type) {
+        avatar.value = null;
+        avatarType.value = 'avataaar'
+        return;
+    }
     getAvatar();
 }, {immediate: true})
 </script>

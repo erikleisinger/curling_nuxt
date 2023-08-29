@@ -716,6 +716,7 @@ const respondToRequest = async (id, status: string) => {
     await updateTeamRequestStatus({id, status})
     getPlayers();
     getPendingRequests();
+    if (status === 'accepted') await useUserTeamStore().fetchUserTeams(true);
 }
 
 const inviteUser = async (userId) => {
@@ -757,7 +758,7 @@ const removePlayer = async () => {
         .eq("team_id", teamId);
     if (errors) console.error(errors);
     await getPlayers();
-    if (userId === userStore.id) await useUserTeamStore().fetchUserTeams(true);
+    if (playerToRemove?.id === userStore.id) await useUserTeamStore().fetchUserTeams(true);
     loading.value = false;
     playerToRemove.value = null;
 };
