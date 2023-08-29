@@ -1,4 +1,5 @@
 <template>
+  <h2 class="text-md text-bold title q-pa-md text-center">Select rock colors</h2>
     <div class="linescore-confirmation__container">
         <div class="team-option__container">
             <div class="color__container">
@@ -8,9 +9,7 @@
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                    <Avataaar
-                        v-bind="parseAvatar(selections?.home?.team_avatar)"
-                    />
+                      <TeamAvatar :team="selections.home"/>
                 </div>
                 <div class="text-center text-bold text-md q-pt-sm">
                     {{ selections.home?.name || "Opposition team" }}
@@ -26,9 +25,7 @@
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                    <Avataaar
-                        v-bind="parseAvatar(selections?.away?.team_avatar)"
-                    />
+                    <TeamAvatar :team="selections.away"/>
                 </div>
                 <div class="text-bold text-md text-center q-pt-sm">
                     {{ selections.away?.name || "Opposition team" }}
@@ -45,7 +42,7 @@ $color-selection-height: 5em;
     margin: auto;
     height: 60%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 50% 50%;
     .team-option__container {
         display: flex;
         flex-direction: column;

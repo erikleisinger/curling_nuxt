@@ -1,4 +1,5 @@
 <template>
+  <h2 class="text-md text-bold title q-pa-md text-center">Who has hammer in the 1st end?</h2>
     <div class="linescore-confirmation__container">
         <div class="team-option__container">
             <div class="hammer__container">
@@ -6,19 +7,17 @@
                     clickable
                     :name="selected === homeId ? 'hardware' : 'o_hardware'"
                     :color="selected === homeId ? 'deep-purple' : 'grey-6'"
-                    @click="selected = homeId"
+                    @click="setHammer(homeId)"
                     class="hammer-icon"
                     :class="{selected: selected === homeId}"
                 />
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                    <Avataaar
-                        v-bind="parseAvatar(teamSelection?.home?.team_avatar)"
-                    />
+                   <TeamAvatar :team="selections.home"/>
                 </div>
                 <div class="text-center text-bold text-md q-pt-sm">
-                    {{ teamSelection.home?.name || "Opposition team" }}
+                    {{ selections.home?.name || "Opposition team" }}
                 </div>
             </div>
         </div>
@@ -26,21 +25,20 @@
         <div class="team-option__container">
             <div class="hammer__container">
                 <q-icon
+                clickable
                     :name="selected === awayId ? 'hardware' : 'o_hardware'"
                     :color="selected === awayId ? 'deep-purple' : 'grey-6'"
-                    @click="selected = awayId"
+                    @click="setHammer(awayId)"
                      class="hammer-icon"
                     :class="{selected: selected === awayId}"
                 />
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                    <Avataaar
-                        v-bind="parseAvatar(teamSelection?.away?.team_avatar)"
-                    />
+                    <TeamAvatar :team="selections.away"/>
                 </div>
                 <div class="text-bold text-md text-center q-pt-sm">
-                    {{ teamSelection.away?.name || "Opposition team" }}
+                    {{ selections.away?.name || "Opposition team" }}
                 </div>
             </div>
         </div>
@@ -54,13 +52,13 @@ $selected-hammer-height: 6em;
     margin: auto;
     height: 60%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 50% 50%;
     .team-option__container {
         display: flex;
         flex-direction: column;
 
         .hammer__container {
-              min-height: calc($selected-hammer-height + $hammer-container-padding * 2);
+              min-height: calc($selected-hammer-height + $hammer-container-padding);
             display: flex;
             justify-content: center;
             padding: $hammer-container-padding;
@@ -98,17 +96,17 @@ $selected-hammer-height: 6em;
 <script setup>
 import { parseAvatar } from "@/utils/avatar";
 const props = defineProps({
-    modelValue: Number,
-    score: Object,
-    teamSelection: Object,
+    modelValue: Object,
 });
 
-const homeId = computed(() => props.teamSelection?.home?.id);
-const awayId = computed(() => props.teamSelection?.away?.id);
+const homeId = computed(() => selections?.value?.home?.id);
+const awayId = computed(() => selections?.value?.away?.id);
 
 const emit = defineEmits(["update:modelValue"]);
 
-const selected = computed({
+const selected = computed(() => selections.value.hammerFirstEndTeam)
+
+const selections = computed({
     get() {
         return props.modelValue;
     },
@@ -116,6 +114,11 @@ const selected = computed({
         emit("update:modelValue", val);
     },
 });
+
+const setHammer = (id) => {
+    console.log('set hammer: ', id)
+    selections.value.hammerFirstEndTeam = id;
+}
 
 
 </script>

@@ -198,7 +198,7 @@
                     <q-tooltip v-if="!canRemovePlayer(player.id)">
                         Can't remove the only admin on the team
                     </q-tooltip>
-                </q-btn>S
+                </q-btn>
             </div>
                 <div
                     style="width: 50px"
@@ -668,23 +668,9 @@ const canRemovePlayer = (userId: string) => {
     return teamPlayers.value.filter(({is_admin}) => !!is_admin)?.length > 1;
 }
 
-const pendingUserRequest = computed(() =>
-    pendingRequests.value.find(({ id }) => id === userStore.id)
-);
-const pendingUserInvite = computed(() =>
-    pendingInvites.value.find(({ id }) => id === userStore.id)
-);
 
-const respondToRequest = async (id, status: string) => {
-    await updateTeamRequestStatus({id, status})
-    getPlayers();
-    getPendingRequests();
-}
 
-const isOwner = (profile_id) => {
-    if (!teamId) return false;
-    return team.value?.owner?.id === profile_id;
-};
+
 
 /**
  * ADD/REMOVE PLAYERS
@@ -718,6 +704,19 @@ const toggleAddPlayer = () => {
         },
     });
 };
+
+const pendingUserRequest = computed(() =>
+    pendingRequests.value.find(({ id }) => id === userStore.id)
+);
+const pendingUserInvite = computed(() =>
+    pendingInvites.value.find(({ id }) => id === userStore.id)
+);
+
+const respondToRequest = async (id, status: string) => {
+    await updateTeamRequestStatus({id, status})
+    getPlayers();
+    getPendingRequests();
+}
 
 const inviteUser = async (userId) => {
     await sendTeamRequest({
@@ -771,7 +770,6 @@ const togglingAdmin = ref(false);
 const toggleAdmin = async (player) => {
     if (!teamId) return;
     const { rowId, id, is_admin } = player;
-    if (isOwner(id)) return;
 
     if (togglingAdmin.value || !canEdit.value) return;
     togglingAdmin.value = true;

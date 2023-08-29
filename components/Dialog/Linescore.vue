@@ -10,7 +10,7 @@
                     class="col-6"
                     size="lg"
                     square
-                    :disable="view === views.GAME_PARAMS"
+                    :disable="view === views.HOME_SELECT"
                     @click="changeView(-1)"
                     >Back</q-btn
                 >
@@ -33,11 +33,24 @@
         </template>
 
         <!-- STEP 1: Game params -->
-        <LinescoreGameParams
-            v-if="view === views.GAME_PARAMS"
-            @select="view = views.COLOR_SELECT"
-            v-model="gameParams"
-        />
+        <LinescoreTeamSelect
+            v-if="view === views.HOME_SELECT"
+            v-model="gameParams.home"
+            :restrictIds="userTeams.map(({id}) => id)"
+        >
+        Select your team
+        </LinescoreTeamSelect>
+         <LinescoreTeamSelect
+            v-if="view === views.AWAY_SELECT"
+            v-model="gameParams.away"
+            allowCustom
+            :filterIds="[userStore.id]"
+        >
+    Select an opposition
+         </LinescoreTeamSelect>
+
+        <LinescoreColorSelect v-if="view === views.COLOR_SELECT" v-model="gameParams"/>
+        <LinescoreHammerSelect v-if="view === views.HAMMER_SELECT" v-model="gameParams"/>
         <!-- STEP 2: End count select -->
 
         <LinescoreEndCountSelect
@@ -247,6 +260,8 @@ $team-nav-margin: 6vh;
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
 import { useGameStore } from "@/store/games";
+import {useUserTeamStore} from '@/store/user-teams'
+import {useUserStore} from '@/store/user'
 import {
     useElementSize,
     useScroll,
@@ -368,7 +383,10 @@ watch(
 const view = ref(null);
 
 const views = {
-    GAME_PARAMS: "params",
+    HOME_SELECT: "homeselect",
+    AWAY_SELECT: "awayselect",
+    HAMMER_SELECT: 'hammerselect',
+    COLOR_SELECT: 'colorselect',
     END_COUNT_SELECT: "endcount",
     LINESCORE: "linescore",
     DETAILS: "details",
@@ -376,7 +394,11 @@ const views = {
 };
 
 const viewOrder = [
-    views.GAME_PARAMS,
+
+    views.HOME_SELECT,
+        views.AWAY_SELECT,
+    views.COLOR_SELECT,
+    views.HAMMER_SELECT,
     views.END_COUNT_SELECT,
     views.LINESCORE,
     views.DETAILS,
@@ -390,16 +412,10 @@ const changeView = useThrottleFn((inc) => {
 });
 
 const nextDisabled = computed(() => {
-    if (view.value === views.GAME_PARAMS) {
-        const { home, away, hammerFirstEndTeam, homeColor, awayColor } =
-            gameParams.value;
-        return !(
-            (!!home?.name || !!home?.id) &&
-            (!!away?.name || !!away?.id) &&
-            !!hammerFirstEndTeam &&
-            !!homeColor &&
-            !!awayColor
-        );
+    if (view.value === views.HOME_SELECT) {
+        return !gameParams.value.home?.id
+    } else if (view.value === views.AWAY_SELECT) {
+return !gameParams.value.away?.id && !gameParams.value.away?.name
     }
     return false;
 });
@@ -595,7 +611,7 @@ onMounted(async () => {
         editedId.value = editedGame.id;
         await fetchGame(editedGame);
     } else {
-        view.value = views.GAME_PARAMS;
+        view.value = views.HOME_SELECT;
     }
     loading.value = false;
 });
@@ -651,4 +667,13 @@ const showExtraEnd = () => {
         homeTotal.value === awayTotal.value;
     return shouldShow;
 };
+
+/**
+ * Team selection
+ */
+
+const userTeamStore = useUserTeamStore();
+const userTeams = computed(() => userTeamStore.userTeams)
+
+const userStore = useUserStore();
 </script>
