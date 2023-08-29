@@ -4,6 +4,7 @@
         :backable="false"
         :loading="loading"
     >
+
         <template v-slot:footer>
             <div class="row">
                 <q-btn
@@ -47,6 +48,9 @@
             :filterIds="[userStore.id]"
         >
     Select an opposition
+    <!-- <template v-slot:subtitle>
+        If you select a team you are not on, an invitation will be sent to that team.
+    </template> -->
          </LinescoreTeamSelect>
 
         <LinescoreColorSelect v-if="view === views.COLOR_SELECT" v-model="gameParams"/>
@@ -160,7 +164,7 @@
             @update:sheet="sheet = $event"
         />
         <LinescoreConfirmation
-            :score="{ home: homeTotal, away: awayTotal }"
+            :score="{ home: homeTotal, away: awayTotal, finalEndCount: getFinalEndCount(), totalEndCount: endCount }"
             :gameParams="gameParams"
             :startTime="start_time"
             :rink="rink"
@@ -176,6 +180,17 @@
         cancelButtonText="Cancel"
         @confirm="toggleLineScore({ open: false })"
         @close="confirmUnsaved = false"
+        cancelColor=""
+        confirmColor="negative"
+    >
+        Are you sure you want to close? All unsaved changes will be lost.
+    </DialogConfirmation>
+        <DialogConfirmation
+        v-if="!!showInvitation"
+        confirmButtonText="Discard"
+        cancelButtonText="Cancel"
+        @confirm="showInvitation = false"
+        @close="showInvitation = false"
         cancelColor=""
         confirmColor="negative"
     >
@@ -361,6 +376,13 @@ const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))
 );
 
+const getFinalEndCount = () => {
+    return Object.keys(score.value).reduce((all, current) => {
+        if (score.value[current]?.home === 'X' && score.value[current]?.away === 'X') return all;
+        return all + 1;
+    }, 0)
+}
+
 /**
  * Update default score when end count changes;
  */
@@ -484,44 +506,58 @@ const createSheet = async (rink_id, sheet_number) => {
     return sheetFromDb?.id;
 };
 
+const showInvitation = ref(false)
+const saving = ref(false)
 const save = async () => {
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
     const rinkCopy = rink.value;
     const sheetCopy = sheet.value;
 
+    let shouldShowInvitation = false
+
+    if (params.away?.id && !userTeams.value.some(({id}) => id === params?.away?.id)) shouldShowInvitation = true;
+
+
+
+
     toggleLineScore({ open: false });
-    const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
+    // const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
-    const conceded = score.value[Object.keys(score.value).length].home === "X";
+    // const conceded = score.value[Object.keys(score.value).length].home === "X";
 
-    const gameToCreate = {
-        home: params?.home?.id,
-        home_color: params?.homeColor,
-        away_color: params?.awayColor,
-        hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
-        end_count: endCount.value,
-        completed: true,
-        conceded,
-        start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
-        rink_id: rink.value?.id,
-        sheet_id: sheetId,
-    };
+    // const gameToCreate = {
+    //     home: params?.home?.id,
+    //     home_color: params?.homeColor,
+    //     away_color: params?.awayColor,
+    //     hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
+    //     end_count: endCount.value,
+    //     completed: true,
+    //     conceded,
+    //     start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
+    //     rink_id: rink.value?.id,
+    //     sheet_id: sheetId,
+    // };
 
-    if (!!params?.away?.id) {
-        gameToCreate.pending_away = params.away.id;
-    } else {
-        gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
+    // if (!!params?.away?.id) {
+    //     gameToCreate.pending_away = params.away.id;
+    // } else {
+    //     gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
+    // }
+
+    // if (editedId.value) {
+    //     gameToCreate.id = editedId.value;
+    // }
+
+    // await createGame({
+    //     game: gameToCreate,
+    //     score: scoreCopy,
+    // });
+
+    if (shouldShowInvitation) {
+        console.log('SHOWING INVITATION')
+        showInvitation.value = true;
     }
-
-    if (editedId.value) {
-        gameToCreate.id = editedId.value;
-    }
-
-    createGame({
-        game: gameToCreate,
-        score: scoreCopy,
-    });
 };
 
 const createGame = async ({ game, score }) => {
@@ -535,8 +571,6 @@ const createGame = async ({ game, score }) => {
         game?.away,
         gameId
     );
-
-    console.log('ends: ',ends)
     if (editedId.value) {
         await gameStore.bulkUpdateGameEnds(ends);
     } else {

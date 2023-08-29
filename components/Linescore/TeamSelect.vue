@@ -1,7 +1,10 @@
 <template>
-    <h2 class="text-md text-bold title q-pa-md text-center">
+    <h2 class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center">
         <slot/>
     </h2>
+    <h3 class="text-sm  title  text-center">
+        <slot name="subtitle"/>
+    </h3>
     <div class="linescore-confirmation__wrap">
         <div class="linescore-confirmation__container">
             <div class="team__card row items-center justify-center">
@@ -83,7 +86,8 @@
     width: 100%;
     height: 100%;
     display: flex;
-    background-color: rgba(0, 0, 0, 0.1);
+    // background-color: rgba(0, 0, 0, 0.1);
+    background-color: white;
     .linescore-confirmation__container {
         display: grid;
         grid-template-rows: auto 50px auto;

@@ -2,6 +2,13 @@
     <h2 class="text-md text-bold title q-pa-md text-center">
         Review & confirm
     </h2>
+    <div class="full-width column justify-center items-center">
+        <div  >
+            {{resultText}}
+        </div>
+        <div class="text-italic">After {{score.finalEndCount}} {{score.finalEndCount === 1 ? 'end' : 'ends'}}</div>
+        
+    </div>
     <div class="linescore-confirmation__wrap">
         <div class="linescore-confirmation__container">
             <div class="team-result__container">
@@ -200,4 +207,21 @@ const emit = defineEmits(['nav', "save"]);
 
 const { format, toTimezone } = useTime();
 const dayjs = useDayjs();
+
+
+const getEndCountText = () => {
+    const {finalEndCount, totalEndCount} = props.score;
+    if (finalEndCount >= totalEndCount) return `After ${finalEndCount} ends`
+    return finalEndCount
+}
+
+const resultText = computed(() => {
+    if (props.score.finalEndCount < props.score.totalEndCount) {
+        const concededTeamName = props.score.away < props.score.home ? props.gameParams.away?.name : props.gameParams.home?.name;
+        return `${concededTeamName} concedes`
+    }
+    if (props.score.home > props.score.away) return `${props.gameParams.home?.name} wins!`
+     if (props.score.away > props.score.home) return `${props.gameParams.away?.name} wins!`
+     if (props.score.away === props.score.home) return 'Draw'
+})
 </script>
