@@ -162,8 +162,12 @@
         <LinescoreConfirmation
             :score="{ home: homeTotal, away: awayTotal }"
             :gameParams="gameParams"
+            :startTime="start_time"
+            :rink="rink"
+            :sheet="sheet"
             v-if="view === views.CONFIRM"
             @save="save"
+            @nav="goToView"
         />
     </DialogFloating>
     <DialogConfirmation
@@ -273,6 +277,7 @@ import {
 import { generateEnds } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
+import {views} from '@/constants/linescore'
 
 const dayjs = useDayjs();
 const dialogStore = useDialogStore();
@@ -382,16 +387,6 @@ watch(
 
 const view = ref(null);
 
-const views = {
-    HOME_SELECT: "homeselect",
-    AWAY_SELECT: "awayselect",
-    HAMMER_SELECT: 'hammerselect',
-    COLOR_SELECT: 'colorselect',
-    END_COUNT_SELECT: "endcount",
-    LINESCORE: "linescore",
-    DETAILS: "details",
-    CONFIRM: "confirm",
-};
 
 const viewOrder = [
 
@@ -404,6 +399,10 @@ const viewOrder = [
     views.DETAILS,
     views.CONFIRM,
 ];
+
+const goToView = useThrottleFn((v) => {
+    view.value = v;
+})
 
 const changeView = useThrottleFn((inc) => {
     const index = viewOrder.indexOf(view.value);
@@ -612,6 +611,7 @@ onMounted(async () => {
         await fetchGame(editedGame);
     } else {
         view.value = views.HOME_SELECT;
+        // view.value = views.CONFIRM
     }
     loading.value = false;
 });
