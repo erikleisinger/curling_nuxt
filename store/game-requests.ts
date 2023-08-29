@@ -22,11 +22,11 @@ export const useGameRequestStore = defineStore("game-requests", {
                 text: `Cancelling invitation...`,
             })
             const client = useSupabaseClient();
-            const {errors} = await client.from('game_requests').delete().eq('game_id', game_id).eq('team_id', team_id).eq('status', 'pending');
-            if (errors) {
+            const {error} = await client.from('game_requests').delete().eq('game_id', game_id).eq('team_id', team_id).eq('status', 'pending');
+            if (error) {
                 notStore.updateNotification(notId, {
                     state: 'failed',
-                    text: `Error cancelling invitation (code: ${errors.code})`,
+                    text: `Error cancelling invitation (code: ${error.code})`,
                 })
                 return false;
             } else {
@@ -52,7 +52,7 @@ export const useGameRequestStore = defineStore("game-requests", {
             if (error) {
                 notStore.updateNotification(notId, {
                     state: 'failed',
-                    text: `Error inviting ${team} (code: ${errors.code})`,
+                    text: `Error inviting ${team} (code: ${error.code})`,
                 })
             } else {
                 notStore.updateNotification(notId, {
@@ -68,11 +68,11 @@ export const useGameRequestStore = defineStore("game-requests", {
                 text: `${status === 'accepted' ? 'Accepting' : status === 'rejected' ? 'Rejecting' : 'Responding to'} invitation..`,
             })
             const client = useSupabaseClient();
-            const {errors} = await client.from('game_requests').update({status}).eq('game_id', game_id).eq('team_id', team_id)
-            if (errors) {
+            const {error} = await client.from('game_requests').update({status}).eq('game_id', game_id).eq('team_id', team_id)
+            if (error) {
                 notStore.updateNotification(notId, {
                     state: 'failed',
-                    text: `Error ${status === 'accepted' ? 'Accepting' : status === 'rejected' ? 'Rejecting' : 'Responding to'} invitation (code: ${errors.code})`,
+                    text: `Error ${status === 'accepted' ? 'Accepting' : status === 'rejected' ? 'Rejecting' : 'Responding to'} invitation (code: ${error.code})`,
                 })
                 return false;
             } else {

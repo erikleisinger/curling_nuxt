@@ -49,11 +49,11 @@
                             <q-icon
                                 class="scoreboard__icon"
                                 :name="
-                                    getIcon(score[end - 1]?.home_conversions)
+                                    getIcon(score[end][`home_${stat}`])
                                 "
                                 :color="
                                     getIconColor(
-                                        score[end - 1]?.home_conversions
+                                        score[end][`home_${stat}`]
                                     )
                                 "
                             />
@@ -62,11 +62,11 @@
                             <q-icon
                                 class="scoreboard__icon"
                                 :name="
-                                    getIcon(score[end - 1]?.away_conversions)
+                                    getIcon(score[end][`away_${stat}`])
                                 "
                                 :color="
                                     getIconColor(
-                                        score[end - 1]?.away_conversions
+                                        score[end][`away_${stat}`]
                                     )
                                 "
                             />

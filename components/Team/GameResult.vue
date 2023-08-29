@@ -106,7 +106,7 @@
                                             resourceTypes: ['team'],
                                             inputLabel:
                                                 'Invite an opposition team',
-                                            filterIds: [userId],
+                                            filterIds: [result.home_id],
                                             callback: selectTeam,
                                         },
                                     })
