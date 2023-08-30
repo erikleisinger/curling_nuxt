@@ -313,10 +313,17 @@ const getTeamRecord = async () => {
     const dayjs = useDayjs();
 
     const client = useSupabaseClient();
-    const { data } = await client.rpc("get_team_game_statistics", {
-        team_id_param: props.teamId,
-        start_time_param: dayjs().toISOString(),
-    }).order('start_time', {ascending: false}).limit(1)
+    const { data } = await client.from('team_stats').select(`
+    *,
+    games:game_id (
+        start_time
+    )
+    `).eq('team_id', props.teamId).order('start_time', { foreignTable: 'game_id', ascending: false }).limit(1)
+    
+    // await client.rpc("get_team_game_statistics", {
+    //     team_id_param: props.teamId,
+    //     start_time_param: dayjs().toISOString(),
+    // }).order('start_time', {ascending: false}).limit(1)
     // 
 
     const [teamRecord] = data;

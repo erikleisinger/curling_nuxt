@@ -610,9 +610,15 @@ const getTeamRecords = async () => {
 const getTeamRecord = async (team_id) => {
  const client = useSupabaseClient();
 
-    const { data } = await client.rpc("get_team_game_statistics", {
-        team_id_param: team_id,
-    });
+    // const { data } = await client.rpc("get_team_game_statistics", {
+    //     team_id_param: team_id,
+    // });
+    const { data } = await client.from('team_stats').select(`
+    *,
+    games:game_id (
+        start_time
+    )
+    `).eq('team_id', team_id).order('start_time', { foreignTable: 'game_id', ascending: false }).limit(1)
 
     const [stats] = data;
 
