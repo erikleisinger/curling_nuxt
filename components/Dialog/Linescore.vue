@@ -91,10 +91,7 @@
                     away: gameParams.away,
                     homeColor: gameParams.homeColor,
                     awayColor: gameParams.awayColor,
-                    hammerFirstEnd:
-                        gameParams.hammerFirstEndTeam === 'away'
-                            ? gameParams.away?.id
-                            : gameParams?.home?.id,
+                    hammerFirstEnd: gameParams.hammerFirstEndTeam
                 }"
                 :endCount="endNumbers.length"
                 :score="score"
@@ -645,6 +642,8 @@ const save = async () => {
     if (shouldSendInvitation) {
         useGameRequestStore().sendGameRequest(params.away, gameId)
     }
+
+    await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
 };
 
 const createGame = async ({ game, score }) => {

@@ -310,12 +310,17 @@ const blankEnds = ref(0);
 const stealsWith = ref(0);
 const stealsWithout = ref(0);
 const getTeamRecord = async () => {
+    const dayjs = useDayjs();
+
     const client = useSupabaseClient();
     const { data } = await client.rpc("get_team_game_statistics", {
         team_id_param: props.teamId,
-    });
+        start_time_param: dayjs().toISOString(),
+    }).order('start_time', {ascending: false}).limit(1)
+    // 
 
     const [teamRecord] = data;
+    if (!teamRecord) return;
     const {
         hammer_steal_count,
         non_hammer_steal_count,
