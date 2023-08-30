@@ -317,34 +317,34 @@ const getTeamRecord = async () => {
 
     const [teamRecord] = data;
     const {
-        steals_with,
-        steals_without,
+        hammer_steal_count,
+        non_hammer_steal_count,
         blank_ends,
-        points_for_per_game,
-        points_against_per_game,
-        ends_against_per_game,
-        ends_for_per_game,
-        force_with_count,
-        force_without_count,
+        points_for,
+        points_against,
+        ends_against,
+        ends_for,
+        hammer_force_count,
+        non_hammer_force_count,
         ends_played,
-        non_hammer_ends,
-        hammer_ends,
-        hammer_conversions,
+        non_hammer_end_count,
+        hammer_end_count,
+        hammer_conversion_count,
     } = teamRecord;
 
-    pointsForGame.value = points_for_per_game;
-    pointsAgainstGame.value = points_against_per_game;
-    endsForGame.value = ends_for_per_game;
-    endsAgainstGame.value = ends_against_per_game;
-    forceWith.value = force_with_count;
-    forceWithout.value = force_without_count;
+    pointsForGame.value = points_for;
+    pointsAgainstGame.value = points_against;
+    endsForGame.value = ends_for;
+    endsAgainstGame.value = ends_against;
+    forceWith.value = hammer_force_count;
+    forceWithout.value = non_hammer_force_count;
     endsPlayed.value = ends_played;
-    nonHammerEnds.value = non_hammer_ends;
-    hammerConversions.value = hammer_conversions;
-    hammerEnds.value = hammer_ends;
+    nonHammerEnds.value = non_hammer_end_count;
+    hammerConversions.value = hammer_conversion_count;
+    hammerEnds.value = hammer_end_count;
     blankEnds.value = blank_ends;
-    stealsWith.value = steals_with;
-    stealsWithout.value = steals_without;
+    stealsWith.value = hammer_steal_count;
+    stealsWithout.value = non_hammer_steal_count;
 };
 
 const currentTeamId = computed(() => props.teamId);

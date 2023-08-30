@@ -78,6 +78,7 @@
     transform-origin: bottom left;
     max-height: v-bind(maxHeight);
     max-width: v-bind(maxWidth);
+    transition: all 0.5s;
     .inner__container {
 
         pointer-events: all;

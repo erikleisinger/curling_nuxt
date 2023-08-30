@@ -3,6 +3,7 @@
         @close="toggleLineScore({ open: false })"
         :backable="false"
         :loading="loading"
+        :maxWidth="view === views.LINESCORE  && $q.platform.is.desktop ? 'unset' : '700px'"
     >
 
         <template v-slot:footer v-if="view !== views.NO_TEAM">
@@ -107,17 +108,21 @@
                 id="scoreboard-linescore"
                 ref="scroller"
                 :style="{ height: contentHeight }"
+                v-if="!$q.platform.is.desktop"
             >
                 <div class="start__padding col-grow" />
 
+                
                 <ScrollerSection
                     @visible="setVisible(end)"
                     v-for="end in endNumbers"
                     :key="`end-input-${end}`"
+                   
                 >
                     <div
                         :id="`scoreboard-end-${end}`"
                         class="scoreboard__end-container"
+                        :style="{maxWidth: $q.platform.is.desktop ? `${colWidth()}vw` : 'unset', minWidth: $q.platform.is.desktop ? `${colWidth()}vw` : '26vh'}"
                     >
                         <LinescoreColumn
                             v-model="score[end]"
@@ -128,11 +133,75 @@
                             :shakeable="
                                 end < endCount && score[end + 1].home !== 'X'
                             "
-                            @shake="concede"
+                            @shake="concede(end)"
                         />
                     </div>
                 </ScrollerSection>
                 <div class="start__padding col-grow" />
+                <transition
+                    appear
+                    enter-active-class=" animated fadeIn"
+                    leave-active-class="animated fadeOut"
+                >
+                    <div
+                        class="next-options__container column"
+                        v-if="visible === endCount"
+                        style="min-width: 10vw"
+                    >
+                        <q-btn
+                            icon="add"
+                            stretch
+                            class="col-grow q-pa-none"
+                            @click="goExtra"
+                            no-wrap
+                            v-if="showExtraEnd()"
+                            ><span class="q-pl-xs">Extra</span></q-btn
+                        >
+                        <q-btn
+                            stretch
+                            color="primary"
+                            icon="check"
+                            no-wrap
+                            class="col-grow q-pa-none"
+                            @click="changeView(+1)"
+                            ><span class="q-pl-xs">Done</span></q-btn
+                        >
+                    </div>
+                </transition>
+            </div>
+            <div
+                class="scoreboard__score-container row no-wrap"
+                id="scoreboard-linescore"
+                ref="scroller"
+                :style="{ height: contentHeight }"
+                v-else
+            >
+       
+
+                
+                
+                    <div
+                        :id="`scoreboard-end-${end}`"
+                        class="scoreboard__end-container"
+                         v-for="end in endNumbers"
+                    :key="`end-input-${end}`"
+                        :style="{maxWidth: $q.platform.is.desktop ? `${colWidth()}vw` : 'unset', minWidth: $q.platform.is.desktop ? `${colWidth()}vw` : '26vh'}"
+                    >
+                        <LinescoreColumn
+                            v-model="score[end]"
+                            :visible="true"
+                            :endno="end"
+                            :extra="end > endCount"
+                            :canExtra="(end >= endCount) && score[end].home !== 'X'"
+                            @remove="removeEnd(end)"
+                            :shakeable="
+                                end < endCount && score[end].home !== 'X'
+                            "
+                            @shake="concede(end)"
+                                       />
+                    </div>
+       
+
                 <transition
                     appear
                     enter-active-class=" animated fadeIn"
@@ -216,6 +285,8 @@ $column-width: 26vh;
 $gutter-width: 20vw;
 $scroll-margin: -100px;
 $team-nav-margin: 6vh;
+
+
 
 .scoreboard__container {
     width: 100%;
@@ -310,6 +381,7 @@ import { TABLE_NAMES } from "@/constants/tables";
 import {views} from '@/constants/linescore'
 
 const dayjs = useDayjs();
+const $q = useQuasar();
 const dialogStore = useDialogStore();
 const { toggleLineScore, toggleTeamViewer, toggleGlobalSearch } = dialogStore;
 
@@ -548,7 +620,7 @@ const save = async () => {
         away_color: params?.awayColor,
         hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
         end_count: endCount.value,
-        completed: true,
+        completed: false,
         conceded,
         start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
         rink_id: rink.value?.id,
@@ -660,6 +732,7 @@ onMounted(async () => {
         editedId.value = editedGame.id;
         await fetchGame(editedGame);
     } else {
+  
         if (!userTeams.value.length) {
             view.value = views.NO_TEAM
         } else {
@@ -685,9 +758,9 @@ const contentHeight = computed(() => `calc(100% - ${navHeight.value}px)`);
  * scoreboard management
  */
 
-const concede = (team) => {
+const concede = (endNo: number) => {
     for (
-        let x = Number.parseInt(visible.value) + 1;
+        let x = Number.parseInt(endNo) + 1;
         x < endNumbers.value.length + 1;
         x++
     ) {
@@ -752,5 +825,14 @@ const searchForTeam = () => {
             }
         })
     })
+}
+
+/**
+ * Desktop linescore input sizing
+ */
+
+const colWidth = () => {
+    const numEnds = Object.keys(score.value)?.length;
+    return 100 / numEnds;
 }
 </script>

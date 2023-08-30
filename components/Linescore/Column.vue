@@ -25,8 +25,9 @@
     <div class="extra__container" v-if="extra">
         <q-btn icon="remove" round @click="emit('remove')"></q-btn>
     </div>
-    <div class="shake__container" v-if="shakeable" ref="shaker">
+    <div class="shake__container" v-if="shakeable || canExtra" ref="shaker" :style="shakeStyle">
         <q-btn
+        v-if="shakeable"
             :round="!isRevealed"
             rounded
             :color="isRevealed ? 'primary' : 'white'"
@@ -38,6 +39,21 @@
             />
 
             <span class="shake-hands__text" :class="{isRevealed}">Shake hands?</span>
+              <q-tooltip v-if="$q.platform.is.desktop">
+                        Shake hands
+                    </q-tooltip>
+            </q-btn
+        >
+           <q-btn
+           v-if="canExtra"
+            round
+            no-wrap
+            icon="add"
+            >
+
+         <q-tooltip >
+                        Extra end
+                    </q-tooltip>
             </q-btn
         >
     </div>
@@ -94,8 +110,7 @@
     top: 0;
     bottom: 0;
     height: 40px;
-
-    right: -1em;
+    
     margin: auto;
     display: flex;
     justify-content: center;
@@ -105,6 +120,7 @@
 <script setup>
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 const props = defineProps({
+    canExtra: Boolean,
     endno: Number,
     extra: Boolean,
     modelValue: Object,
@@ -162,4 +178,20 @@ onConfirm(() => {
 
 const shaker = ref(null);
 onClickOutside(shaker, cancel)
+
+const $q = useQuasar();
+
+const shakeStyle = computed(() => {
+    if ($q.platform.is.desktop) {
+        return {
+            left: 0,
+            right: 0,
+        }
+    } else {
+        return {
+            right: `-1em`
+        }
+    }
+})
+
 </script>
