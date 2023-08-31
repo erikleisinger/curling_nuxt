@@ -116,6 +116,7 @@ onMounted(async () => {
 
         plugins: [ChartDataLabels],
         options: {
+        responsive: true,
             maintainAspectRatio: false,
             aspectRatio: 2,
             elements: {

@@ -1,24 +1,16 @@
 <template>
     <div class="chart__container">
-        <div class="chart__inner">
-            <canvas ref="chart1" />
-        </div>
+        <canvas ref="chart" />
     </div>
 </template>
 <style lang="scss" scoped>
 .chart__container {
-    // height: v-bind(formattedHeight);
-    // width: v-bind(formattedHeight);
     width: 100%;
-    .chart__inner {
-        width: inherit;
-        padding: var(--space-sm);
-        margin: -10px;
-        canvas {
-            width: 100%;
-            height: 400px;
-            box-sizing: border-box;
-        }
+    padding: var(--space-sm);
+    canvas {
+        width: 100%;
+        height: 400px;
+        box-sizing: border-box;
     }
 }
 </style>
@@ -46,21 +38,10 @@ const props = defineProps({
 });
 
 const formattedHeight = computed(() => `${props.height}px`);
-
-const index = ref(0);
-
-const TITLES = ["Games played", "Title 2"];
-
-const DESCRIPTIONS = ["", "It changed!"];
-
-const descriptionText = computed(() => {
-    return `<span class="text-bold">${props.for} / ${props.totalEnds}</span> ends`;
-});
-const components = ref([null, null]);
-const chart1 = ref(null);
+const chart = ref(null);
 
 onMounted(async () => {
-    new Chart(chart1.value, {
+    new Chart(chart.value, {
         type: "line",
         data: props.data,
 
@@ -79,8 +60,8 @@ onMounted(async () => {
             maintainAspectRatio: false,
             plugins: {
                 annotation: {
-                     drawTime: 'beforeDraw',
-                    annotations: props.annotations
+                    drawTime: "beforeDraw",
+                    annotations: props.annotations,
                 },
                 legend: {
                     display: true,

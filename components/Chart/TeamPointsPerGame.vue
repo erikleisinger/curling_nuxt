@@ -93,6 +93,7 @@ onMounted(async () => {
         plugins: [ChartDataLabels],
         options: {
             maintainAspectRatio: true,
+            responsive: true,
             aspectRatio: 1,
             elements: {
                 arc: [

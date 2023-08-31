@@ -47,34 +47,13 @@ export const useUserTeamStore = defineStore("user-teams", {
             if (this.userTeams?.length && !force) return;
             const { user: userId } = useUser();
             const client = useSupabaseClient();
-            const { data } = await client
-                .from("team_profile_junction")
-                .select(
-                    `
-                    is_admin,
-                    team:team_id (
-                    id,
-                    name,
-                    team_avatar,
-                    avatar_type,
-                    avatar_url
-                    ),
-                    type
-            `
-                )
-                .eq("profile_id", userId.value);
-            if (!data || !data?.length) {
-                this.userTeams = [];
-                return;
-            }
-            this.userTeams = data.map((e) => {
-                const { is_admin, type, team, ...rest } = e;
-                return {
-                    is_admin,
-                    type,
-                    ...team,
-                };
-            });
+            const {data} = await client.rpc('get_user_teams', {user_id_param: userId.value})
+
+           
+            this.userTeams = data ?? []
+        },
+        async fetchUserTeamStats() {
+
         },
         async removeTeam(team) {
             const notStore = useNotificationStore();

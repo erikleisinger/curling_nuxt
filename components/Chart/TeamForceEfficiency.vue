@@ -144,6 +144,7 @@ onMounted(async () => {
         ],
         options: {
             backgroundColor: 'rgba(0,0,0,0.4)',
+            responsive: true,
             maintainAspectRatio: false,
             aspectRatio: 2,
              radiusBackground: {
