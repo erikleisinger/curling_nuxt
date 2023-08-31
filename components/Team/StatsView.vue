@@ -7,11 +7,7 @@
             :showing="loading"
         />
         <!-- <ChartHammerPoints v-if="!loading"/> -->
-        <ChartLineOverTime
-            :height="200"
-            v-bind="hammerConversionProps"
-            v-if="!loading"
-        />
+       
         <ChartTeamWinLossCard
             :teamId="teamId"
             :wins="wins"
@@ -33,11 +29,18 @@
         />
         <ChartTeamHammerEfficiencyCard
             :teamId="teamId"
-            v-if="!loading"
+            v-if="!loading  && !showEfficiencyOverTime"
             :for="hammerConversions"
             :forces="forceWith"
             :steals="stealsWith"
             :totalEnds="hammerEnds"
+            @click="showEfficiencyOverTime = true"
+        />
+         <ChartLineOverTime
+            :height="200"
+            v-bind="hammerConversionProps"
+            v-if="!loading && showEfficiencyOverTime"
+            @click="showEfficiencyOverTime = false"
         />
         <ChartTeamForceEfficiency
             :teamId="teamId"
@@ -238,6 +241,8 @@ const { height: winLossChartHeight } = useElementSize(winLossChart);
 const statsContainer = ref(null);
 const visible = useElementVisibility(statsContainer);
 const disableScroll = ref(false);
+
+const showEfficiencyOverTime = ref(false)
 
 const { height: containerHeight } = useElementSize(statsContainer);
 
@@ -528,7 +533,7 @@ const getHammerConversionOverTime = () => {
                 label: {
                     display: true,
                     content: `Avg: ${hammerConversionAvg.toFixed(1)}%`,
-                    color: "#9ad0f5",
+                    color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
@@ -544,7 +549,7 @@ const getHammerConversionOverTime = () => {
                 label: {
                     display: true,
                     content: `Avg: ${hammerForceAvg.toFixed(1)}%`,
-                    color: "#ffcf9f",
+                    color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
@@ -560,7 +565,7 @@ const getHammerConversionOverTime = () => {
                 label: {
                     display: true,
                     content: `Avg: ${hammerStealAvg.toFixed(1)}%`,
-                    color: "#ffb1c1",
+                    color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
@@ -576,7 +581,7 @@ const getHammerConversionOverTime = () => {
                 label: {
                     display: true,
                     content: `Avg: ${hammerBlankAvg.toFixed(1)}%`,
-                    color: "#ffe6aa ",
+                    color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
@@ -644,8 +649,7 @@ watchDebounced(
     currentTeamId,
     async () => {
         loading.value = true;
-        // , getWinsLossess()
-        await Promise.all([getTeamRecord()]);
+        await Promise.all([getTeamRecord(), getWinsLossess()]);
 
         loading.value = false;
     },
