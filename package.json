@@ -48,6 +48,7 @@
     "@vueuse/router": "^10.2.1",
     "browser-image-compression": "^2.0.2",
     "chart.js": "^4.3.3",
+    "chartjs-plugin-annotation": "^3.0.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "nuxt-quasar-ui": "^2.0.2",
     "pinch-zoom-js": "2.3.4",
