@@ -10,8 +10,8 @@
        <TeamStatsViewPercentage class="col-12" badge="efficiency" :numerator="team.hammer_conversion_count" :denominator="team.hammer_end_count" @showMore="viewMore(BADGE_TITLES_PLAIN.efficiency)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.efficiency)"/>
           <TeamStatsViewPercentage class="col-12" badge="bulwark" :numerator="team.non_hammer_force_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bulwark)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bulwark)"/>
        <TeamStatsViewPercentage  class="col-12" badge="bandit" :numerator="team.non_hammer_steal_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bandit)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bandit)"/>
-      <TeamStatsViewPercentage  class="col-12" badge="firstend" :numerator="team.hammer_first_end_count" :denominator="team.games_played" gameStat  noDetails/>
-        <TeamStatsViewPercentage  class="col-12" badge="strategist" :numerator="team.hammer_last_end_count" :denominator="team.games_played" gameStat  noDetails />
+      <TeamStatsViewPercentage  class="col-12" badge="firstend" :numerator="team.hammer_first_end_count" :denominator="team.games_played" gameStat   @showMore="viewMore(BADGE_TITLES_PLAIN.firstend)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.firstend)"/>
+        <TeamStatsViewPercentage  class="col-12" badge="strategist" :numerator="team.hammer_last_end_count" :denominator="team.games_played" gameStat @showMore="viewMore(BADGE_TITLES_PLAIN.strategist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.strategist)" />
         <TeamStatsViewPercentage  class="col-12" badge="minimalist" :numerator="team.hammer_blank_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.minimalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.minimalist)"/>
       <TeamStatsViewPercentage  class="col-12" badge="survivalist" :numerator="team.hammer_force_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.survivalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.survivalist)"/>
     </div>

@@ -1,58 +1,66 @@
 <template>
-    <ChartLineOverTime v-if="!loading" v-bind="chartProps"/>
+    <ChartLineOverTime v-if="!loading" v-bind="chartProps" />
 </template>
 
 <script setup>
-import {BADGE_TITLES_PLAIN} from '@/constants/badges'
-import {watchDebounced} from '@vueuse/core'
+import { BADGE_TITLES_PLAIN } from "@/constants/badges";
+import { watchDebounced } from "@vueuse/core";
 
 const props = defineProps({
     teamId: Number,
     visibleStats: Array,
-})
+});
 
-const allData = ref([])
+const allData = ref([]);
 
 const getTeamStats = async () => {
-    const {data} =  await useSupabaseClient().from('team_stats').select(`
+    const { data } = await useSupabaseClient()
+        .from("team_stats")
+        .select(
+            `
     *,
     games:game_id (
         start_time
     )
-    `).eq('team_id', props.teamId)
+    `
+        )
+        .eq("team_id", props.teamId);
 
     const dayjs = useDayjs();
 
-    allData.value = data.sort((a,b) => dayjs(a.games?.start_time).unix() - dayjs(b?.games?.start_time).unix())
-}
+    allData.value = data.sort(
+        (a, b) =>
+            dayjs(a.games?.start_time).unix() -
+            dayjs(b?.games?.start_time).unix()
+    );
+};
 
-const chartProps = ref({})
-const loading = ref(false)
+const chartProps = ref({});
+const loading = ref(false);
 
 const initChart = () => {
- loading.value = true;
- chartProps.value = getHammerConversionOverTime();
-   setTimeout(() => {
-   loading.value = false;
-    }, 200)
-}
+    loading.value = true;
+    chartProps.value = getHammerConversionOverTime();
+    setTimeout(() => {
+        loading.value = false;
+    }, 200);
+};
 
 onMounted(async () => {
-     loading.value = true;
+    loading.value = true;
     await getTeamStats();
     initChart();
- 
-})
+});
 
+watchDebounced(
+    () => props.visibleStats,
+    async () => {
+        initChart();
+    },
+    { debounce: 200, immediate: false, deep: true }
+);
 
-watchDebounced(() => props.visibleStats, async () => {
-initChart();
-   
-    
-  
-}, {debounce: 200, immediate: false, deep: true})
-
-    const getHammerConversionOverTime = () => {
+const getHammerConversionOverTime = () => {
     const reversed = allData.value.reverse();
     const conversions = {
         label: BADGE_TITLES_PLAIN.efficiency,
@@ -65,8 +73,8 @@ initChart();
                 hammer_end_count: d.hammer_end_count,
             },
         })),
-        backgroundColor: 'rgba(156, 39, 176, 0.3)',
-        borderColor: 'rgba(156, 39, 176, 1)',
+        backgroundColor: "rgba(156, 39, 176, 1)",
+        borderColor: "rgba(156, 39, 176, 1)",
         hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.efficiency),
     };
 
@@ -81,8 +89,8 @@ initChart();
                 hammer_end_count: d.hammer_end_count,
             },
         })),
-        borderColor: 'rgba(244, 67, 54, 1)',
-        backgroundColor: 'rgba(244, 67, 54, 0.3)',
+        borderColor: "rgba(244, 67, 54, 1)",
+        backgroundColor: "rgba(244, 67, 54, 1)",
         hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bandit),
     };
 
@@ -97,13 +105,13 @@ initChart();
                 non_hammer_end_count: d.non_hammer_end_count,
             },
         })),
-        borderColor: 'rgba(33, 150, 243, 1)',
-        backgroundColor: 'rgba(33, 150, 243, 0.3)',
+        borderColor: "rgba(33, 150, 243, 1)",
+        backgroundColor: "rgba(33, 150, 243, 1)",
         hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bulwark),
     };
 
     const blanks = {
-        label:  BADGE_TITLES_PLAIN.minimalist,
+        label: BADGE_TITLES_PLAIN.minimalist,
         data: reversed.map((d, index) => ({
             x: index,
             y: (d.hammer_blank_count / d.hammer_end_count) * 100,
@@ -113,8 +121,8 @@ initChart();
                 hammer_end_count: d.hammer_end_count,
             },
         })),
-        borderColor: 'rgba(0, 131, 143, 1)',
-        backgroundColor: 'rgba(0, 131, 143, 0.3)',
+        borderColor: "rgba(0, 131, 143, 1)",
+        backgroundColor: "rgba(0, 131, 143, 1)",
         hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.minimalist),
     };
 
@@ -129,39 +137,53 @@ initChart();
                 hammer_end_count: d.hammer_end_count,
             },
         })),
-        borderColor: 'rgba(27, 94, 32, 1)',
-        backgroundColor: 'rgba(27, 94, 32, 0.3)',
-        hidden:!props.visibleStats.includes(BADGE_TITLES_PLAIN.survivalist),
+        borderColor: "rgba(27, 94, 32, 1)",
+        backgroundColor: "rgba(27, 94, 32, 1)",
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.survivalist),
     };
 
-     const hammerFirstEnd = {
+        const hammerFirstEnd = {
         label: BADGE_TITLES_PLAIN.firstend,
-        data: reversed.map((d, index) => ({
-            x: index,
-            y: (d.hammer_first_end_count / allData.value.length) * 100,
-            data: {
-                start_time: d.games?.start_time,
-                hammer_first_end_count: d.hammer_first_end_count,
-                hammer_end_count: allData.value.length,
-            },
-        })),
-        borderColor: 'rgba(255, 235, 59, 1)',
-        backgroundColor: 'rgba(255, 235, 59, 0.3)'
+        data: reversed.reduce((all, current, index) => {
+            const runningHFECount = all.reduce((allHFE, currentHFE) => {
+                return allHFE + currentHFE.data.hammer_first_end_count;
+            }, 0) + current.hammer_first_end_count
+
+            return [...all, {
+                x: index,
+                y: (runningHFECount / (index + 1)) * 100,
+                data: {
+                    start_time: current.games?.start_time,
+                    hammer_first_end_count: current.hammer_first_end_count,
+                    hammer_end_count: index + 1,
+                },
+            }];
+        }, []),
+        borderColor: "rgba(255, 235, 59, 1)",
+        backgroundColor: "rgba(255, 235, 59, 1)",
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.firstend),
     };
 
       const hammerLastEnd = {
-        label: BADGE_TITLES_PLAIN.firstend,
-        data: reversed.map((d, index) => ({
-            x: index,
-            y: (d.hammer_last_end_count / 1) * 100,
-            data: {
-                start_time: d.games?.start_time,
-                hammer_last_end_count: d.hammer_last_end_count,
-                hammer_end_count: allData.value.length,
-            },
-        })),
-        borderColor: 'rgba(233, 30, 99, 1)',
-        backgroundColor: 'rgba(233, 30, 99, 0.3)'
+        label: BADGE_TITLES_PLAIN.strategist,
+        data: reversed.reduce((all, current, index) => {
+            const runningHLECount = all.reduce((allHLE, currentHLE) => {
+                return allHLE + currentHLE.data.hammer_last_end_count;
+            }, 0) + current.hammer_last_end_count
+
+            return [...all, {
+                x: index,
+                y: (runningHLECount / (index + 1)) * 100,
+                data: {
+                    start_time: current.games?.start_time,
+                    hammer_last_end_count: current.hammer_last_end_count,
+                    hammer_end_count: index + 1,
+                },
+            }];
+        }, []),
+        borderColor: "rgba(233, 30, 99, 1)",
+        backgroundColor: "rgba(233, 30, 99, 1)",
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.strategist),
     };
 
     const { format, toTimezone } = useTime();
@@ -190,33 +212,33 @@ initChart();
         return (hammer_conversion_count / hammer_end_count) * 100;
     };
 
-    
     const getForceAverage = () => {
-        const { non_hammer_end_count, non_hammer_force_count } = reversed.reduce(
-            (all, current) => {
-                return {
-                    non_hammer_end_count:
-                        all.non_hammer_end_count + current.non_hammer_end_count,
-                    non_hammer_force_count:
-                        all.non_hammer_force_count +
-                        current.non_hammer_force_count,
-                };
-            },
-            { non_hammer_end_count: 0, non_hammer_force_count: 0 }
-        );
+        const { non_hammer_end_count, non_hammer_force_count } =
+            reversed.reduce(
+                (all, current) => {
+                    return {
+                        non_hammer_end_count:
+                            all.non_hammer_end_count +
+                            current.non_hammer_end_count,
+                        non_hammer_force_count:
+                            all.non_hammer_force_count +
+                            current.non_hammer_force_count,
+                    };
+                },
+                { non_hammer_end_count: 0, non_hammer_force_count: 0 }
+            );
 
         return (non_hammer_force_count / non_hammer_end_count) * 100;
     };
 
-     const getStealAverage = () => {
+    const getStealAverage = () => {
         const { hammer_end_count, hammer_steal_count } = reversed.reduce(
             (all, current) => {
                 return {
                     hammer_end_count:
                         all.hammer_end_count + current.hammer_end_count,
                     hammer_steal_count:
-                        all.hammer_steal_count +
-                        current.hammer_steal_count,
+                        all.hammer_steal_count + current.hammer_steal_count,
                 };
             },
             { hammer_end_count: 0, hammer_steal_count: 0 }
@@ -224,15 +246,14 @@ initChart();
 
         return (hammer_steal_count / hammer_end_count) * 100;
     };
-      const getBlankAverage = () => {
+    const getBlankAverage = () => {
         const { hammer_end_count, hammer_blank_count } = reversed.reduce(
             (all, current) => {
                 return {
                     hammer_end_count:
                         all.hammer_end_count + current.hammer_end_count,
                     hammer_blank_count:
-                        all.hammer_blank_count +
-                        current.hammer_blank_count,
+                        all.hammer_blank_count + current.hammer_blank_count,
                 };
             },
             { hammer_end_count: 0, hammer_blank_count: 0 }
@@ -241,15 +262,14 @@ initChart();
         return (hammer_blank_count / hammer_end_count) * 100;
     };
 
-        const getHammerForceAverage = () => {
+    const getHammerForceAverage = () => {
         const { hammer_end_count, hammer_force_count } = reversed.reduce(
             (all, current) => {
                 return {
                     hammer_end_count:
                         all.hammer_end_count + current.hammer_end_count,
                     hammer_force_count:
-                        all.hammer_force_count +
-                        current.hammer_force_count,
+                        all.hammer_force_count + current.hammer_force_count,
                 };
             },
             { hammer_end_count: 0, hammer_force_count: 0 }
@@ -258,9 +278,9 @@ initChart();
         return (hammer_force_count / hammer_end_count) * 100;
     };
 
-           const getHammerFirstEndAverage = () => {
+    const getHammerFirstEndAverage = () => {
         const { hammer_first_end_count } = reversed.reduce(
-            (all, current) => {
+            (all, current, index) => {
                 return {
                     hammer_first_end_count:
                         all.hammer_first_end_count +
@@ -270,15 +290,31 @@ initChart();
             { hammer_first_end_count: 0 }
         );
 
-        return (hammer_first_end_count / 1) * 100;
+        return (hammer_first_end_count / allData.value.length) * 100;
+    };
+
+     const getHammerLastEndAverage = () => {
+        const { hammer_last_end_count } = reversed.reduce(
+            (all, current, index) => {
+                return {
+                    hammer_last_end_count:
+                        all.hammer_last_end_count +
+                        current.hammer_last_end_count,
+                };
+            },
+            { hammer_last_end_count: 0 }
+        );
+
+        return (hammer_last_end_count / allData.value.length) * 100;
     };
 
     const hammerConversionAvg = getConversionAverage();
     const nonHammerForceAvg = getForceAverage();
     const hammerStealAvg = getStealAverage();
-    const hammerBlankAvg = getBlankAverage()
-    const hammerForceAvg = getHammerForceAverage()
+    const hammerBlankAvg = getBlankAverage();
+    const hammerForceAvg = getHammerForceAverage();
     const hammerFirstEndAvg = getHammerFirstEndAverage();
+    const hammerLandEndAvg = getHammerLastEndAverage()
 
     return {
         annotations: {
@@ -287,20 +323,22 @@ initChart();
                 yMax: hammerConversionAvg,
                 borderColor: "rgba(156, 39, 176, 0.3)",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `${BADGE_TITLES_PLAIN.efficiency} avg: ${hammerConversionAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.efficiency
+                    } avg: ${hammerConversionAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
                 },
                 display: (e) => {
                     if (e.chart) {
-                        return e.chart.getDatasetMeta(0)?.visible
-                    } 
+                        return e.chart.getDatasetMeta(0)?.visible;
+                    }
                     return true;
                 },
             },
@@ -309,20 +347,22 @@ initChart();
                 yMax: nonHammerForceAvg,
                 borderColor: "rgba(33, 150, 243, 0.3)",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `${BADGE_TITLES_PLAIN.bulwark} avg: ${nonHammerForceAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.bulwark
+                    } avg: ${nonHammerForceAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
                 },
                 display: (e) => {
                     if (e.chart) {
-                        return e.chart.getDatasetMeta(2)?.visible
-                    } 
+                        return e.chart.getDatasetMeta(2)?.visible;
+                    }
                     return true;
                 },
             },
@@ -331,20 +371,22 @@ initChart();
                 yMax: hammerStealAvg,
                 borderColor: "rgba(244, 67, 54, 0.3)",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `${BADGE_TITLES_PLAIN.bandit} avg: ${hammerStealAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.bandit
+                    } avg: ${hammerStealAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
                 },
                 display: (e) => {
                     if (e.chart) {
-                        return e.chart.getDatasetMeta(1)?.visible
-                    } 
+                        return e.chart.getDatasetMeta(1)?.visible;
+                    }
                     return true;
                 },
             },
@@ -353,42 +395,46 @@ initChart();
                 yMax: hammerBlankAvg,
                 borderColor: "#ffe6aa ",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `${BADGE_TITLES_PLAIN.minimalist} avg: ${hammerBlankAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.minimalist
+                    } avg: ${hammerBlankAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
                 },
                 display: (e) => {
                     if (e.chart) {
-                        return e.chart.getDatasetMeta(3)?.visible
-                    } 
+                        return e.chart.getDatasetMeta(3)?.visible;
+                    }
                     return true;
                 },
             },
-           hammerForce: {
+            hammerForce: {
                 yMin: hammerForceAvg,
                 yMax: hammerForceAvg,
                 borderColor: "rgba(27, 94, 32, 0.3)",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `${BADGE_TITLES_PLAIN.survivalist} avg: ${hammerForceAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.survivalist
+                    } avg: ${hammerForceAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
                 },
                 display: (e) => {
                     if (e.chart) {
-                        return e.chart.getDatasetMeta(4)?.visible
-                    } 
+                        return e.chart.getDatasetMeta(4)?.visible;
+                    }
                     return true;
                 },
             },
@@ -397,23 +443,67 @@ initChart();
                 yMax: hammerFirstEndAvg,
                 borderColor: "rgba(255, 235, 59, 0.3)",
                 borderWidth: 2,
-                borderDash: [6,6],
+                borderDash: [6, 6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `Hammer first end avg: ${hammerFirstEndAvg.toFixed(1)}%`,
+                    content: `${
+                        BADGE_TITLES_PLAIN.firstend
+                    } avg: ${hammerFirstEndAvg.toFixed(
+                        1
+                    )}%`,
                     color: "rgba(0,0,0,0.6)",
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: "rgba(0,0,0,0)",
                     yAdjust: -7,
                     enabled: true,
-                }
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(5)?.visible;
+                    }
+                    return true;
+                },
+            },
+             hammerLastEnd: {
+                yMin: hammerLandEndAvg,
+                yMax: hammerLandEndAvg,
+                borderColor: "rgba(233, 30, 99, 0.3)",
+                borderWidth: 2,
+                borderDash: [6, 6],
+                type: "line",
+                label: {
+                    display: true,
+                    content: `${
+                        BADGE_TITLES_PLAIN.strategist
+                    } avg: ${hammerLandEndAvg.toFixed(
+                        1
+                    )}%`,
+                    color: "rgba(0,0,0,0.6)",
+                    backgroundColor: "rgba(0,0,0,0)",
+                    yAdjust: -7,
+                    enabled: true,
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(6)?.visible;
+                    }
+                    return true;
+                },
             },
         },
         data: {
             labels: allData.value.map(({ games }) =>
                 format(toTimezone(games.start_time))
             ),
-            datasets: [conversions, steals, forces, blanks, hammerForces],
+            datasets: [
+                conversions,
+                steals,
+                forces,
+                blanks,
+                hammerForces,
+                hammerFirstEnd,
+                hammerLastEnd,
+            ],
         },
         tooltip: {
             callbacks: {
@@ -463,7 +553,6 @@ initChart();
         },
     };
 };
-
 
 // hammerConversionProps.value = getHammerConversionOverTime();
 </script>

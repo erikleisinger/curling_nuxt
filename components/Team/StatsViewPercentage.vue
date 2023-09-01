@@ -4,7 +4,7 @@
                 <div>
                     <div class="row">
                     <h2 class="text-md q-mr-md text-bold clickable" >{{BADGE_TITLES_PLAIN[badge]}}</h2>
-                    <q-btn flat round icon="stacked_line_chart" :color="visible ? BADGE_COLORS[badge] : ''" dense @click="emit('showMore')" v-if="!noDetails"/>
+                    <q-btn flat round icon="stacked_line_chart" :color="visible ? BADGE_COLORS[badge] : 'grey-8'" dense @click="emit('showMore')" v-if="!noDetails"/>
                     </div>
                     <h3 class="text-sm clickable">{{BADGE_DESCRIPTIONS_PLAIN[badge]}}</h3>
                 </div>
@@ -193,8 +193,11 @@ import {onClickOutside, useElementBounding, useWindowSize} from '@vueuse/core'
     }
 
     const expandBadge = () => {
-        getTransformation();
-        viewBadge.value = true;
+        if (!viewBadge.value) {
+ getTransformation();
+        } 
+       
+        viewBadge.value = !viewBadge.value;
     }
 
   
