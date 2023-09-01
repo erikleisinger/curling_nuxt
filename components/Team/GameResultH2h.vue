@@ -13,6 +13,8 @@
                 label=""
                 reverse
                 v-if="!loading"
+                showPercent
+                showLabel
             />
             <div>
                 <q-btn
@@ -28,6 +30,8 @@
                 :color="game.awayColor"
                 label=""
                 v-if="!loading"
+                showPercent
+                showLabel
             />
         </div>
          <div class="details-container"  :class="{expanded}">
