@@ -28,6 +28,7 @@ ctx.canvas.height = 400;
         data: props.data,
 
         options: {
+            clip: false,
             elements: {
                 line: {
                     tension: 0,
@@ -37,6 +38,8 @@ ctx.canvas.height = 400;
                     pointRadius: 7,
                 },
             },
+
+           
 
             responsive: true,
             maintainAspectRatio: false,

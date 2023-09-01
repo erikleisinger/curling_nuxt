@@ -1,8 +1,11 @@
 <template>
      <div class="line-container">
             <div class="row items-center justify-between title">
-                <div  @click="emit('click')">
+                <div>
+                    <div class="row">
                     <h2 class="text-md q-mr-md text-bold clickable" >{{BADGE_TITLES_PLAIN[badge]}}</h2>
+                    <q-btn flat round icon="stacked_line_chart" :color="visible ? BADGE_COLORS[badge] : ''" dense @click="emit('showMore')" v-if="!noDetails"/>
+                    </div>
                     <h3 class="text-sm clickable">{{BADGE_DESCRIPTIONS_PLAIN[badge]}}</h3>
                 </div>
                 <div :style="{height: BADGE_DIMENSION, width: BADGE_DIMENSION}" ref="badgeContainer">
@@ -152,11 +155,13 @@ import {onClickOutside, useElementBounding, useWindowSize} from '@vueuse/core'
     const props = defineProps({
         badge: String,
         gameStat: Boolean,
+        noDetails: Boolean,
         numerator: Number,
-        denominator: Number
+        denominator: Number,
+        visible: Boolean,
     })
 
-    const emit = defineEmits(['click'])
+    const emit = defineEmits(['showMore'])
 
     const percent =  (props.numerator / props.denominator) * 100
 
@@ -184,18 +189,6 @@ import {onClickOutside, useElementBounding, useWindowSize} from '@vueuse/core'
     const getTransformation = () => {
                const widthHalf = width.value / 2;
         const heightHalf = height.value /2;
-    // const {height: badgeHeight, width: badgeWidth} = useElementBounding(badgeRef)
-        // const badgeWidthExpanded = badgeWidth.value * EXPANDED_SCALE;
-        // const badgeHeightExpanded = badgeHeight.value * EXPANDED_SCALE;
-        // console.table({
-        //     x: x.value,
-        //     y: y.value,
-        //     badgeWidth: badgeWidthExpanded,
-        //     badgeHeight: badgeHeightExpanded,
-        //     widthHalf,
-        //     heightHalf,
-
-        // })
         transformation.value = `scale(${EXPANDED_SCALE}) translateY(${(heightHalf - y.value) / EXPANDED_SCALE}px) translateX(${(widthHalf - x.value - 200) / EXPANDED_SCALE}px)`
     }
 

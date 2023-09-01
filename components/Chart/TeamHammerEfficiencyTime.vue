@@ -3,9 +3,12 @@
 </template>
 
 <script setup>
+import {BADGE_TITLES_PLAIN} from '@/constants/badges'
+import {watchDebounced} from '@vueuse/core'
 
 const props = defineProps({
     teamId: Number,
+    visibleStats: Array,
 })
 
 const allData = ref([])
@@ -26,20 +29,33 @@ const getTeamStats = async () => {
 const chartProps = ref({})
 const loading = ref(false)
 
-onMounted(async () => {
-    loading.value = true;
-    await getTeamStats();
-    chartProps.value = getHammerConversionOverTime();
-    setTimeout(() => {
+const initChart = () => {
+ loading.value = true;
+ chartProps.value = getHammerConversionOverTime();
+   setTimeout(() => {
    loading.value = false;
     }, 200)
+}
+
+onMounted(async () => {
+     loading.value = true;
+    await getTeamStats();
+    initChart();
  
 })
+
+
+watchDebounced(() => props.visibleStats, async () => {
+initChart();
+   
+    
+  
+}, {debounce: 200, immediate: false, deep: true})
 
     const getHammerConversionOverTime = () => {
     const reversed = allData.value.reverse();
     const conversions = {
-        label: "Hammer conversion",
+        label: BADGE_TITLES_PLAIN.efficiency,
         data: reversed.map((d, index) => ({
             x: index,
             y: (d.hammer_conversion_count / d.hammer_end_count) * 100,
@@ -49,10 +65,13 @@ onMounted(async () => {
                 hammer_end_count: d.hammer_end_count,
             },
         })),
+        backgroundColor: 'rgba(156, 39, 176, 0.3)',
+        borderColor: 'rgba(156, 39, 176, 1)',
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.efficiency),
     };
 
     const steals = {
-        label: "Steals conceded",
+        label: BADGE_TITLES_PLAIN.bandit,
         data: reversed.map((d, index) => ({
             x: index,
             y: (d.hammer_steal_count / d.hammer_end_count) * 100,
@@ -62,23 +81,29 @@ onMounted(async () => {
                 hammer_end_count: d.hammer_end_count,
             },
         })),
+        borderColor: 'rgba(244, 67, 54, 1)',
+        backgroundColor: 'rgba(244, 67, 54, 0.3)',
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bandit),
     };
 
     const forces = {
-        label: "Forced ends",
+        label: BADGE_TITLES_PLAIN.bulwark,
         data: reversed.map((d, index) => ({
             x: index,
-            y: (d.hammer_force_count / d.hammer_end_count) * 100,
+            y: (d.non_hammer_force_count / d.non_hammer_end_count) * 100,
             data: {
                 start_time: d.games?.start_time,
-                hammer_force_count: d.hammer_force_count,
-                hammer_end_count: d.hammer_end_count,
+                non_hammer_force_count: d.non_hammer_force_count,
+                non_hammer_end_count: d.non_hammer_end_count,
             },
         })),
+        borderColor: 'rgba(33, 150, 243, 1)',
+        backgroundColor: 'rgba(33, 150, 243, 0.3)',
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bulwark),
     };
 
     const blanks = {
-        label: "Blank ends",
+        label:  BADGE_TITLES_PLAIN.minimalist,
         data: reversed.map((d, index) => ({
             x: index,
             y: (d.hammer_blank_count / d.hammer_end_count) * 100,
@@ -88,6 +113,55 @@ onMounted(async () => {
                 hammer_end_count: d.hammer_end_count,
             },
         })),
+        borderColor: 'rgba(0, 131, 143, 1)',
+        backgroundColor: 'rgba(0, 131, 143, 0.3)',
+        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.minimalist),
+    };
+
+    const hammerForces = {
+        label: BADGE_TITLES_PLAIN.survivalist,
+        data: reversed.map((d, index) => ({
+            x: index,
+            y: (d.hammer_force_count / d.hammer_end_count) * 100,
+            data: {
+                start_time: d.games?.start_time,
+                hammer_force_count: d.hammer_force_count,
+                hammer_end_count: d.hammer_end_count,
+            },
+        })),
+        borderColor: 'rgba(27, 94, 32, 1)',
+        backgroundColor: 'rgba(27, 94, 32, 0.3)',
+        hidden:!props.visibleStats.includes(BADGE_TITLES_PLAIN.survivalist),
+    };
+
+     const hammerFirstEnd = {
+        label: BADGE_TITLES_PLAIN.firstend,
+        data: reversed.map((d, index) => ({
+            x: index,
+            y: (d.hammer_first_end_count / allData.value.length) * 100,
+            data: {
+                start_time: d.games?.start_time,
+                hammer_first_end_count: d.hammer_first_end_count,
+                hammer_end_count: allData.value.length,
+            },
+        })),
+        borderColor: 'rgba(255, 235, 59, 1)',
+        backgroundColor: 'rgba(255, 235, 59, 0.3)'
+    };
+
+      const hammerLastEnd = {
+        label: BADGE_TITLES_PLAIN.firstend,
+        data: reversed.map((d, index) => ({
+            x: index,
+            y: (d.hammer_last_end_count / 1) * 100,
+            data: {
+                start_time: d.games?.start_time,
+                hammer_last_end_count: d.hammer_last_end_count,
+                hammer_end_count: allData.value.length,
+            },
+        })),
+        borderColor: 'rgba(233, 30, 99, 1)',
+        backgroundColor: 'rgba(233, 30, 99, 0.3)'
     };
 
     const { format, toTimezone } = useTime();
@@ -118,20 +192,20 @@ onMounted(async () => {
 
     
     const getForceAverage = () => {
-        const { hammer_end_count, hammer_force_count } = reversed.reduce(
+        const { non_hammer_end_count, non_hammer_force_count } = reversed.reduce(
             (all, current) => {
                 return {
-                    hammer_end_count:
-                        all.hammer_end_count + current.hammer_end_count,
-                    hammer_force_count:
-                        all.hammer_force_count +
-                        current.hammer_force_count,
+                    non_hammer_end_count:
+                        all.non_hammer_end_count + current.non_hammer_end_count,
+                    non_hammer_force_count:
+                        all.non_hammer_force_count +
+                        current.non_hammer_force_count,
                 };
             },
-            { hammer_end_count: 0, hammer_force_count: 0 }
+            { non_hammer_end_count: 0, non_hammer_force_count: 0 }
         );
 
-        return (hammer_force_count / hammer_end_count) * 100;
+        return (non_hammer_force_count / non_hammer_end_count) * 100;
     };
 
      const getStealAverage = () => {
@@ -167,60 +241,112 @@ onMounted(async () => {
         return (hammer_blank_count / hammer_end_count) * 100;
     };
 
+        const getHammerForceAverage = () => {
+        const { hammer_end_count, hammer_force_count } = reversed.reduce(
+            (all, current) => {
+                return {
+                    hammer_end_count:
+                        all.hammer_end_count + current.hammer_end_count,
+                    hammer_force_count:
+                        all.hammer_force_count +
+                        current.hammer_force_count,
+                };
+            },
+            { hammer_end_count: 0, hammer_force_count: 0 }
+        );
+
+        return (hammer_force_count / hammer_end_count) * 100;
+    };
+
+           const getHammerFirstEndAverage = () => {
+        const { hammer_first_end_count } = reversed.reduce(
+            (all, current) => {
+                return {
+                    hammer_first_end_count:
+                        all.hammer_first_end_count +
+                        current.hammer_first_end_count,
+                };
+            },
+            { hammer_first_end_count: 0 }
+        );
+
+        return (hammer_first_end_count / 1) * 100;
+    };
+
     const hammerConversionAvg = getConversionAverage();
-    const hammerForceAvg = getForceAverage();
+    const nonHammerForceAvg = getForceAverage();
     const hammerStealAvg = getStealAverage();
     const hammerBlankAvg = getBlankAverage()
+    const hammerForceAvg = getHammerForceAverage()
+    const hammerFirstEndAvg = getHammerFirstEndAverage();
 
     return {
         annotations: {
             conversion: {
                 yMin: hammerConversionAvg,
                 yMax: hammerConversionAvg,
-                borderColor: "#9ad0f5",
+                borderColor: "rgba(156, 39, 176, 0.3)",
                 borderWidth: 2,
                 borderDash: [6,6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `Avg: ${hammerConversionAvg.toFixed(1)}%`,
+                    content: `${BADGE_TITLES_PLAIN.efficiency} avg: ${hammerConversionAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
-                }
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(0)?.visible
+                    } 
+                    return true;
+                },
             },
             force: {
-                yMin: hammerForceAvg,
-                yMax: hammerForceAvg,
-                borderColor: "#ffcf9f",
+                yMin: nonHammerForceAvg,
+                yMax: nonHammerForceAvg,
+                borderColor: "rgba(33, 150, 243, 0.3)",
                 borderWidth: 2,
                 borderDash: [6,6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `Avg: ${hammerForceAvg.toFixed(1)}%`,
+                    content: `${BADGE_TITLES_PLAIN.bulwark} avg: ${nonHammerForceAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
-                }
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(2)?.visible
+                    } 
+                    return true;
+                },
             },
             steal: {
                 yMin: hammerStealAvg,
                 yMax: hammerStealAvg,
-                borderColor: "#ffb1c1",
+                borderColor: "rgba(244, 67, 54, 0.3)",
                 borderWidth: 2,
                 borderDash: [6,6],
                 type: "line",
                 label: {
                     display: true,
-                    content: `Avg: ${hammerStealAvg.toFixed(1)}%`,
+                    content: `${BADGE_TITLES_PLAIN.bandit} avg: ${hammerStealAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
                     enabled: true,
-                }
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(1)?.visible
+                    } 
+                    return true;
+                },
             },
             blank: {
                 yMin: hammerBlankAvg,
@@ -231,7 +357,51 @@ onMounted(async () => {
                 type: "line",
                 label: {
                     display: true,
-                    content: `Avg: ${hammerBlankAvg.toFixed(1)}%`,
+                    content: `${BADGE_TITLES_PLAIN.minimalist} avg: ${hammerBlankAvg.toFixed(1)}%`,
+                    color: "rgba(0,0,0,0.6)",
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    yAdjust: -7,
+                    enabled: true,
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(3)?.visible
+                    } 
+                    return true;
+                },
+            },
+           hammerForce: {
+                yMin: hammerForceAvg,
+                yMax: hammerForceAvg,
+                borderColor: "rgba(27, 94, 32, 0.3)",
+                borderWidth: 2,
+                borderDash: [6,6],
+                type: "line",
+                label: {
+                    display: true,
+                    content: `${BADGE_TITLES_PLAIN.survivalist} avg: ${hammerForceAvg.toFixed(1)}%`,
+                    color: "rgba(0,0,0,0.6)",
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    yAdjust: -7,
+                    enabled: true,
+                },
+                display: (e) => {
+                    if (e.chart) {
+                        return e.chart.getDatasetMeta(4)?.visible
+                    } 
+                    return true;
+                },
+            },
+            hammerFirstEnd: {
+                yMin: hammerFirstEndAvg,
+                yMax: hammerFirstEndAvg,
+                borderColor: "rgba(255, 235, 59, 0.3)",
+                borderWidth: 2,
+                borderDash: [6,6],
+                type: "line",
+                label: {
+                    display: true,
+                    content: `Hammer first end avg: ${hammerFirstEndAvg.toFixed(1)}%`,
                     color: "rgba(0,0,0,0.6)",
                     backgroundColor: 'rgba(0,0,0,0)',
                     yAdjust: -7,
@@ -243,7 +413,7 @@ onMounted(async () => {
             labels: allData.value.map(({ games }) =>
                 format(toTimezone(games.start_time))
             ),
-            datasets: [conversions, steals, forces, blanks],
+            datasets: [conversions, steals, forces, blanks, hammerForces],
         },
         tooltip: {
             callbacks: {
@@ -268,11 +438,11 @@ onMounted(async () => {
                                     data.hammer_end_count) *
                                 100
                             ).toFixed(1)}%)`,
-                            2: `${data.hammer_force_count}/${
-                                data.hammer_end_count
+                            2: `${data.non_hammer_force_count}/${
+                                data.non_hammer_end_count
                             } ends (${(
-                                (data.hammer_force_count /
-                                    data.hammer_end_count) *
+                                (data.non_hammer_force_count /
+                                    data.non_hammer_end_count) *
                                 100
                             ).toFixed(1)}%)`,
                             3: `${data.hammer_blank_count}/${

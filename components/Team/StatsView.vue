@@ -7,22 +7,20 @@
             label="Loading stats..."
             :showing="loading"
         />
-       <TeamStatsViewPercentage class="col-12" badge="efficiency" :numerator="team.hammer_conversion_count" :denominator="team.hammer_end_count" @click="viewMore('conversions')"/>
-          <TeamStatsViewPercentage class="col-12" badge="bulwark" :numerator="team.non_hammer_force_count" :denominator="team.non_hammer_end_count"/>
-       <TeamStatsViewPercentage  class="col-12" badge="bandit" :numerator="team.non_hammer_steal_count" :denominator="team.non_hammer_end_count"/>
-      <TeamStatsViewPercentage  class="col-12" badge="firstend" :numerator="team.hammer_first_end_count" :denominator="team.games_played" gameStat/>
-        <TeamStatsViewPercentage  class="col-12" badge="strategist" :numerator="team.hammer_last_end_count" :denominator="team.games_played" gameStat/>
-        <TeamStatsViewPercentage  class="col-12" badge="minimalist" :numerator="team.hammer_blank_count" :denominator="team.hammer_end_count" />
-      <TeamStatsViewPercentage  class="col-12" badge="survivalist" :numerator="team.hammer_force_count" :denominator="team.hammer_end_count" />
+       <TeamStatsViewPercentage class="col-12" badge="efficiency" :numerator="team.hammer_conversion_count" :denominator="team.hammer_end_count" @showMore="viewMore(BADGE_TITLES_PLAIN.efficiency)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.efficiency)"/>
+          <TeamStatsViewPercentage class="col-12" badge="bulwark" :numerator="team.non_hammer_force_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bulwark)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bulwark)"/>
+       <TeamStatsViewPercentage  class="col-12" badge="bandit" :numerator="team.non_hammer_steal_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bandit)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bandit)"/>
+      <TeamStatsViewPercentage  class="col-12" badge="firstend" :numerator="team.hammer_first_end_count" :denominator="team.games_played" gameStat  noDetails/>
+        <TeamStatsViewPercentage  class="col-12" badge="strategist" :numerator="team.hammer_last_end_count" :denominator="team.games_played" gameStat  noDetails />
+        <TeamStatsViewPercentage  class="col-12" badge="minimalist" :numerator="team.hammer_blank_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.minimalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.minimalist)"/>
+      <TeamStatsViewPercentage  class="col-12" badge="survivalist" :numerator="team.hammer_force_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.survivalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.survivalist)"/>
     </div>
     <transition appear enter-active-class="animted slideInRight" leave-active-class="animated slideOutRight">
     <div  class="col-12 col-sm-6 row full-height view-more__container" v-show="!!viewDetails" >
         <div class="view-details-back__container" @click="viewDetails = null" v-if="$q.screen.xs">
             <q-btn  icon="close" round flat />
         </div>
-        <KeepAlive>
-        <ChartTeamHammerEfficiencyTime :teamId="team.id" v-if="viewDetails === 'conversions'"/>
-        </KeepAlive>
+        <ChartTeamHammerEfficiencyTime :teamId="team.id" v-if="!!viewDetails.length" :visibleStats="viewDetails"/>
     </div>
     </transition>
     </div>
@@ -54,7 +52,7 @@ import {
     useDebounceFn,
 } from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
-import { BADGE_THRESHOLDS } from "@/constants/badges";
+import { BADGE_THRESHOLDS, BADGE_TITLES_PLAIN } from "@/constants/badges";
 
 const props = defineProps({
     teamId: Number,
@@ -66,14 +64,15 @@ const props = defineProps({
 
 const $q = useQuasar();
 
-const viewDetails = ref(false)
+const viewDetails = ref([])
 const detailsType = ref(null);
 
 const viewMore = (str) => {
-    if (viewDetails.value === str) {
-        viewDetails.value = null
+    if (viewDetails.value.includes(str)) {
+        const index = viewDetails.value.indexOf(str)
+        viewDetails.value.splice(index, 1)
     } else {
-        viewDetails.value = str;
+        viewDetails.value.push(str)
     }
 }
 

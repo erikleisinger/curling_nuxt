@@ -39,7 +39,7 @@ export const BADGE_TITLES_PLAIN = {
     bulwark: 'Force efficiency',
     minimalist: 'Blank ends',
     survivalist: 'Survivalism',
-    strategist: 'Coming home with',
+    strategist: 'Hammer in last end',
 }
 
 export const BADGE_DESCRIPTIONS_PLAIN = {
