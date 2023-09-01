@@ -1,7 +1,7 @@
 <template>
     <!-- -->
     <div class="row full-height">
-    <div  class="stats__container row" v-if="$q.screen.gt.xs || !viewDetails" :class="{'col-12': $q.screen.xs || !viewDetails, 'col-6': viewDetails && !$q.screen.xs}">
+    <div  class="stats__container row" v-if="$q.screen.gt.xs || !viewDetails?.length" :class="{'col-12': $q.screen.xs || !viewDetails.length, 'col-6': viewDetails.length && !$q.screen.xs}">
         <q-inner-loading
             color="purple"
             label="Loading stats..."
@@ -16,8 +16,8 @@
       <TeamStatsViewPercentage  class="col-12" badge="survivalist" :numerator="team.hammer_force_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.survivalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.survivalist)"/>
     </div>
     <transition appear enter-active-class="animted slideInRight" leave-active-class="animated slideOutRight">
-    <div  class="col-12 col-sm-6 row full-height view-more__container" v-show="!!viewDetails" >
-        <div class="view-details-back__container" @click="viewDetails = null" v-if="$q.screen.xs">
+    <div  class="col-12 col-sm-6 row full-height view-more__container" v-show="!!viewDetails?.length" >
+        <div class="view-details-back__container" @click="viewDetails = []" v-if="$q.screen.xs">
             <q-btn  icon="close" round flat />
         </div>
         <ChartTeamHammerEfficiencyTime :teamId="team.id" v-if="!!viewDetails.length" :visibleStats="viewDetails"/>
