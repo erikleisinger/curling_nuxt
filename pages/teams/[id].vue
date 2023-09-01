@@ -1,15 +1,6 @@
 <template>
  <NuxtLayout>
      <Team v-if="team && !loading" :team="team">
-        <!-- <template v-slot:appendButton>
-            <q-btn
-                flat
-                round
-                icon="search"
-                color="grey-8"
-                @click="toggleSearch"
-            /> -->
-        <!-- </template> -->
     </Team>
     <div v-else/>
  </NuxtLayout>
@@ -19,7 +10,6 @@
     const loading = ref(false)
     const team = ref(null)
     onMounted(async () => {
-        console.log('MOUNT TEA')
         loading.value = true;
         const client = useSupabaseClient();
 
@@ -32,8 +22,6 @@
         `).eq('id', route.params.id)
         const [t] = data;
         team.value = t;
-        console.log(data)
-
         loading.value = false;
     })
 </script>

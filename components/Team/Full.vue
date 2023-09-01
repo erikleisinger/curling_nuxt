@@ -154,7 +154,7 @@ const getRequest = async (teamId: number) => {
 
 const request = ref({})
 onMounted(async () => {
-    getTeamRecord(teamId);
+    // getTeamRecord(teamId);
     if (!canEdit.value) {
         const [r] = await getRequest(teamId)
         if (r) request.value = r

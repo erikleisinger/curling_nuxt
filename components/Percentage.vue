@@ -2,19 +2,27 @@
     <div
         class="column"
             :class="{ 'column-reverse': reverse }"
-        style="width: inherit; padding-bottom: 16px"
+        style="width: inherit"
         ref="el"
     >
+
         <div
             class="row justify-between no-wrap"
             :class="{ reverse }"
-            style="padding-bottom: 8px; width: 100%"
+            style=" width: 100%;"
         >
-            <div style="font-weight: bold" class="truncate-text col-shrink label" :class="{reverse}">{{ label }}</div>
-            <div style="font-weight: bold">{{ width }}%</div>
+            <div  class="truncate-text col-shrink label text-bold" :class="{reverse}" ><div v-if="showLabel">{{ label }}</div></div>
+            <div style="font-weight: bold" ><div v-if="showPercent">{{ width }}%</div></div>
         </div>
-        <div class="row justify-end" :class="{ reverse }">
-            <div class="percent-wrapper"  />
+        <div class="row justify-end no-wrap items-center" style="position: relative" :class="{ reverse }" :style="{height}">
+           
+                <div class="full-width" style="position:relative">
+                         <slot/>
+            <div class="percent-wrapper">
+            </div>
+
+            </div>
+            <slot name="append"/>
         </div>
     </div>
 </template>
@@ -24,7 +32,7 @@
     border-radius: 8px;
     overflow: hidden;
     width: 100%;
-    height: 8px;
+    height: v-bind(height);
     background-color: rgba(213, 213, 213, 0.3);
  
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
@@ -40,6 +48,8 @@
         animation-delay: 0.2s;
         width: v-bind(widthComputed);
         box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+             background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0)) !important;
+    background-size: 40px 40px !important;
     }
     
 }
@@ -57,9 +67,15 @@
 // import {useElementVisibility} from '@vueuse/core'
 const props = defineProps({
     color: String,
+    height: {
+        type: String,
+        default: '8px'
+    },
     percent: Number,
     label: String,
     reverse: Boolean,
+    showLabel: Boolean,
+    showPercent: Boolean,
     static: {
         type: Boolean,
         default() {

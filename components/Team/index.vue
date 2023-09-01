@@ -49,7 +49,7 @@
         </nav>
         </header>
 
-    <main class="column select__section full-width no-wrap" >
+    <main class="column select__section full-width no-wrap" :style="{overflow: tab === 'stats' ? 'hidden' : 'auto'}">
         <TeamStatsView
             :teamId="team?.id"
             v-if="team && tab === 'stats'"
@@ -73,7 +73,7 @@
 
 .select__section {
     height: v-bind(mainHeight);
-    overflow: auto;
+  
 }
 .team__content--container {
     border-bottom: 1px solid $grey-4;

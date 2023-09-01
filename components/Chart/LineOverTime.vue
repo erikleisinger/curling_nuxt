@@ -1,18 +1,7 @@
 <template>
-    <div class="chart__container">
-        <canvas ref="chart" />
-    </div>
+        <canvas ref="chart" id="canvas" height="400" width="400" />
 </template>
 <style lang="scss" scoped>
-.chart__container {
-    width: 100%;
-    padding: var(--space-sm);
-    canvas {
-        width: 100%;
-        height: 400px;
-        box-sizing: border-box;
-    }
-}
 </style>
 <script setup>
 import { useElementSize } from "@vueuse/core";
@@ -25,23 +14,16 @@ Chart.register(annotationPlugin);
 const props = defineProps({
     annotations: Object,
     data: Object,
-    for: Number,
-    forces: Number,
-    steals: Number,
-    teamId: Number,
-    totalEnds: Number,
-    height: {
-        type: Number,
-        default: 60,
-    },
     tooltip: Object,
 });
 
-const formattedHeight = computed(() => `${props.height}px`);
 const chart = ref(null);
 
 onMounted(async () => {
-    new Chart(chart.value, {
+    var ctx = document.getElementById("canvas").getContext("2d");
+ctx.canvas.width = 400;
+ctx.canvas.height = 400;
+    const myChart = new Chart(chart.value, {
         type: "line",
         data: props.data,
 
@@ -69,7 +51,9 @@ onMounted(async () => {
                     labels: {
                         usePointStyle: true,
                         pointStyle: "circle",
+                        padding: 16
                     },
+             
                 },
                 tooltip: props.tooltip,
             },
@@ -96,5 +80,7 @@ onMounted(async () => {
             },
         },
     });
+
+    Object.seal(myChart)
 });
 </script>

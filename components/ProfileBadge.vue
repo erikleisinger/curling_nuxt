@@ -36,7 +36,7 @@ $animation-dur: 0.1s;
 $inner-animation-dur: $animation-dur * 3;
 body {
     .expanded__wrap {
-        box-shadow: $pretty-shadow;
+        box-shadow: $pretty-shadow-2;
         position: absolute;
         top: v-bind(top);
 

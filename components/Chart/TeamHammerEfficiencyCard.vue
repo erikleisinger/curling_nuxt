@@ -2,12 +2,12 @@
     <ChartContainer @swipe="onSwipe" :index="index">
         <template v-slot:card>
         </template>
-        <div v-if="index === 0" key="chart-1" class="chart__container">
+        <div key="chart-1" class="chart__container">
             <h2 class="text-md text-left text-bold q-pl-sm">
-                Hammer efficiency
+                Hammer efficiency <q-btn dense round icon="edit" @click="showOverTime = !showOverTime"/>
             </h2>
 
-            <div class="stats__grid--container">
+            <div class="stats__grid--container" v-if="!showOverTime">
                 <div class="inner-stat">
                     <h2 class="text-sm">Conversions</h2>
                     <div>{{ props.for }}</div>
@@ -28,12 +28,19 @@
                     <canvas ref="chart1" />
                 </div>
             </div>
+            <KeepAlive v-else>
+            <div  class="line__container">
+                <div class="line__container--inner">
+                <ChartTeamHammerEfficiencyTime :teamId="props.teamId"/>
+                </div>
+            </div>
+            </KeepAlive>
         </div>
-        <div v-if="index === 1" key="chart-1">Stats 2</div>
     </ChartContainer>
 </template>
 <style lang="scss" scoped>
 .chart__container {
+    overflow: visible;
     display: grid;
     grid-template-rows: 3em 1fr;
     padding: var(--space-md);
@@ -60,6 +67,20 @@
             }
         }
     }
+    .line__container {
+        position: fixed;
+        top: 0;
+        background-color: white;
+        z-index: 1000;
+        height:400px;
+        width: 400px;
+        .line__container--inner {
+            position: relative;
+            height: inherit;
+            width: inherit;
+        }
+
+    }
 }
 </style>
 <script setup>
@@ -77,6 +98,8 @@ const props = defineProps({
 });
 
 const index = ref(0);
+
+const showOverTime = ref(false)
 
 const TITLES = ["Games played", "Title 2"];
 

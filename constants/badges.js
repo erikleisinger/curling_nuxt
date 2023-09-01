@@ -1,19 +1,67 @@
 export const BADGE_BACKGROUNDS = {
+    firstend: 'bg-badge--amber',
+    efficiency: 'bg-badge--purple',
     showoff: 'bg-badge--pale-red',
-    bandit: 'bg-badge--brown',
-    bulwark: 'bg-badge--purple',
-    minimalist: 'bg-badge--blue',
+    bandit: 'bg-badge--pale-red',
+    bulwark: 'bg-badge--blue',
+    minimalist: 'bg-badge--teal',
     survivalist: 'bg-badge--green',
     strategist: 'bg-badge--pink'
 }   
 
+export const BADGE_COLORS = {
+    firstend: 'amber',
+    efficiency: 'purple',
+    showoff: 'red',
+    bandit: 'red',
+    bulwark: 'blue',
+    minimalist: 'teal',
+    survivalist: 'green',
+    strategist: 'pink'
+}   
+
 export const BADGE_TITLES = {
+    efficiency: 'Efficiency',
+    firstend: 'Running start',
     showoff: 'Showoffs!',
     bandit: 'Bandits',
     bulwark: 'Indomitable',
     minimalist: 'Cleaning crew',
     survivalist: 'Survivalists',
     strategist: 'Strategists',
+}
+
+export const BADGE_TITLES_PLAIN = {
+    efficiency: 'Hammer efficiency',
+    firstend: 'Hammer in first end',
+    showoff: 'Big ends',
+    bandit: 'Steal efficiency',
+    bulwark: 'Force efficiency',
+    minimalist: 'Blank ends',
+    survivalist: 'Survivalism',
+    strategist: 'Coming home with',
+}
+
+export const BADGE_DESCRIPTIONS_PLAIN = {
+    efficiency: 'Score 2+ points with hammer',
+    firstend: 'Possess hammer in end #1',
+    showoff: 'Score 3+ points',
+    bandit: 'Score without hammer',
+    bulwark: 'Opposition takes 1 point with hammer',
+    minimalist: 'Score 0 points with hammer',
+    survivalist: 'Score 1 point with hammer',
+    strategist: 'Possess hammer in last end',
+}
+
+export const BADGE_THRESHOLDS = {
+    firstend: 66,
+    efficiency: 66,
+    showoff: 50,
+    bandit: 33,
+    bulwark: 50,
+    minimalist: 33,
+    survivalist: 50,
+    strategist: 50
 }
 
 
@@ -24,6 +72,17 @@ export const BADGE_FORMULAS = {
     minimalist: (val) => `With hammer, blanks ${val.toFixed()}% of the time.`,
     survivalist: (val) => `With hammer, scores 1 point ${val.toFixed()}% of the time.`,
     strategist: (val) => `Has hammer in last end ${val.toFixed()}% of the time.`
+}
+
+export const BADGE_FORMULA_EXPLANATIONS = {
+    firstend: `Possess hammer in the first end ${BADGE_THRESHOLDS.firstend}% of the time or more.`,
+    efficiency: `With hammer, score 2+ points  ${BADGE_THRESHOLDS.efficiency}% of the time or more.`,
+    showoff: `With hammer, more than 2 points  ${BADGE_THRESHOLDS.showoff}% of the time or more.`,
+    bandit: `Score points without hammer ${BADGE_THRESHOLDS.bandit}% of the time or more.`,
+    bulwark: `Force opposition ${BADGE_THRESHOLDS.bulwark}% of the time or more.`,
+    minimalist: `With hammer, blank ${BADGE_THRESHOLDS.minimalist}% of the time or more.`,
+    survivalist: `With hammer, score only 1 point ${BADGE_THRESHOLDS.survivalist}% of the time or more.`,
+    strategist: `Possess hammer in the last end ${BADGE_THRESHOLDS.strategist}% of the time or more.`,
 }
 
 export const BADGE_DESCRIPTIONS = {

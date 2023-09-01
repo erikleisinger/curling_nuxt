@@ -13,7 +13,7 @@
                     <h3 class="text-sm" v-html="descriptionText" />
                 </div>
             </div>
-            <div>
+            <div style="position: relative; width: 100%">
                 <canvas ref="chart1" />
             </div>
         </div>
@@ -22,6 +22,7 @@
 </template>
 <style lang="scss" scoped>
 .chart__container {
+    width: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
     padding-left: var(--space-md);

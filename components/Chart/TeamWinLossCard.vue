@@ -1,9 +1,6 @@
 <template>
     <ChartContainer :index="index">
-        <!-- <template v-slot:title>{{ TITLES[index] }}</template>
-        <template v-slot:subtitle>{{ DESCRIPTIONS[index] }}</template> -->
         <template v-slot:card>
-            <!-- <StatsAggregateCard :score="gamesCount"/> -->
         </template>
         <div v-if="index === 0" key="chart-1" class="chart__container">
             <div class="full-height row items-center">
@@ -14,7 +11,7 @@
                     </h3>
                 </div>
             </div>
-            <div>
+            <div style="position: relative; width: 100%">
                 <canvas ref="chart1" />
             </div>
         </div>
@@ -23,6 +20,7 @@
 </template>
 <style lang="scss" scoped>
 .chart__container {
+    width: 100%;
     display: grid;
     grid-template-columns: 50% 50%;
     padding-left: var(--space-md);
