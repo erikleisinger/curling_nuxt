@@ -23,6 +23,7 @@ const props = defineProps({
     against: Number,
     labels: Boolean,
     for: Number,
+    showTooltip: Boolean,
     teamId: Number,
      height: {
         type: Number,
@@ -107,10 +108,10 @@ onMounted(async () => {
             },
             plugins: {
                 datalabels: {
-                    display: props.labels,
+                    display: true,
                     color: "white",
                     font: {
-                        size: 18,
+                        size: props.height / 6,
                         family: '"Hind", sans-serif',
                         weight: "bold",
                     },
@@ -137,6 +138,7 @@ onMounted(async () => {
                     position: "bottom",
                 },
                 tooltip: {
+                    enabled: props.showTooltip,
                     usePointStyle: true,
                     callbacks: {
                         label: ({ raw }) => {
@@ -146,7 +148,7 @@ onMounted(async () => {
                     },
                 },
             },
-            cutout: "50%",
+            cutout: "0",
             rotation: -90,
             circumference: 360,
             animation: {

@@ -6,13 +6,13 @@
             v-bind="chartProps"
             v-slot="{ chart }"
             height="calc(100% - 66px)"
+            @chart="setChart"
         >
             <div
                 class="row justify-between  chart-options__container no-wrap"
-                ref="toolbar"
             >
             <div class="row ">
-                <q-btn class="q-mb-sm q-mr-none q-mr-sm-sm"  :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="visibility" color="primary" :label="$q.screen.xs ? '' : 'Show/hide stats'">
+                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md"  round  flat icon="visibility" color="primary" v-if="$q.screen.xs">
                   
                     <q-menu
                         transition-show="jump-down"
@@ -20,6 +20,12 @@
                       
                     >
                         <q-list dense style="min-width: 100px">
+                             <q-item
+                                v-if="$q.screen.xs"
+                            >
+                                <q-item-section class="text-bold">Show/hide stats</q-item-section>
+                            </q-item>
+                            <q-separator  v-if="$q.screen.xs"/>
                             <q-item
                                 clickable
                                 v-ripple
@@ -45,7 +51,7 @@
                         </q-list>
                     </q-menu>
                 </q-btn>
-                <q-btn class="q-mb-sm q-mr-none q-mr-sm-sm" :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="date_range"  :color="$q.screen.xs ? 'primary' : 'white'" text-color="primary"  :label="$q.screen.xs ? '' : 'Range'">
+                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md" :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="date_range"  :color="$q.screen.xs ? 'primary' : 'white'" text-color="primary"  :label="$q.screen.xs ? '' : 'Time range'">
                 
                     <q-menu
                         transition-show="jump-down"
@@ -53,6 +59,12 @@
                       
                     >
                         <q-list dense style="min-width: 100px">
+                           <q-item
+                                v-if="$q.screen.xs"
+                            >
+                                <q-item-section class="text-bold">Time range</q-item-section>
+                            </q-item>
+                              <q-separator  v-if="$q.screen.xs"/>
                             <q-item
                                 clickable
                                 @click="setFilter('range', 'week', chart)"
@@ -86,7 +98,7 @@
                         </q-list>
                     </q-menu>
                 </q-btn>
-                <q-checkbox label="Averages" class="q-mb-sm q-ml-sm q-ml-sm-none" v-model="showAverages" dense @update:model-value="toggleAverageVisibility($event, chart)"/>
+                <q-checkbox label="Season avg" class="q-mb-sm q-ml-sm q-ml-sm-none" v-model="showAverages" dense @update:model-value="toggleAverageVisibility($event, chart)"/>
             </div>
             <div>
                 <q-btn flat round icon="close" @click="emit('close')" />
@@ -110,7 +122,6 @@
 </style>
 <script setup>
 import { BADGE_COLORS, BADGE_TITLES_PLAIN } from "@/constants/badges";
-import { useElementSize, watchDebounced } from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
 
 const props = defineProps({
@@ -122,8 +133,6 @@ const emit = defineEmits(["close"]);
 
 const $q = useQuasar();
 
-const toolbar = ref(null);
-const { height, width } = useElementSize(toolbar);
 
 const showAverages = ref(true)
 
@@ -142,6 +151,11 @@ const options = [
         color: BADGE_COLORS.bulwark,
         title: BADGE_TITLES_PLAIN.bulwark,
         visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.bulwark),
+    },
+    {
+        color: BADGE_COLORS.stealdefense,
+        title: BADGE_TITLES_PLAIN.stealdefense,
+        visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.stealdefense),
     },
     {
         color: BADGE_COLORS.minimalist,
@@ -163,6 +177,7 @@ const options = [
 const visibleItems = ref([...(props.visibleStats ?? [])]);
 
 const toggleVisibility = (chart, index = 0) => {
+    console.log('TOGGLE VISIBLE')
     const { visible } = chart.getDatasetMeta(index);
     chart.setDatasetVisibility(index, !visible);
     chart.update("active");
@@ -181,6 +196,14 @@ const toggleAverageVisibility = (evt, chart) => {
     chart.options.plugins.annotation.annotations = annotations;
     chart.update();
 }
+
+watch(() => props.visibleStats, (val) => {
+    if (!chart || $q.screen.xs) return;
+    console.log('update visible')
+    const {data} = getHammerConversionOverTime();
+    chart.data = data;
+    chart.update();
+}, {deep: true})
 
 const allData = ref([]);
 
@@ -223,6 +246,12 @@ const getTeamStats = async () => {
     });
     allData.value = data.reverse();
 };
+
+let chart;
+
+const setChart = (c) => {
+    chart = c;
+}
 
 const chartProps = ref({});
 const loading = ref(true);
@@ -280,13 +309,14 @@ const getHammerConversionOverTime = () => {
         (team.hammer_conversion_count / team.hammer_end_count) * 100;
     const nonHammerForceAvg =
         (team.non_hammer_force_count / team.non_hammer_end_count) * 100;
-    const hammerStealAvg =
-        (team.hammer_steal_count / team.hammer_end_count) * 100;
+    const nonHammerStealAvg =
+        (team.non_hammer_steal_count / team.hammer_end_count) * 100;
+    const hammerStealDefenseAvg = (team.hammer_steal_count / team.hammer_end_count) * 100;
     const hammerBlankAvg =
         (team.hammer_blank_count / team.hammer_end_count) * 100;
     const hammerFirstEndAvg =
         (team.hammer_first_end_count / team.games_played) * 100;
-    const hammerLandEndAvg =
+    const hammerLastEndAvg =
         (team.hammer_last_end_count / team.games_played) * 100;
 
     const conversions = {
@@ -303,7 +333,7 @@ const getHammerConversionOverTime = () => {
         })),
         backgroundColor: "rgba(156, 39, 176, 1)",
         borderColor: "rgba(156, 39, 176, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.efficiency),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.efficiency),
     };
 
     const steals = {
@@ -315,12 +345,12 @@ const getHammerConversionOverTime = () => {
                 start_time: d.start_time,
                 hammer_steal_count: d.hammer_steal_count,
                 hammer_end_count: d.hammer_end_count,
-                average: hammerStealAvg,
+                average: nonHammerStealAvg,
             },
         })),
         borderColor: "rgba(244, 67, 54, 1)",
         backgroundColor: "rgba(244, 67, 54, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bandit),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bandit),
     };
 
     const forces = {
@@ -337,7 +367,7 @@ const getHammerConversionOverTime = () => {
         })),
         borderColor: "rgba(33, 150, 243, 1)",
         backgroundColor: "rgba(33, 150, 243, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.bulwark),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bulwark),
     };
 
     const blanks = {
@@ -354,7 +384,7 @@ const getHammerConversionOverTime = () => {
         })),
         borderColor: "rgba(0, 131, 143, 1)",
         backgroundColor: "rgba(0, 131, 143, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.minimalist),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.minimalist),
     };
 
     const hammerFirstEnd = {
@@ -381,7 +411,7 @@ const getHammerConversionOverTime = () => {
         }, []),
         borderColor: "rgba(255, 235, 59, 1)",
         backgroundColor: "rgba(255, 235, 59, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.firstend),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.firstend),
     };
 
     const hammerLastEnd = {
@@ -401,42 +431,64 @@ const getHammerConversionOverTime = () => {
                         start_time: current.start_time,
                         hammer_last_end_count: current.hammer_last_end_count,
                         hammer_end_count: index + 1,
-                        average: hammerLandEndAvg,
+                        average: hammerLastEndAvg,
                     },
                 },
             ];
         }, []),
         borderColor: "rgba(233, 30, 99, 1)",
         backgroundColor: "rgba(233, 30, 99, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.strategist),
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.strategist),
+    };
+
+    const stealDefense = {
+        label: BADGE_TITLES_PLAIN.stealdefense,
+        data: allData.value.map((d, index) => ({
+            x: index,
+            y: (d.hammer_steal_count / d.hammer_end_count) * 100,
+            data: {
+                start_time: d.start_time,
+                hammer_steal_count: d.hammer_steal_count,
+                hammer_end_count: d.hammer_end_count,
+                average: hammerBlankAvg,
+            },
+        })),
+        borderColor: "rgba(96, 125, 139, 1)",
+        backgroundColor: "rgba(96, 125, 139, 1)",
+        hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.stealdefense),
     };
 
     const datasets = {
         efficiency: {
             datasets: conversions,
             average:
-                (team.hammer_conversion_count / team.hammer_end_count) * 100,
+                hammerConversionAvg
         },
         bandit: {
             datasets: steals,
-            average: (team.hammer_steal_count / team.hammer_end_count) * 100,
+            average: nonHammerStealAvg
         },
         bulwark: {
             datasets: forces,
             average:
-                (team.non_hammer_force_count / team.non_hammer_end_count) * 100,
+                nonHammerForceAvg
+        },
+                stealdefense: {
+            datasets: stealDefense,
+            average: hammerStealDefenseAvg
         },
         minimalist: {
             datasets: blanks,
-            average: (team.hammer_blank_count / team.hammer_end_count) * 100,
+            average: hammerBlankAvg
         },
         firstend: {
             datasets: hammerFirstEnd,
-            average: (team.hammer_first_end_count / team.games_played) * 100,
+            average: hammerFirstEndAvg
         },
+
         strategist: {
             datasets: hammerLastEnd,
-            average: (team.hammer_last_end_count / team.games_played) * 100,
+            average: hammerLastEndAvg
         },
     };
 
@@ -448,7 +500,7 @@ const getHammerConversionOverTime = () => {
                 yMin: datasets[key].average,
                 yMax: datasets[key].average,
                 borderColor: getColor(BADGE_COLORS[key]),
-                opacity: 0.3,
+                opacity: 0.1,
                 borderWidth: 2,
                 borderDash: [6, 6],
                 type: "line",
@@ -523,21 +575,28 @@ const getHammerConversionOverTime = () => {
                                     data.non_hammer_end_count) *
                                 100
                             ).toFixed(1)}%)`,
-                            3: `${data.hammer_blank_count}/${
+                              3: `${data.hammer_steal_count}/${
+                                data.hammer_end_count
+                            } ends (${(
+                                (data.hammer_steal_count /
+                                    data.hammer_end_count) *
+                                100
+                            ).toFixed(1)}%)`,
+                            4: `${data.hammer_blank_count}/${
                                 data.hammer_end_count
                             } ends (${(
                                 (data.hammer_blank_count /
                                     data.hammer_end_count) *
                                 100
                             ).toFixed(1)}%)`,
-                            4: `${data.hammer_first_end_count}/${
+                            5: `${data.hammer_first_end_count}/${
                                 d.dataIndex + 1
                             } games (${(
                                 (data.hammer_first_end_count /
                                     allData.value.length) *
                                 100
                             ).toFixed(1)}%)`,
-                            5: `${data.hammer_last_end_count}/${
+                            6: `${data.hammer_last_end_count}/${
                                 d.dataIndex + 1
                             } games (${(
                                 (data.hammer_last_end_count /

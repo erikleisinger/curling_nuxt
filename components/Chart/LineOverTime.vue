@@ -25,13 +25,14 @@ const props = defineProps({
     tooltip: Object,
 });
 
+const emit = defineEmits(['chart'])
+
 const chart = ref(null);
 let myChart;
 
 const loading = ref(true);
 
 onMounted(async () => {
-    console.log("MOUNTED: ", props.data);
     const annotations = { ...props.annotations };
     const data = { ...props.data };
     const tooltip = { ...props.tooltip };
@@ -56,7 +57,6 @@ onMounted(async () => {
             maintainAspectRatio: false,
             plugins: {
                 annotation: {
-                    // drawTime: "beforeDraw",
                     annotations,
                 },
                 legend: {
@@ -96,5 +96,6 @@ onMounted(async () => {
 
     Object.seal(myChart.value);
     loading.value = false;
+    emit('chart', myChart)
 });
 </script>

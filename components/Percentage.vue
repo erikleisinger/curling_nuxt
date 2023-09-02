@@ -1,28 +1,27 @@
 <template>
-    <div
-        class="column"
-
-        style="width: inherit"
-        ref="el"
-    >
-
-        <div
-            class="row justify-between no-wrap"
-
-            style=" width: 100%;"
-        >
-            <div  class="truncate-text col-shrink label text-bold" :class="{reverse}" ><div v-if="showLabel">{{ label }}</div></div>
-            <div style="font-weight: bold" ><div v-if="showPercent">{{ width }}%</div></div>
+    <div class="column" style="width: inherit" ref="el">
+        <div class="row justify-between no-wrap" style="width: 100%">
+            <div
+                class="truncate-text col-shrink label text-bold"
+                :class="{ reverse }"
+            >
+                <div v-if="showLabel">{{ label }}</div>
+            </div>
+            <div style="font-weight: bold">
+                <div v-if="showPercent">{{ width }}%</div>
+            </div>
         </div>
-        <div class="row justify-end no-wrap items-center" style="position: relative"  :style="{height}">
-           
-                <div class="full-width" style="position:relative">
-                         <slot/>
-            <div class="percent-wrapper">
+        <div
+            class="row justify-end no-wrap items-center"
+            style="position: relative"
+            :style="{ height }"
+        >
+          <slot name="prepend" />
+            <div class="full-width" style="position: relative">
+                <slot />
+                <div class="percent-wrapper"></div>
             </div>
-
-            </div>
-            <slot name="append"/>
+               <slot name="append" />
         </div>
     </div>
 </template>
@@ -34,7 +33,7 @@
     width: 100%;
     height: v-bind(height);
     background-color: rgba(213, 213, 213, 0.3);
- 
+
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
     &:after {
         content: "";
@@ -47,18 +46,28 @@
         animation: 0.8s grow forwards;
         animation-delay: 0.2s;
         width: v-bind(widthComputed);
-        box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
-             background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0)) !important;
-    background-size: 40px 40px !important;
+        box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+            rgba(17, 17, 26, 0.1) 0px 8px 24px,
+            rgba(17, 17, 26, 0.1) 0px 16px 56px;
+        background-image: linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.15) 25%,
+            rgba(255, 255, 255, 0) 25%,
+            rgba(255, 255, 255, 0) 50%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.15) 75%,
+            rgba(255, 255, 255, 0) 75%,
+            rgba(255, 255, 255, 0)
+        ) !important;
+        background-size: 40px 40px !important;
     }
-    
 }
 .label {
-        margin-right: var(--space-xs);
-        &.reverse {
-            margin-left: var(--space-xs);
-        }
+    margin-right: var(--space-xs);
+    &.reverse {
+        margin-left: var(--space-xs);
     }
+}
 </style>
 <script setup>
 // import {useElementVisibility} from '@vueuse/core'
@@ -66,7 +75,7 @@ const props = defineProps({
     color: String,
     height: {
         type: String,
-        default: '8px'
+        default: "8px",
     },
     percent: Number,
     label: String,
@@ -77,23 +86,22 @@ const props = defineProps({
         type: Boolean,
         default() {
             return true;
-        }
-    }
+        },
+    },
 });
-const width = ref(0)
+const width = ref(0);
 const widthComputed = computed(() => `${width.value}%`);
 const left = computed(() => (props.reverse ? "unset" : 0));
 const right = computed(() => (props.reverse ? 0 : "unset"));
 // const el = ref(null)
 // const targetVisible = useElementVisibility(el)
- const {upTick} = useAnimate();
-     const {getColor} = useColor();
+const { upTick } = useAnimate();
+const { getColor } = useColor();
 
-const rendered = ref(false)
+const rendered = ref(false);
 onMounted(() => {
     upTick(width, props.percent);
-})
-
+});
 
 // watch(targetVisible, (val) => {
 //     if (!val || (props.static && rendered.value)) return;
@@ -102,9 +110,7 @@ onMounted(() => {
 //     upTick(width, props.percent);
 // }, {immediate:true})
 
-
-
 const bg = computed(() => {
-    return getColor(props.color)
-})
+    return getColor(props.color);
+});
 </script>

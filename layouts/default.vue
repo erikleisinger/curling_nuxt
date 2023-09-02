@@ -1,12 +1,22 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
-    <q-layout view="hhh lpr fFf" v-else class="app-layout">
-        <q-page-container class="page__container--global">
-                <slot />
-        </q-page-container>
-        <q-footer bordered class="bg-white text-black">
-            <q-toolbar class="bottom__nav" >
-                <div class="bottom__nav--item">
+    <q-layout view="HHH lpr fff" v-else class="app-layout">
+            <q-header bordered class="bg-white text-black">
+            <q-toolbar class="global-header row justify-between" >
+                <div style="width: 42px"/>
+                <div class="row full-height items-center">
+                    <div style="height: 50%; aspect-ratio: 1/1; margin-top: -10%">
+                <Logo :color="getColor('deepPurple')"/>
+                    </div>
+                </div>
+
+                <div v-if="$q.screen.xs">
+                    <q-btn flat round icon="menu" color="grey-8" @click="rightDrawerOpen = !rightDrawerOpen"/>
+                    
+                </div>
+
+                <div v-else/>
+                <!-- <div class="bottom__nav--item">
                     <ButtonNav
                         label="Season"
                         :selected="view === VIEWS.SEASON"
@@ -26,10 +36,10 @@
                         size="3em"
                         class="col-grow"
                     />
-                </div>
+                </div> -->
 
                 <!-- New game -->
-                <div
+                <!-- <div
                     style="
                         position: relative;
                         min-height: inherit;
@@ -71,7 +81,7 @@
                                 @click="toggleLineScore({open: true})"
                             ></q-fab-action>
                        
-                            <!-- <q-fab-action
+                           <q-fab-action
                                      color="white"
                                 text-color="deep-purple"
                                 icon="groups_2"
@@ -85,10 +95,10 @@
                                 label="New Player"
                                 @click="createNewPlayer"
                             /> -->
-                        </q-fab>
+                        <!-- </q-fab>
                     </div>
-                </div>
-                             <div class="bottom__nav--item">
+                </div>  -->
+                             <!-- <div class="bottom__nav--item">
                     <ButtonNav
                         label="Notifications"
                         :selected="view === VIEWS.NOTIFICATIONS"
@@ -98,8 +108,8 @@
                         class="col-grow"
                     >
                     </ButtonNav>
-                </div>     
-                <div class="bottom__nav--item">
+                </div>      -->
+                <!-- <div class="bottom__nav--item">
                     <ButtonNav
                         label="Settings"
                         :selected="view === VIEWS.SETTINGS"
@@ -108,11 +118,18 @@
                         size="3em"
                         class="col-grow"
                     >
-                <!-- <q-badge color="red" floating v-if="requests" rounded/> -->
+           
                     </ButtonNav>
-                </div>
+                </div> -->
             </q-toolbar>
-        </q-footer>
+        </q-header>
+          <q-drawer v-model="rightDrawerOpen" side="right" behavior="mobile" >
+      <!-- drawer content -->
+    </q-drawer>
+        <q-page-container class="page__container--global">
+                <slot />
+        </q-page-container>
+    
         <Banner />
     </q-layout>
 </template>
@@ -122,17 +139,26 @@
     flex-direction: column;
     align-items: center;
     background-color:rgba(0,0,0,0.05);
-    .q-page-container, .q-footer {
+    .q-page-container, .q-footer, .q-header {
         width: min(960px, 100vw);
         background-color: white;
     }
-    .q-footer {
+    .q-footer, .q-header {
             left: 0;
     right: 0;
     margin: auto;
+    z-index: $z-tools;
     }
     .q-page-container {
         box-shadow: $pretty-shadow;
+    }
+
+    .global-header {
+        height: 4em;
+
+        @include sm {
+            height: 6em;
+        }
     }
 }
 .page__container--global {
@@ -164,6 +190,10 @@ import {onClickOutside} from '@vueuse/core'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
+
+const {getColor} = useColor();
+
+const $q = useQuasar();
 
 
 const navStore = useNavigationStore();

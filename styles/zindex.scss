@@ -4,13 +4,18 @@ $below: -1;
 
 $z-footer: $above + $base;
 $z-tools: $above + $z-footer;
-$z-tooltip: $above + $z-tools;
+$z-drawer: $above + $z-tools;
+$z-header: $above + $z-drawer;
+$z-tooltip: $above + $z-header;
 $z-dialog: $above + $z-tooltip;
 $z-confirmation: $above + $z-dialog;
 $z-notification: $above + $z-confirmation;
 
 .q-footer {
     z-index: $z-footer!important;
+}
+.q-header {
+    z-index: $z-header!important;
 }
 .q-fab {
     z-index: $z-tools!important;
@@ -19,4 +24,7 @@ $z-notification: $above + $z-confirmation;
 .q-tabs {
     z-index: $z-footer!important;
 
+}
+.q-drawer__backdrop, .q-drawer__opener, .q-drawer {
+    z-index: $z-drawer!important;
 }

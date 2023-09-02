@@ -357,7 +357,7 @@ const respondToRequest = async (accepted) => {
 
 const isAuthorized = (teamId) => {
     return useUserTeamStore().userTeams.some(
-        ({ id, type }) => id === teamId && type === "member"
+        ({ id, is_admin }) => id === teamId && is_admin === true
     );
 };
 </script>

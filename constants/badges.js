@@ -19,7 +19,7 @@ export const BADGE_COLORS = {
     minimalist: 'teal',
     survivalist: 'green',
     strategist: 'pink',
-    stealdefense: 'bluegrey',   
+    stealdefense: 'blue-grey',   
 }   
 
 export const BADGE_TITLES = {
@@ -58,25 +58,28 @@ export const BADGE_DESCRIPTIONS_PLAIN = {
 }
 
 export const BADGE_THRESHOLDS = {
-    firstend: 66,
-    efficiency: 66,
-    showoff: 50,
     bandit: 33,
     bulwark: 50,
+    efficiency: 66,
+    firstend: 66,
     minimalist: 33,
-    survivalist: 50,
-    strategist: 50,
+    showoff: 50,
     stealdefense: 20,
+    strategist: 50,
+    survivalist: 50,
 }
 
 
 export const BADGE_FORMULAS = {
-    showoff: (val) =>  `With hammer, scores 2+ points ${val.toFixed()}% of the time.`,
     bandit: (val) => `Without hammer, steals ${val.toFixed()}% of the time.`,
-    bulwark: (val) => `Opposition scores 2+ points only ${val.toFixed()}% of the time with hammer.`,
+    bulwark: (val) => `Without hammer, opposition takes 1 point ${val.toFixed()}% of the time.`,
+    efficiency: (val) => `With hammer, scores 2+ points ${val.toFixed()}% of the time.`,
+    firstend: (val) => `Wins hammer first end in ${val.toFixed()}% of games played.`,
     minimalist: (val) => `With hammer, blanks ${val.toFixed()}% of the time.`,
-    survivalist: (val) => `With hammer, scores 1 point ${val.toFixed()}% of the time.`,
-    strategist: (val) => `Has hammer in last end ${val.toFixed()}% of the time.`
+    showoff: (val) =>  `With hammer,scores 2+ points ${val.toFixed()}% of the time.`,
+    stealdefense: (val) => `With hammer, opposition steals ${val.toFixed()}% of the time.`,
+    strategist: (val) => `Has hammer in last end in ${val.toFixed()}% of games played.`,
+    survivalist: (val) => `With hammer,scores 1 point ${val.toFixed()}% of the time.`,
 }
 
 export const BADGE_FORMULA_EXPLANATIONS = {
@@ -102,10 +105,7 @@ export const BADGE_DESCRIPTIONS = {
 export const LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 export const BADGE_FIELDS = {
-    firstend: {
-        numerator: 'hammer_first_end_count',
-        denominator: 'games_played',
-    },
+
     efficiency: {
         numerator: 'hammer_conversion_count',
         denominator: 'hammer_end_count',
@@ -118,6 +118,11 @@ export const BADGE_FIELDS = {
         numerator: 'non_hammer_force_count',
         denominator: 'non_hammer_end_count'
     },
+    stealdefense: {
+        numerator: 'hammer_steal_count',
+        denominator: 'hammer_end_count',
+        reverse: true,
+    },
     minimalist: {
         numerator: 'hammer_blank_count',
         denominator: 'hammer_end_count'
@@ -126,13 +131,13 @@ export const BADGE_FIELDS = {
         numerator: 'hammer_force_count',
         denominator: 'hammer_end_count'
     },
+    firstend: {
+        numerator: 'hammer_first_end_count',
+        denominator: 'games_played',
+    },
     strategist: {
         numerator: 'hammer_last_end_count',
         denominator: 'games_played'
     },
-    stealdefense: {
-        numerator: 'hammer_steal_count',
-        denominator: 'hammer_end_count',
-        reverse: true,
-    }
+
 }
