@@ -15,19 +15,63 @@
                     class="col-12 col-sm-6"
                     v-if="tab === 'overview'"
                 >
-                    <div class="column full-width team__header">
-                        <div class="row justify-center items-center">
+                    <div class="row no-wrap justify-between">
+                        <div
+                            class="column team__header"
+                            :class="comparisonTeam ? 'col-6' : 'col-12'"
+                        >
                             <div class="avatar__container">
-                                <TeamAvatar :team="team" />
+                                <TeamAvatar
+                                    :team="team"
+                                    :style="{
+                                        marginTop:
+                                            team.avatar_type === 'avataaar'
+                                                ? '-15%'
+                                                : '',
+                                    }"
+                                />
+                            </div>
+
+                            <div class="column items-center">
+                                <div class="text-sm">Team</div>
+                                <h2 class="text-sm text-bold text-center">
+                                    {{ team.name }}
+                                </h2>
                             </div>
                         </div>
-                        <div class="column items-center">
-                            <div class="text-sm">Team</div>
-                            <h2 class="text-sm text-bold">{{ team.name }}</h2>
+                        <div
+                            class="column team__header col-6"
+                            v-if="comparisonTeam"
+                        >
+                            <div class="avatar__container">
+                                <TeamAvatar
+                                    :team="comparisonTeam"
+                                    :style="{
+                                        marginTop:
+                                            comparisonTeam.avatar_type ===
+                                            'avataaar'
+                                                ? '-15%'
+                                                : '',
+                                    }"
+                                />
+                            </div>
+
+                            <div class="column items-center">
+                                <div class="text-sm">Team</div>
+                                <h2
+                                    class="text-sm text-bold text-center"
+                                    style="white-space: nowrap"
+                                >
+                                    {{ comparisonTeam.name }}
+                                </h2>
+                            </div>
                         </div>
                     </div>
                     <div class="full-width row justify-center">
-                        <div class="attribute__container">
+                        <div
+                            class="attribute__container"
+                            v-if="!comparisonTeam"
+                        >
                             <div class="row no-wrap">
                                 <q-icon
                                     size="1em"
@@ -40,7 +84,10 @@
                                 {{ team.games_played }}
                             </div>
                         </div>
-                        <div class="attribute__container">
+                        <div
+                            class="attribute__container"
+                            v-if="!comparisonTeam"
+                        >
                             <div class="row no-wrap">
                                 <q-icon
                                     size="1em"
@@ -71,8 +118,11 @@
                     </div>
                 </header>
                 <main class="col-12 col-sm-6">
-                        <q-separator/>
-                    <div class="row justify-between full-width items-end q-my-sm">
+                    <q-separator v-if="!comparisonTeam" />
+                    <div
+                        class="row justify-between full-width items-end q-my-sm"
+                        v-if="!comparisonTeam"
+                    >
                         <div class="row items-center">
                             <q-icon
                                 name="token"
@@ -85,14 +135,17 @@
                             See stats
                         </div> -->
                     </div>
-                    <q-separator/>
-                    <div class="row badge__container ">
+                    <q-separator v-if="!comparisonTeam" />
+                    <div class="row badge__container" v-if="!comparisonTeam">
                         <div class="badge" v-for="badge in badges" :key="badge">
                             <Badge :badge="badge" height="3em" />
                         </div>
                     </div>
-                        <q-separator />
-                    <div class="row items-end justify-between q-my-sm">
+                    <q-separator v-if="!comparisonTeam" />
+                    <div
+                        class="row items-end justify-between q-my-sm"
+                        v-if="!comparisonTeam"
+                    >
                         <div class="row items-center">
                             <q-icon
                                 color="blue"
@@ -101,24 +154,102 @@
                             />
                             <h3 class="text-md text-bold">Stats</h3>
                         </div>
-                        <div class="link-more text-sm" @click="toggleGlobalSearch({
-                            open: true,
-                            options: {
-                                inputLabel: 'Search for a team to compare',
-                                resourceTypes: ['team'],
-                                callback: onSelect,
-                                filterIds: [team.id]
-                            }
-                        })">Team comparison</div>
+                        <div
+                            class="link-more text-sm"
+                            @click="
+                                toggleGlobalSearch({
+                                    open: true,
+                                    options: {
+                                        inputLabel:
+                                            'Search for a team to compare',
+                                        resourceTypes: ['team'],
+                                        callback: onSelect,
+                                        filterIds: [team.id],
+                                    },
+                                })
+                            "
+                        >
+                            Team comparison
+                        </div>
                     </div>
-                    <q-separator />
+                    <q-separator v-if="!comparisonTeam" />
                     <div class="stats-view__container">
                         <TeamStatsView
                             :teamId="team?.id"
                             v-if="team"
                             key="stats"
                             viewerHeight="400px"
-                        />
+                            :oppositionId="comparisonTeam?.id"
+                        >
+                            <template
+                                v-slot:prepend="{
+                                    team: myTeam,
+                                    oppositionTeam,
+                                }"
+                                v-if="comparisonTeam"
+                            >
+                                <div class="row justify-around q-mb-sm">
+                                    <div class="attribute__container">
+                                        <div class="row no-wrap">
+                                            <q-icon
+                                                size="1em"
+                                                name="track_changes"
+                                                color="blue"
+                                            />
+                                            <h3 class="text-xs">
+                                                Games played
+                                            </h3>
+                                        </div>
+                                        <div class="text-md text-bold value">
+                                            {{ myTeam.games_played }}
+                                        </div>
+                                    </div>
+                                    <div class="attribute__container">
+                                                <q-tooltip>
+                                                    <div><span class="text-bold">{{myTeam.name}}</span>: {{myTeam.win}} wins </div>
+                                                    <div><span class="text-bold">{{oppositionTeam.name}}</span>: {{oppositionTeam.win}} wins </div>
+                                                    <div ><span class="text-bold">Ties</span>: {{myTeam.tie}} </div>
+                                                </q-tooltip>
+                                        <div class="row no-wrap">
+                                            <q-icon
+                                                size="1em"
+                                                name="leaderboard"
+                                                color="amber"
+                                            />
+                                            <h3 class="text-xs">Head to head</h3>
+                                        </div>
+                                        <div class="text-md text-bold value">
+                                           
+                                                <div class="row items-center">
+                                                        <div class="q-mr-xs" >
+                                                        +{{
+                                                            myTeam.win -
+                                                            oppositionTeam.win
+                                                        }}
+                                                        
+                                                    </div>
+                                                    <div
+
+                                                        style="
+                                                            height: 1em;
+                                                            width: 1em;
+                                                        "
+                                                        v-if="myTeam.win !== oppositionTeam.win"
+                                                    >
+                                                        <TeamAvatar
+                                                     
+                                                            :team="myTeam.win > oppositionTeam.win ? myTeam : oppositionTeam"
+                                                        />
+                                                    </div>
+                                        
+                                                    
+                                                </div>
+                                         
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </TeamStatsView>
                     </div>
                 </main>
             </div>
@@ -148,7 +279,7 @@ $avatar-dimension: 7em;
         margin-bottom: var(--space-md);
     }
     .badge__container {
-           padding: var(--space-md) 0px;
+        padding: var(--space-md) 0px;
         .badge {
             margin-right: var(--space-md);
         }
@@ -174,6 +305,7 @@ $avatar-dimension: 7em;
 
     .avatar__container {
         height: $avatar-dimension;
+        max-width: 100%;
         width: $avatar-dimension;
     }
 }
@@ -201,7 +333,7 @@ $avatar-dimension: 7em;
 </style>
 <script setup>
 import { useElementSize } from "@vueuse/core";
-import {useDialogStore} from '@/store/dialog'
+import { useDialogStore } from "@/store/dialog";
 import { BADGE_FIELDS } from "@/constants/badges";
 
 const props = defineProps({
@@ -225,13 +357,15 @@ const badges = ref(
     }, [])
 );
 
-const {toggleGlobalSearch} = useDialogStore();
+const { toggleGlobalSearch } = useDialogStore();
 
-const comparisonTeam = ref(null)
+const comparisonTeam = ref(null);
 
 const onSelect = (selection) => {
-    comparisonTeam.value = selection
-    toggleGlobalSearch({open: false})
-    console.log(comparisonTeam.value)
-}
+    comparisonTeam.value = {
+        ...selection,
+        team_avatar: selection.avatar,
+    };
+    toggleGlobalSearch({ open: false });
+};
 </script>

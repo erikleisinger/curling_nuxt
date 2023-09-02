@@ -15,6 +15,7 @@
                             @close="viewDetails = []"
                         />
                     </div>
+                    
         <div
             class="stats__container column no-wrap"
             v-if="
@@ -30,13 +31,13 @@
             </div> -->
           
                   
-            
+                   <slot name="prepend" :team="team" :oppositionTeam="oppositionTeam"/>
             <div
                 class="column no-wrap"
                 v-for="badge in fields"
                 :key="`percentage-${badge}`"
             >
-               
+              
                 <div
                     v-if="showTeamComparison && !!oppositionTeam"
                     class="q-mt-md row no-wrap"
@@ -78,6 +79,7 @@
                         </div>
                     </div>
                 </div>
+          
                 <div class="row col-12 no-wrap">
                     <div
                         :class="
@@ -205,7 +207,7 @@
 .stats__container {
     padding: 0px var(--space-md);
     border-radius: 8px;
-    overflow: auto;
+    // overflow: auto;
     // overflow-x: hidden;
     .toolbar {
         padding: var(--space-sm);
@@ -235,6 +237,7 @@ import {
 } from "@/constants/badges";
 
 const props = defineProps({
+    oppositionId: Number,
     teamId: Number,
     teamName: {
         type: String,
@@ -276,13 +279,23 @@ const oppositionTeam = ref(null);
 
 const showTeamComparison = ref(false);
 
-const oppositionId = 77;
-
 const toggleTeamComparison = () => {
     viewDetails.value = [];
     showTeamComparison.value = !showTeamComparison.value;
     if (showTeamComparison.value) getComparisonTeam();
 };
+
+watch(() => props.oppositionId, (val) => {
+    showTeamComparison.value = !!val;
+    if (val) {
+        viewDetails.value = [];
+        getComparisonTeam();
+    } else {
+        oppositionTeam.value = null;
+    }
+    
+
+}, {immediate: true})
 
 const loadingComparison = ref(false);
 
@@ -292,7 +305,7 @@ const getComparisonTeam = async () => {
         .from("games")
         .select("id")
         .or(`home.eq.${props.teamId},away.eq.${props.teamId}`)
-        .or(`home.eq.${oppositionId},away.eq.${oppositionId}`);
+        .or(`home.eq.${props.oppositionId},away.eq.${props.oppositionId}`);
     const games = data?.map(({ id }) => id) || [];
 
     //TODO inform user there have been no games
@@ -313,7 +326,6 @@ const getComparisonTeam = async () => {
         )
         .in("game_id", games);
 
-    console.log("GOT STATS: ", stats);
     const [reference] = stats;
 
     const EXCLUDE_STATS_FROM_COMPARISON = [
@@ -338,13 +350,13 @@ const getComparisonTeam = async () => {
         }, 0);
 
         oppTeam[key] = stats.reduce((all, current) => {
-            if (current.team_id !== oppositionId) return all;
+            if (current.team_id !== props.oppositionId) return all;
             return all + current[key];
         }, 0);
     });
 
     const oneOppositionEntry = stats.find(
-        ({ team_id }) => team_id === oppositionId
+        ({ team_id }) => team_id === props.oppositionId
     );
 
     const { avatar_type, avatar_url, team_avatar, name } = { ...team.value };
