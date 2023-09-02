@@ -1,10 +1,13 @@
 <template>
-        <canvas ref="chart" id="canvas" height="400" width="400" />
+    <div v-if="!loading" class="full-width">
+        <slot :chart="myChart" />
+    </div>
+    <div :style="`height: ${height}; width: 100%`">
+        <canvas ref="chart" id="canvas" />
+    </div>
 </template>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
 <script setup>
-import { useElementSize } from "@vueuse/core";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import annotationPlugin from "chartjs-plugin-annotation";
@@ -13,19 +16,29 @@ Chart.register(annotationPlugin);
 
 const props = defineProps({
     annotations: Object,
+    height: {
+        type: String,
+        default: "100%",
+    },
     data: Object,
+    ticks: Object,
     tooltip: Object,
 });
 
 const chart = ref(null);
+let myChart;
+
+const loading = ref(true);
 
 onMounted(async () => {
-    var ctx = document.getElementById("canvas").getContext("2d");
-ctx.canvas.width = 400;
-ctx.canvas.height = 400;
-    const myChart = new Chart(chart.value, {
+    console.log("MOUNTED: ", props.data);
+    const annotations = { ...props.annotations };
+    const data = { ...props.data };
+    const tooltip = { ...props.tooltip };
+    const ticks = {...props.ticks}
+    myChart = new Chart(chart.value, {
         type: "line",
-        data: props.data,
+        data,
 
         options: {
             clip: false,
@@ -39,26 +52,23 @@ ctx.canvas.height = 400;
                 },
             },
 
-           
-
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 annotation: {
-                    drawTime: "beforeDraw",
-                    annotations: props.annotations,
+                    // drawTime: "beforeDraw",
+                    annotations,
                 },
                 legend: {
-                    display: true,
+                    display: false,
                     position: "top",
                     labels: {
                         usePointStyle: true,
                         pointStyle: "circle",
-                        padding: 16
+                        padding: 16,
                     },
-             
                 },
-                tooltip: props.tooltip,
+                tooltip,
             },
 
             animation: {
@@ -66,7 +76,7 @@ ctx.canvas.height = 400;
             },
             scales: {
                 x: {
-                    display: false,
+                    ticks
                 },
                 y: {
                     grid: {
@@ -84,6 +94,7 @@ ctx.canvas.height = 400;
         },
     });
 
-    Object.seal(myChart)
+    Object.seal(myChart.value);
+    loading.value = false;
 });
 </script>

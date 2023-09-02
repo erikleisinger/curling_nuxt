@@ -19,7 +19,7 @@ export const BADGE_COLORS = {
     minimalist: 'teal',
     survivalist: 'green',
     strategist: 'pink',
-    stealdefense: 'bluegrey',
+    stealdefense: 'bluegrey',   
 }   
 
 export const BADGE_TITLES = {

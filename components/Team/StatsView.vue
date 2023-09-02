@@ -1,5 +1,5 @@
 <template>
-    <div class="row full-height">
+    <div class="column full-height no-wrap">
     <div  class="stats__container row" v-if="$q.screen.gt.xs || !viewDetails?.length" :class="{'col-12': $q.screen.xs || !viewDetails.length, 'col-6': viewDetails.length && !$q.screen.xs}">
        <TeamStatsViewPercentage class="col-12" badge="efficiency" :teamId="team.id" :numerator="team[BADGE_FIELDS.efficiency.numerator]" :denominator="team[BADGE_FIELDS.efficiency.denominator]" @showMore="viewMore(BADGE_TITLES_PLAIN.efficiency)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.efficiency)"/>
           <TeamStatsViewPercentage class="col-12" badge="bulwark" :teamId="team.id" :numerator="team[BADGE_FIELDS.bulwark.numerator]" :denominator="team[BADGE_FIELDS.bulwark.denominator]" @showMore="viewMore(BADGE_TITLES_PLAIN.bulwark)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bulwark)"/>
@@ -11,11 +11,8 @@
       <TeamStatsViewPercentage  class="col-12" badge="minimalist" :teamId="team.id" :numerator="team[BADGE_FIELDS.minimalist.numerator]" :denominator="team[BADGE_FIELDS.minimalist.denominator]"  @showMore="viewMore(BADGE_TITLES_PLAIN.minimalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.minimalist)"/>
     </div>
     <transition appear enter-active-class="animted slideInRight" leave-active-class="animated slideOutRight">
-    <div  class="col-12 col-sm-6 row full-height view-more__container" v-show="!!viewDetails?.length" >
-        <div class="view-details-back__container" @click="viewDetails = []" v-if="$q.screen.xs">
-            <q-btn  icon="close" round flat />
-        </div>
-        <ChartTeamHammerEfficiencyTime :teamId="team.id" v-if="!!viewDetails.length" :visibleStats="viewDetails"/>
+    <div  class="col-12 col-sm-6 row full-width view-more__container" v-show="!!viewDetails?.length" >
+        <ChartTeamHammerEfficiencyTime :teamId="team.id" v-if="!!viewDetails.length" :visibleStats="viewDetails" @close="viewDetails = []"/>
     </div>
     </transition>
     </div>
@@ -25,7 +22,7 @@
     padding: 0px var(--space-md);
     border-radius: 8px;
     overflow: auto;
-    height: 100%;
+    // height: 100%;
  
   
 }
@@ -37,11 +34,15 @@
         padding: var(--space-xs);
         right: 0;
     }
+    @include sm {
+        border-top: 1px solid $grey-5;
+    }
 }
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import { BADGE_FIELDS, BADGE_THRESHOLDS, BADGE_TITLES_PLAIN } from "@/constants/badges";
+
 
 const props = defineProps({
     teamId: Number,
