@@ -1,19 +1,14 @@
 <template>
-    <!-- -->
     <div class="row full-height">
     <div  class="stats__container row" v-if="$q.screen.gt.xs || !viewDetails?.length" :class="{'col-12': $q.screen.xs || !viewDetails.length, 'col-6': viewDetails.length && !$q.screen.xs}">
-        <q-inner-loading
-            color="purple"
-            label="Loading stats..."
-            :showing="loading"
-        />
-       <TeamStatsViewPercentage class="col-12" badge="efficiency" :numerator="team.hammer_conversion_count" :denominator="team.hammer_end_count" @showMore="viewMore(BADGE_TITLES_PLAIN.efficiency)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.efficiency)"/>
-          <TeamStatsViewPercentage class="col-12" badge="bulwark" :numerator="team.non_hammer_force_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bulwark)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bulwark)"/>
-       <TeamStatsViewPercentage  class="col-12" badge="bandit" :numerator="team.non_hammer_steal_count" :denominator="team.non_hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.bandit)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bandit)"/>
-      <TeamStatsViewPercentage  class="col-12" badge="firstend" :numerator="team.hammer_first_end_count" :denominator="team.games_played" gameStat   @showMore="viewMore(BADGE_TITLES_PLAIN.firstend)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.firstend)"/>
-        <TeamStatsViewPercentage  class="col-12" badge="strategist" :numerator="team.hammer_last_end_count" :denominator="team.games_played" gameStat @showMore="viewMore(BADGE_TITLES_PLAIN.strategist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.strategist)" />
-        <TeamStatsViewPercentage  class="col-12" badge="minimalist" :numerator="team.hammer_blank_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.minimalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.minimalist)"/>
-      <TeamStatsViewPercentage  class="col-12" badge="survivalist" :numerator="team.hammer_force_count" :denominator="team.hammer_end_count"  @showMore="viewMore(BADGE_TITLES_PLAIN.survivalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.survivalist)"/>
+       <TeamStatsViewPercentage class="col-12" badge="efficiency" :teamId="team.id" :numerator="team[BADGE_FIELDS.efficiency.numerator]" :denominator="team[BADGE_FIELDS.efficiency.denominator]" @showMore="viewMore(BADGE_TITLES_PLAIN.efficiency)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.efficiency)"/>
+          <TeamStatsViewPercentage class="col-12" badge="bulwark" :teamId="team.id" :numerator="team[BADGE_FIELDS.bulwark.numerator]" :denominator="team[BADGE_FIELDS.bulwark.denominator]" @showMore="viewMore(BADGE_TITLES_PLAIN.bulwark)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bulwark)"/>
+       <TeamStatsViewPercentage  class="col-12" badge="bandit" :teamId="team.id" :numerator="team[BADGE_FIELDS.bandit.numerator]" :denominator="team[BADGE_FIELDS.bandit.denominator]"  @showMore="viewMore(BADGE_TITLES_PLAIN.bandit)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.bandit)"/>
+        <TeamStatsViewPercentage  class="col-12" reverse badge="stealdefense" :teamId="team.id" :numerator="team[BADGE_FIELDS.stealdefense.numerator]" :denominator="team[BADGE_FIELDS.stealdefense.denominator]"  @showMore="viewMore(BADGE_TITLES_PLAIN.stealdefense)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.stealdefense)"/>
+      <TeamStatsViewPercentage  class="col-12" badge="firstend" :teamId="team.id" :numerator="team[BADGE_FIELDS.firstend.numerator]" :denominator="team[BADGE_FIELDS.firstend.denominator]" gameStat   @showMore="viewMore(BADGE_TITLES_PLAIN.firstend)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.firstend)"/>
+        <TeamStatsViewPercentage  class="col-12" badge="strategist" :teamId="team.id" :numerator="team[BADGE_FIELDS.strategist.numerator]" :denominator="team[BADGE_FIELDS.strategist.denominator]" gameStat @showMore="viewMore(BADGE_TITLES_PLAIN.strategist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.strategist)" />
+       
+      <TeamStatsViewPercentage  class="col-12" badge="minimalist" :teamId="team.id" :numerator="team[BADGE_FIELDS.minimalist.numerator]" :denominator="team[BADGE_FIELDS.minimalist.denominator]"  @showMore="viewMore(BADGE_TITLES_PLAIN.minimalist)" :visible="viewDetails.includes(BADGE_TITLES_PLAIN.minimalist)"/>
     </div>
     <transition appear enter-active-class="animted slideInRight" leave-active-class="animated slideOutRight">
     <div  class="col-12 col-sm-6 row full-height view-more__container" v-show="!!viewDetails?.length" >
@@ -45,14 +40,8 @@
 }
 </style>
 <script setup>
-import {
-    useElementSize,
-    useScroll,
-    watchDebounced,
-    useDebounceFn,
-} from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
-import { BADGE_THRESHOLDS, BADGE_TITLES_PLAIN } from "@/constants/badges";
+import { BADGE_FIELDS, BADGE_THRESHOLDS, BADGE_TITLES_PLAIN } from "@/constants/badges";
 
 const props = defineProps({
     teamId: Number,
@@ -76,44 +65,8 @@ const viewMore = (str) => {
     }
 }
 
-const stats = ref(null);
-const wins = ref(0);
-const losses = ref(0);
-const ties = ref(0);
-
-const loadingRecord = ref(false);
-const getWinsLossess = async () => {
-    loadingRecord.value = true;
-    const { client, fetchHandler } = useSupabaseFetch();
-    const { data } = await fetchHandler(
-        () =>
-            client.rpc("get_team_wins", {
-                team_ids_param: [props.teamId],
-            }),
-        { onError: "Error fetching data" }
-    );
-    data.forEach((team) => {
-        wins.value += team.wins;
-        losses.value += team.losses;
-        ties.value += team.ties;
-    });
-
-    loadingRecord.value = false;
-};
 
 const team = useUserTeamStore().userTeams.find((t) => t.id === props.teamId);
 
-const currentTeamId = computed(() => props.teamId);
-const loading = ref(true);
-watchDebounced(
-    currentTeamId,
-    async () => {
-        loading.value = true;
-        await getWinsLossess();
-
-        loading.value = false;
-    },
-    { debounce: 1, immediate: true }
-);
 
 </script>

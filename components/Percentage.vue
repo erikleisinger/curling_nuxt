@@ -1,20 +1,20 @@
 <template>
     <div
         class="column"
-            :class="{ 'column-reverse': reverse }"
+
         style="width: inherit"
         ref="el"
     >
 
         <div
             class="row justify-between no-wrap"
-            :class="{ reverse }"
+
             style=" width: 100%;"
         >
             <div  class="truncate-text col-shrink label text-bold" :class="{reverse}" ><div v-if="showLabel">{{ label }}</div></div>
             <div style="font-weight: bold" ><div v-if="showPercent">{{ width }}%</div></div>
         </div>
-        <div class="row justify-end no-wrap items-center" style="position: relative" :class="{ reverse }" :style="{height}">
+        <div class="row justify-end no-wrap items-center" style="position: relative"  :style="{height}">
            
                 <div class="full-width" style="position:relative">
                          <slot/>
@@ -55,9 +55,6 @@
 }
 .label {
         margin-right: var(--space-xs);
-        &:not(.reverse) {
-            
-        }
         &.reverse {
             margin-left: var(--space-xs);
         }

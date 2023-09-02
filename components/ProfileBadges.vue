@@ -3,8 +3,8 @@
         appear
         enter-active-class="animated fadeIn"
     >
-        <div class="badge-container row" v-if="badges">
-            <ProfileBadge
+        <div class="badge-container row" v-if="false">
+            <!-- <ProfileBadge
                 badge="showoff"
                 v-if="showoff"
                 :raw="showoff"
@@ -39,7 +39,7 @@
                 v-if="strategist"
                 :raw="strategist"
                 :height="height"
-            />
+            /> -->
         </div>
     </transition>
 </template>
@@ -58,60 +58,4 @@ const props = defineProps({
     teamId: Number,
 });
 
-const badges = computed(() => {
-    return (
-        !!bandit.value ||
-        !!bulwark.value ||
-        !!control_freak.value ||
-        !!minimalist.value ||
-        !!strategist.value ||
-        !!survivor.value
-    );
-});
-
-const bandit = ref(null);
-const bulwark = ref(null);
-const control_freak = ref(null);
-const minimalist = ref(null);
-const showoff = ref(null);
-const strategist = ref(null);
-const survivor = ref(null);
-const getBadges = async () => {
-    bandit.value = null;
-    bulwark.value = null;
-    control_freak.value = null;
-    minimalist.value = null;
-    showoff.value = null;
-    strategist.value = null;
-    survivor.value = null;
-    strategist.value = null;
-    const { client, fetchHandler } = useSupabaseFetch();
-    const { data } = await fetchHandler(
-        () => client.rpc("get_team_statistics").eq("id", props.teamId),
-        { onError: "Error fetching game stats." }
-    );
-    const [stats] = data;
-
-    bandit.value = stats.bandit;
-    bulwark.value = stats.bulwark;
-    control_freak.value = stats.control_freak;
-    minimalist.value = stats.minimalist;
-    showoff.value = stats.showoff;
-    strategist.value = stats.strategist;
-    survivor.value = stats.survivor;
-    strategist.value = stats.strategist;
-};
-
-onMounted(() => {
-    if (!props.teamId) return;
-});
-
-watch(
-    () => props.teamId,
-    (id) => {
-        if (!id) return;
-        getBadges();
-    },
-    { immediate: true }
-);
 </script>

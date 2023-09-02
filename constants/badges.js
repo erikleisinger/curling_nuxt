@@ -6,7 +6,8 @@ export const BADGE_BACKGROUNDS = {
     bulwark: 'bg-badge--blue',
     minimalist: 'bg-badge--teal',
     survivalist: 'bg-badge--green',
-    strategist: 'bg-badge--pink'
+    strategist: 'bg-badge--pink',
+    stealdefense: 'bg-badge--blue-grey'
 }   
 
 export const BADGE_COLORS = {
@@ -17,18 +18,19 @@ export const BADGE_COLORS = {
     bulwark: 'blue',
     minimalist: 'teal',
     survivalist: 'green',
-    strategist: 'pink'
+    strategist: 'pink',
+    stealdefense: 'bluegrey',
 }   
 
 export const BADGE_TITLES = {
-    efficiency: 'Efficiency',
-    firstend: 'Running start',
+    efficiency: 'Hammer efficiency',
+    firstend: 'Hammer first end',
     showoff: 'Showoffs!',
-    bandit: 'Bandits',
-    bulwark: 'Indomitable',
+    bandit: 'Steal efficiency',
+    bulwark: 'Force efficiency',
     minimalist: 'Cleaning crew',
-    survivalist: 'Survivalists',
     strategist: 'Strategists',
+    stealdefense: 'Steal defense'
 }
 
 export const BADGE_TITLES_PLAIN = {
@@ -40,6 +42,7 @@ export const BADGE_TITLES_PLAIN = {
     minimalist: 'Blank ends',
     survivalist: 'Survivalism',
     strategist: 'Hammer in last end',
+    stealdefense: 'Steal defense'
 }
 
 export const BADGE_DESCRIPTIONS_PLAIN = {
@@ -51,6 +54,7 @@ export const BADGE_DESCRIPTIONS_PLAIN = {
     minimalist: 'Score 0 points with hammer',
     survivalist: 'Score 1 point with hammer',
     strategist: 'Possess hammer in last end',
+    stealdefense: 'Do not allow opposition to steal'
 }
 
 export const BADGE_THRESHOLDS = {
@@ -61,7 +65,8 @@ export const BADGE_THRESHOLDS = {
     bulwark: 50,
     minimalist: 33,
     survivalist: 50,
-    strategist: 50
+    strategist: 50,
+    stealdefense: 20,
 }
 
 
@@ -83,6 +88,7 @@ export const BADGE_FORMULA_EXPLANATIONS = {
     minimalist: `With hammer, blank ${BADGE_THRESHOLDS.minimalist}% of the time or more.`,
     survivalist: `With hammer, score only 1 point ${BADGE_THRESHOLDS.survivalist}% of the time or more.`,
     strategist: `Possess hammer in the last end ${BADGE_THRESHOLDS.strategist}% of the time or more.`,
+    stealdefense: `With hammer, give up a steal ${BADGE_THRESHOLDS.stealdefense}% of the time or less.`
 }
 
 export const BADGE_DESCRIPTIONS = {
@@ -94,3 +100,39 @@ export const BADGE_DESCRIPTIONS = {
 }
 
 export const LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+export const BADGE_FIELDS = {
+    firstend: {
+        numerator: 'hammer_first_end_count',
+        denominator: 'games_played',
+    },
+    efficiency: {
+        numerator: 'hammer_conversion_count',
+        denominator: 'hammer_end_count',
+    },
+    bandit: {
+        numerator: 'non_hammer_steal_count',
+        denominator: 'non_hammer_end_count',
+    },
+    bulwark: {
+        numerator: 'non_hammer_force_count',
+        denominator: 'non_hammer_end_count'
+    },
+    minimalist: {
+        numerator: 'hammer_blank_count',
+        denominator: 'hammer_end_count'
+    },
+    survivalist: {
+        numerator: 'hammer_force_count',
+        denominator: 'hammer_end_count'
+    },
+    strategist: {
+        numerator: 'hammer_last_end_count',
+        denominator: 'games_played'
+    },
+    stealdefense: {
+        numerator: 'hammer_steal_count',
+        denominator: 'hammer_end_count',
+        reverse: true,
+    }
+}

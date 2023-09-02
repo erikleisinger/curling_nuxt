@@ -20,6 +20,7 @@ export const useColor = () => {
             accent: "#9C27B0",
             positive: "#21BA45",
             negative: "#C10015",
+            bluegrey: '#607d8b',
         }[key];
     };
 

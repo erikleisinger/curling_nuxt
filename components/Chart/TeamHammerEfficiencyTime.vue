@@ -126,21 +126,21 @@ const getHammerConversionOverTime = () => {
         hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.minimalist),
     };
 
-    const hammerForces = {
-        label: BADGE_TITLES_PLAIN.survivalist,
-        data: reversed.map((d, index) => ({
-            x: index,
-            y: (d.hammer_force_count / d.hammer_end_count) * 100,
-            data: {
-                start_time: d.games?.start_time,
-                hammer_force_count: d.hammer_force_count,
-                hammer_end_count: d.hammer_end_count,
-            },
-        })),
-        borderColor: "rgba(27, 94, 32, 1)",
-        backgroundColor: "rgba(27, 94, 32, 1)",
-        hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.survivalist),
-    };
+    // const hammerForces = {
+    //     label: BADGE_TITLES_PLAIN.survivalist,
+    //     data: reversed.map((d, index) => ({
+    //         x: index,
+    //         y: (d.hammer_force_count / d.hammer_end_count) * 100,
+    //         data: {
+    //             start_time: d.games?.start_time,
+    //             hammer_force_count: d.hammer_force_count,
+    //             hammer_end_count: d.hammer_end_count,
+    //         },
+    //     })),
+    //     borderColor: "rgba(27, 94, 32, 1)",
+    //     backgroundColor: "rgba(27, 94, 32, 1)",
+    //     hidden: !props.visibleStats.includes(BADGE_TITLES_PLAIN.survivalist),
+    // };
 
         const hammerFirstEnd = {
         label: BADGE_TITLES_PLAIN.firstend,
@@ -500,7 +500,7 @@ const getHammerConversionOverTime = () => {
                 steals,
                 forces,
                 blanks,
-                hammerForces,
+                // hammerForces,
                 hammerFirstEnd,
                 hammerLastEnd,
             ],
@@ -540,6 +540,13 @@ const getHammerConversionOverTime = () => {
                             } ends (${(
                                 (data.hammer_blank_count /
                                     data.hammer_end_count) *
+                                100
+                            ).toFixed(1)}%)`,
+                            5: `${data.hammer_first_end_count}/${
+                                d.dataIndex + 1
+                            } games (${(
+                                (data.hammer_first_end_count /
+                                    allData.value.length) *
                                 100
                             ).toFixed(1)}%)`,
                         }[d.datasetIndex] || "no label"
