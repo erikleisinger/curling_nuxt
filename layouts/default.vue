@@ -149,6 +149,22 @@
         </q-header>
         <q-drawer v-model="rightDrawerOpen" side="right" behavior="mobile">
             <q-list>
+                  <q-item
+                    clickable
+                    v-ripple
+                    color="primary"
+                    to="/"
+                >
+                    <q-item-section
+                        avatar
+                        class="row justify-center items-center"
+                    >
+                     
+                            <q-icon name="home" size="1.5em" class="q-mb-xs" />
+                      
+                    </q-item-section>
+                    <q-item-section>Home</q-item-section>
+                </q-item>
                 <q-item
                     clickable
                     v-ripple
@@ -159,11 +175,10 @@
                         avatar
                         class="row justify-center items-center"
                     >
-                        <div>
-                            <q-icon name="search" size="1.5em" />
-                        </div>
+                            <q-icon name="search" size="1.5em" class="q-mb-xs" />
+                     
                     </q-item-section>
-                    <q-item-section>Search</q-item-section>
+                    <q-item-section class=" justify-center">Search</q-item-section>
                 </q-item>
                 <q-item clickable v-ripple color="primary" to="/profile">
                     <q-item-section avatar>

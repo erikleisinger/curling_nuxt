@@ -17,7 +17,7 @@
                 >
                     <div class="row no-wrap justify-between">
                         <div
-                            class="column team__header"
+                            class="column team__header items-center"
                             :class="comparisonTeam ? 'col-6' : 'col-12'"
                         >
                             <div class="avatar__container">
@@ -40,7 +40,7 @@
                             </div>
                         </div>
                         <div
-                            class="column team__header col-6"
+                            class="column team__header items-center col-6"
                             v-if="comparisonTeam"
                         >
                             <div class="avatar__container">
