@@ -3,7 +3,7 @@
         <div class="row items-center justify-between title"   v-if="!dense">
             <div>
                 <div class="row">
-                    <h2 class="text-md q-mr-md text-bold clickable">
+                    <h2 class="text-md q-mr-md  clickable">
                         {{ BADGE_TITLES_PLAIN[badge] }}
                     </h2>
                
@@ -30,9 +30,10 @@
                 <div
                     ref="badgeRef"
                     class="badge--viewable column items-center"
-                    @click="expandBadge"
+                   
                     :class="{ expanded: viewBadge }"
                 >
+                 <!-- @click="expandBadge" -->
                     <div class="badge-container__wrap">
                         <Badge
                             :badge="badge"

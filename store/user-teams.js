@@ -47,7 +47,7 @@ export const useUserTeamStore = defineStore("user-teams", {
             if (this.userTeams?.length && !force) return;
             const { user: userId } = useUser();
             const client = useSupabaseClient();
-            const {data} = await client.rpc('get_user_teams', {user_id_param: userId.value})
+            const {data} = await client.rpc('get_user_teams').eq('profile_id', userId.value)
 
            
             this.userTeams = data ?? []

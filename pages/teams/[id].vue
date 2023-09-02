@@ -13,13 +13,7 @@
         loading.value = true;
         const client = useSupabaseClient();
 
-        const {data} = await client.from('teams').select(`
-            id,
-            team_avatar,
-            avatar_type,
-            avatar_url,
-            name
-        `).eq('id', route.params.id)
+        const {data} = await client.rpc('get_user_teams').eq('id', route.params.id)
         const [t] = data;
         team.value = t;
         loading.value = false;

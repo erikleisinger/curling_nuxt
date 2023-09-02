@@ -11,7 +11,7 @@
         </template>
     </AreaSearch>
     <div class="season__wrap">
-        <header ref="header">
+        <!-- <header ref="header">
             <div class="q-pa-lg bg-primary">
                 <h1 class="text-xl text-bold full-width text-center text-white">
                     2023-2024 Season
@@ -23,7 +23,7 @@
                     />
                 </h2>
             </div>
-        </header>
+        </header> -->
         <main class="season-content__container">
             <div style="height: 100%">
                 <div class="team-table__item">

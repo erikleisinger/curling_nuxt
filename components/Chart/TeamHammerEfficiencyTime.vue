@@ -12,7 +12,7 @@
                 class="row justify-between  chart-options__container no-wrap"
             >
             <div class="row ">
-                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md"  round  flat icon="visibility" color="primary" v-if="$q.screen.xs">
+                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md"  :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="visibility"  :color="$q.screen.xs ? 'primary' : 'white'" text-color="primary"  :label="$q.screen.xs ? '' : 'Show/hide stats'">
                   
                     <q-menu
                         transition-show="jump-down"
@@ -199,9 +199,10 @@ const toggleAverageVisibility = (evt, chart) => {
 
 watch(() => props.visibleStats, (val) => {
     if (!chart || $q.screen.xs) return;
-    console.log('update visible')
+    visibleItems.value = val;
     const {data} = getHammerConversionOverTime();
     chart.data = data;
+    console.log(chart.data)
     chart.update();
 }, {deep: true})
 

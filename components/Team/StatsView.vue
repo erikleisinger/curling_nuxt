@@ -4,6 +4,17 @@
         :class="{ column: !showTeamComparison, row: !!showTeamComparison }"
     >
         <q-inner-loading :showing="loadingComparison" color="primary" />
+          <div
+                        class="col-12 col-sm-6 row full-width view-more__container"
+                        v-show="!!viewDetails?.length"
+                    >
+                        <ChartTeamHammerEfficiencyTime
+                            :teamId="team.id"
+                            v-if="!showTeamComparison && !!viewDetails.length"
+                            :visibleStats="viewDetails"
+                            @close="viewDetails = []"
+                        />
+                    </div>
         <div
             class="stats__container column no-wrap"
             v-if="
@@ -14,14 +25,18 @@
                 'col-6': viewDetails.length && !$q.screen.xs,
             }"
         >
-            <div class="toolbar">
-                <q-btn flat round icon="edit"/>
-            </div>
+            <!-- <div class="toolbar">
+                <q-btn flat round icon="edit" />
+            </div> -->
+          
+                  
+            
             <div
                 class="column no-wrap"
                 v-for="badge in fields"
                 :key="`percentage-${badge}`"
             >
+               
                 <div
                     v-if="showTeamComparison && !!oppositionTeam"
                     class="q-mt-md row no-wrap"
@@ -161,7 +176,7 @@
             class="stats__container row col-6"
             v-if="showTeamComparison && oppositionTeam"
         >
-            <q-btn @click="toggleTeamComparison">Hi</q-btn>
+            <!-- <q-btn @click="toggleTeamComparison">Hi</q-btn> -->
             <TeamStatsViewPercentage
                 v-for="badge in fields"
                 :key="`percentage-opp-team-${badge}`"
@@ -176,24 +191,6 @@
                 reverse
             />
         </div>
-
-        <transition
-            appear
-            enter-active-class="animted slideInRight"
-            leave-active-class="animated slideOutRight"
-        >
-            <div
-                class="col-12 col-sm-6 row full-width view-more__container"
-                v-show="!!viewDetails?.length"
-            >
-                <ChartTeamHammerEfficiencyTime
-                    :teamId="team.id"
-                    v-if="!showTeamComparison && !!viewDetails.length"
-                    :visibleStats="viewDetails"
-                    @close="viewDetails = []"
-                />
-            </div>
-        </transition>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -209,7 +206,7 @@
     padding: 0px var(--space-md);
     border-radius: 8px;
     overflow: auto;
-    overflow-x: hidden;
+    // overflow-x: hidden;
     .toolbar {
         padding: var(--space-sm);
     }
@@ -217,6 +214,7 @@
 .view-more__container {
     overflow: auto;
     position: relative;
+    height: v-bind(viewerHeight);
     .view-details-back__container {
         position: absolute;
         padding: var(--space-xs);
@@ -242,6 +240,7 @@ const props = defineProps({
         type: String,
         default: "<TEAM>",
     },
+    viewerHeight: String,
 });
 
 const EXCLUDE_FIELDS = ["survivalist"];
@@ -255,12 +254,18 @@ const viewDetails = ref([]);
 const detailsType = ref(null);
 
 const viewMore = (str) => {
+    console.log('VIEW MORE')
     if (viewDetails.value.includes(str)) {
+        console.log('IF')
         const index = viewDetails.value.indexOf(str);
         viewDetails.value.splice(index, 1);
+  
     } else {
+        console.log('ELSE')
         viewDetails.value.push(str);
+
     }
+          console.log(viewDetails.value)
 };
 
 const team = ref(

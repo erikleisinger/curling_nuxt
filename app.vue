@@ -12,6 +12,10 @@
 <style lang="scss">
 #__nuxt {
     height: inherit;
+    @include sm {
+overflow: auto;
+    }
+    
 }
 </style>
 <script setup lang="ts">
