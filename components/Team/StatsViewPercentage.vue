@@ -69,6 +69,7 @@
             :percent="percent"
             height="16px"
             :reverse="reverse"
+          
         >
             <!-- <div
                 class="threshold-indicator"
@@ -106,49 +107,6 @@
             </template> -->
                   <template v-slot:prepend v-if="prependPercent">
                 <div class="percent__container reverse">{{ percent.toFixed() }}%</div>
-            </template>
-            <template v-slot:append v-else>
-                <div class="percent__container">{{ percent.toFixed() }}%</div>
-            </template>
-        </Percentage>
-        <Percentage
-            :color="BADGE_COLORS[badge]"
-            :percent="percentSecond"
-            height="16px"
-            v-if="twoline && secondNumerator && secondDenominator"
-        >
-            <!-- <div
-                class="threshold-indicator"
-                :style="{
-                    left: reverse ? `calc(${Math.abs(BADGE_THRESHOLDS[badge] - 100)}% - 16px)` : `calc(${BADGE_THRESHOLDS[badge]}% - 16px)`,
-                }"
-            >
-                <q-icon
-                    name="arrow_drop_down"
-                    dense
-                    size="2em"
-                    :color="BADGE_COLORS[badge]"
-                />
-            </div>
-            <div
-                class="threshold-indicator down"
-                :style="{
-                    left: reverse ? `calc(${Math.abs(BADGE_THRESHOLDS[badge] - 100)}% - 16px)` : `calc(${BADGE_THRESHOLDS[badge]}% - 16px)`,
-                }"
-            >
-                <q-icon
-                    name="arrow_drop_up"
-                    dense
-                    size="2em"
-                    :color="BADGE_COLORS[badge]"
-                />
-            </div> -->
-            <q-tooltip anchor="top middle" self="bottom middle">
-                {{ numerator }} out of {{ denominator }}
-                {{ gameStat ? "games" : "ends" }}
-            </q-tooltip>
-            <template v-slot:prepend v-if="prependPercent">
-                <div class="percent__container " >{{ percent.toFixed() }}%</div>
             </template>
             <template v-slot:append v-else>
                 <div class="percent__container">{{ percent.toFixed() }}%</div>
@@ -281,9 +239,10 @@ const props = defineProps({
 
 const emit = defineEmits(["showMore"]);
 
-const percent = (props.numerator / props.denominator) * 100;
+const {getStatPercent} = useConvert();
 
-const percentSecond = ((props.secondNumerator ?? 1) / (props.secondDenominator ?? 1)) * 100;
+const percent = getStatPercent(props.numerator, props.denominator, 0)
+
 
 const viewBadge = ref(false);
 

@@ -14,23 +14,9 @@
         class="full-height relative-position row justify-center items-center"
         v-else
     >
-        <q-inner-loading
-            :showing="loading"
-            color="deep-purple"
-            label="Loading games..."
-        />
-        <div v-if="!loading">
-            <div class="column items-center">
-                <q-icon
-                    name="sentiment_very_dissatisfied"
-                    size="7em"
-                    color="deep-purple"
-                />
-                <div class="q-mt-sm">
-                    {{ team.name || "Unnamed team" }} has no games!
-                </div>
-            </div>
-        </div>
+    
+           <slot name="noData"/>
+   
     </div>
 </template>
 <style lang="scss" scoped>
@@ -42,32 +28,18 @@
 import { watchDebounced } from "@vueuse/core";
 
 const props = defineProps({
-    team: Object,
-    teamId: Number,
+   results:Array,
+   teamName: String,
 });
 const { format } = useTime();
 
 const loading = ref(true);
 
-const getTeamRecord = async (team_id_param) => {
-    const {getTeamGames} = useGame();
-    const games = await getTeamGames([team_id_param])
-    results.value = games;
-};
-const results = ref(null);
-
-const currentTeamId = computed(() => props?.teamId);
-watchDebounced(
-    currentTeamId,
-    async () => {
-        loading.value = true;
-        results.value = null;
-
-        await getTeamRecord(props.teamId);
-        loading.value = false;
-    },
-    { debounce: 500, immediate: true }
-);
+// const getTeamRecord = async (team_id_param) => {
+//     const {getTeamGames} = useGame();
+//     const games = await getTeamGames([team_id_param])
+//     results.value = games;
+// };
 
 const expanded = ref(null)
 const expand = (id) => {
@@ -79,10 +51,11 @@ const expand = (id) => {
 }
 
 const updateResult = (newResult) => {
-    const {id} = newResult;
-    const index = results.value.findIndex((res) => res.id === id)
-    if (index === -1) return;
-    results.value.splice(index, 1, newResult)
+    console.log('UPDATE: ', newResult)
+    // const {id} = newResult;
+    // const index = results.value.findIndex((res) => res.id === id)
+    // if (index === -1) return;
+    // results.value.splice(index, 1, newResult)
 }
 
 

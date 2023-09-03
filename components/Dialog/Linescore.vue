@@ -725,14 +725,17 @@ const loading = ref();
 
 onMounted(async () => {
     loading.value = true;
-    const { editedGame } = dialogStore.linescore;
+    const { editedGame, options } = dialogStore.linescore;
+
     if (editedGame) {
         view.value = views.LINESCORE;
         editedId.value = editedGame.id;
         await fetchGame(editedGame);
     } else {
-  
-        if (!userTeams.value.length) {
+        if (options?.homeTeam) {
+            gameParams.value.home = options.homeTeam;
+            view.value = views.HOME_SELECT
+        } else if (!userTeams.value.length) {
             view.value = views.NO_TEAM
         } else {
        view.value = views.HOME_SELECT;

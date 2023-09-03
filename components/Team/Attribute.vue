@@ -1,8 +1,10 @@
 <template>
     <div class="attribute__container" :class="{ highlight }">
-        <div class="row no-wrap">
+        <div class="row no-wrap items-center">
             <q-icon size="1em" :name="icon" :color="color" />
             <h3 class="text-xs">{{title}}</h3>
+            <slot name="appendAction"/>
+         
         </div>
         <div class="text-md text-bold value">
             <slot/>

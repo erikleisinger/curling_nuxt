@@ -1,15 +1,9 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
-    <q-layout view="HHH lpr fff" v-else class="app-layout">
+    <q-layout view="hhh lpr fff" v-else class="app-layout">
         <q-header bordered class="bg-white text-black" >
-            <q-toolbar class="global-header row justify-between full-width">
+            <q-toolbar class="global-header row justify-between">
                 <div style="width: 50%">
-                    <!-- <div style="height: 2.5em; width: 2.5em" class="q-ml-sm">
-                          <Avataaar
-                v-bind="avatar ? parseAvatar(avatar) : {}"
-                
-            />
-                    </div> -->
                 </div>
                 <div
                     class="row full-height items-center col-grow clickable"
@@ -40,111 +34,6 @@
                     <q-btn flat round icon="search" />
                     <q-btn flat round icon="notifications" />
                 </div>
-                <!-- <div class="bottom__nav--item">
-                    <ButtonNav
-                        label="Season"
-                        :selected="view === VIEWS.SEASON"
-                        :onClick="() => goTo('season')"
-                        icon="home"
-                        size="3em"
-                        class="col-grow"
-                    />
-                </div>
-             
-                 <div class="bottom__nav--item">
-                    <ButtonNav
-                        label="Explore"
-                        :selected="view === VIEWS.EXPLORE"
-                        :onClick="() => setView(VIEWS.EXPLORE)"
-                        icon="explore"
-                        size="3em"
-                        class="col-grow"
-                    />
-                </div> -->
-
-                <!-- New game -->
-                <!-- <div
-                    style="
-                        position: relative;
-                        min-height: inherit;
-                        min-width: 75px;
-                    "
-                    class="col-auto"
-                >
-                    <div
-                        style="
-                            position: absolute;
-                            left: 0;
-                            right: 0;
-                            top: -1em;
-                            margin: auto;
-                        "
-                        class="row justify-center"
-                        ref="fab"
-                    >
-                        <q-fab
-                            color="deep-purple"
-                            icon="arrow_circle_up"
-                            size="2em"
-                            direction="up"
-                            class="action__button"
-                            v-model="actionOpen"
-                        >
-                             <q-fab-action
-                                     color="white"
-                                text-color="deep-purple"
-                                icon="radio_button_checked"
-                                label="Shot by shot"
-                                to="/game?id=53"
-                            />
-                            <q-fab-action
-                                color="deep-purple"
-                                text-color="white"
-                                icon="scoreboard"
-                                label="Line score"
-                                @click="toggleLineScore({open: true})"
-                            ></q-fab-action>
-                       
-                           <q-fab-action
-                                     color="white"
-                                text-color="deep-purple"
-                                icon="groups_2"
-                                label="New team"
-                                @click="createNewTeam"
-                            />
-                               <q-fab-action
-                                   color="white"
-                                text-color="deep-purple"
-                                icon="person"
-                                label="New Player"
-                                @click="createNewPlayer"
-                            /> -->
-                <!-- </q-fab>
-                    </div>
-                </div>  -->
-                <!-- <div class="bottom__nav--item">
-                    <ButtonNav
-                        label="Notifications"
-                        :selected="view === VIEWS.NOTIFICATIONS"
-                        :onClick="() => setView(VIEWS.NOTIFICATIONS)"
-                        icon="notifications"
-                        size="3em"
-                        class="col-grow"
-                    >
-                    </ButtonNav>
-                </div>      -->
-                <!-- <div class="bottom__nav--item">
-                    <ButtonNav
-                        label="Settings"
-                        :selected="view === VIEWS.SETTINGS"
-                        :onClick="() => setView(VIEWS.SETTINGS)"
-                        icon="settings"
-                        size="3em"
-                        class="col-grow"
-                    >
-           
-                    </ButtonNav>
-                </div> -->
             </q-toolbar>
         </q-header>
         <q-drawer v-model="rightDrawerOpen" side="right" behavior="mobile">
@@ -225,11 +114,15 @@
     .q-header {
         left: 0;
         right: 0;
-        margin: auto;
+        // margin: auto;
         z-index: $z-tools;
+        position: sticky;
+        top: 0;
     }
+
     .q-page-container {
         box-shadow: $pretty-shadow;
+        padding-top: unset!important;
     }
 
     .global-header {
@@ -246,7 +139,7 @@
     }
 }
 .page__container--global {
-      height: calc(100 * var(--vh, 1vh));
+      height: calc((100 * var(--vh, 1vh)) - 65px);
     overflow: auto;
     @include sm {
         height: auto;

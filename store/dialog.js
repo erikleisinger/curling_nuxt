@@ -19,6 +19,7 @@ export const useDialogStore = defineStore("dialog", {
         linescore: {
             open: false,
             editedGame: null,
+            options: {},
         },
         playerSelect: {
             open: false,
@@ -55,11 +56,13 @@ export const useDialogStore = defineStore("dialog", {
             this.globalSearch.options = {}
         }
     },
-    toggleLineScore({open, editedGame = null}) {
-        if (open === false || !editedGame) {
+    toggleLineScore({open, editedGame = null, options = {}}) {
+        if (!open) {
             this.linescore.editedGame = null;
+            this.linescore.options = {}
         } else {
             this.linescore.editedGame = editedGame
+            this.linescore.options = options
         }
 
         this.linescore.open = open;

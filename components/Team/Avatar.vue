@@ -7,7 +7,7 @@
     </div>
     <Avataaar
         v-else-if="avatarType === 'avataaar'"
-        v-bind="typeof avatar === 'string' ? parseAvatar(avatar) : avatar"
+        v-bind="typeof avatar === 'string' ? parseAvatar(avatar) : avatar ?? {}"
     />
 </template>
 <style lang="scss" scoped>

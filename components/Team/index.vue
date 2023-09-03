@@ -94,6 +94,7 @@
                                     ? h2hTeam.games_played
                                     : team.games_played
                             }}
+           
                         </TeamAttribute>
 
                         <TeamAttribute
@@ -115,17 +116,15 @@
                             icon="emoji_events"
                             class="col-5"
                         >
+                        <span v-if="team.games_played">
                             {{
                                 headToHead
-                                    ? (
-                                          (h2hTeam.win / h2hTeam.games_played) *
-                                          100
-                                      ).toFixed(1)
-                                    : (
-                                          (team.win / team.games_played) *
-                                          100
-                                      ).toFixed(1)
+                                    ? getStatPercent(h2hTeam.win, h2hTeam.games_played)
+                                    : getStatPercent(team.win, team.games_played)
                             }}%
+
+                        </span>
+                        <span v-else>-</span>
 
                             <span
                                 class="text-xs"
@@ -135,15 +134,9 @@
                                 "
                                 >({{
                                     headToHead
-                                        ? (
-                                              (h2hTeam.tie /
-                                                  h2hTeam.games_played) *
-                                              100
-                                          ).toFixed(1)
-                                        : (
-                                              (team.tie / team.games_played) *
-                                              100
-                                          ).toFixed(1)
+                                        ? getStatPercent(h2hTeam.tie,
+                                                  h2hTeam.games_played)
+                                        : getStatPercent(team.tie, team.games_played)
                                 }}%)</span
                             >
                         </TeamAttribute>
@@ -156,16 +149,9 @@
                         >
                             {{
                                 headToHead
-                                    ? (
-                                          (h2hOpposition.win /
-                                              h2hOpposition.games_played) *
-                                          100
-                                      ).toFixed(1)
-                                    : (
-                                          (comparisonTeam.win /
-                                              comparisonTeam.games_played) *
-                                          100
-                                      ).toFixed(1)
+                                    ? getStatPercent(h2hOpposition.win, h2hOpposition.games_played)
+                                    : getStatPercent(comparisonTeam.win,
+                                              comparisonTeam.games_played)
                             }}%
 
                             <span
@@ -176,16 +162,10 @@
                                 "
                                 >({{
                                     headToHead
-                                        ? (
-                                              (h2hOpposition.tie /
-                                                  h2hOpposition.games_played) *
-                                              100
-                                          ).toFixed(1)
-                                        : (
-                                              (comparisonTeam.tie /
-                                                  comparisonTeam.games_played) *
-                                              100
-                                          ).toFixed(1)
+                                        ? getStatPercent(h2hOpposition.tie,
+                                                  h2hOpposition.games_played)
+                                        : getStatPercent(comparisonTeam.tie,
+                                                  comparisonTeam.games_played)
                                 }}%)</span
                             >
                         </TeamAttribute>
@@ -196,6 +176,7 @@
                             v-if="!comparisonTeam"
                             class="col-5"
                         >
+                        <span v-if="team.games_played">
                             {{
                                 `${
                                     team.points_for / team.games_played -
@@ -209,6 +190,8 @@
                                     team.points_against / team.games_played
                                 ).toFixed(1)}`
                             }}
+                        </span>
+                        <span v-else>-</span>
                             <template v-slot:tooltip>
                                 <q-tooltip>
                                     <div>
@@ -216,10 +199,9 @@
                                             >Avgs points scored:
                                         </span>
                                         {{
-                                            (
-                                                team.points_for /
-                                                team.games_played
-                                            ).toFixed(1)
+                                           (
+                                    team.points_for / team.games_played 
+                                ).toFixed(1)
                                         }}
                                     </div>
                                     <div>
@@ -228,9 +210,8 @@
                                         </span>
                                         {{
                                             (
-                                                team.points_against /
-                                                team.games_played
-                                            ).toFixed(1)
+                                    team.points_against / team.games_played 
+                                ).toFixed(1)
                                         }}
                                     </div>
                                 </q-tooltip>
@@ -243,6 +224,7 @@
                             icon="o_pin"
                             class="col-5"
                         >
+                        <span v-if="team.games_played">
                             {{
                                 `${
                                     team.ends_for / team.games_played -
@@ -255,6 +237,8 @@
                                     team.ends_against / team.games_played
                                 ).toFixed(1)}`
                             }}
+                        </span>
+                        <span v-else>-</span>
 
                             <template v-slot:tooltip>
                                 <q-tooltip>
@@ -263,10 +247,10 @@
                                             >Avg ends won:
                                         </span>
                                         {{
-                                            (
-                                                team.ends_for /
-                                                team.games_played
-                                            ).toFixed(1)
+                                           (
+                                    team.ends_for / team.games_played 
+          
+                                ).toFixed(1)
                                         }}
                                     </div>
                                     <div>
@@ -275,9 +259,8 @@
                                         </span>
                                         {{
                                             (
-                                                team.ends_against /
-                                                team.games_played
-                                            ).toFixed(1)
+                                    team.ends_against / team.games_played 
+                                ).toFixed(1)
                                         }}
                                     </div>
                                 </q-tooltip>
@@ -291,9 +274,9 @@
                         <div
                             class="row full-width justify-around"
                             
-                            v-if="comparisonTeam && h2hTeam"
+                            v-if="comparisonTeam || h2hTeam"
                         >
-                         <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam.win < h2hOpposition.win"/>
+                         <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam?.win < h2hOpposition?.win"/>
                             <TeamAttribute
                                 title="Head to head"
                                 color="red"
@@ -302,32 +285,37 @@
                                 :highlight="headToHead"
                                
                             >
+                            <template v-slot:appendAction v-if="h2hTeam && h2hOpposition">
+                                <q-btn flat round dense icon="view_list" size="xs" color="grey-8" @click="showHeadToHead"/>
+                            </template>
                                 <div
                                     class="row items-center"
-                                    @click="headToHead = !headToHead"
+                                   
                                 >
                                     <div class="q-mr-xs">
-                                        <span  v-if="h2hTeam.win !== h2hOpposition.win">
-                                        +{{ Math.abs(h2hTeam.win - h2hOpposition.win) }}
+                                        <span  v-if="h2hTeam?.win !== h2hOpposition?.win">
+                                        +{{ Math.abs(h2hTeam?.win - h2hOpposition?.win) }}
                                         </span>
+                                        <span v-else-if="!h2hTeam && !h2hOpposition">-</span>
                                         <span v-else>Even</span>
                                     </div>
                                     <div
                                         style="height: 1em; width: 1em"
-                                        v-if="h2hTeam.win !== h2hOpposition.win"
+                                        v-if="h2hTeam?.win !== h2hOpposition?.win"
                                     >
                                         <TeamAvatar
                                             :team="
-                                                h2hTeam.win > h2hOpposition.win
+                                                h2hTeam?.win > h2hOpposition?.win
                                                     ? h2hTeam
                                                     : h2hOpposition
                                             "
                                         />
                                     </div>
                                 </div>
-                                <template v-slot:tooltip>
+                                <template v-slot:tooltip >
                                       
                                     <q-tooltip>
+                                        <div v-if="!!h2hTeam && !!h2hOpposition">
                                         <div>
                                             <span class="text-bold">{{
                                                 h2hTeam.name
@@ -344,13 +332,15 @@
                                             <span class="text-bold">Ties</span>:
                                             {{ h2hTeam.tie }}
                                         </div>
+                                        </div>
+                                        <div v-else>{{team.name}} and {{comparisonTeam.name}} have played no games.</div>
                                     </q-tooltip>
                                 </template>
                             </TeamAttribute>
-                            <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam.win > h2hOpposition.win"/>
+                            <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam?.win > h2hOpposition?.win"/>
                             
                         </div>
-                     <q-separator v-if="!comparisonTeam" />
+                
                     <div
                         class="row justify-between col-12 items-end q-my-sm"
                         v-if="!comparisonTeam"
@@ -361,13 +351,16 @@
                                 color="amber"
                                 class="text-md q-mr-sm"
                             />
-                            <h2 class="text-md text-bold">Badges</h2>
+                            <h2 class="text-md text-bold ">Badges</h2>
                         </div>
                     </div>
                     <q-separator v-if="!comparisonTeam" />
                     <div class="row badge__container" v-if="!comparisonTeam">
                         <div class="badge" v-for="badge in badges" :key="badge">
                             <Badge :badge="badge" height="3em" />
+                        </div>
+                        <div v-if="!badges?.length" class="text-sm full-width text-center text-italic">
+                            {{team.name}} is working on it.
                         </div>
                     </div>
                   
@@ -411,34 +404,60 @@
                         </div>
                     </div>
                     <q-separator v-if="!comparisonTeam" />
-
+                   
                     <div class="stats-view__container">
                         <TeamStatsView
-                            :teamId="team?.id"
+                            :team="headToHead ? h2hTeam : team"
                             v-if="team"
                             key="stats"
                             viewerHeight="400px"
                             :oppositionTeam="
                                 headToHead ? h2hOpposition : comparisonTeam
                             "
-                            :customTeam="headToHead ? h2hTeam : null"
+                     
                         >
                         </TeamStatsView>
                     </div>
+
+                   
+                    <div
+                        class="row justify-between col-12 items-end q-my-sm"
+                        v-if="!comparisonTeam"
+                    >
+                        <div class="row items-center">
+                            <q-icon
+                                name="o_scoreboard"
+                                color="green"
+                                class="text-md q-mr-sm"
+                            />
+                            <h2 class="text-md text-bold">Latest results</h2>
+                        </div>
+                                <q-btn rounded outlined flat dense color="primary" icon="add" label="Add game" class="q-pa-none" v-if="team.is_admin" @click="toggleLineScore({
+                                    open: true,
+                                    options: {
+                                        homeTeam: team
+                                    }
+                                })"/>
+                    </div>
+                    <q-separator v-if="!comparisonTeam" />
+                     <div class="stats-view__container"   v-if="!comparisonTeam">
+                    <LazyTeamGameHistory
+                    :teamName="team?.name"
+                    key="gamehistory"
+                    
+                >   
+                <template v-slot:noData>
+                    <div class="row full-width justify-center q-pa-md">
+                        {{team.name}} has played no games.
+                    </div>  
+            
+                </template>
+
+                    </LazyTeamGameHistory>
+                     </div>
                 </main>
             </div>
-            <main
-                class="column select__section full-width no-wrap"
-                v-else
-                key="other"
-            >
-                <TeamGameHistory
-                    :teamId="team?.id"
-                    :team="team"
-                    key="gamehistory"
-                    v-if="team && tab === 'history'"
-                />
-            </main>
+            
         </transition-group>
     </div>
 </template>
@@ -447,12 +466,10 @@ $avatar-dimension: 7em;
 
 .overview__container {
     padding: var(--space-md);
+    padding-top: 0px;
     width: 100%;
     height: fit-content;
     position: relative;
-    header {
-        margin-bottom: var(--space-md);
-    }
     .badge__container {
         padding: var(--space-md) 0px;
         .badge {
@@ -495,6 +512,8 @@ const props = defineProps({
     team: Object,
 });
 
+const {getStatPercent} = useConvert();
+
 const tab = ref("overview");
 
 const index = ref(0);
@@ -507,23 +526,23 @@ const badges = ref(
     }, [])
 );
 
-const { toggleGlobalSearch } = useDialogStore();
+const { toggleGlobalSearch, toggleLineScore } = useDialogStore();
 
 const comparisonTeam = ref(null);
 const loadingComparison = ref(false);
 
 const onSelect = async ({ id }) => {
     loadingComparison.value = true;
-    toggleGlobalSearch({ open: false });
-    await getComparisonTeam(id);
-    await getHeadToHead(id);
+   toggleGlobalSearch({ open: false });
+   await Promise.all([getComparisonTeam(id), getHeadToHead(id)])
+
     loadingComparison.value = false;
 };
 
 const getComparisonTeam = async (id) => {
     const { data: stats } = await useSupabaseClient()
         .rpc("get_user_teams")
-        .eq("id", id);
+        .eq("id", id).limit(1)
     const [t] = stats;
     comparisonTeam.value = t;
 };
@@ -533,6 +552,11 @@ const headToHead = ref(false);
 const h2hTeam = ref(null);
 const h2hOpposition = ref(null);
 
+const showHeadToHead = () => {
+    if (!h2hTeam.value || !h2hOpposition.value) return;
+    headToHead.value = !headToHead.value
+}
+
 const getHeadToHead = async (oppositionId) => {
     const { data } = await useSupabaseClient()
         .from("games")
@@ -540,7 +564,6 @@ const getHeadToHead = async (oppositionId) => {
         .or(`home.eq.${props.team.id},away.eq.${props.team.id}`)
         .or(`home.eq.${oppositionId},away.eq.${oppositionId}`);
     const games = data?.map(({ id }) => id) || [];
-
     //TODO inform user there have been no games
     if (!games?.length) return;
 
@@ -610,6 +633,7 @@ const getHeadToHead = async (oppositionId) => {
 };
 
 const endComparison = () => {
+    headToHead.value  = false;
     comparisonTeam.value = null;
     h2hTeam.value = null;
     h2hOpposition.value = null;

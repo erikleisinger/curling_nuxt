@@ -27,7 +27,7 @@
         >
             <div
                 class="column no-wrap"
-                v-for="badge in fields"
+                v-for="(badge, index) in fields"
                 :key="`percentage-${badge}`"
             >
                 <div
@@ -120,7 +120,7 @@
                         />
                     </div>
                 </div>
-                <q-separator/>
+                <q-separator v-if="index !== fields.length - 1"/>
             </div>
             <!-- <div
                 class="row justify-between items-center full-width no-wrap stats__container--pie"
@@ -211,7 +211,7 @@ import {
 } from "@/constants/badges";
 
 const props = defineProps({
-    customTeam: Object,
+    team: Object,
     oppositionTeam: Object,
     teamId: Number,
     teamName: {
@@ -240,11 +240,11 @@ const viewMore = (str) => {
     }
 };
 
-const team = computed(() => props.customTeam ||  useUserTeamStore().userTeams.find((t) => t.id === props.teamId))
+
 
 const reloading = ref(false)
 
-watch(() => props.customTeam || props.oppositionTeam, () => {
+watch(() => props.team || props.oppositionTeam, () => {
     reloading.value = true;
     nextTick(() => {
         reloading.value = false;
