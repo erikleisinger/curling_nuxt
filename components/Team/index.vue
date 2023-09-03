@@ -20,10 +20,10 @@
                     />
                 </div>
                 <header
-                    ref="header"
                     :class="{
                         'col-12': $q.screen.xs || !!comparisonTeam,
-                        'col-6': !$q.screen.xs && !comparisonTeam,
+                        'col-6 q-pr-lg': !$q.screen.xs && !comparisonTeam,
+              
                     }"
                     v-if="tab === 'overview'"
                 >
@@ -80,10 +80,8 @@
                         </div>
                     </div>
                     <div
-                        class="full-width row"
-                        :class="
-                            comparisonTeam ? 'justify-around' : 'justify-center'
-                        "
+                        class="full-width row justify-around"
+                      
                     >
                         <TeamAttribute
                             title="Games played"
@@ -286,24 +284,33 @@
                             </template>
                         </TeamAttribute>
 
-                        <!-- Comparison stats -->
+                       
+                        
+                    </div>
+                     <!-- Comparison stats -->
                         <div
-                            class="row justify-around col-12"
+                            class="row full-width justify-around"
+                            
                             v-if="comparisonTeam && h2hTeam"
                         >
+                         <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam.win < h2hOpposition.win"/>
                             <TeamAttribute
                                 title="Head to head"
                                 color="red"
                                 icon="leaderboard"
                                 class="col-5"
                                 :highlight="headToHead"
+                               
                             >
                                 <div
                                     class="row items-center"
                                     @click="headToHead = !headToHead"
                                 >
                                     <div class="q-mr-xs">
-                                        +{{ h2hTeam.win - h2hOpposition.win }}
+                                        <span  v-if="h2hTeam.win !== h2hOpposition.win">
+                                        +{{ Math.abs(h2hTeam.win - h2hOpposition.win) }}
+                                        </span>
+                                        <span v-else>Even</span>
                                     </div>
                                     <div
                                         style="height: 1em; width: 1em"
@@ -340,18 +347,12 @@
                                     </q-tooltip>
                                 </template>
                             </TeamAttribute>
+                            <TeamAttribute class="col-5" style="visibility:hidden" v-if="h2hTeam.win > h2hOpposition.win"/>
+                            
                         </div>
-                    </div>
-                </header>
-                <main
-                    :class="{
-                        'col-12': $q.screen.xs || !!comparisonTeam,
-                        'col-6': !$q.screen.xs && !comparisonTeam,
-                    }"
-                >
-                    <q-separator v-if="!comparisonTeam" />
+                     <q-separator v-if="!comparisonTeam" />
                     <div
-                        class="row justify-between full-width items-end q-my-sm"
+                        class="row justify-between col-12 items-end q-my-sm"
                         v-if="!comparisonTeam"
                     >
                         <div class="row items-center">
@@ -369,7 +370,16 @@
                             <Badge :badge="badge" height="3em" />
                         </div>
                     </div>
-                    <q-separator v-if="!comparisonTeam" />
+                  
+                </header>
+                <main
+                    :class="{
+                        'col-12': $q.screen.xs || !!comparisonTeam,
+                        'col-6': !$q.screen.xs && !comparisonTeam,
+                    }"
+                >
+                   
+                    
                     <div
                         class="row items-end justify-between q-my-sm"
                         v-if="!comparisonTeam"
@@ -462,9 +472,7 @@ $avatar-dimension: 7em;
         left: 0;
         padding: var(--space-xs);
     }
-}
-
-.team__header {
+    .team__header {
     padding: var(--space-lg);
     padding-bottom: var(--space-sm);
 
@@ -474,33 +482,12 @@ $avatar-dimension: 7em;
         width: $avatar-dimension;
     }
 }
-.attribute__container {
-    padding: var(--space-xs);
-    border: 1px solid $grey-4;
-    border-radius: 4px;
-    margin: var(--space-xs);
-    .q-icon {
-        margin-right: var(--space-xxs);
-    }
-    .value {
-        margin-left: 1.2em;
-    }
-    &.highlight {
-        border: 2px solid $blue;
-    }
+.h2h__container {
+    margin: 0px var(--space-md);
 }
-.team__content--container {
-    border-bottom: 1px solid $grey-4;
-    .team-header__container {
-        padding: var(--space-xs);
-        position: sticky;
-        top: 0;
-        background-color: rgba(255, 255, 255, 0.98);
-    }
 }
 </style>
 <script setup>
-import { useElementSize } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { BADGE_FIELDS } from "@/constants/badges";
 
@@ -511,11 +498,6 @@ const props = defineProps({
 const tab = ref("overview");
 
 const index = ref(0);
-
-const header = ref(null);
-const { height: headerHeight } = useElementSize(header);
-
-const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`);
 
 const { hasBadge } = useBadge();
 const badges = ref(

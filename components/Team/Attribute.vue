@@ -16,7 +16,8 @@
     padding: var(--space-xs);
     border: 1px solid $grey-4;
     border-radius: 4px;
-    margin: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    
     .q-icon {
         margin-right: var(--space-xxs);
     }
@@ -25,6 +26,12 @@
     }
     &.highlight {
         border: 2px solid $blue;
+    }
+    &:nth-child(even) {
+        margin-left: var(--space-xs);
+    }
+    &:nth-child(odd) {
+        margin-right: var(--space-xs);
     }
 }
 </style>

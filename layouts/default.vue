@@ -180,6 +180,16 @@
                     </q-item-section>
                     <q-item-section class=" justify-center">Search</q-item-section>
                 </q-item>
+                 <q-item clickable v-ripple color="primary" @click="toggleLineScore({open: true})">
+                   <q-item-section
+                        avatar
+                        class="row justify-center items-center"
+                    >
+                            <q-icon name="add" size="1.5em" class="q-mb-xs" />
+                     
+                    </q-item-section>
+                    <q-item-section>Enter linescore</q-item-section>
+                </q-item>
                 <q-item clickable v-ripple color="primary" to="/profile">
                     <q-item-section avatar>
                         <!-- <div style="height: 2.5em; width: 2.5em">
