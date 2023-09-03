@@ -1,18 +1,27 @@
 <template>
-    <div style="position: relative full-width">
- 
-        <div class="result__container--wrap" :class="{ expanded }">
-       
-            <div
-                class="result__header"
-                :style="{ backgroundImage }"
-                ref="container"
-            >
-                        <div class="game-request-response__container row no-wrap" v-if="isAuthorized(result.pending_away)">
-                            <div class="text-bold">Pending game invitation</div>
-                            <q-btn color="positive" class="q-mx-sm" @click="respondToRequest(true)">Accept</q-btn>
-                            <q-btn color="negative" @click="respondToRequest(false)">Reject</q-btn>
-                        </div>
+    <div style="position: relative full-width" >
+        <div
+            class="result__container--wrap"
+            :class="{ expanded }"
+            @click="reveal"
+        >
+            <div class="result__header" ref="container">
+                <!-- :style="{ backgroundImage }" -->
+                <div
+                    class="game-request-response__container row no-wrap"
+                    v-if="isAuthorized(result.pending_away)"
+                >
+                    <div class="text-bold">Pending game invitation</div>
+                    <q-btn
+                        color="positive"
+                        class="q-mx-sm"
+                        @click.stop="respondToRequest(true)"
+                        >Accept</q-btn
+                    >
+                    <q-btn color="negative" @click.stop="respondToRequest(false)"
+                        >Reject</q-btn
+                    >
+                </div>
                 <div class="result__container" @click="emit('expand')">
                     <div class="team__profile--container column no-wrap">
                         <div
@@ -85,14 +94,18 @@
                                 />
                             </div>
                         </div>
-                        <div class="text-center" >
+                        <div class="text-center">
                             <h2 class="text-sm truncate-text text-center">
                                 <span v-if="result.away_name">{{
                                     result.away_name
                                 }}</span>
                             </h2>
                             <q-chip
-                                v-if="isAuthorized(result.home_id) && !result.away_id && !result.pending_away"
+                                v-if="
+                                    isAuthorized(result.home_id) &&
+                                    !result.away_id &&
+                                    !result.pending_away
+                                "
                                 dense
                                 color="deep-purple"
                                 text-color="white"
@@ -115,8 +128,10 @@
                             </q-chip>
                             <RequestStatus
                                 @click.stop.prevent
-                                v-else-if="isAuthorized(result.home_id) && 
-                                    !result.away_id && result.pending_away
+                                v-else-if="
+                                    isAuthorized(result.home_id) &&
+                                    !result.away_id &&
+                                    result.pending_away
                                 "
                                 resourceType="game"
                                 :resourceId="result.id"
@@ -178,14 +193,29 @@
                     </div>
                 </div>
             </div>
-            <div style="overflow:hidden">
-            <transition
-                appear
-                enter-active-class="animated slideInDown"
-                leave-active-class="animated slideOutUp"
+
+            <div style="overflow: hidden">
+                <transition
+                    appear
+                    enter-active-class="animated slideInDown"
+                    leave-active-class="animated slideOutUp"
+                >
+                    <TeamGameResultDetails
+                        v-if="expanded"
+                        :result="props.result"
+                    />
+                </transition>
+            </div>
+            <div
+                class="confirm__overlay row justify-center items-center"
+                :class="{ visible: isRevealed }"
+                ref="confirmOverlay"
             >
-                <TeamGameResultDetails v-if="expanded" :result="props.result" />
-            </transition>
+               <div class="confirm__overlay--content full-width row justify-around">
+                  <q-btn color="white" text-color="primary" @click.stop="cancel">Cancel</q-btn>
+                <q-btn color="primary" @click.stop="confirm">View game </q-btn>
+               
+               </div>
             </div>
         </div>
     </div>
@@ -193,15 +223,16 @@
 <style lang="scss" scoped>
 $result-height: 50px;
 $columns: 1fr 120px 1fr;
+$max-container-width: 600px;
 .result__container--wrap {
-    border-radius: 16px;
+    // border-radius: 16px;
     max-height: fit-content;
-    border: 1px solid $grey-3;
+    // border: 1px solid $grey-3;
     box-sizing: border-box;
     transition: all 1s;
     position: relative;
     overflow: hidden;
-        margin-bottom: var(--space-sm);
+    // margin-bottom: var(--space-sm);
     .start-time--floating {
         position: absolute;
         left: 0;
@@ -214,8 +245,8 @@ $columns: 1fr 120px 1fr;
         padding-bottom: var(--space-xs);
         padding-top: var(--space-xs);
         border-radius: inherit;
-        padding-left: var(--space-sm);
-        padding-right: var(--space-sm);
+        // padding-left: var(--space-sm);
+        // padding-right: var(--space-sm);
         z-index: 1;
         width: 100%;
         box-sizing: border-box;
@@ -238,8 +269,8 @@ $columns: 1fr 120px 1fr;
         display: grid;
         grid-template-rows: 100%;
         grid-template-columns: $columns;
-        border-bottom: 1px solid $grey-3;
-        max-width: 600px;
+        // border-bottom: 1px solid $grey-3;
+        max-width: $max-container-width;
         margin: auto;
         position: relative;
 
@@ -266,6 +297,28 @@ $columns: 1fr 120px 1fr;
         margin: auto !important;
         font-size: 35px;
     }
+
+    .confirm__overlay {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top:0;
+        margin: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+        // z-index: $z-confirmation;
+        transform-origin: center;
+        transition: all 0.3s;
+        border-radius: 8px;
+        &:not(.visible) {
+            transform: scaleX(0);
+        }
+        &.visible {
+            transform: scaleX(1);
+        }
+        max-width: $max-container-width
+    }
 }
 </style>
 <script setup>
@@ -273,10 +326,12 @@ import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useGameRequestStore } from "@/store/game-requests";
 import {
+    onClickOutside,
     useElementBounding,
     useElementSize,
     useParentElement,
     watchDebounced,
+    useConfirmDialog,
 } from "@vueuse/core";
 import { numberToLetter } from "@/utils/sheets";
 
@@ -289,7 +344,7 @@ const props = defineProps({
     result: Object,
 });
 
-const emit = defineEmits(["expand", "update", 'remove']);
+const emit = defineEmits(["expand", "update", "remove"]);
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -323,7 +378,7 @@ watch(containerHeight, () => {
 
 const onAvatarClick = (id) => {
     if (!id) return;
-    
+
     dialogStore.toggleTeamViewer({ open: true, team: { id } });
 };
 
@@ -346,18 +401,33 @@ const selectTeam = async (team) => {
 };
 
 const respondToRequest = async (accepted) => {
-    await useGameRequestStore().updateGameRequestStatus({team_id: props.result.pending_away, game_id: props.result.id, status: accepted ? 'accepted' : 'rejected' });
+    await useGameRequestStore().updateGameRequestStatus({
+        team_id: props.result.pending_away,
+        game_id: props.result.id,
+        status: accepted ? "accepted" : "rejected",
+    });
     if (accepted) {
-  updateResult();
+        updateResult();
     } else {
-        emit('remove')
+        emit("remove");
     }
-  
-}
+};
 
 const isAuthorized = (teamId) => {
     return useUserTeamStore().userTeams.some(
         ({ id, is_admin }) => id === teamId && is_admin === true
     );
 };
+
+const { reveal, isRevealed, confirm, cancel, onConfirm, onCancel } = useConfirmDialog();
+
+onConfirm(() => {
+    return navigateTo(`/teams/${props.result?.home_id || props.result.away_id}/games/${props.result?.id}`)
+})
+
+const confirmOverlay = ref(null)
+
+onClickOutside(confirmOverlay, cancel)
+
+
 </script>

@@ -19,6 +19,7 @@
     border: 1px solid $grey-4;
     border-radius: 4px;
     margin-bottom: var(--space-sm);
+    height: fit-content;
     
     .q-icon {
         margin-right: var(--space-xxs);

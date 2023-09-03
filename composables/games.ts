@@ -31,5 +31,87 @@ export const useGame = () => {
         }));
         return []
     }
-    return { getGameResult, getTeamGames };
+
+    const getHeadToHead = async (homeTeamId: number, awayTeamId: number) => {
+        const { data } = await useSupabaseClient()
+            .from("games")
+            .select("id")
+            .or(`home.eq.${homeTeamId},away.eq.${homeTeamId}`)
+            .or(`home.eq.${awayTeamId},away.eq.${awayTeamId}`);
+        const games = data?.map(({ id }) => id) || [];
+        //TODO inform user there have been no games
+        if (!games?.length) return null;
+    
+        const { data: stats } = await useSupabaseClient()
+            .from("team_stats")
+            .select(
+                `
+            *,
+            team:team_id (
+                name,
+                team_avatar,
+                avatar_url,
+                avatar_type
+            )
+            `
+            )
+            .in("game_id", games);
+    
+        const [reference] = stats;
+    
+        const EXCLUDE_STATS_FROM_COMPARISON = [
+            "id",
+            "created_at",
+            "game_id",
+            "team_id",
+            "team",
+        ];
+    
+        const keys = Object.keys(reference).filter(
+            (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
+        );
+    
+        console.log(stats)
+        const myTeam = {};
+        const oppTeam = {};
+    
+        keys.forEach((key) => {
+            myTeam[key] = stats.reduce((all, current) => {
+                if (current.team_id !== homeTeamId) return all;
+                return all + current[key];
+            }, 0);
+    
+            oppTeam[key] = stats.reduce((all, current) => {
+                if (current.team_id !== awayTeamId) return all;
+                return all + current[key];
+            }, 0);
+        });
+    
+        const oneOppositionEntry = stats.find(
+            ({ team_id }) => team_id === awayTeamId
+        );
+        const oneHomeEntry = stats?.find( ({ team_id }) => team_id === homeTeamId)
+
+        console.log('one home entry: ', oneHomeEntry)
+    
+        const { avatar_type, avatar_url, team_avatar, name } = { ...(oneHomeEntry?.team ?? {}) };
+    
+        const team1 = {
+            ...myTeam,
+            games_played: stats?.length / 2,
+            avatar_type,
+            avatar_url,
+            team_avatar,
+            name,
+        };
+        const team2 = {
+            ...oppTeam,
+            games_played: stats?.length / 2,
+            ...oneOppositionEntry.team,
+        };
+
+        return {team1, team2, allGames: stats}
+    };
+
+    return { getGameResult, getHeadToHead, getTeamGames };
 };

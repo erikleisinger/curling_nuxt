@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div>
-                        <h2 class="text-md q-mr-md text-bold text-center">
+                        <h2 class="text-md q-mr-md  text-center">
                             {{ BADGE_TITLES_PLAIN[badge] }}
                         </h2>
                         <h3 class="text-sm text-center">
@@ -211,6 +211,10 @@ import {
 } from "@/constants/badges";
 
 const props = defineProps({
+    exclude: {
+        type: Array,
+        default: []
+    },
     team: Object,
     oppositionTeam: Object,
     teamId: Number,
@@ -221,7 +225,7 @@ const props = defineProps({
     viewerHeight: String,
 });
 
-const EXCLUDE_FIELDS = ["survivalist"];
+const EXCLUDE_FIELDS = ["survivalist", ...props.exclude];
 const fields = Object.keys(BADGE_FIELDS).filter(
     (f) => !EXCLUDE_FIELDS.includes(f)
 );
