@@ -161,7 +161,6 @@
 .line-container {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid $grey-4;
     padding: var(--space-md) 0px;
     width: 100%;
     .q-linear-progress {

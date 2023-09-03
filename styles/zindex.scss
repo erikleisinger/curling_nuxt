@@ -28,3 +28,6 @@ $z-notification: $above + $z-confirmation;
 .q-drawer__backdrop, .q-drawer__opener, .q-drawer {
     z-index: $z-drawer!important;
 }
+.q-inner-loading {
+    z-index: $z-confirmation!important;
+}

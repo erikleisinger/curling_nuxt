@@ -1,45 +1,37 @@
 <template>
     <div
         class="full-height no-wrap"
-        :class="{ column: !showTeamComparison, row: !!showTeamComparison }"
+        :class="{ column: !oppositionTeam, row: !!oppositionTeam }"
     >
-        <q-inner-loading :showing="loadingComparison" color="primary" />
-          <div
-                        class="col-12 col-sm-6 row full-width view-more__container"
-                        v-show="!!viewDetails?.length"
-                    >
-                        <ChartTeamHammerEfficiencyTime
-                            :teamId="team.id"
-                            v-if="!showTeamComparison && !!viewDetails.length"
-                            :visibleStats="viewDetails"
-                            @close="viewDetails = []"
-                        />
-                    </div>
-                    
+        <div
+            class="col-12 col-sm-6 row full-width view-more__container"
+            v-show="!!viewDetails?.length"
+        >
+            <ChartTeamHammerEfficiencyTime
+                :teamId="team.id"
+                v-if="!oppositionTeam && !!viewDetails.length"
+                :visibleStats="viewDetails"
+                @close="viewDetails = []"
+            />
+        </div>
+
         <div
             class="stats__container column no-wrap"
             v-if="
-                !loadingComparison && ($q.screen.gt.xs || !viewDetails?.length)
+                ($q.screen.gt.xs || !viewDetails?.length)
             "
             :class="{
                 'col-12': $q.screen.xs || !viewDetails.length,
                 'col-6': viewDetails.length && !$q.screen.xs,
             }"
         >
-            <!-- <div class="toolbar">
-                <q-btn flat round icon="edit" />
-            </div> -->
-          
-                  
-                   <slot name="prepend" :team="team" :oppositionTeam="oppositionTeam"/>
             <div
                 class="column no-wrap"
                 v-for="badge in fields"
                 :key="`percentage-${badge}`"
             >
-              
                 <div
-                    v-if="showTeamComparison && !!oppositionTeam"
+                    v-if="!!oppositionTeam"
                     class="q-mt-md row no-wrap"
                 >
                     <div class="row col-grow justify-start items-center">
@@ -79,14 +71,15 @@
                         </div>
                     </div>
                 </div>
-          
-                <div class="row col-12 no-wrap">
+
+                <div class="row no-wrap">
                     <div
                         :class="
-                            showTeamComparison && !!oppositionTeam
+                            !!oppositionTeam
                                 ? 'col-6 q-pr-md'
                                 : 'col-12'
                         "
+                        v-if="!reloading"
                     >
                         <TeamStatsViewPercentage
                             class="full-width"
@@ -98,15 +91,15 @@
                             :visible="
                                 viewDetails.includes(BADGE_TITLES_PLAIN[badge])
                             "
-                            :dense="showTeamComparison && !!oppositionTeam"
+                            :dense="!!oppositionTeam"
                             :prependPercent="
-                                showTeamComparison && !!oppositionTeam
+                                !!oppositionTeam
                             "
                         />
                     </div>
                     <div
                         class="col-6 q-pl-md"
-                        v-if="showTeamComparison && oppositionTeam"
+                        v-if="!reloading && oppositionTeam"
                     >
                         <TeamStatsViewPercentage
                             class="full-width"
@@ -127,6 +120,7 @@
                         />
                     </div>
                 </div>
+                <q-separator/>
             </div>
             <!-- <div
                 class="row justify-between items-center full-width no-wrap stats__container--pie"
@@ -173,26 +167,6 @@
                 </div>
             </div> -->
         </div>
-
-        <div
-            class="stats__container row col-6"
-            v-if="showTeamComparison && oppositionTeam"
-        >
-            <!-- <q-btn @click="toggleTeamComparison">Hi</q-btn> -->
-            <TeamStatsViewPercentage
-                v-for="badge in fields"
-                :key="`percentage-opp-team-${badge}`"
-                class="col-12"
-                :badge="badge"
-                :teamId="oppositionTeam.id"
-                :numerator="oppositionTeam[BADGE_FIELDS[badge].numerator]"
-                :denominator="oppositionTeam[BADGE_FIELDS[badge].denominator]"
-                @showMore="viewMore(BADGE_TITLES_PLAIN[badge])"
-                :visible="viewDetails.includes(BADGE_TITLES_PLAIN[badge])"
-                dense
-                reverse
-            />
-        </div>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -237,7 +211,8 @@ import {
 } from "@/constants/badges";
 
 const props = defineProps({
-    oppositionId: Number,
+    customTeam: Object,
+    oppositionTeam: Object,
     teamId: Number,
     teamName: {
         type: String,
@@ -257,124 +232,23 @@ const viewDetails = ref([]);
 const detailsType = ref(null);
 
 const viewMore = (str) => {
-    console.log('VIEW MORE')
     if (viewDetails.value.includes(str)) {
-        console.log('IF')
         const index = viewDetails.value.indexOf(str);
         viewDetails.value.splice(index, 1);
-  
     } else {
-        console.log('ELSE')
         viewDetails.value.push(str);
-
     }
-          console.log(viewDetails.value)
 };
 
-const team = ref(
-    useUserTeamStore().userTeams.find((t) => t.id === props.teamId)
-);
+const team = computed(() => props.customTeam ||  useUserTeamStore().userTeams.find((t) => t.id === props.teamId))
 
-const oppositionTeam = ref(null);
+const reloading = ref(false)
 
-const showTeamComparison = ref(false);
+watch(() => props.customTeam || props.oppositionTeam, () => {
+    reloading.value = true;
+    nextTick(() => {
+        reloading.value = false;
+    })
+})
 
-const toggleTeamComparison = () => {
-    viewDetails.value = [];
-    showTeamComparison.value = !showTeamComparison.value;
-    if (showTeamComparison.value) getComparisonTeam();
-};
-
-watch(() => props.oppositionId, (val) => {
-    showTeamComparison.value = !!val;
-    if (val) {
-        viewDetails.value = [];
-        getComparisonTeam();
-    } else {
-        oppositionTeam.value = null;
-    }
-    
-
-}, {immediate: true})
-
-const loadingComparison = ref(false);
-
-const getComparisonTeam = async () => {
-    loadingComparison.value = true;
-    const { data } = await useSupabaseClient()
-        .from("games")
-        .select("id")
-        .or(`home.eq.${props.teamId},away.eq.${props.teamId}`)
-        .or(`home.eq.${props.oppositionId},away.eq.${props.oppositionId}`);
-    const games = data?.map(({ id }) => id) || [];
-
-    //TODO inform user there have been no games
-    if (!games?.length) return;
-
-    const { data: stats } = await useSupabaseClient()
-        .from("team_stats")
-        .select(
-            `
-        *,
-        team:team_id (
-            name,
-            team_avatar,
-            avatar_url,
-            avatar_type
-        )
-        `
-        )
-        .in("game_id", games);
-
-    const [reference] = stats;
-
-    const EXCLUDE_STATS_FROM_COMPARISON = [
-        "id",
-        "created_at",
-        "game_id",
-        "team_id",
-        "team",
-    ];
-
-    const keys = Object.keys(reference).filter(
-        (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
-    );
-
-    const myTeam = {};
-    const oppTeam = {};
-
-    keys.forEach((key) => {
-        myTeam[key] = stats.reduce((all, current) => {
-            if (current.team_id !== props.teamId) return all;
-            return all + current[key];
-        }, 0);
-
-        oppTeam[key] = stats.reduce((all, current) => {
-            if (current.team_id !== props.oppositionId) return all;
-            return all + current[key];
-        }, 0);
-    });
-
-    const oneOppositionEntry = stats.find(
-        ({ team_id }) => team_id === props.oppositionId
-    );
-
-    const { avatar_type, avatar_url, team_avatar, name } = { ...team.value };
-
-    team.value = {
-        ...myTeam,
-        games_played: stats.length / 2,
-        avatar_type,
-        avatar_url,
-        team_avatar,
-        name,
-    };
-    oppositionTeam.value = {
-        ...oppTeam,
-        games_played: stats.length / 2,
-        ...oneOppositionEntry.team,
-    };
-
-    loadingComparison.value = false;
-};
 </script>
