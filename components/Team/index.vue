@@ -15,8 +15,8 @@
                 <q-btn flat round icon="arrow_back" @click="endComparison" />
             </div>
             <header
-                class="row justify-center"
-                :class="!$q.screen.xs || !comparisonTeam ? 'col-12' : 'col-6'"
+                class="row justify-center col-12"
+                
             >
                 <div
                     class="full-width row justify-center team-view-options__container"
