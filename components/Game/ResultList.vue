@@ -4,16 +4,16 @@
         :key="game.id"
         class="result__container"
     >
-    <!-- v-if="
-                        !game.verified &&
-                        game.away_id &&
-                        isAuthorized(game.away_id)
-                    " -->
+    <!--  -->
         <TeamGameResult :result="game">
             <template v-slot:before>
                 <div
                     class="game-request-response__container row items-center no-wrap justify-end"
-                    
+                    v-if="
+                        !game.verified &&
+                        game.away_id &&
+                        isAuthorized(game.away_id)
+                    "
                 >
                     <h3 class="text-sm text-bold">Verify game</h3>
                   <q-btn
