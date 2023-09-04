@@ -2,7 +2,6 @@
     <div style="position: relative full-width">
         <div
             class="result__container--wrap"
-            :class="{ expanded }"
             @click="reveal"
         >
             <!-- <div class="more-options__container">
@@ -36,6 +35,7 @@
                                                 result.home_avatar_type,
                                             avatar_url: result.home_avatar_url,
                                         }"
+                                        :color="result.home_color"
                                     />
                                 </div>
                             </div>
@@ -98,6 +98,7 @@
                                                 result.away_avatar_type,
                                             avatar_url: result.away_avatar_url,
                                         }"
+                                        :color="result.away_color"
                                     />
                                 </div>
                             </div>
@@ -108,7 +109,7 @@
                                         position: relative;
                                     "
                                 >
-                                    <div class="verified__container">
+                                    <div class="verified__container" v-if="result.verified">
                                         <q-icon
                                             name="verified"
                                             :color="
@@ -226,19 +227,6 @@
                    
                 </div>
             </div>
-
-            <div style="overflow: hidden">
-                <transition
-                    appear
-                    enter-active-class="animated slideInDown"
-                    leave-active-class="animated slideOutUp"
-                >
-                    <TeamGameResultDetails
-                        v-if="expanded"
-                        :result="props.result"
-                    />
-                </transition>
-            </div>
         </div>
     </div>
 </template>
@@ -281,15 +269,6 @@ $max-container-width: 500px;
         .game-request-response__container {
             margin: 0px var(--space-sm);
             margin-bottom: var(--space-md);
-        }
-    }
-    &.expanded {
-        max-height: unset;
-        .result__header {
-            padding-bottom: var(--space-xs);
-            padding-top: var(--space-xs);
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
         }
     }
 
@@ -380,7 +359,6 @@ const dialogStore = useDialogStore();
 const { toggleGlobalSearch } = dialogStore;
 
 const props = defineProps({
-    expanded: Boolean,
     notify: {
         type: Boolean,
         default: true,

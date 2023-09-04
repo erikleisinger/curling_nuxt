@@ -38,7 +38,7 @@
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :team="team"
-                                
+                                :color="showColors ? team.color : null"
                                
                             />
                             <q-tooltip>
@@ -58,6 +58,7 @@
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :team="oppositionTeam"
+                                :color="showColors ? oppositionTeam.color : null"
                                 
                             />
                             <q-tooltip>
@@ -210,6 +211,8 @@ const props = defineProps({
     },
     team: Object,
     oppositionTeam: Object,
+    // Requires 'color' to be included in team/oppositionTeam props
+    showColors: Boolean,
     teamId: Number,
     teamName: {
         type: String,

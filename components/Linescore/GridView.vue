@@ -14,6 +14,7 @@
                         style="height: 100%; width: 100%"
                         :team="game?.home"
                         :viewable="false"
+                        :color="game?.home_color"
                     />
 
                     <q-badge
@@ -24,12 +25,7 @@
                     >
                         <q-icon name="hardware" color="white"></q-icon
                     ></q-badge>
-                    <q-badge
-                        :color="game?.homeColor || game?.home?.color"
-                        rounded
-                    >
-                        <q-icon name="circle" :color="game?.homeColor"
-                    /></q-badge>
+                  
                     </div>
                 </div>
                 <slot name="header" />
@@ -42,6 +38,7 @@
                         style="height: 100%; width: 100%"
                         :team="game?.away"
                           :viewable="false"
+                          :color="game?.away_color"
                     />
                     <q-badge
                         class="hammer__badge"
@@ -51,11 +48,7 @@
                     >
                         <q-icon name="hardware" color="white"></q-icon
                     ></q-badge>
-                    <q-badge
-                        :color="game?.awayColor || game?.away?.color"
-                        rounded
-                        ><q-icon name="circle" :color="game?.awayColor"
-                    /></q-badge>
+                   
                 </div>
                 </div>
             </div>

@@ -35,7 +35,7 @@
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
-                            <TeamAvatar :team="currentGame?.home" />
+                            <TeamAvatar :team="currentGame?.home" :color="currentGame.home_color" />
                         </div>
 
                         <div class="column items-center">
@@ -50,7 +50,7 @@
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
-                            <TeamAvatar :team="currentGame.away" />
+                            <TeamAvatar :team="currentGame.away" :color="currentGame.away_color" />
                         </div>
 
                         <div
@@ -142,8 +142,10 @@
                 <div v-if="stats">
                     <TeamStatsView
                         :team="
+                        
                             stats.home
                                 ? {
+                                    color: currentGame.home_color,
                                       ...stats?.home,
                                       ...stats?.home.team,
                                       id: stats.home.team_id,
@@ -156,6 +158,7 @@
                         :oppositionTeam="
                             stats?.away
                                 ? {
+                                    color: currentGame.away_color,
                                       ...stats?.away,
                                       ...stats?.away.team,
                                       id: stats.away.team_id,
@@ -163,6 +166,7 @@
                                 : {}
                         "
                         :exclude="['firstend', 'strategist']"
+                        showColors
                     >
                     </TeamStatsView>
                 </div>

@@ -23,9 +23,9 @@
                 class="ring"
                 :class="className"
                 v-if="loaded"
-                :style="{ left: avatarType === 'upload' ? '0' : '0' }"
+                :style="{ left: avatarType === 'upload' ? '0' : '0', ...styleObj }"
             />
-            <div class="ring inner" />
+           
             <div class="inner-wrap">
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
@@ -84,10 +84,11 @@
             width: 100%;
             box-sizing: border-box;
             position: absolute;
-            border: 8px solid;
+            border:3px solid rgba(0,0,0,0.1);
+            box-shadow: $pretty-shadow-2;
 
             bottom: 0;
-            transform: scale(1.1);
+            transform: scale(1.02);
             border-radius: 50%;
             opacity: 1;
 
@@ -96,22 +97,22 @@
             right: 0;
             margin: auto;
             &.inner {
-                transform: scale(1.02);
-                border: 1px solid rgba(255, 255, 255, 0);
+                // transform: scale(1.02);
+                // border: 1px solid transparent;
             }
 
-            &.dummy {
-                border-color: $grey-5;
-                background-color: $grey-5;
-            }
-            &.user-team {
-                border-color: $blue-6;
-                background-color: $blue-6;
-            }
-            &.non-user-team {
-                border-color: $amber;
-                background-color: $amber;
-            }
+            // &.dummy {
+            //     border-color: $grey-5;
+            //     background-color: $grey-5;
+            // }
+            // &.user-team {
+            //     border-color: $primary;
+            //     // background-color: $blue-6;
+            // }
+            // &.non-user-team {
+            //     border-color: $amber;
+            //     background-color: $amber;
+            // }
         }
     }
 }
@@ -154,6 +155,7 @@
 import { useStorageStore } from "@/store/storage";
 import { onClickOutside } from "@vueuse/core";
 const props = defineProps({
+    color: String,
     team: Object,
     viewable: {
         type: Boolean,
@@ -213,4 +215,13 @@ const clickAvatar = () => {
         return navigateTo(`/teams/${props.team.id}`);
     }
 };
+const {getColor} = useColor()
+const styleObj = computed(() => {
+    if (!props.color) return {};
+    return {
+        border: `6px solid ${getColor(props.color)}`,
+        transform: 'scale(1.08)',
+        'box-shadow': 'unset'
+    }
+})
 </script>

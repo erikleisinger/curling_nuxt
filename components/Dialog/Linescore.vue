@@ -601,7 +601,7 @@ const save = async () => {
 
     let shouldSendInvitation = false
 
-    if (params.away?.id && !userTeams.value.some(({id}) => id === params?.away?.id)) shouldSendInvitation = true;
+    if (!params.away?.id || !userTeams.value.some(({id}) => id === params?.away?.id)) shouldSendInvitation = true;
 
 
 
