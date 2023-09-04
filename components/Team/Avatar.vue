@@ -204,7 +204,6 @@ watch(hovered, (val) => {
 
 const clickAvatar = () => {
     if (!props.viewable && !props.invitable) return;
-    console.log(!visible.value && $q.screen.xs)
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
 } else if (!props.invitable) {
@@ -212,7 +211,6 @@ const clickAvatar = () => {
     } else {
         emit('invite')
     }
-    console.log(visible.value)
 };
 const {getColor} = useColor()
 const styleObj = computed(() => {

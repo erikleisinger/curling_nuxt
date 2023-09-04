@@ -515,7 +515,7 @@
                                 icon="add"
                                 label="Add game"
                                 class="q-pa-none"
-                                v-if="team.is_admin && !comparisonTeam"
+                                v-if="!comparisonTeam && isAuthorized"
                                 @click="
                                     toggleLineScore({
                                         open: true,
@@ -776,7 +776,7 @@ const browseGames = () => {
 
 const isAuthorized = computed(() => {
     return useUserTeamStore().userTeams.some(
-        ({ id, is_admin }) => id === props.team.id
+        ({ id }) => id === props.team.id
     );
 })
 

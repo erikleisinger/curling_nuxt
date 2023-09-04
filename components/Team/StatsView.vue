@@ -39,11 +39,10 @@
                             <TeamAvatar
                                 :team="team"
                                 :color="showColors ? team.color : null"
+                                        :viewable="!!team.id"
                                
                             />
-                            <q-tooltip>
-                                {{ team.name }}
-                            </q-tooltip>
+                           
                         </div>
                     </div>
                     <div>
@@ -59,11 +58,10 @@
                             <TeamAvatar
                                 :team="oppositionTeam"
                                 :color="showColors ? oppositionTeam.color : null"
+                                :viewable="!!oppositionTeam.id"
                                 
                             />
-                            <q-tooltip>
-                                {{ oppositionTeam.name }}
-                            </q-tooltip>
+                          
                         </div>
                     </div>
                 </div>

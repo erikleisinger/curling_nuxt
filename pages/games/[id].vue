@@ -50,7 +50,7 @@
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
-                            <TeamAvatar :team="currentGame.away" :color="currentGame.away_color" />
+                            <TeamAvatar :team="currentGame.away" :color="currentGame.away_color" :viewable="!!currentGame.away_id" :invitable="isAuthorized && !currentGame.away_id" />
                         </div>
 
                         <div
@@ -154,7 +154,6 @@
                         "
                         key="stats"
                         viewerHeight="400px"
-                        st
                         :oppositionTeam="
                             stats?.away
                                 ? {
@@ -238,12 +237,14 @@ $avatar-dimension: 7em;
 </style>
 <script setup>
 import { useThrottleFn } from "@vueuse/core";
+import {useUserTeamStore} from '@/store/user-teams'
 const route = useRoute();
 const { getGameResult } = useGame();
 
 const loading = ref(false);
 const result = ref(null);
 const error = ref(null);
+const isAuthorized = ref(false)
 
 const { id: gameId } = route.params;
 
@@ -262,6 +263,8 @@ const init = async () => {
     score.value = await generateScore(currentGame.value);
 
     stats.value = await getStatsForGame(currentGame.value);
+
+    isAuthorized.value = useUserTeamStore().userTeams.some(({id}) => id === currentGame.value.home_id)
 };
 
 const games = ref([]);
@@ -390,6 +393,8 @@ const getStatsForGame = async (game) => {
         away: data.find(({ team_id }) => team_id === game?.away_id),
     };
 };
+
+
 
 const { format, toTimezone } = useTime();
 </script>

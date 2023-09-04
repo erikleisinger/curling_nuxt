@@ -31,7 +31,7 @@
                     >Reject game</q-fab-action
                 >
                   <q-fab-action
-                  v-if="isAuthorized(game.home_id)"
+                  v-if="isAuthorized(game.home_id) && requiresVerification(game)"
                     color="white"
                     text-color="red"
                     icon="new_releases"
@@ -69,8 +69,12 @@ const games = ref([]);
 
 const confirmUnsaved = ref(false);
 
+const requiresVerification = (game) => {
+    return !game.verified && game.away_id
+}
+
 const canVerify = (game) => {
-    return !game.verified && game.away_id && isAuthorized(game.away_id);
+    return requiresVerification(game) && isAuthorized(game.away_id);
 };
 
 watch(
