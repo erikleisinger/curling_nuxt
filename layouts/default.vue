@@ -141,6 +141,7 @@
 .page__container--global {
       height: calc((100 * var(--vh, 1vh)) - 65px);
     overflow: auto;
+    scroll-behavior: smooth;
     @include sm {
         height: auto;
         overflow: unset;

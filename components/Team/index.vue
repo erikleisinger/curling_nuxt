@@ -1,16 +1,8 @@
 <template>
     <div class="row no-wrap" style="overflow: hidden">
         <q-inner-loading :showing="loadingComparison" color="primary" />
-        <transition-group
-            appear
-            enter-active-class="animated slideInLeft"
-            leave-active-class="animated slideOutRight"
-        >
-            <div
-                v-if="tab === 'overview'"
-                class="overview__container row"
-                key="overview"
-            >
+
+            <div class="overview__container row" key="overview">
                 <div class="back-button__container" v-if="comparisonTeam">
                     <q-btn
                         flat
@@ -19,7 +11,7 @@
                         @click="endComparison"
                     />
                 </div>
-                <header class="col-12 row" v-if="tab === 'overview'">
+                <header class="col-12 row">
                     <div
                         class="full-width row justify-center team-view-options__container"
                         v-if="!!comparisonTeam"
@@ -34,14 +26,16 @@
                             color="white"
                             text-color="primary"
                             :options="[
-                                { label: 'All time totals', value: 'total' },
                                 { label: 'Head to head', value: 'h2h' },
+                                { label: 'All time totals', value: 'total' },
                             ]"
                             :readonly="!h2hOpposition || !h2hTeam"
                         >
-                        <q-tooltip v-if="!h2hOpposition || !h2hTeam">
-                            {{team.name}} and {{comparisonTeam.name}} have not played any games.
-                        </q-tooltip>
+                            <q-tooltip v-if="!h2hOpposition || !h2hTeam">
+                                {{ team.name }} and
+                                {{ comparisonTeam.name }} have not played any
+                                games.
+                            </q-tooltip>
                         </q-btn-toggle>
                     </div>
                     <div
@@ -57,16 +51,8 @@
                             class="column team__header items-center"
                             :class="comparisonTeam ? 'col-6' : 'col-12'"
                         >
-                            <div class="avatar__container">
-                                <TeamAvatar
-                                    :team="team"
-                                    :style="{
-                                        marginTop:
-                                            team.avatar_type === 'avataaar'
-                                                ? '-15%'
-                                                : '',
-                                    }"
-                                />
+                            <div class="avatar__container q-mb-sm">
+                                <TeamAvatar :team="team" :viewable="false" />
                             </div>
 
                             <div class="column items-center">
@@ -80,17 +66,8 @@
                             class="column team__header items-center col-6"
                             v-if="comparisonTeam"
                         >
-                            <div class="avatar__container">
-                                <TeamAvatar
-                                    :team="comparisonTeam"
-                                    :style="{
-                                        marginTop:
-                                            comparisonTeam.avatar_type ===
-                                            'avataaar'
-                                                ? '-15%'
-                                                : '',
-                                    }"
-                                />
+                            <div class="avatar__container q-mb-sm">
+                                <TeamAvatar :team="comparisonTeam" />
                             </div>
 
                             <div class="column items-center">
@@ -130,6 +107,7 @@
                                     class="text-xs text-underline clickable q-pl-sm"
                                     style="margin-top: 1px"
                                     @click="browseGames"
+                                    v-if="teamViewMode !== 'total'"
                                 >
                                     Browse
                                 </h2>
@@ -142,7 +120,6 @@
                             class="col-5"
                             v-if="headToHead"
                         >
-                          
                             <div class="row items-center">
                                 <div class="q-mr-xs">
                                     <span
@@ -176,7 +153,7 @@
                                 </div>
                             </div>
                             <template v-slot:tooltip>
-                                <q-tooltip>
+                                <q-tooltip v-if="$q.platform.is.desktop">
                                     <div v-if="!!h2hTeam && !!h2hOpposition">
                                         <div>
                                             <span class="text-bold">{{
@@ -297,12 +274,13 @@
                             >
                         </TeamAttribute>
                         <TeamAttribute
-                            title="Points per game"
-                            icon="filter_1"
-                            color="blue"
+                            title="Points p. game"
                             v-if="!comparisonTeam"
                             class="col-5"
+                            icon="sym_o_counter_1"
+                            color="blue"
                         >
+                        
                             <span v-if="team.games_played">
                                 {{
                                     `${
@@ -320,7 +298,7 @@
                             </span>
                             <span v-else>-</span>
                             <template v-slot:tooltip>
-                                <q-tooltip>
+                                <q-tooltip v-if="$q.platform.is.desktop">
                                     <div>
                                         <span class="text-bold"
                                             >Avgs points scored:
@@ -348,11 +326,12 @@
                         </TeamAttribute>
                         <TeamAttribute
                             v-if="!comparisonTeam"
-                            title="Ends per game"
-                            color="green"
-                            icon="o_pin"
+                            title="Ends p. game"
                             class="col-5"
+                            color="blue"
+                            icon="filter_1"
                         >
+                       
                             <span v-if="team.games_played">
                                 {{
                                     `${
@@ -371,7 +350,7 @@
                             <span v-else>-</span>
 
                             <template v-slot:tooltip>
-                                <q-tooltip>
+                                <q-tooltip v-if="$q.platform.is.desktop">
                                     <div>
                                         <span class="text-bold"
                                             >Avg ends won:
@@ -449,9 +428,9 @@
                         </div>
                         <!-- END BADGES -->
                     </div>
-                    <div>
+                    <div :style="{order: headToHead ? 1 : 0}">
                         <!-- STATS-->
-                         
+
                         <div class="row items-end justify-between q-my-sm">
                             <div class="row items-center">
                                 <q-icon
@@ -507,60 +486,60 @@
                             'full-column': !!comparisonTeam || $q.screen.xs,
                             'half-column': !comparisonTeam && !$q.screen.xs,
                         }" -->
-                    <div v-if="!comparisonTeam || headToHead"> 
-                          <q-separator />
-                    <div >
-                        <div
-                            class="row justify-between col-12 items-end q-my-sm"
-                        >
-                            <div class="row items-center">
-                                <q-icon
-                                    name="o_scoreboard"
-                                    color="green"
-                                    class="text-md q-mr-sm"
-                                />
-                                <h2 class="text-md text-bold">
-                                    Latest results
-                                </h2>
-                            </div>
-                            <q-btn
-                                rounded
-                                outlined
-                                flat
-                                dense
-                                color="primary"
-                                icon="add"
-                                label="Add game"
-                                class="q-pa-none"
-                                v-if="team.is_admin && !comparisonTeam"
-                                @click="
-                                    toggleLineScore({
-                                        open: true,
-                                        options: {
-                                            homeTeam: team,
-                                        },
-                                    })
-                                "
-                            />
-                        </div>
+                    <div v-if="!comparisonTeam || headToHead">
                         <q-separator />
-                        <div class="stats-view__container" >
-                            <div v-if="!games.length">
-                                <div
-                                    class="row full-width justify-center q-pa-md"
-                                >
-                                    {{ team.name }} has played no games.
+                        <div>
+                            <div
+                                class="row justify-between col-12 items-end q-my-sm"
+                            >
+                                <div class="row items-center" ref="results">
+                                    <q-icon
+                                        name="o_scoreboard"
+                                        color="green"
+                                        class="text-md q-mr-sm"
+                                    />
+                                    <h2 class="text-md text-bold">
+                                        Latest results
+                                    </h2>
+                                </div>
+                                <q-btn
+                                    rounded
+                                    outlined
+                                    flat
+                                    dense
+                                    color="primary"
+                                    icon="add"
+                                    label="Add game"
+                                    class="q-pa-none"
+                                    v-if="team.is_admin && !comparisonTeam"
+                                    @click="
+                                        toggleLineScore({
+                                            open: true,
+                                            options: {
+                                                homeTeam: team,
+                                            },
+                                        })
+                                    "
+                                />
+                            </div>
+                            <q-separator />
+                            <div class="stats-view__container">
+                                <div v-if="!games.length">
+                                    <div
+                                        class="row full-width justify-center q-pa-md"
+                                    >
+                                        {{ team.name }} has played no games.
+                                    </div>
+                                </div>
+                                <div v-else class="game-history__container">
+                                    <LazyGameResultList :results="games" />
                                 </div>
                             </div>
-                            <div v-else class="game-history__container">
-                                <GameResultList :results="games"/>
-                            </div>
                         </div>
-                    </div>
                     </div>
                 </main>
             </div>
-        </transition-group>
+     
     </div>
 </template>
 <style lang="scss" scoped>
@@ -643,6 +622,7 @@ $avatar-dimension: 7em;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import { useElementBounding } from "@vueuse/core";
 import { BADGE_FIELDS } from "@/constants/badges";
 
 const props = defineProps({
@@ -650,8 +630,6 @@ const props = defineProps({
 });
 
 const { getStatPercent } = useConvert();
-
-const tab = ref("overview");
 
 const index = ref(0);
 
@@ -685,9 +663,9 @@ const getComparisonTeam = async (id) => {
     comparisonTeam.value = t;
 };
 
-const headToHead = computed(() => teamViewMode.value === "h2h");
-
-
+const headToHead = computed(
+    () => teamViewMode.value === "h2h" && h2hTeam.value && h2hOpposition.value
+);
 
 const h2hTeam = ref(null);
 const h2hOpposition = ref(null);
@@ -695,11 +673,13 @@ const h2hOpposition = ref(null);
 const getH2h = async (oppositionId) => {
     const { getHeadToHead } = useGame();
     const data = await getHeadToHead(props.team.id, oppositionId);
-    if (!data) return;
+    if (!data) {
+        teamViewMode.value = 'total';
+        return
+    }
     const { team1, team2 } = data || {};
-    console.log(team1, team2)
-    h2hTeam.value = team1;
-    h2hOpposition.value = team2;
+    h2hTeam.value = { ...team1, id: props.team.id };
+    h2hOpposition.value = { ...team2, id: oppositionId };
     getHeadToHeadRecord(oppositionId);
 };
 
@@ -707,6 +687,7 @@ const endComparison = () => {
     headToHead.value = false;
     comparisonTeam.value = null;
     h2hTeam.value = null;
+    teamViewMode.value = "h2h";
     h2hOpposition.value = null;
 };
 
@@ -731,13 +712,24 @@ onMounted(() => {
     getTeamRecord(props.team.id);
 });
 
-const teamViewMode = ref("total");
+const $q = useQuasar();
+
+const teamViewMode = ref("h2h");
+
+const results = ref(null);
+
+const { y: resultsY } = useElementBounding(results);
 
 const browseGames = () => {
-    loadingComparison.value = true;
-    return navigateTo(
-        `/teams/${props.team?.id}/games?opponent=${comparisonTeam.value?.id}`
-    );
+    let scrollElement;
+    if ($q.platform.is.mobile) {
+        scrollElement = document.querySelector(".page__container--global");
+    } else {
+        scrollElement = document.getElementById("__nuxt");
+    }
+
+    if (!scrollElement) return;
+    scrollElement.scrollTop = resultsY.value;
 };
 </script>
 <script>

@@ -34,7 +34,7 @@
                         {{ `After ${currentGame.end_count}` }}
                     </div>
                     <div class="column team__header items-center col-6">
-                        <div class="avatar__container">
+                        <div class="avatar__container q-mb-md">
                             <TeamAvatar :team="currentGame?.home" />
                         </div>
 
@@ -45,43 +45,46 @@
                             </h2>
                         </div>
                         <div class="score__container">
-                            {{ currentGame.home_points }}
-                            <div
-                                class="winner__container"
-                                v-if="
-                                    currentGame.home_points >
-                                    currentGame.away_points
-                                "
-                            >
-                                <q-icon name="verified" color="green" />
-                            </div>
+                            {{ currentGame.home_points ?? 0 }}
                         </div>
                     </div>
                     <div class="column team__header items-center col-6">
-                        <div class="avatar__container">
+                        <div class="avatar__container q-mb-md">
                             <TeamAvatar :team="currentGame.away" />
                         </div>
 
-                        <div class="column items-center">
+                        <div
+                            class="column items-center"
+                          
+                        >
+                    
                             <div class="text-sm">Team</div>
+                            <div   style="position: relative">
+                                     <div class="verified__container" v-if="currentGame.verified">
+                                    <q-icon name="verified" :color="currentGame.verified ? 'primary' : 'grey-5'" />
+                                      <q-tooltip v-if="$q.platform.is.desktop">
+                                <div v-if="currentGame.verified">
+                                    {{ currentGame.away_name }} has verified that
+                                    this score is accurate.
+                                </div>
+                                <div v-else>
+                                    Game is unverified by
+                                    {{ currentGame.away_name }} and may not be
+                                    accurate.
+                                </div>
+                            </q-tooltip>
+                                </div>
                             <h2
                                 class="text-sm text-bold text-center"
                                 style="white-space: nowrap"
                             >
                                 {{ currentGame.away_name }}
+                               
                             </h2>
+                            </div>
                         </div>
                         <div class="score__container">
-                            {{ currentGame.away_points }}
-                            <div
-                                class="winner__container"
-                                v-if="
-                                    currentGame.away_points >
-                                    currentGame.home_points
-                                "
-                            >
-                                <q-icon name="verified" color="green" />
-                            </div>
+                            {{ currentGame.away_points ?? 0 }}
                         </div>
                     </div>
                 </div>
@@ -143,6 +146,7 @@
                                 ? {
                                       ...stats?.home,
                                       ...stats?.home.team,
+                                      id: stats.home.team_id,
                                   }
                                 : {}
                         "
@@ -154,6 +158,7 @@
                                 ? {
                                       ...stats?.away,
                                       ...stats?.away.team,
+                                      id: stats.away.team_id,
                                   }
                                 : {}
                         "
@@ -196,18 +201,19 @@ $avatar-dimension: 7em;
         .score__container {
             font-size: 4em;
             position: relative;
-            .winner__container {
+           
+        }
+    }
+     .verified__container {
                 position: absolute;
-                bottom: 0.5em;
-                right: -0.5em;
-                font-size: 0.3em;
+             
+                left: -1em;
+                
                 height: min-content;
                 .q-icon {
                     font-size: 1em;
                 }
             }
-        }
-    }
     .end-count__container {
         position: absolute;
         bottom: 1em;
@@ -257,12 +263,16 @@ const init = async () => {
 const games = ref([]);
 const currentGame = ref(null);
 
-const getGames = async () => {  
+const getGames = async () => {
     const client = useSupabaseClient();
-    const {data:gameData} = await client.from('games').select('home').eq('id', gameId).single()
-    const {home} = gameData ?? {};
+    const { data: gameData } = await client
+        .from("games")
+        .select("home")
+        .eq("id", gameId)
+        .single();
+    const { home } = gameData ?? {};
     if (!home) return;
-  
+
     const { data } = await client
         .rpc("get_team_record", { team_ids_param: [home] })
         .eq("id", gameId);

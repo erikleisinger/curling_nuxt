@@ -4,57 +4,35 @@
         :key="game.id"
         class="result__container"
     >
-    <!--  -->
-        <TeamGameResult :result="game">
+        <TeamGameResult :result="game" :notify="canVerify(game)">
+            <!-- Verification -->
+            <template
+                v-slot:actions
+                v-if="canVerify(game)
+                       
+                    "
+            >
+                <q-fab-action
+                    color="white"
+                    text-color="primary"
+                    icon="verified"
+                    @click="
+                        respondToRequest(game.id, true, index, game.away_id)
+                    "
+                    >Verify game</q-fab-action
+                >
+                <q-fab-action
+                    color="white"
+                    text-color="red"
+                    icon="new_releases"
+                    @click="respondToRequest(game.id, false, index)"
+                    >Reject game</q-fab-action
+                >
+            </template>
             <template v-slot:before>
                 <div
-                    class="game-request-response__container row items-center no-wrap justify-end"
-                    v-if="
-                        !game.verified &&
-                        game.away_id &&
-                        isAuthorized(game.away_id)
-                    "
-                >
-                    <h3 class="text-sm text-bold">Verify game</h3>
-                  <q-btn
-                        color="red"
-                        
-                        class="q-mx-sm"
-                        @click="
-                            respondToRequest(game.id, false, index)
-                        "
-                        :loading="responding"
-                        dense
-                        round
-                        icon="close"
-                        />
-                    <q-btn
-                        color="green"
-                        
-                        class="q-mx-sm"
-                        @click="
-                            respondToRequest(game.id, true, index, game.away_id)
-                        "
-                        :loading="responding"
-                        dense
-                        round
-                        icon="check"
-                        />
-                         <q-btn
-                        color="primary"
-                        
-                        class="q-mx-sm"
-                        :loading="responding"
-                       
-                        rounded
-                        icon="check"
-                        label="view"
-                        no-wrap
-                        :to="`/games/${game.id}`"
-                        />
-                
-                
-                </div>
+                    class="game-request-response__container row items-center no-wrap"
+                ></div>
             </template>
         </TeamGameResult>
         <q-separator />
@@ -67,7 +45,7 @@
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
-import {useNotificationStore} from '@/store/notification'
+import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
 const props = defineProps({
     results: {
@@ -77,6 +55,12 @@ const props = defineProps({
 });
 
 const games = ref([]);
+
+const confirmUnsaved = ref(false);
+
+const canVerify = (game) => {
+    return !game.verified && game.away_id && isAuthorized(game.away_id);
+};
 
 watch(
     () => props.results,
@@ -92,10 +76,9 @@ const respondToRequest = useThrottleFn(
     async (gameId, accepted, index, teamId) => {
         const notStore = useNotificationStore();
         const notId = notStore.addNotification({
-            text: accepted ? 'Verifying game...' : 'Rejecting game...',
-            state: 'pending',
-
-        })
+            text: accepted ? "Verifying game..." : "Rejecting game...",
+            state: "pending",
+        });
         responding.value = true;
         let updates;
         if (accepted) {
@@ -123,9 +106,9 @@ const respondToRequest = useThrottleFn(
         games.value[index] = newGame;
         responding.value = false;
         notStore.updateNotification(notId, {
-            state: 'completed',
-            text: `Game result ${accepted ? 'verified!' : 'rejected.'}`
-        })
+            state: "completed",
+            text: `Game result ${accepted ? "verified!" : "rejected."}`,
+        });
     },
     1000
 );

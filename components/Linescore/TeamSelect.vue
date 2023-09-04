@@ -10,7 +10,7 @@
             <div class="team__card row items-center justify-center">
                 <div class="column items-center  full-width">
                
-                        <div style="width: 50%" @click="toggleSelect">
+                        <div style="width: 50%" class="q-mb-md" @click="toggleSelect">
                             <!-- v-bind="parseAvatar(teamSelection?.home?.team_avatar)" -->
                             <TeamAvatar
                                 :team="

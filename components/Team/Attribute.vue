@@ -9,6 +9,7 @@
         <div class="text-md text-bold value">
             <slot/>
         </div>
+      
 
         <slot name="tooltip"/>
     </div>

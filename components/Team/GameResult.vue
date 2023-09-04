@@ -5,202 +5,225 @@
             :class="{ expanded }"
             @click="reveal"
         >
-            <div class="result__header" ref="container">
-                <slot name="before"/>
-                <div class="result__container" @click="emit('expand')">
-                    <div class="team__profile--container column no-wrap">
-                        <div
-                            class="team-avatar__container"
-                            @click.stop.prevent="onAvatarClick(result.home_id)"
-                        >
-                            <div class="team-avatar--wrap">
-                                <TeamAvatar
-                                    :team="{
-                                        id: result.home_id,
-                                        team_avatar: result.home_avatar,
-                                        avatar_type: result.home_avatar_type,
-                                        avatar_url: result.home_avatar_url,
-                                    }"
-                                />
-                                <!-- <RockIcon
-                                    :draggable="false"
-                                    :color="result.home_color"
-                                /> -->
-                            </div>
-                        </div>
-
-                        <h2
-                            class="text-sm truncate-text text-center col-grow row items-center justify-center"
-                        >
-                            {{ result.home_name }}
-                        </h2>
-                    </div>
-
-                    <div class="row items-center full-width">
-                        <div
-                            class="row justify-around items-center text-xxxl full-width"
-                        >
+            <!-- <div class="more-options__container">
+                      
+                    </div> -->
+            <div class="row no-wrap">
+                 <div style="visibility:hidden; margin-left: -12px">
+                    <q-fab
+                        padding="0px"
+                        flat
+                        icon="more_horiz"
+                        color="grey-8"
+                    />
+                </div>
+                <div class="result__header" ref="container">
+                    <slot name="before" />
+                    <div class="result__container" @click="emit('expand')">
+                        <div class="team__profile--container column no-wrap">
                             <div
-                                class="column justify-center items-center no-wrap"
-                            >
-                                <div class="score">
-                                    {{ result.home_points ?? 0 }}
-                                </div>
-                            </div>
-                            <div
-                                class="column justify-center items-center no-wrap"
-                            >
-                                <div class="score">
-                                    {{ result.away_points ?? 0 }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="team__profile--container column no-wrap">
-                        <div class="team-avatar__container">
-                            <div
-                                class="team-avatar--wrap"
+                                class="team-avatar__container"
                                 @click.stop.prevent="
-                                    onAvatarClick(result.away_id)
+                                    onAvatarClick(result.home_id)
                                 "
                             >
-                                <TeamAvatar
-                                    :team="{
-                                        id: result.away_id,
-                                        team_avatar: result.away_avatar,
-                                        avatar_type: result.away_avatar_type,
-                                        avatar_url: result.away_avatar_url,
-                                    }"
-                                />
-                                <!-- <RockIcon
-                                    :draggable="false"
-                                    :color="result.away_color"
-                                /> -->
+                                <div class="team-avatar--wrap">
+                                    <TeamAvatar
+                                        :team="{
+                                            id: result.home_id,
+                                            team_avatar: result.home_avatar,
+                                            avatar_type:
+                                                result.home_avatar_type,
+                                            avatar_url: result.home_avatar_url,
+                                        }"
+                                    />
+                                </div>
+                            </div>
+
+                            <h2
+                                class="text-sm truncate-text text-center col-grow row items-center justify-center"
+                            >
+                                {{ result.home_name }}
+                            </h2>
+                        </div>
+
+                        <div class="row items-center full-width">
+                            <div
+                                class="row justify-around items-center text-xxxl full-width"
+                            >
+                                <div
+                                    class="column justify-center items-center no-wrap"
+                                >
+                                    <div
+                                        class="score"
+                                        :class="{
+                                            winning:
+                                                result.home_points >
+                                                result.away_points,
+                                        }"
+                                    >
+                                        {{ result.home_points ?? 0 }}
+                                    </div>
+                                </div>
+                                <div
+                                    class="column justify-center items-center no-wrap"
+                                >
+                                    <div
+                                        class="score"
+                                        :class="{
+                                            winning:
+                                                result.away_points >
+                                                result.home_points,
+                                        }"
+                                    >
+                                        {{ result.away_points ?? 0 }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-center row justify-center">
-                            <div style="width: fit-content; position: relative">
-                                <div class="verified__container">
-                                    <q-icon
-                                        name="verified"
-                                        :color="
-                                            result.verified ? 'green' : 'grey-5'
-                                        "
+
+                        <div class="team__profile--container column no-wrap">
+                            <div class="team-avatar__container">
+                                <div
+                                    class="team-avatar--wrap"
+                                    @click.stop.prevent="
+                                        onAvatarClick(result.away_id)
+                                    "
+                                >
+                                    <TeamAvatar
+                                        :team="{
+                                            id: result.away_id,
+                                            team_avatar: result.away_avatar,
+                                            avatar_type:
+                                                result.away_avatar_type,
+                                            avatar_url: result.away_avatar_url,
+                                        }"
                                     />
-                                   
                                 </div>
-                                <h2
-                                    class="text-sm truncate-text text-center"
+                            </div>
+                            <div class="text-center row justify-center">
+                                <div
                                     style="
                                         width: fit-content;
                                         position: relative;
                                     "
                                 >
-                                    {{ result.away_name ?? "Unnamed team" }}
-                                </h2>
-                                 
+                                    <div class="verified__container">
+                                        <q-icon
+                                            name="verified"
+                                            :color="
+                                                result.verified
+                                                    ? 'primary'
+                                                    : 'grey-5'
+                                            "
+                                        />
+                                    </div>
+                                    <h2
+                                        class="text-sm truncate-text text-center"
+                                        style="
+                                            width: fit-content;
+                                            position: relative;
+                                        "
+                                    >
+                                        {{ result.away_name ?? "Unnamed team" }}
+                                    </h2>
+                                </div>
+                                <q-tooltip v-if="$q.platform.is.desktop">
+                                    <div v-if="result.verified">
+                                        {{ result.away_name }} has verified that
+                                        this score is accurate.
+                                    </div>
+                                    <div v-else>
+                                        Game is unverified by
+                                        {{ result.away_name }} and may not be
+                                        accurate.
+                                    </div>
+                                </q-tooltip>
                             </div>
-                            <q-tooltip>
-                                        <div v-if="result.verified">
-                                            {{ result.away_name }} has verified
-                                            that this score is accurate.
-                                        </div>
-                                        <div v-else>
-                                            Game is unverified by
-                                            {{ result.away_name }} and may not
-                                            be accurate.
-                                        </div>
-                                    </q-tooltip>
-                            <!-- <q-chip
-                                v-if="
-                                    isAuthorized(result.home_id) &&
-                                    !result.away_id
-                                "
-                                dense
-                                color="deep-purple"
-                                text-color="white"
-                                class="text-bold"
-                                clickable
-                                icon="add"
-                                @click.stop="
-                                    toggleGlobalSearch({
-                                        open: true,
-                                        options: {
-                                            resourceTypes: ['team'],
-                                            inputLabel:
-                                                'Invite an opposition team',
-                                            filterIds: [result.home_id],
-                                            callback: selectTeam,
-                                        },
-                                    })
-                                "
-                                ><span>Invite team</span>
-                            </q-chip>
-                            <RequestStatus
-                                @click.stop.prevent
-                                v-else-if="
-                                    isAuthorized(result.home_id) &&
-                                    !result.away_id
-                                "
-                                resourceType="game"
-                                :resourceId="result.id"
-                                :requesteeId="result.away"
-                                :status="'pending'"
-                                canEdit
-                                @cancel="updateResult"
-                            /> -->
+                        </div>
+                    </div>
+
+                    <!-- League / Location -->
+                    <div
+                        class="column items-center q-pt-sm game-details"
+                        v-if="
+                            result.rink_name ||
+                            result.sheet_name ||
+                            result.event_name ||
+                            result.start_time
+                        "
+                    >
+                        <div class="text-xs">
+                            {{ format(toTimezone(result.start_time)) }}
+                        </div>
+                        <div class="row no-wrap q-mr-xs items-center">
+                            <div
+                                class="row no-wrap text-xs q-ml-sm"
+                                v-if="result.rink_name"
+                            >
+                                <q-icon name="location_on" color="red" />
+                                <div class="truncate-text">
+                                    {{ result.rink_name }}
+                                </div>
+                            </div>
+                            <div
+                                class="row no-wrap text-xs q-ml-sm"
+                                v-if="result.sheet_name"
+                            >
+                                <q-icon name="crop_portrait" />
+                                <div
+                                    class="truncate-text"
+                                    v-if="result.sheet_name"
+                                >
+                                    Sheet {{ result.sheet_name }}/{{
+                                        numberToLetter(result.sheet_name)
+                                    }}
+                                </div>
+                                <div class="truncate-text" v-else>
+                                    Unknown sheet
+                                </div>
+                            </div>
+                            <div
+                                class="row no-wrap text-xs justify-end q-ml-sm"
+                                v-if="result.event_name"
+                            >
+                                <q-icon name="emoji_events" color="yellow" />
+                                <div class="truncate-text">
+                                    {{ result.event_name }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- League / Location -->
-                <div
-                    class="column items-center q-pt-sm game-details"
-                    v-if="
-                        result.rink_name ||
-                        result.sheet_name ||
-                        result.event_name ||
-                        result.start_time
-                    "
-                >
-                    <div class="text-xs">
-                        {{ format(toTimezone(result.start_time)) }}
-                    </div>
-                    <div class="row no-wrap q-mr-xs items-center">
-                        <div
-                            class="row no-wrap text-xs q-ml-sm"
-                            v-if="result.rink_name"
-                        >
-                            <q-icon name="location_on" color="red" />
-                            <div class="truncate-text">
-                                {{ result.rink_name }}
-                            </div>
-                        </div>
-                        <div
-                            class="row no-wrap text-xs q-ml-sm"
-                            v-if="result.sheet_name"
-                        >
-                            <q-icon name="crop_portrait" />
-                            <div class="truncate-text" v-if="result.sheet_name">
-                                Sheet {{ result.sheet_name }}/{{
-                                    numberToLetter(result.sheet_name)
-                                }}
-                            </div>
-                            <div class="truncate-text" v-else>
-                                Unknown sheet
-                            </div>
-                        </div>
-                        <div
-                            class="row no-wrap text-xs justify-end q-ml-sm"
-                            v-if="result.event_name"
-                        >
-                            <q-icon name="emoji_events" color="yellow" />
-                            <div class="truncate-text">
-                                {{ result.event_name }}
-                            </div>
-                        </div>
-                    </div>
+                <div    style="margin-top: -12px; margin-left: -12px">
+                   
+                    <q-fab
+                        padding="0px"
+                        flat
+                        icon="more_horiz"
+                        color="grey-8"
+                        direction="down"
+                        vertical-actions-align="right"
+                        
+                      
+                     
+                    >
+                     
+        <q-fab-action icon="visibility" color="primary" label="View game" :to="`/games/${result.id}`"/>
+        <slot name="actions"/>
+            
+                    </q-fab>
+                    <q-badge
+                       
+                        color="deep-purple"
+                        rounded
+                        floating
+                        style="margin-top: 4px"
+                        v-if="notify"
+                      
+                    >
+                       </q-badge>
+                   
                 </div>
             </div>
 
@@ -216,47 +239,30 @@
                     />
                 </transition>
             </div>
-             <transition
-                    appear
-                    enter-active-class="animated fadeIn"
-                    leave-active-class="animated fadeOut"
-                >
-            <div
-                class="view__overlay row justify-center items-center"
-                v-if="isRevealed"
-                ref="confirmOverlay"
-            >
-                <div
-                    class="view__overlay--content full-width row justify-around q-mb-lg"
-                >
-                    <q-btn
-                        color="white"
-                        text-color="grey-6"
-                        @click.stop="confirm"
-                        flat round
-                        icon="visibility"
-                        ></q-btn
-                    >
-                   
-                </div>
-            </div>
-             </transition>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
 $result-height: 50px;
-$columns: 1fr 120px 1fr;
-$max-container-width: 600px;
+$columns: 1fr 80px 1fr;
+$max-container-width: 500px;
 .result__container--wrap {
-    // border-radius: 16px;
-    max-height: fit-content;
-    // border: 1px solid $grey-3;
+     max-height: fit-content;
     box-sizing: border-box;
     transition: all 1s;
     position: relative;
-    overflow: hidden;
-    // margin-bottom: var(--space-sm);
+    overflow: visible;
+    margin: auto;
+    max-width: $max-container-width;
+    .more-options__container {
+        position: absolute;
+        // right: 0;
+        left: 0;
+        top: 0;
+        margin: auto;
+        width: fit-content;
+        height: 34px;
+    }
     .start-time--floating {
         position: absolute;
         left: 0;
@@ -269,8 +275,6 @@ $max-container-width: 600px;
         padding-bottom: var(--space-xs);
         padding-top: var(--space-xs);
         border-radius: inherit;
-        // padding-left: var(--space-sm);
-        // padding-right: var(--space-sm);
 
         width: 100%;
         box-sizing: border-box;
@@ -325,9 +329,20 @@ $max-container-width: 600px;
             height: 1.1em;
         }
     }
+    .game-details {
+        position: relative;
+    }
+
     .score {
         margin: auto !important;
         font-size: 35px;
+        transition: all 0.2s;
+        &.winning {
+            // text-decoration: underline;
+            // text-decoration-color: $green;
+
+            font-weight: bold;
+        }
     }
 
     .view__overlay {
@@ -358,12 +373,18 @@ import {
 } from "@vueuse/core";
 import { numberToLetter } from "@/utils/sheets";
 
+const $q = useQuasar();
+
 const dialogStore = useDialogStore();
 
 const { toggleGlobalSearch } = dialogStore;
 
 const props = defineProps({
     expanded: Boolean,
+    notify: {
+        type: Boolean,
+        default: true,
+    },
     result: Object,
 });
 

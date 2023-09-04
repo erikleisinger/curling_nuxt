@@ -14,6 +14,7 @@
     height: inherit;
     @include sm {
     overflow: auto; 
+    scroll-behavior: smooth;
     &::-webkit-scrollbar {
         width: 5px;
         

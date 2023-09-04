@@ -1,8 +1,10 @@
 <template>
-<div style="margin-top: -20%; margin-left: -4%">
+<!-- style="margin-top: -20%; margin-left: -4%" -->
+<div >
 <div style="position:relative; height: 100%; width: 100%; background: transparent" class="column justify-center" >
+    <!-- viewBox='0 0 264 280' -->
 <svg
-    viewBox='0 0 264 280'
+    viewBox="11 0 241 280"
     style="stroke: none"
     version='1.1'
     xmlns='http://www.w3.org/2000/svg'
@@ -20,7 +22,7 @@
     <g
       id='Avataaar'
       stroke='none'
-      stroke-width='1'
+      stroke-width='0'
       fill='none'
       fill-rule='evenodd'>
       <g
@@ -30,7 +32,7 @@
         <template v-if="isCircle">
             <g
               id='Circle'
-              stroke-width='1'
+              stroke-width='0'
               fill-rule='evenodd'
               transform='translate(12.000000, 40.000000)'>
               <mask id='mask-1' fill='white'>
@@ -38,12 +40,13 @@
               </mask>
               <use
                 id='Circle-Background'
-                fill='#E6E6E6'
+               
                 xlink:href='#path-1'></use>
+                 <!-- fill='#E6E6E6' -->
               <g
                 id='Color/Palette/Blue-01'
                 mask='url(#mask-1)'
-                :fill=circleColor>
+                :fill="circleColor">
                 <rect id='🖍Color' x='0' y='0' width='240' height='240'></rect>
               </g>
             </g>

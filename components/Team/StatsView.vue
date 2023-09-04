@@ -38,13 +38,8 @@
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :team="team"
-                                style="height: inherit; width: inherit"
-                                :style="{
-                                    'margin-top':
-                                        team.avatar_type === 'avataar'
-                                            ? '20%'
-                                            : '',
-                                }"
+                                
+                               
                             />
                             <q-tooltip>
                                 {{ team.name }}
@@ -63,7 +58,7 @@
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :team="oppositionTeam"
-                                style="height: inherit; width: inherit"
+                                
                             />
                             <q-tooltip>
                                 {{ oppositionTeam.name }}
@@ -81,7 +76,7 @@
                         "
                         v-if="!reloading"
                     >
-                        <TeamStatsViewPercentage
+                        <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
                             :teamId="team.id"
@@ -101,7 +96,7 @@
                         class="col-6 q-pl-md"
                         v-if="!reloading && oppositionTeam"
                     >
-                        <TeamStatsViewPercentage
+                        <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
                             :teamId="oppositionTeam.id"
@@ -181,8 +176,6 @@
 .stats__container {
     padding: 0px var(--space-md);
     border-radius: 8px;
-    // overflow: auto;
-    // overflow-x: hidden;
     .toolbar {
         padding: var(--space-sm);
     }

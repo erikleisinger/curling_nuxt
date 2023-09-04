@@ -13,6 +13,7 @@
                     <TeamAvatar
                         style="height: 100%; width: 100%"
                         :team="game?.home"
+                        :viewable="false"
                     />
 
                     <q-badge
@@ -40,6 +41,7 @@
                     <TeamAvatar
                         style="height: 100%; width: 100%"
                         :team="game?.away"
+                          :viewable="false"
                     />
                     <q-badge
                         class="hammer__badge"

@@ -37,7 +37,6 @@ export const useStorageStore = defineStore("storage", {
     },
     actions: {
         getTeamAvatar(teamId, avatarUrl) {
-            // const client = useSupabaseClient();
             this.fetchQueue.push({teamId, avatarUrl})
             if (!this.fetching) {
                 processQueue({fetchQueue: this.fetchQueue, teamAvatars: this.teamAvatars, setFetch: this.setFetch})
