@@ -4,7 +4,7 @@
             class="avatar-inner"
             :class="{
                 upload: avatarType === 'upload' && avatarUrl,
-              
+
                 viewable,
             }"
             @touchstart="clickAvatar"
@@ -14,13 +14,18 @@
                 class="overlay row justify-center items-center"
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible: viewable && ($q.platform.is.desktop  || visible),
+                    visible: viewable && ($q.platform.is.desktop || visible),
                 }"
             >
                 <div class="text-white text-bold">View</div>
             </div>
-            <div class="ring" :class="className" v-if="loaded" :style="{left: avatarType === 'upload' ? '0' : '0'}"/>
-            <div class="ring inner"/>
+            <div
+                class="ring"
+                :class="className"
+                v-if="loaded"
+                :style="{ left: avatarType === 'upload' ? '0' : '0' }"
+            />
+            <div class="ring inner" />
             <div class="inner-wrap">
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
@@ -80,7 +85,7 @@
             box-sizing: border-box;
             position: absolute;
             border: 8px solid;
-          
+
             bottom: 0;
             transform: scale(1.1);
             border-radius: 50%;
@@ -92,7 +97,7 @@
             margin: auto;
             &.inner {
                 transform: scale(1.02);
-                border:1px solid rgba(255,255,255,0.0);
+                border: 1px solid rgba(255, 255, 255, 0);
             }
 
             &.dummy {
@@ -140,15 +145,13 @@
     }
     &:not(.desktop) {
         &.visible {
-        opacity: 1 !important;
+            opacity: 1 !important;
+        }
     }
-    }
-   
 }
 </style>
 <script setup>
 import { useStorageStore } from "@/store/storage";
-import { useUserTeamStore } from "@/store/user-teams";
 import { onClickOutside } from "@vueuse/core";
 const props = defineProps({
     team: Object,
@@ -164,7 +167,6 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-
 const avatarUrl = computed(() => storage.teamAvatars[props.team.id]);
 
 const fetchAvatar = async (path) => {
@@ -172,19 +174,18 @@ const fetchAvatar = async (path) => {
 };
 
 const avatar = ref(null);
-const avatarType = ref(props.team.avatar_type || 'avataaar');
-const loaded = ref(avatarType.value === 'avataaar')
+const avatarType = ref(props.team.avatar_type || "avataaar");
+const loaded = ref(avatarType.value === "avataaar");
 
 const getAvatar = async () => {
     if (avatarType.value === "upload" && props.team.avatar_url) {
-      
         fetchAvatar(props.team.avatar_url);
     } else {
         avatar.value = props.team.team_avatar;
     }
 };
 
-let className;
+const className = ref('dummy')
 
 watch(
     () => props.team,
@@ -192,24 +193,14 @@ watch(
         if (!val?.avatar_type) {
             avatar.value = null;
             avatarType.value = "avataaar";
-            
         } else {
-            avatarType.value = val.avatar_type
-   getAvatar();
+            avatarType.value = val.avatar_type;
+            getAvatar();
         }
-     
-        className = !props.team?.id
-    ? "dummy"
-    : useUserTeamStore().userTeams.some(({ id }) => props.team.id === id)
-    ? "user-team"
-    : "non-user-team";
-
-        
+        className.value = !val?.id ? "dummy" : "user-team";
     },
     { immediate: true }
 );
-
-
 
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));

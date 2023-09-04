@@ -195,7 +195,7 @@
                         </div>
                     </div>
                 </div>
-                <div    style="margin-top: -12px; margin-left: -12px">
+                <div    style=" margin-left: -12px">
                    
                     <q-fab
                         padding="0px"

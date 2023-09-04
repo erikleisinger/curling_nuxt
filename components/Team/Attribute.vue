@@ -1,13 +1,16 @@
 <template>
-    <div class="attribute__container" :class="{ highlight }">
+    <div class="attribute__container" :class="{ highlight: expanded }" @click="expand" :style="styleObj">
         <div class="row no-wrap items-center">
             <q-icon size="1em" :name="icon" :color="color" />
-            <h3 class="text-xs">{{title}}</h3>
+            <h3 class="text-xs truncate-text">{{title}}</h3>
             <slot name="appendAction"/>
          
         </div>
         <div class="text-md text-bold value">
             <slot/>
+            <span v-if="expanded">
+            <slot name="contentExpanded"/>
+            </span>
         </div>
       
 
@@ -21,6 +24,7 @@
     border-radius: 4px;
     margin-bottom: var(--space-sm);
     height: fit-content;
+    transition: width 0.2s;
     
     .q-icon {
         margin-right: var(--space-xxs);
@@ -29,7 +33,7 @@
         margin-left: 1.2em;
     }
     &.highlight {
-        border: 2px solid $blue;
+        border: v-bind(highlightBorder)
     }
     &:nth-child(even) {
         margin-left: var(--space-xs);
@@ -43,8 +47,24 @@
 <script setup>
 const props = defineProps({
     color: String,
-    highlight: Boolean,
+    expandable:Boolean,
     icon: String,
     title: String,
 });
+
+const expanded = ref(false)
+
+const expand = () => {
+    if (!props.expandable) return;
+    expanded.value = !expanded.value
+}
+
+const styleObj = computed(() => {
+    if (!expanded.value) return {};
+    return {
+        width: '90%'
+    }
+}) 
+const {getColor} = useColor()
+const highlightBorder = `2px solid ${getColor(props.color)}`
 </script>
