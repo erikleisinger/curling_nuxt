@@ -60,6 +60,7 @@
             v-if="view === views.AWAY_SELECT"
             v-model="gameParams.away"
             allowCustom
+            :filterIds="[gameParams.home?.id]"
           
         >
     Select an opposition

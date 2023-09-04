@@ -142,10 +142,7 @@ const props = defineProps({
     color: String,
     invitable: Boolean,
     team: Object,
-    viewable: {
-        type: Boolean,
-        default: true,
-    },
+    viewable: Boolean,
 });
 
 const emit = defineEmits(['invite'])

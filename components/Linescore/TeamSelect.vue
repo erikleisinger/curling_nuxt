@@ -16,6 +16,7 @@
                                 :team="
                                     !selections ? {} : selections
                                 "
+                              
                             />
                         </div>
                          <div
@@ -39,28 +40,18 @@
                                 label="Type team name"
                                 autofocus
                                 v-model="selections.name"
-                              @blur="customOpposition = false"
-                                clearable
-                                @keydown.enter="customOpposition = false"
+                                maxlength="15"
+                             
+                                @keydown.enter="setCustomOpposition"
                             >
+                            <template v-slot:append>
+                                <q-btn dense flat round icon="check" color="green" @click="setCustomOpposition"/>
+                            </template> 
                             </q-input>
                   
                         </div>
                     </div>
-                    <div
-                        v-else-if="allowCustom && customOppositionName"
-                        class="row justify-center"
-                    >
-                        <div>{{ customOppositionName }}</div>
-                        <q-btn
-                            flat
-                            round
-                            icon="edit"
-                            size="sm"
-                            dense
-                            @click="customOpposition = true"
-                        />
-                    </div>
+                   
                     <div v-else-if="selections" key="awayname">
                         {{ selections.name ?? "Unnamed team" }}
                     </div>
@@ -215,4 +206,10 @@ const toggleSelect = () => {
 };
 
 const customOppositionName = ref(null);
+
+const setCustomOpposition = () => {
+    const {name} = {...selections.value}
+    selections.value = {name}
+    customOpposition.value = false;
+}
 </script>
