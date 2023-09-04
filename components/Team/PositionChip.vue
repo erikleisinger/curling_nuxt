@@ -3,8 +3,8 @@
         dense
         :icon="getIcon(props.modelValue)"
         :icon-right="canEdit ? 'edit' : null"
-        color="blue"
-        text-color="white"
+        color="grey-4"
+        text-color="grey-10"
         rounded
         padding
         size="md"
@@ -65,14 +65,6 @@ const positions = {
         icon: "sym_o_counter_5",
         value: 'fifth'
     },
-    // sixth: {
-    //     name: "Sixth",
-    //     icon: "sym_o_counter_6",
-    // },
-    // seventh: {
-    //     name: "Seventh",
-    //     icon: "sym_o_counter_7",
-    // },
     coach: {
         name: "Coach",
         icon: "assignment",

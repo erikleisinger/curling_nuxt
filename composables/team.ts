@@ -1,6 +1,6 @@
 export const useTeam = () => {
     
-    const getTeamPlayers = async (teamId:number) => {
+    const getTeamPlayers = async (teamId:number, andRequests: boolean) => {
         if (!teamId) return []
         const client = useSupabaseClient();
  
@@ -18,20 +18,46 @@ export const useTeam = () => {
                 first_name,
                 last_name,
                 avatar
-            ),
-            type
+            )
         `
                 )
                 .eq("team_id", teamId);
-                console.log(data)
+
+
+
+            
+            
+        if (andRequests) {
+            const {data:requests} = await client.from('team_requests').select(`
+                user:requestee_profile_id (
+                    id,
+                    username,
+                    first_name,
+                    last_name,
+                    avatar
+                ),
+                status,
+                id
+            `).eq('team_id', teamId).eq('status', 'pending')
+            return [...data, ...requests].map((p) => ({
+                rowId: p.id,
+                ...p.user,
+                status: p.status ?? null,
+                avatar: p.user?.avatar ? JSON.parse(p.user.avatar) : {},
+
+            }))
+        } else  {
+
+            return data.map((p) => ({
+                rowId: p.id,
+                ...p,
+                ...p.user,
+                status: null,
+                avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {},
+            }));
+        }
     
-            // teamPlayers.value = data.map((p) => ({
-            //     rowId: p.id,
-            //     ...p,
-            //     ...p.user,
-            //     status: null,
-            //     avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {},
-            // }));
+            
         
     }
     return { getTeamPlayers };

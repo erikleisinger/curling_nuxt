@@ -78,60 +78,47 @@ export const useTeamRequestStore = defineStore("team-requests", {
 
         async sendTeamRequest({
             requestee_profile_id,
-            requester_profile_id,
             team_id,
         }: {
             requestee_profile_id?: string;
             requester_profile_id?: string;
             team_id: number;
         }) {
-            console.log(
-                "send team request: ",
-                requestee_profile_id,
-                requester_profile_id,
-                team_id
-            );
+
 
             const { client, fetchHandler } = useSupabaseFetch();
 
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({
                 state: "pending",
-                text: `Sending ${
-                    requester_profile_id ? "request" : "invitation"
-                }...`,
+                text: `Sending invitation...`,
                 timeout: 10000,
             });
 
-            const { error } = await fetchHandler(() =>
+            const { error, data } = await fetchHandler(() =>
                 client.from(TABLE_NAMES.TEAM_REQUESTS).upsert({
                     team_id,
                     requestee_profile_id,
-                    requester_profile_id,
-                })
+                }).select('id')
             );
 
             if (error) {
-                // const duplicate = new RegExp("unique_team_request");
-
                 notStore.updateNotification(notId, {
                     state: "failed",
-                    text: `Error sending  ${
-                        requester_profile_id ? "request" : "invitation"
-                    }: ${error.message} (code ${error?.code ?? "X"})`,
+                    text: `Error sending  invitation: ${error.message} (code ${error?.code ?? "X"})`,
                     timeout: 10000,
                 });
 
                 return false;
             } else {
+                const [user] = data || {}
+                const {id} = user || {}
                 notStore.updateNotification(notId, {
                     state: "completed",
-                    text: ` ${
-                        requester_profile_id ? "Request" : "Invitation"
-                    } sent!`,
+                    text: `Invitation sent!`,
                     timeout: 4000,
                 });
-                return true;
+                return id;
             }
         },
         async updateTeamRequestStatus({

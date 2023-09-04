@@ -6,7 +6,10 @@
             <div class="back-button__container" v-if="comparisonTeam">
                 <q-btn flat round icon="arrow_back" @click="endComparison" />
             </div>
-            <header class="col-12 row">
+            <header
+                class="row justify-center"
+                :class="!$q.screen.xs || !comparisonTeam ? 'col-12' : 'col-6'"
+            >
                 <div
                     class="full-width row justify-center team-view-options__container"
                     v-if="!!comparisonTeam"
@@ -56,6 +59,7 @@
                             </h2>
                         </div>
                     </div>
+
                     <div
                         class="column team__header items-center col-6"
                         v-if="comparisonTeam"
@@ -75,14 +79,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div
-                    class="row justify-around q-mt-lg"
-                    :class="{
-                        'col-12': !!comparisonTeam || $q.screen.xs,
-                        'col-6': !comparisonTeam && !$q.screen.xs,
-                    }"
-                >
+                <div class="row justify-around col-12 q-mt-md">
                     <TeamAttribute
                         title="Games played"
                         icon="track_changes"
@@ -270,10 +267,7 @@
                         class="col-5"
                         icon="sym_o_counter_1"
                         color="blue"
-                       
                     >
-                      
-
                         <span v-if="team.games_played">
                             {{
                                 `${
@@ -288,10 +282,15 @@
                                     team.points_against / team.games_played
                                 ).toFixed(1)}`
                             }}
-                            <span class="text-xs text-regular text-grey-8">{{`(${(team.points_for / team.games_played).toFixed(1)} - ${(team.points_against / team.games_played).toFixed(1)})`}}</span>
+                            <span class="text-xs text-regular text-grey-8">{{
+                                `(${(
+                                    team.points_for / team.games_played
+                                ).toFixed(1)} - ${(
+                                    team.points_against / team.games_played
+                                ).toFixed(1)})`
+                            }}</span>
                         </span>
                         <span v-else>-</span>
-                      
                     </TeamAttribute>
                     <TeamAttribute
                         v-if="!comparisonTeam"
@@ -313,7 +312,13 @@
                                     team.ends_against / team.games_played
                                 ).toFixed(1)}`
                             }}
-                            <span class="text-xs text-regular text-grey-8">{{`(${(team.ends_for / team.games_played).toFixed(1)} - ${(team.ends_against / team.games_played).toFixed(1)})`}}</span>
+                            <span class="text-xs text-regular text-grey-8">{{
+                                `(${(team.ends_for / team.games_played).toFixed(
+                                    1
+                                )} - ${(
+                                    team.ends_against / team.games_played
+                                ).toFixed(1)})`
+                            }}</span>
                         </span>
                         <span v-else>-</span>
 
@@ -384,37 +389,43 @@
                     </div>
                     <!-- END BADGES -->
                 </div>
-                 <div>
-                    <!-- PLAYERS -->
-                    <div v-if="!comparisonTeam">
-                         <div class="row items-end justify-between q-my-sm">
+
+                <div v-if="!comparisonTeam">
+                    
+                
+                    <TeamPlayerList
+                        :players="players"
+                       
+                        :teamId="team.id"
+                    >
+                        <template v-slot:title="{ editing, setEditing }" >
+                            <div class="row justify-between items-end q-my-sm">
                         <div class="row items-center">
                             <q-icon
-                                color="primary"
                                 name="groups_2"
-                                class="text-md q-mr-sm q-mt-xs"
+                                color="primary"
+                                class="text-md q-mr-sm"
                             />
-                            <div>
-                                <h3 class="text-md text-bold">Players</h3>
-                            </div>
+                            <h2 class="text-md text-bold">Team players</h2>
                         </div>
-
-                        <div
-                            class="link-more text-sm"
-                            v-if="!comparisonTeam"
-                            @click="showPlayers = !showPlayers"
-                        >
-                        {{showPlayers ? 'Hide' : 'Show'}}
-                            
+                        <div v-if="isAuthorized()">
+                            <q-btn
+                                :icon="editing ? 'close' : 'edit'"
+                                flat
+                                round
+                                dense
+                                :color="editing ? 'blue' : 'grey-7'"
+                                padding="4px"
+                                @click="setEditing(!editing)"
+                            />
                         </div>
-                     
                     </div>
-                       <q-separator />
-                        
-                    </div>
-                    <!-- END PLAYERS -->
+                        <q-separator />
+                        </template>
+                    </TeamPlayerList>
                 </div>
-                <div >
+
+                <div>
                     <!-- STATS-->
 
                     <div class="row items-end justify-between q-my-sm">
@@ -447,7 +458,6 @@
                         >
                             Team comparison
                         </div>
-                     
                     </div>
                     <q-separator />
 
@@ -604,6 +614,7 @@ $avatar-dimension: 7em;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {useUserTeamStore} from '@/store/user-teams'
 import { useElementBounding, watchDebounced } from "@vueuse/core";
 import { BADGE_FIELDS } from "@/constants/badges";
 
@@ -625,33 +636,37 @@ const badges = ref(
 
 const { toggleGlobalSearch, toggleLineScore } = useDialogStore();
 
-const showPlayers = ref(true)
+const showPlayers = ref(true);
+const editingPlayers = ref(false);
 
 const comparisonTeam = ref(null);
 const loadingComparison = ref(false);
 const router = useRouter();
-const {currentRoute} = router;
+const { currentRoute } = router;
 
 const onSelect = async ({ id }) => {
     toggleGlobalSearch({ open: false });
-    navigateTo(`?opponent=${id}`)
+    navigateTo(`?opponent=${id}`);
 };
 
 const loadComparison = async (id) => {
-loadingComparison.value = true;
-await Promise.all([getComparisonTeam(id), getH2h(id)]);
- loadingComparison.value = false;
-}
+    loadingComparison.value = true;
+    await Promise.all([getComparisonTeam(id), getH2h(id)]);
+    loadingComparison.value = false;
+};
 
-watchDebounced(currentRoute, (val) => {
-    const {opponent} = val?.query || {};
-    if (!opponent) {
-        endComparison();
-    } else {
-        loadComparison(opponent);
-
-    }
-}, {immediate: true, debounce: 200})
+watchDebounced(
+    currentRoute,
+    (val) => {
+        const { opponent } = val?.query || {};
+        if (!opponent) {
+            endComparison();
+        } else {
+            loadComparison(opponent);
+        }
+    },
+    { immediate: true, debounce: 200 }
+);
 
 const getComparisonTeam = async (id) => {
     const { data: stats } = await useSupabaseClient()
@@ -671,7 +686,10 @@ const h2hOpposition = ref(null);
 
 const getH2h = async (oppositionId) => {
     const { getHeadToHead } = useGame();
-    const data = await getHeadToHead(props.team.id, Number.parseInt(oppositionId));
+    const data = await getHeadToHead(
+        props.team.id,
+        Number.parseInt(oppositionId)
+    );
     if (!data) {
         teamViewMode.value = "total";
         return;
@@ -707,10 +725,15 @@ const getHeadToHeadRecord = async (opponentId) => {
     games.value = data ?? [];
 };
 
+const players = ref([]);
+const getPlayers = async () => {
+    const { getTeamPlayers } = useTeam();
+    players.value = await getTeamPlayers(props.team.id, true);
+};
+
 onMounted(() => {
-    const {getTeamPlayers} = useTeam();
     getTeamRecord(props.team.id);
-    getTeamPlayers(props.team.id)
+    getPlayers();
 });
 
 const $q = useQuasar();
@@ -731,6 +754,12 @@ const browseGames = () => {
 
     if (!scrollElement) return;
     scrollElement.scrollTop = resultsY.value;
+};
+
+const isAuthorized = () => {
+    return useUserTeamStore().userTeams.some(
+        ({ id, is_admin }) => id === props.team.id
+    );
 };
 </script>
 <script>
