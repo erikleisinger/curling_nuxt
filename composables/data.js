@@ -31,6 +31,7 @@ export const useData = () => {
       const {fetchRinks} = rinkStore;
       const {fetchSheets} = sheetStore;
       const {fetchUserTeams} = userTeamStore;
+      const {getTeamRequestsByUser} = useTeamRequestStore();
 
       await getCurrentUser()
 
@@ -42,6 +43,7 @@ export const useData = () => {
         // () => fetchRinks(true),
         // () => fetchSheets(true),
         // () => fetchTeams(true)
+        () => getTeamRequestsByUser(userStore.id)
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(

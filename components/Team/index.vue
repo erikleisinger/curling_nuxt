@@ -3,6 +3,14 @@
         <q-inner-loading :showing="loadingComparison" color="primary" />
 
         <div class="overview__container row" key="overview">
+            <div v-if="pendingTeamRequest" class="pending-request__container">
+                <div>You have been invited to join team {{team.name}}!</div>
+                <div class="row">
+                    <q-btn class="col-6" square color="red" flat @click="respondToRequest(false)">Decline</q-btn>
+                    <q-btn class="col-6" square color="green" flat @click="respondToRequest(true)">Accept</q-btn>
+                </div>
+
+            </div>
             <div class="back-button__container" v-if="comparisonTeam">
                 <q-btn flat round icon="arrow_back" @click="endComparison" />
             </div>
@@ -408,7 +416,7 @@
                             />
                             <h2 class="text-md text-bold">Team players</h2>
                         </div>
-                        <div v-if="isAuthorized()">
+                        <div v-if="isAuthorized">
                             <q-btn
                                 :icon="editing ? 'close' : 'edit'"
                                 flat
@@ -610,10 +618,16 @@ $avatar-dimension: 7em;
             border: 1px solid $primary;
         }
     }
+
+    .pending-request__container {
+        padding: var(--space-sm);
+        width: 100%;
+    }
 }
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
 import { useElementBounding, watchDebounced } from "@vueuse/core";
 import { BADGE_FIELDS } from "@/constants/badges";
@@ -623,6 +637,7 @@ const props = defineProps({
 });
 
 const { getStatPercent } = useConvert();
+
 
 const index = ref(0);
 
@@ -728,7 +743,7 @@ const getHeadToHeadRecord = async (opponentId) => {
 const players = ref([]);
 const getPlayers = async () => {
     const { getTeamPlayers } = useTeam();
-    players.value = await getTeamPlayers(props.team.id, true);
+    players.value = await getTeamPlayers(props.team.id, isAuthorized.value);
 };
 
 onMounted(() => {
@@ -756,11 +771,30 @@ const browseGames = () => {
     scrollElement.scrollTop = resultsY.value;
 };
 
-const isAuthorized = () => {
+const isAuthorized = computed(() => {
     return useUserTeamStore().userTeams.some(
         ({ id, is_admin }) => id === props.team.id
     );
-};
+})
+
+const pendingTeamRequest = computed(() => {
+     return useTeamRequestStore().requests.find(({team_id}) => team_id === props.team.id)?.id
+})
+
+const respondToRequest = async (response) => {
+    const trStore = useTeamRequestStore()
+    let success;
+    if (!!response) {
+       success = await trStore.updateTeamRequestStatus({id: pendingTeamRequest.value, status: 'accepted'})
+    } else {
+        success = await trStore.updateTeamRequestStatus({id: pendingTeamRequest.value, status: 'rejected'})
+    }
+    if (!success) return;
+    const {user:userId} = useUser();
+     trStore.getTeamRequestsByUser(userId.value)
+    useUserTeamStore().fetchUserTeams(true);
+    if (!!response) getPlayers();
+}
 </script>
 <script>
 export default {

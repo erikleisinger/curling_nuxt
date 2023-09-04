@@ -6,9 +6,11 @@ import { useNotificationStore } from "@/store/notification";
 export const useTeamRequestStore = defineStore("team-requests", {
     state: () => {
         return {
+            requests: [],
             requestsToRespond: 0,
         } as {
             requestsToRespond: number;
+            requests: any[]
         };
     },
     actions: {
@@ -43,6 +45,33 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 });
                 return true;
             }
+        },
+        
+        async getTeamRequestsByUser(profile_id: number) {
+            const client = useSupabaseClient();
+
+            const { data, error } = await client
+                .from("team_requests")
+                .select(
+                    `
+                id, 
+                status,
+                team: team_id (
+                    id,
+                    name,
+                    team_avatar,
+                    avatar_url,
+                    avatar_type
+                )
+            `
+                )
+                .eq("requestee_profile_id", profile_id)
+                .eq('status', 'pending')
+            this.requests = data?.map((d) => ({
+                ...(d.team ?? {}),
+                ...d,
+                team_id: d.team?.id,
+            }))
         },
 
         async getTeamRequestsByTeam(teamId: number) {
@@ -135,6 +164,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
                     .update({ status })
                     .eq("id", id)
             );
+            return !error
         },
     },
 });
