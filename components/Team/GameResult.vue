@@ -22,9 +22,7 @@
                         <div class="team__profile--container column no-wrap">
                             <div
                                 class="team-avatar__container"
-                                @click.stop.prevent="
-                                    onAvatarClick(result.home_id)
-                                "
+                               
                             >
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
@@ -36,6 +34,7 @@
                                             avatar_url: result.home_avatar_url,
                                         }"
                                         :color="result.home_color"
+                                        :viewable="!!result.home_id"
                                     />
                                 </div>
                             </div>
@@ -86,9 +85,7 @@
                             <div class="team-avatar__container">
                                 <div
                                     class="team-avatar--wrap"
-                                    @click.stop.prevent="
-                                        onAvatarClick(result.away_id)
-                                    "
+                                
                                 >
                                     <TeamAvatar
                                         :team="{
@@ -99,6 +96,18 @@
                                             avatar_url: result.away_avatar_url,
                                         }"
                                         :color="result.away_color"
+                                        :viewable="!!result.away_id"
+                                        :invitable="!!(!result.away_id && authorized)"
+                                        @invite="toggleGlobalSearch({
+                                            open: true,
+                                            options: {
+                                                inputLabel: 'Search for a team to invite',
+                                                resourceTypes: ['team'],
+                                                filterIds: [result.home_id],
+                                                callback: (team) => emit('invite', team),
+                                            }
+                                        })"
+                                       
                                     />
                                 </div>
                             </div>
@@ -109,13 +118,13 @@
                                         position: relative;
                                     "
                                 >
-                                    <div class="verified__container" v-if="result.verified">
+                                    <div class="verified__container" >
                                         <q-icon
-                                            name="verified"
+                                            :name="result.verified ? 'verified' : 'sym_o_smart_toy'"
                                             :color="
                                                 result.verified
                                                     ? 'primary'
-                                                    : 'grey-5'
+                                                    : 'grey-8'
                                             "
                                         />
                                     </div>
@@ -359,6 +368,7 @@ const dialogStore = useDialogStore();
 const { toggleGlobalSearch } = dialogStore;
 
 const props = defineProps({
+    authorized: Boolean,
     notify: {
         type: Boolean,
         default: true,
@@ -366,7 +376,7 @@ const props = defineProps({
     result: Object,
 });
 
-const emit = defineEmits(["expand", "update", "remove"]);
+const emit = defineEmits(["expand", "update", "remove", 'invite']);
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -398,11 +408,7 @@ watch(containerHeight, () => {
     );
 });
 
-const onAvatarClick = (id) => {
-    if (!id || true) return;
 
-    dialogStore.toggleTeamViewer({ open: true, team: { id } });
-};
 
 const { format, toTimezone } = useTime();
 
@@ -427,4 +433,5 @@ onConfirm(() => {
 const confirmOverlay = ref(null);
 
 onClickOutside(confirmOverlay, cancel);
+
 </script>

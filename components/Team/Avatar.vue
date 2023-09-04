@@ -1,5 +1,5 @@
 <template>
-    <div class="avatar-outer__container">
+    <div class="avatar-outer__container " :class="{clickable: 'viewable'}" >
         <div
             class="avatar-inner"
             :class="{
@@ -7,17 +7,19 @@
 
                 viewable,
             }"
-            @touchstart="clickAvatar"
+            @click="clickAvatar"
             ref="innerContainer"
         >
             <div
                 class="overlay row justify-center items-center"
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible: viewable && ($q.platform.is.desktop || visible),
+                    visible: (viewable || invitable) && ($q.platform.is.desktop || visible),
                 }"
             >
-                <div class="text-white text-bold">View</div>
+                <div class="text-white text-bold">
+                    {{invitable ? 'Invite' : 'View'}}
+                </div>
             </div>
             <div
                 class="ring"
@@ -75,7 +77,6 @@
 
             .inner-wrap {
                 z-index: 1;
-                // opacity: 0;
             }
         }
         .ring {
@@ -96,23 +97,6 @@
             left: 0;
             right: 0;
             margin: auto;
-            &.inner {
-                // transform: scale(1.02);
-                // border: 1px solid transparent;
-            }
-
-            // &.dummy {
-            //     border-color: $grey-5;
-            //     background-color: $grey-5;
-            // }
-            // &.user-team {
-            //     border-color: $primary;
-            //     // background-color: $blue-6;
-            // }
-            // &.non-user-team {
-            //     border-color: $amber;
-            //     background-color: $amber;
-            // }
         }
     }
 }
@@ -153,9 +137,10 @@
 </style>
 <script setup>
 import { useStorageStore } from "@/store/storage";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useElementHover } from "@vueuse/core";
 const props = defineProps({
     color: String,
+    invitable: Boolean,
     team: Object,
     viewable: {
         type: Boolean,
@@ -163,11 +148,14 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits(['invite'])
+
 const storage = useStorageStore();
 
 const $q = useQuasar();
 
 const visible = ref(false);
+
 
 const avatarUrl = computed(() => storage.teamAvatars[props.team.id]);
 
@@ -207,13 +195,24 @@ watch(
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));
 
+const hovered = useElementHover(innerContainer)
+
+watch(hovered, (val) => {
+    if($q.platform.is.mobile) return;
+    visible.value = val;
+})
+
 const clickAvatar = () => {
-    if (!props.viewable) return;
-    if (!visible.value) {
+    if (!props.viewable && !props.invitable) return;
+    console.log(!visible.value && $q.screen.xs)
+    if (!visible.value && $q.screen.xs) {
         visible.value = true;
-    } else {
+} else if (!props.invitable) {
         return navigateTo(`/teams/${props.team.id}`);
+    } else {
+        emit('invite')
     }
+    console.log(visible.value)
 };
 const {getColor} = useColor()
 const styleObj = computed(() => {

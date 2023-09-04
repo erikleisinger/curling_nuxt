@@ -97,7 +97,7 @@
                     :color="BADGE_COLORS[badge]"
                 />
             </div> -->
-            <q-tooltip anchor="top middle" self="bottom middle">
+            <q-tooltip anchor="top middle" self="bottom middle" v-if="!$q.screen.xs">
                 {{ numerator }} out of {{ denominator }}
                 {{ gameStat ? "games" : "ends" }}
             </q-tooltip>

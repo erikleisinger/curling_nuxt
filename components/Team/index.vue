@@ -365,7 +365,45 @@
             </header>
 
             <main class="main__content">
-                <div>
+              
+              <!-- Team players -->
+
+                <div v-if="!comparisonTeam">
+                    
+                
+                    <TeamPlayerList
+                        :players="players"
+                       
+                        :teamId="team.id"
+                    >
+                        <template v-slot:title="{ editing, setEditing }" >
+                            <div class="row justify-between items-end q-my-sm">
+                        <div class="row items-center">
+                            <q-icon
+                                name="groups_2"
+                                color="primary"
+                                class="text-md q-mr-sm"
+                            />
+                            <h2 class="text-md text-bold">Team members</h2>
+                        </div>
+                        <div v-if="isAuthorized">
+                            <q-btn
+                                :icon="editing ? 'close' : 'edit'"
+                                flat
+                                round
+                                dense
+                                :color="editing ? 'blue' : 'grey-7'"
+                                padding="4px"
+                                @click="setEditing(!editing)"
+                            />
+                        </div>
+                    </div>
+                        <q-separator />
+                        </template>
+                    </TeamPlayerList>
+                </div>
+
+                  <div>
                     <!-- BADGES -->
                     <div v-if="!comparisonTeam">
                         <div class="row justify-between items-end q-my-sm">
@@ -396,41 +434,6 @@
                         </div>
                     </div>
                     <!-- END BADGES -->
-                </div>
-
-                <div v-if="!comparisonTeam">
-                    
-                
-                    <TeamPlayerList
-                        :players="players"
-                       
-                        :teamId="team.id"
-                    >
-                        <template v-slot:title="{ editing, setEditing }" >
-                            <div class="row justify-between items-end q-my-sm">
-                        <div class="row items-center">
-                            <q-icon
-                                name="groups_2"
-                                color="primary"
-                                class="text-md q-mr-sm"
-                            />
-                            <h2 class="text-md text-bold">Team players</h2>
-                        </div>
-                        <div v-if="isAuthorized">
-                            <q-btn
-                                :icon="editing ? 'close' : 'edit'"
-                                flat
-                                round
-                                dense
-                                :color="editing ? 'blue' : 'grey-7'"
-                                padding="4px"
-                                @click="setEditing(!editing)"
-                            />
-                        </div>
-                    </div>
-                        <q-separator />
-                        </template>
-                    </TeamPlayerList>
                 </div>
 
                 <div>

@@ -59,6 +59,7 @@ export const useGameRequestStore = defineStore("game-requests", {
                     state: 'completed',
                     text: `Invitation sent to ${name}.`
                 })
+               
             }
         },
         async updateGameRequestStatus({team_id, game_id, status} : {team_id: number, game_id: number, status: string}) {
