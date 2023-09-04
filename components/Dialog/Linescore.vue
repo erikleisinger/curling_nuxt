@@ -60,7 +60,7 @@
             v-if="view === views.AWAY_SELECT"
             v-model="gameParams.away"
             allowCustom
-            :filterIds="[userStore.id]"
+          
         >
     Select an opposition
     <!-- <template v-slot:subtitle>
@@ -622,10 +622,11 @@ const save = async () => {
         start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
         rink_id: rink.value?.id,
         sheet_id: sheetId,
+        verified: !shouldSendInvitation
     };
 
     if (!!params?.away?.id) {
-        gameToCreate.pending_away = params.away.id;
+        gameToCreate.away = params.away.id;
     } else {
         gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
     }
@@ -639,11 +640,9 @@ const save = async () => {
         score: scoreCopy,
     });
 
-    if (shouldSendInvitation) {
-        useGameRequestStore().sendGameRequest(params.away, gameId)
-    }
-
     await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
+
+    return navigateTo(`/games/${gameId}`)
 };
 
 const createGame = async ({ game, score }) => {

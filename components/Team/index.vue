@@ -37,7 +37,12 @@
                                 { label: 'All time totals', value: 'total' },
                                 { label: 'Head to head', value: 'h2h' },
                             ]"
-                        ></q-btn-toggle>
+                            :readonly="!h2hOpposition || !h2hTeam"
+                        >
+                        <q-tooltip v-if="!h2hOpposition || !h2hTeam">
+                            {{team.name}} and {{comparisonTeam.name}} have not played any games.
+                        </q-tooltip>
+                        </q-btn-toggle>
                     </div>
                     <div
                         class="row no-wrap"
@@ -137,20 +142,7 @@
                             class="col-5"
                             v-if="headToHead"
                         >
-                            <!-- <template
-                                v-slot:appendAction
-                                v-if="h2hTeam && h2hOpposition"
-                            >
-                                <q-btn
-                                    flat
-                                    round
-                                    dense
-                                    icon="view_list"
-                                    size="xs"
-                                    color="grey-8"
-                                    @click="showHeadToHead"
-                                />
-                            </template> -->
+                          
                             <div class="row items-center">
                                 <div class="q-mr-xs">
                                     <span
@@ -515,8 +507,9 @@
                             'full-column': !!comparisonTeam || $q.screen.xs,
                             'half-column': !comparisonTeam && !$q.screen.xs,
                         }" -->
+                    <div v-if="!comparisonTeam || headToHead"> 
                           <q-separator />
-                    <div>
+                    <div >
                         <div
                             class="row justify-between col-12 items-end q-my-sm"
                         >
@@ -539,7 +532,7 @@
                                 icon="add"
                                 label="Add game"
                                 class="q-pa-none"
-                                v-if="team.is_admin"
+                                v-if="team.is_admin && !comparisonTeam"
                                 @click="
                                     toggleLineScore({
                                         open: true,
@@ -551,7 +544,7 @@
                             />
                         </div>
                         <q-separator />
-                        <div class="stats-view__container">
+                        <div class="stats-view__container" >
                             <div v-if="!games.length">
                                 <div
                                     class="row full-width justify-center q-pa-md"
@@ -560,16 +553,10 @@
                                 </div>
                             </div>
                             <div v-else class="game-history__container">
-                                <div
-                                    v-for="game in games"
-                                    :key="game.id"
-                                    class="q-pt-sm"
-                                >
-                                    <LazyTeamGameResult :result="game" />
-                                    <q-separator />
-                                </div>
+                                <GameResultList :results="games"/>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </main>
             </div>
@@ -652,22 +639,6 @@ $avatar-dimension: 7em;
             border: 1px solid $primary;
         }
     }
-
-    // .main__content {
-    //     display: grid;
-    //     grid-template-columns: repeat(2, 1fr);
-    //     grid-template-rows: masonry;
-    //     width: 100%;
-    //     .full-column {
-    //         width: 100%;
-    //     }
-    //     .half-column {
-    //         width: 100%
-    //     }
-    //     .full-column, .half-column {
-    //         box-sizing: border-box;
-    //     }
-    // }
 }
 </style>
 <script setup>
@@ -716,6 +687,8 @@ const getComparisonTeam = async (id) => {
 
 const headToHead = computed(() => teamViewMode.value === "h2h");
 
+
+
 const h2hTeam = ref(null);
 const h2hOpposition = ref(null);
 
@@ -724,6 +697,7 @@ const getH2h = async (oppositionId) => {
     const data = await getHeadToHead(props.team.id, oppositionId);
     if (!data) return;
     const { team1, team2 } = data || {};
+    console.log(team1, team2)
     h2hTeam.value = team1;
     h2hOpposition.value = team2;
     getHeadToHeadRecord(oppositionId);
@@ -764,5 +738,10 @@ const browseGames = () => {
     return navigateTo(
         `/teams/${props.team?.id}/games?opponent=${comparisonTeam.value?.id}`
     );
+};
+</script>
+<script>
+export default {
+    name: "Team",
 };
 </script>

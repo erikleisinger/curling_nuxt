@@ -1,27 +1,12 @@
 <template>
-    <div style="position: relative full-width" >
+    <div style="position: relative full-width">
         <div
             class="result__container--wrap"
             :class="{ expanded }"
             @click="reveal"
         >
             <div class="result__header" ref="container">
-                <!-- :style="{ backgroundImage }" -->
-                <div
-                    class="game-request-response__container row no-wrap"
-                    v-if="isAuthorized(result.pending_away)"
-                >
-                    <div class="text-bold">Pending game invitation</div>
-                    <q-btn
-                        color="positive"
-                        class="q-mx-sm"
-                        @click.stop="respondToRequest(true)"
-                        >Accept</q-btn
-                    >
-                    <q-btn color="negative" @click.stop="respondToRequest(false)"
-                        >Reject</q-btn
-                    >
-                </div>
+                <slot name="before"/>
                 <div class="result__container" @click="emit('expand')">
                     <div class="team__profile--container column no-wrap">
                         <div
@@ -37,10 +22,10 @@
                                         avatar_url: result.home_avatar_url,
                                     }"
                                 />
-                                <RockIcon
+                                <!-- <RockIcon
                                     :draggable="false"
                                     :color="result.home_color"
-                                />
+                                /> -->
                             </div>
                         </div>
 
@@ -88,23 +73,49 @@
                                         avatar_url: result.away_avatar_url,
                                     }"
                                 />
-                                <RockIcon
+                                <!-- <RockIcon
                                     :draggable="false"
                                     :color="result.away_color"
-                                />
+                                /> -->
                             </div>
                         </div>
-                        <div class="text-center">
-                            <h2 class="text-sm truncate-text text-center">
-                                <span v-if="result.away_name">{{
-                                    result.away_name
-                                }}</span>
-                            </h2>
-                            <q-chip
+                        <div class="text-center row justify-center">
+                            <div style="width: fit-content; position: relative">
+                                <div class="verified__container">
+                                    <q-icon
+                                        name="verified"
+                                        :color="
+                                            result.verified ? 'green' : 'grey-5'
+                                        "
+                                    />
+                                   
+                                </div>
+                                <h2
+                                    class="text-sm truncate-text text-center"
+                                    style="
+                                        width: fit-content;
+                                        position: relative;
+                                    "
+                                >
+                                    {{ result.away_name ?? "Unnamed team" }}
+                                </h2>
+                                 
+                            </div>
+                            <q-tooltip>
+                                        <div v-if="result.verified">
+                                            {{ result.away_name }} has verified
+                                            that this score is accurate.
+                                        </div>
+                                        <div v-else>
+                                            Game is unverified by
+                                            {{ result.away_name }} and may not
+                                            be accurate.
+                                        </div>
+                                    </q-tooltip>
+                            <!-- <q-chip
                                 v-if="
                                     isAuthorized(result.home_id) &&
-                                    !result.away_id &&
-                                    !result.pending_away
+                                    !result.away_id
                                 "
                                 dense
                                 color="deep-purple"
@@ -130,16 +141,15 @@
                                 @click.stop.prevent
                                 v-else-if="
                                     isAuthorized(result.home_id) &&
-                                    !result.away_id &&
-                                    result.pending_away
+                                    !result.away_id
                                 "
                                 resourceType="game"
                                 :resourceId="result.id"
-                                :requesteeId="result.pending_away"
+                                :requesteeId="result.away"
                                 :status="'pending'"
                                 canEdit
                                 @cancel="updateResult"
-                            />
+                            /> -->
                         </div>
                     </div>
                 </div>
@@ -206,17 +216,31 @@
                     />
                 </transition>
             </div>
+             <transition
+                    appear
+                    enter-active-class="animated fadeIn"
+                    leave-active-class="animated fadeOut"
+                >
             <div
-                class="confirm__overlay row justify-center items-center"
-                :class="{ visible: isRevealed }"
+                class="view__overlay row justify-center items-center"
+                v-if="isRevealed"
                 ref="confirmOverlay"
             >
-               <div class="confirm__overlay--content full-width row justify-around">
-                  <q-btn color="white" text-color="primary" @click.stop="cancel">Cancel</q-btn>
-                <q-btn color="primary" @click.stop="confirm">View game </q-btn>
-               
-               </div>
+                <div
+                    class="view__overlay--content full-width row justify-around q-mb-lg"
+                >
+                    <q-btn
+                        color="white"
+                        text-color="grey-6"
+                        @click.stop="confirm"
+                        flat round
+                        icon="visibility"
+                        ></q-btn
+                    >
+                   
+                </div>
             </div>
+             </transition>
         </div>
     </div>
 </template>
@@ -247,7 +271,7 @@ $max-container-width: 600px;
         border-radius: inherit;
         // padding-left: var(--space-sm);
         // padding-right: var(--space-sm);
-        z-index: 1;
+
         width: 100%;
         box-sizing: border-box;
         .game-request-response__container {
@@ -292,32 +316,31 @@ $max-container-width: 600px;
                 }
             }
         }
+        .verified__container {
+            position: absolute;
+            z-index: 1;
+            font-size: 1em;
+            bottom: 0;
+            left: -1em;
+            height: 1.1em;
+        }
     }
     .score {
         margin: auto !important;
         font-size: 35px;
     }
 
-    .confirm__overlay {
+    .view__overlay {
         position: absolute;
-        height: 100%;
-        width: 100%;
+        bottom: 0;
         left: 0;
         right: 0;
-        top:0;
+        top: 0;
         margin: auto;
-        background-color: rgba(0, 0, 0, 0.3);
-        // z-index: $z-confirmation;
         transform-origin: center;
         transition: all 0.3s;
         border-radius: 8px;
-        &:not(.visible) {
-            transform: scaleX(0);
-        }
-        &.visible {
-            transform: scaleX(1);
-        }
-        max-width: $max-container-width
+        max-width: $max-container-width;
     }
 }
 </style>
@@ -377,7 +400,7 @@ watch(containerHeight, () => {
 });
 
 const onAvatarClick = (id) => {
-    if (!id) return;
+    if (!id || true) return;
 
     dialogStore.toggleTeamViewer({ open: true, team: { id } });
 };
@@ -395,39 +418,14 @@ const updateResult = async () => {
     emit("update", result);
 };
 
-const selectTeam = async (team) => {
-    await useGameRequestStore().sendGameRequest(team, props.result.id);
-    updateResult();
-};
-
-const respondToRequest = async (accepted) => {
-    await useGameRequestStore().updateGameRequestStatus({
-        team_id: props.result.pending_away,
-        game_id: props.result.id,
-        status: accepted ? "accepted" : "rejected",
-    });
-    if (accepted) {
-        updateResult();
-    } else {
-        emit("remove");
-    }
-};
-
-const isAuthorized = (teamId) => {
-    return useUserTeamStore().userTeams.some(
-        ({ id, is_admin }) => id === teamId && is_admin === true
-    );
-};
-
-const { reveal, isRevealed, confirm, cancel, onConfirm, onCancel } = useConfirmDialog();
+const { reveal, isRevealed, confirm, cancel, onConfirm, onCancel } =
+    useConfirmDialog();
 
 onConfirm(() => {
-    return navigateTo(`/teams/${props.result?.home_id || props.result.away_id}/games/${props.result?.id}`)
-})
+    return navigateTo(`/games/${props.result?.id}`);
+});
 
-const confirmOverlay = ref(null)
+const confirmOverlay = ref(null);
 
-onClickOutside(confirmOverlay, cancel)
-
-
+onClickOutside(confirmOverlay, cancel);
 </script>
