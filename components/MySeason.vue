@@ -26,13 +26,13 @@
         </header> -->
         <main class="season-content__container">
             <div style="height: 100%">
-                <div class="team-table__item">
+                <!-- <div class="team-table__item">
                     <div class="text-center">Team</div>
                     <div class="text-center">WLT</div>
                     <div class="text-center" v-if="$q.screen.gt.xs">P/G</div>
                     <div class="text-center" v-if="$q.screen.gt.xs">HE</div>
                     <div class="text-center">More</div>
-                </div>
+                </div> -->
                 <div
                     v-for="team in teams"
                     :key="team.id"
@@ -45,7 +45,7 @@
                         </template>
                         <template v-slot:append> </template>
                     </ProfileCard>
-                    <div class="row justify-center" >
+                    <!-- <div class="row justify-center" >
                         <ChartTeamWinLoss
                             v-if="!loading"
                             :wins="team.wins ?? 0"
@@ -70,8 +70,8 @@
                             :teamId="team.id"
                             :totalEnds="team.hammer_end_count"
                         />
-                    </div>
-                    <div class="row items-center q-px-sm justify-center">
+                    </div> -->
+                    <!-- <div class="row items-center q-px-sm justify-center">
                         <q-btn
                             icon="read_more"
                             flat
@@ -79,7 +79,7 @@
                             color="primary"
                             @click="viewTeam(team.id)"
                         />
-                    </div>
+                    </div> -->
                 </div>
                 <div class="team-table__item" style="overflow: visible">
                     <ProfileCard>

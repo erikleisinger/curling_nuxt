@@ -84,14 +84,14 @@ const handleClick = () => {
         return;
     }
   
-    if (!props.type || !props.viewable) return;
-    const editorStore = useDialogStore();
+    // if (!props.type || !props.viewable) return;
+    // const editorStore = useDialogStore();
 
-    if (props.type === 'team') {
-        editorStore.toggleTeamViewer({open: true, team: props.item})
-    } else if (props.type === 'player') {
-           editorStore.togglePlayerEditor({open: true, editedPlayer: props.item})
-    }
+    // if (props.type === 'team') {
+    //     editorStore.toggleTeamViewer({open: true, team: props.item})
+    // } else if (props.type === 'player') {
+    //        editorStore.togglePlayerEditor({open: true, editedPlayer: props.item})
+    // }
 }
 
 
