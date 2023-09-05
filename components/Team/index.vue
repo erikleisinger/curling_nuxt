@@ -565,7 +565,7 @@ $avatar-dimension: 7em;
     .compare__container {
         position: absolute;
         left: 0;
-        margin: var(--space-sm);
+        margin: var(--space-md);
     }
     .badge__container {
         padding: var(--space-md) 0px;
