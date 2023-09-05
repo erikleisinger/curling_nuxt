@@ -42,43 +42,43 @@ const emit = defineEmits(['update:modelValue'])
 const positions = {
     lead: {
         name: "Lead",
-        icon: "sym_o_counter_1",
-        value: 'lead',
+        icon: "looks_one",
+        value: "lead",
     },
     second: {
         name: "Second",
-        icon: "sym_o_counter_2",
-        value: 'second'
+        icon: "looks_two",
+        value: "second",
     },
     third: {
         name: "Third",
-        icon: "sym_o_counter_3",
-        value: 'third'
+        icon: "looks_three",
+        value: "third",
     },
     fourth: {
         name: "Fourth",
-        icon: "sym_o_counter_4",
-        value: 'fourth'
+        icon: "looks_four",
+        value: "fourth",
     },
     fifth: {
         name: "Fifth",
-        icon: "sym_o_counter_5",
-        value: 'fifth'
+        icon: "looks_five",
+        value: "fifth",
     },
     coach: {
         name: "Coach",
         icon: "assignment",
-        value: 'coach'
+        value: "coach",
     },
     alternate: {
         name: "Alternate",
-        icon: "sym_o_counter_0",
-        value: 'alternate'
+        icon: "exposure_zero",
+        value: "alternate",
     },
     skip: {
         name: "Skip",
         icon: "psychology",
-        value: 'skip'
+        value: "skip",
     },
 };
 

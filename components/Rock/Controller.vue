@@ -46,7 +46,7 @@
                         round
                         :color="showNumbers ? 'primary' : 'white'"
                         ><q-icon
-                            name="sym_o_counter_1"
+                            name="looks_one"
                             :color="showNumbers ? 'white' : 'primary'"
                             size="sm"
                     /></q-btn>

@@ -294,7 +294,7 @@
                         title="Points per game"
                         v-if="!comparisonTeam"
                         class="col-5"
-                        icon="sym_o_counter_1"
+                        icon="o_looks_one"
                         color="blue"
                     >
                         <span v-if="team.games_played">

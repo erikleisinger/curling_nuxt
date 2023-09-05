@@ -100,27 +100,27 @@ const emit = defineEmits(["cancelInvitation", "edit", "removePlayer"]);
 const positions = {
     lead: {
         name: "Lead",
-        icon: "sym_o_counter_1",
+        icon: "looks_one",
         value: "lead",
     },
     second: {
         name: "Second",
-        icon: "sym_o_counter_2",
+        icon: "looks_two",
         value: "second",
     },
     third: {
         name: "Third",
-        icon: "sym_o_counter_3",
+        icon: "looks_three",
         value: "third",
     },
     fourth: {
         name: "Fourth",
-        icon: "sym_o_counter_4",
+        icon: "looks_four",
         value: "fourth",
     },
     fifth: {
         name: "Fifth",
-        icon: "sym_o_counter_5",
+        icon: "looks_five",
         value: "fifth",
     },
     coach: {
@@ -130,7 +130,7 @@ const positions = {
     },
     alternate: {
         name: "Alternate",
-        icon: "sym_o_counter_0",
+        icon: "exposure_zero",
         value: "alternate",
     },
     skip: {

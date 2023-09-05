@@ -34,7 +34,7 @@ const props = defineProps({
 
 const ICONS = {
     accepted: "check",
-    pending: "sym_o_outgoing_mail",
+    pending: "forward_to_inbox",
     rejected: "close",
 };
 
