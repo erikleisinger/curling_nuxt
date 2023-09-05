@@ -573,10 +573,6 @@ $avatar-dimension: 7em;
             margin-right: var(--space-md);
         }
     }
-    .link-more {
-        text-decoration: underline;
-        cursor: pointer;
-    }
     .stats-view__container {
         margin: 0px calc(-1 * var(--space-md));
         .game-history__container {
@@ -605,7 +601,6 @@ $avatar-dimension: 7em;
     .main__content {
         display: flex;
         flex-direction: column;
-        // flex-wrap: wrap;
         width: 100%;
         .full-column {
             width: 100%;
