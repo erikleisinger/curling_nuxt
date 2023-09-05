@@ -4,7 +4,6 @@
         <div v-if="!!currentGame" class="game__container">
             <header class="game__header">
                 <nav class="row no-wrap justify-center full-width items-center">
-                    <!-- <q-btn icon="chevron_left" flat round @click="goToGame(currentIndex - 1)" :disable="currentIndex === 0"/> -->
                     <div>
                         <h2 class="text-sm text-center">Game</h2>
                         <h1 class="text-md text-bold text-center">
@@ -24,7 +23,6 @@
                             }}
                         </h2>
                     </div>
-                    <!-- <q-btn icon="chevron_right" flat round @click="goToGame(currentIndex + 1)" :disable="endOfResults && currentIndex === games.length - 1"/> -->
                 </nav>
                 <div
                     class="row no-wrap justify-between col-12"
@@ -35,7 +33,11 @@
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
-                            <TeamAvatar :team="currentGame?.home" :color="currentGame.home_color" />
+                            <TeamAvatar
+                                :team="currentGame?.home"
+                                :color="currentGame.home_color"
+                                :viewable="!!currentGame.home_id"
+                            />
                         </div>
 
                         <div class="column items-center">
@@ -50,37 +52,50 @@
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
-                            <TeamAvatar :team="currentGame.away" :color="currentGame.away_color" :viewable="!!currentGame.away_id" :invitable="isAuthorized && !currentGame.away_id" />
+                            <TeamAvatar
+                                :team="currentGame.away"
+                                :color="currentGame.away_color"
+                                :viewable="!!currentGame.away_id"
+                                :invitable="
+                                    isAuthorized && !currentGame.away_id
+                                "
+                            />
                         </div>
 
-                        <div
-                            class="column items-center"
-                          
-                        >
-                    
+                        <div class="column items-center">
                             <div class="text-sm">Team</div>
-                            <div   style="position: relative">
-                                     <div class="verified__container" v-if="currentGame.verified">
-                                    <q-icon name="verified" :color="currentGame.verified ? 'primary' : 'grey-5'" />
-                                      <q-tooltip v-if="$q.platform.is.desktop">
-                                <div v-if="currentGame.verified">
-                                    {{ currentGame.away_name }} has verified that
-                                    this score is accurate.
+                            <div style="position: relative">
+                                <div
+                                    class="verified__container"
+                                    v-if="currentGame.verified"
+                                >
+                                    <q-icon
+                                        name="verified"
+                                        :color="
+                                            currentGame.verified
+                                                ? 'primary'
+                                                : 'grey-5'
+                                        "
+                                    />
+                                    <q-tooltip v-if="$q.platform.is.desktop">
+                                        <div v-if="currentGame.verified">
+                                            {{ currentGame.away_name }} has
+                                            verified that this score is
+                                            accurate.
+                                        </div>
+                                        <div v-else>
+                                            Game is unverified by
+                                            {{ currentGame.away_name }} and may
+                                            not be accurate.
+                                        </div>
+                                    </q-tooltip>
                                 </div>
-                                <div v-else>
-                                    Game is unverified by
-                                    {{ currentGame.away_name }} and may not be
-                                    accurate.
-                                </div>
-                            </q-tooltip>
-                                </div>
-                            <h2
-                                class="text-sm text-bold text-center"
-                                style="white-space: nowrap"
-                            >
-                                {{ currentGame.away_name }}
-                               
-                            </h2>
+                                <h2
+                                    class="text-sm text-bold text-center"
+                                    style="white-space: nowrap"
+                                >
+                                    {{ currentGame.away_name }}
+                                </h2>
                             </div>
                         </div>
                         <div class="score__container">
@@ -142,10 +157,9 @@
                 <div v-if="stats">
                     <TeamStatsView
                         :team="
-                        
                             stats.home
                                 ? {
-                                    color: currentGame.home_color,
+                                      color: currentGame.home_color,
                                       ...stats?.home,
                                       ...stats?.home.team,
                                       id: stats.home.team_id,
@@ -157,7 +171,7 @@
                         :oppositionTeam="
                             stats?.away
                                 ? {
-                                    color: currentGame.away_color,
+                                      color: currentGame.away_color,
                                       ...stats?.away,
                                       ...stats?.away.team,
                                       id: stats.away.team_id,
@@ -194,8 +208,6 @@ $avatar-dimension: 7em;
         }
     }
     .team__header {
-        // padding-bottom: var(--space-sm);
-
         .avatar__container {
             height: $avatar-dimension;
             max-width: 100%;
@@ -204,19 +216,18 @@ $avatar-dimension: 7em;
         .score__container {
             font-size: 4em;
             position: relative;
-           
         }
     }
-     .verified__container {
-                position: absolute;
-             
-                left: -1em;
-                
-                height: min-content;
-                .q-icon {
-                    font-size: 1em;
-                }
-            }
+    .verified__container {
+        position: absolute;
+
+        left: -1em;
+
+        height: min-content;
+        .q-icon {
+            font-size: 1em;
+        }
+    }
     .end-count__container {
         position: absolute;
         bottom: 1em;
@@ -236,15 +247,14 @@ $avatar-dimension: 7em;
 }
 </style>
 <script setup>
-import { useThrottleFn } from "@vueuse/core";
-import {useUserTeamStore} from '@/store/user-teams'
+import { useUserTeamStore } from "@/store/user-teams";
 const route = useRoute();
 const { getGameResult } = useGame();
 
 const loading = ref(false);
 const result = ref(null);
 const error = ref(null);
-const isAuthorized = ref(false)
+const isAuthorized = ref(false);
 
 const { id: gameId } = route.params;
 
@@ -264,7 +274,9 @@ const init = async () => {
 
     stats.value = await getStatsForGame(currentGame.value);
 
-    isAuthorized.value = useUserTeamStore().userTeams.some(({id}) => id === currentGame.value.home_id)
+    isAuthorized.value = useUserTeamStore().userTeams.some(
+        ({ id }) => id === currentGame.value.home_id
+    );
 };
 
 const games = ref([]);
@@ -393,8 +405,6 @@ const getStatsForGame = async (game) => {
         away: data.find(({ team_id }) => team_id === game?.away_id),
     };
 };
-
-
 
 const { format, toTimezone } = useTime();
 </script>

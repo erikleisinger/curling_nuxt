@@ -1,7 +1,7 @@
 <template>
     <slot name="title" :editing="editing" :setEditing="setEditing" />
     <div class="row">
-        <TeamPlayer
+        <LazyTeamPlayer
             v-for="player in playerList"
             :key="player.id"
             :player="player"
@@ -9,7 +9,7 @@
             @cancelInvitation="cancelRequest"
             @removePlayer="playerToRemove = $event"
         />
-        <TeamPlayer v-if="editing" editing>
+        <LazyTeamPlayer v-if="editing" editing>
             <div
                 class="full-height full-width row justify-center items-center no-wrap"
                 v-ripple
@@ -28,9 +28,9 @@
                 <q-icon name="add" color="blue" size="1.2em" />
                 Invite player
             </div>
-        </TeamPlayer>
+        </LazyTeamPlayer>
     </div>
-        <DialogConfirmation
+        <LazyDialogConfirmation
         v-if="!!playerToRemove"
         confirmButtonText="Remove from team"
         cancelButtonText="Cancel"
@@ -40,7 +40,7 @@
         confirmColor="negative"
     >
        Are you sure you want to remove {{playerToRemove.first_name}} {{playerToRemove.last_name}} from the team? 
-    </DialogConfirmation>
+    </LazyDialogConfirmation>
 </template>
 <style lang="scss" scoped>
 .player__container {
