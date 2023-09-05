@@ -120,11 +120,11 @@
                                 >
                                     <div class="verified__container" >
                                         <q-icon
-                                            :name="result.verified ? 'verified' : 'o_smart_toy'"
+                                            :name="!!result.away_id ? 'verified' : 'o_smart_toy'"
                                             :color="
                                                 result.verified
                                                     ? 'primary'
-                                                    : 'grey-8'
+                                                    : 'grey-7'
                                             "
                                         />
                                     </div>

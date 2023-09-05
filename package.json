@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@nuxtjs/supabase": "^0.3.8",
+    "@pinia-orm/nuxt": "^1.6.7",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
     "@vueuse/components": "^10.2.1",
@@ -53,6 +54,7 @@
     "nuxt-quasar-ui": "^2.0.2",
     "pinch-zoom-js": "2.3.4",
     "pinia": "^2.1.4",
+    "pinia-orm": "^1.6.7",
     "quasar": "^2.12.1",
     "vue": "^3.0.0",
     "vue-virtual-scroller": "^2.0.0-beta.8",

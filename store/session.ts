@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useStorage } from "@vueuse/core";
-
-import { useTeamStore } from "@/store/teams";
 import { useGameStore } from "@/store/games";
 import { newShot } from "@/models/shot";
 import type End from "@/types/end";

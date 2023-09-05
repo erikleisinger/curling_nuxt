@@ -1,8 +1,4 @@
 import { defineStore } from "pinia";
-import { BasicTeamRequest, RequestStatus } from "@/types/request";
-import { TABLE_NAMES } from "@/constants/tables";
-import { useTeamStore } from "@/store/teams";
-import { DatabaseError, ErrorName } from "@/types/error";
 import { useNotificationStore } from "@/store/notification";
 import Team from '@/types/team'
 

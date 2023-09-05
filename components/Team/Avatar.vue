@@ -14,12 +14,14 @@
                 class="overlay row justify-center items-center"
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible: (viewable || invitable) && ($q.platform.is.desktop || visible),
+                    visible: (viewable || invitable || editable) && ($q.platform.is.desktop || visible),
                 }"
             >
-                <div class="text-white text-bold">
+                <div class="text-white text-bold" v-if="!editable">
                     {{invitable ? 'Invite' : 'View'}}
                 </div>
+                
+                <q-icon v-else name="edit" color="white" size="md"/>
             </div>
             <div
                 class="ring"
@@ -29,6 +31,8 @@
             />
            
             <div class="inner-wrap">
+
+                <UploaderDraft v-if="editable && visible" style="z-index: 10" @upload="emit('update')"/>
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
                         v-if="avatarType === 'upload' && avatarUrl"
@@ -140,12 +144,13 @@ import { useStorageStore } from "@/store/storage";
 import { onClickOutside, useElementHover } from "@vueuse/core";
 const props = defineProps({
     color: String,
+    editable: Boolean,
     invitable: Boolean,
     team: Object,
     viewable: Boolean,
 });
 
-const emit = defineEmits(['invite'])
+const emit = defineEmits(['edit', 'invite', 'update'])
 
 const storage = useStorageStore();
 
@@ -200,14 +205,17 @@ watch(hovered, (val) => {
 })
 
 const clickAvatar = () => {
-    if (!props.viewable && !props.invitable) return;
+    if (!props.viewable && !props.invitable && !props.editable) return;
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
-} else if (!props.invitable) {
+} else if (props.viewable) {
         return navigateTo(`/teams/${props.team.id}`);
-    } else {
+    } else if (props.invitable) {
         emit('invite')
-    }
+    } 
+    // else if (props.editable) {
+    //     emit('edit')
+    // }
 };
 const {getColor} = useColor()
 const styleObj = computed(() => {

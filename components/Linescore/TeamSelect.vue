@@ -160,9 +160,7 @@
 }
 </style>
 <script setup>
-import { useTeamStore } from "@/store/teams";
 import { useDialogStore } from "@/store/dialog";
-import { useUserTeamStore } from "@/store/user-teams";
 
 const { toggleLineScore, toggleGlobalSearch } = useDialogStore();
 

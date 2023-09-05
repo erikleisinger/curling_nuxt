@@ -78,14 +78,28 @@
                         :class="comparisonTeam ? 'col-6' : 'col-12'"
                     >
                         <div class="avatar__container q-mb-sm">
-                            <TeamAvatar :team="team" :viewable="false" />
+                            <TeamAvatar :team="team" :viewable="false" :editable="isAuthorized" @update="editAvatar" />
+
                         </div>
 
                         <div class="column items-center">
                             <div class="text-sm">Team</div>
+                            <div style="position: relative">
                             <h2 class="text-sm text-bold text-center">
                                 {{ team.name }}
+                              
                             </h2>
+                            <div class="edit--floating" v-if="isAuthorized">
+                                <q-btn flat round icon="edit" color="grey-8" size="sm" padding="2px"/>
+                            </div>
+                        
+
+
+                        </div>
+                            <!-- <div class="row items-center">
+                                <q-icon class="text-sm" name="home" color="grey-8"/>
+                            <h2 class="text-sm">St. Vital Curling Club</h2>
+                            </div> -->
                         </div>
                     </div>
 
@@ -594,6 +608,12 @@ $avatar-dimension: 7em;
             max-width: 100%;
             width: $avatar-dimension;
         }
+        .edit--floating {
+            position: absolute;
+            top: 0;
+            right: -1.5em;
+
+        }
     }
     .h2h__container {
         margin: 0px var(--space-md);
@@ -823,6 +843,15 @@ const respondToRequest = async (response) => {
      trStore.getTeamRequestsByUser(userId.value)
     useUserTeamStore().fetchUserTeams(true);
     if (!!response) getPlayers();
+}
+
+/**
+ * 
+ * EDITING
+ */
+
+const editAvatar = () => {
+    console.log('edit avatar')
 }
 
 
