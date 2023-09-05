@@ -78,7 +78,7 @@
                         <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
-                            :teamId="team.id"
+                            :teamId="Number.parseInt(team.id)"
                             :numerator="team[BADGE_FIELDS[badge].numerator]"
                             :denominator="team[BADGE_FIELDS[badge].denominator]"
                             @showMore="viewMore(BADGE_TITLES_PLAIN[badge])"
@@ -98,7 +98,7 @@
                         <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
-                            :teamId="oppositionTeam.id"
+                            :teamId="Number.parseInt(oppositionTeam.id)"
                             :numerator="
                                 oppositionTeam[BADGE_FIELDS[badge].numerator]
                             "

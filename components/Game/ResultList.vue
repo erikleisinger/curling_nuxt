@@ -4,7 +4,7 @@
         :key="game.id"
         class="result__container"
     >
-        <TeamGameResult :result="game" :notify="canVerify(game)" :authorized="!!isAuthorized(game.home_id)" @invite="inviteTeam($event, game)">
+        <LazyTeamGameResult :result="game" :notify="canVerify(game)" :authorized="!!isAuthorized(game.home_id)" @invite="inviteTeam($event, game)">
             <!-- Verification -->
             <template
                 v-slot:actions
@@ -45,7 +45,7 @@
                     class="game-request-response__container row items-center no-wrap"
                 ></div>
             </template>
-        </TeamGameResult>
+        </LazyTeamGameResult>
         <q-separator />
     </div>
 </template>

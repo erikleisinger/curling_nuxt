@@ -41,7 +41,7 @@
                     <ProfileCard type="team" :item="team">
                         {{ team.name }}
                         <template v-slot:avatar>
-                            <TeamAvatar :team="team" />
+                            <TeamAvatar :team="team" viewable />
                         </template>
                         <template v-slot:append> </template>
                     </ProfileCard>

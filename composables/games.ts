@@ -71,7 +71,6 @@ export const useGame = () => {
             (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
         );
     
-        console.log(stats)
         const myTeam = {};
         const oppTeam = {};
     
@@ -89,15 +88,11 @@ export const useGame = () => {
     
         const oneOppositionEntry = stats.find(
             ({ team_id }) => {
-                console.log(team_id)
                 return team_id === awayTeamId
             }
         );
 
-        console.log('one opp entry: ', oneOppositionEntry, awayTeamId)
         const oneHomeEntry = stats?.find( ({ team_id }) => team_id === homeTeamId)
-
-        console.log('one home entry: ', oneHomeEntry)
     
         const { avatar_type, avatar_url, team_avatar, name } = { ...(oneHomeEntry?.team ?? {}) };
     

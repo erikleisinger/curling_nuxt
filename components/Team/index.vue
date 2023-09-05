@@ -3,7 +3,7 @@
         <q-inner-loading :showing="loadingComparison" color="primary" />
 
         <div class="overview__container row" key="overview">
-            <div v-if="pendingTeamRequest" class="pending-request__container">
+            <div v-if="pendingTeamRequest && !comparisonTeam" class="pending-request__container">
                 <div>You have been invited to join team {{team.name}}!</div>
                 <div class="row">
                     <q-btn class="col-6" square color="red" flat @click="respondToRequest(false)">Decline</q-btn>
@@ -18,6 +18,27 @@
                 class="row justify-center col-12"
                 
             >
+            <div class="compare__container">
+                 <q-btn flat round icon="compare_arrows" color="grey-8"
+                           
+                            v-if="!comparisonTeam"
+                            :label="$q.screen.xs ? '' : 'Team comparison'"
+                            @click="
+                                toggleGlobalSearch({
+                                    open: true,
+                                    options: {
+                                        inputLabel:
+                                            'Search for a team to compare',
+                                        resourceTypes: ['team'],
+                                        callback: onSelect,
+                                        filterIds: [team.id],
+                                    },
+                                })
+                            "
+                        >
+                           
+                 </q-btn>
+            </div>
                 <div
                     class="full-width row justify-center team-view-options__container"
                     v-if="!!comparisonTeam"
@@ -451,24 +472,7 @@
                             </div>
                         </div>
 
-                        <div
-                            class="link-more text-sm"
-                            v-if="!comparisonTeam"
-                            @click="
-                                toggleGlobalSearch({
-                                    open: true,
-                                    options: {
-                                        inputLabel:
-                                            'Search for a team to compare',
-                                        resourceTypes: ['team'],
-                                        callback: onSelect,
-                                        filterIds: [team.id],
-                                    },
-                                })
-                            "
-                        >
-                            Team comparison
-                        </div>
+                       
                     </div>
                     <q-separator />
 
@@ -490,7 +494,7 @@
                             'full-column': !!comparisonTeam || $q.screen.xs,
                             'half-column': !comparisonTeam && !$q.screen.xs,
                         }" -->
-                <div v-if="!comparisonTeam || headToHead">
+                <div v-if="!comparisonTeam || headToHead" ref="gamesContainer">
                     <q-separator />
                     <div>
                         <div
@@ -528,14 +532,18 @@
                         </div>
                         <q-separator />
                         <div class="stats-view__container">
-                            <div v-if="!games.length">
+                              <div v-if="!recordLoaded || gettingRecord" class="q-pa-sm row justify-center items-center">
+                                <q-circular-progress indeterminate color="primary"/>
+                              </div>
+                            <div v-else-if="!games.length">
                                 <div
                                     class="row full-width justify-center q-pa-md"
                                 >
                                     {{ team.name }} has played no games.
                                 </div>
                             </div>
-                            <div v-else class="game-history__container">
+                          
+                            <div v-else class="game-history__container" >
                                 <LazyGameResultList :results="games" />
                             </div>
                         </div>
@@ -554,6 +562,11 @@ $avatar-dimension: 7em;
     width: 100%;
     height: fit-content;
     position: relative;
+    .compare__container {
+        position: absolute;
+        left: 0;
+        margin: var(--space-sm);
+    }
     .badge__container {
         padding: var(--space-md) 0px;
         .badge {
@@ -632,7 +645,7 @@ $avatar-dimension: 7em;
 import { useDialogStore } from "@/store/dialog";
 import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
-import { useElementBounding, watchDebounced } from "@vueuse/core";
+import { useElementBounding, useRefHistory, watchDebounced, useElementVisibility } from "@vueuse/core";
 import { BADGE_FIELDS } from "@/constants/badges";
 
 const props = defineProps({
@@ -660,7 +673,9 @@ const editingPlayers = ref(false);
 const comparisonTeam = ref(null);
 const loadingComparison = ref(false);
 const router = useRouter();
-const { currentRoute } = router;
+const { currentRoute  } = router;
+
+const {history} = useRefHistory(currentRoute)
 
 const onSelect = async ({ id }) => {
     toggleGlobalSearch({ open: false });
@@ -673,6 +688,10 @@ const loadComparison = async (id) => {
     loadingComparison.value = false;
 };
 
+const gamesContainer = ref(null)
+
+const isVisible = useElementVisibility(gamesContainer)
+
 watchDebounced(
     currentRoute,
     (val) => {
@@ -683,8 +702,13 @@ watchDebounced(
             loadComparison(opponent);
         }
     },
-    { immediate: true, debounce: 200 }
+    { debounce: 200, immediate: true }
 );
+
+watchDebounced(isVisible, (val) => {
+    if (!val || gettingRecord.value) return;
+    if (!games.value.length) getTeamRecord(props.team.id)
+}, {immediate: true, debounce: 200})
 
 const getComparisonTeam = async (id) => {
     const { data: stats } = await useSupabaseClient()
@@ -724,14 +748,21 @@ const endComparison = () => {
     h2hTeam.value = null;
     teamViewMode.value = "h2h";
     h2hOpposition.value = null;
+    navigateTo(`/teams/${props.team.id}`)
 };
 
 const games = ref([]);
+const gettingRecord = ref(false)
+const recordLoaded = ref(false)
 
 const getTeamRecord = async (team_id_param) => {
+     recordLoaded.value = true;
+   gettingRecord.value = true;
+  
     const { getTeamGames } = useGame();
     const teamGames = await getTeamGames([team_id_param], 0, 10);
     games.value = teamGames;
+    gettingRecord.value = false;
 };
 
 const getHeadToHeadRecord = async (opponentId) => {
@@ -750,7 +781,6 @@ const getPlayers = async () => {
 };
 
 onMounted(() => {
-    getTeamRecord(props.team.id);
     getPlayers();
 });
 
@@ -798,6 +828,10 @@ const respondToRequest = async (response) => {
     useUserTeamStore().fetchUserTeams(true);
     if (!!response) getPlayers();
 }
+
+
+
+
 </script>
 <script>
 export default {
