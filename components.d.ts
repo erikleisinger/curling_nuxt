@@ -37,7 +37,7 @@ declare module 'vue' {
     InputScore: typeof import('./components/Input/Score.vue')['default']
     InputShotScore: typeof import('./components/Input/ShotScore.vue')['default']
     InputTime: typeof import('./components/Input/Time.vue')['default']
-    MySeason: typeof import('./components/MySeason.vue')['default']
+    MySeason: typeof import('./components/Season.vue')['default']
     Percentage: typeof import('./components/Percentage.vue')['default']
     'Percentage.story': typeof import('./components/Percentage.story.vue')['default']
     Profile: typeof import('./components/Profile/index.vue')['default']

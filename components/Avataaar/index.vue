@@ -112,6 +112,10 @@ getRandomChoice (items) {
             const itemsLength = Object.entries(items).length
             return Object.entries(items)[Math.floor((Math.random()*(itemsLength)))][1]
     }
+
+    export default {
+    name: "Avataaar",
+};
 </script>
 
 <script setup>
@@ -161,8 +165,8 @@ const props = defineProps({
           }
         }) 
 
-
-
+        
 
 </script>
+
 

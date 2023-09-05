@@ -3,7 +3,6 @@ import {useStorage} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Rock from "@/types/rock";
 import type {SupabaseRockReturn} from "types/fetch";
-import { BannerColors } from "@/types/color";
 
 export const useRockStore = defineStore("rockss", {
   state: () => {
@@ -18,15 +17,12 @@ export const useRockStore = defineStore("rockss", {
         .from(TABLE_NAMES.ROCKS)
         .delete()
         .eq("id", id);
-      if (error) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error deleting rock(code ${code})`, BannerColors.Negative);
-      } else {
+      if (error) return;
+     
         const index = this.rocks.findIndex((g) => g.id === id);
         if (index === -1) return;
         this.rocks.splice(index, 1);
-      }
+      
     },
     async insertRocks(force = false) {
       if (this.rocks.length && !force) return;
@@ -34,13 +30,10 @@ export const useRockStore = defineStore("rockss", {
       const {error, data}: SupabaseRockReturn = await client
         .from(TABLE_NAMES.ROCKS)
         .select("*")
-      if (error) {
-        const {setBanner} = useBanner();
-        setBanner("Error getting rock.", BannerColors.Negative);
-      } else if (data) {
+      if (error || !data) return;
         this.rocks = data;
         this.sortRocks();
-      }
+      
     },
 
     async insertRock(rock: any) {
@@ -50,12 +43,7 @@ export const useRockStore = defineStore("rockss", {
         .upsert(rock)
         .select();
       const [newRock] = data || [];
-      if (error || !newRock) {
-        const {code} = error || {};
-        const {setBanner} = useBanner();
-        setBanner(`Error creating rock (code ${code})`, BannerColors.Negative);
-        return null;
-      } else {
+      if (error || !newRock) return;
         const index = this.rocks.findIndex((g) => g.id === newRock.id);
         if (index === -1) {
           this.rocks.push(newRock);
@@ -64,7 +52,7 @@ export const useRockStore = defineStore("rockss", {
         }
         this.sortRocks();
         return newRock
-      }
+      
     },
     sortRocks() {
       const {sortNameAlphabetically} = useSort();

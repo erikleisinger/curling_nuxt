@@ -9,7 +9,6 @@ import type End from "@/types/end";
 import type Shot from "@/types/shot";
 import type Game from "@/types/game";
 import type { GamePlayerJunction } from "@/types/game";
-import { BannerColors } from "@/types/color";
 import { CUSTOM_QUERIES } from "@/constants/query";
 import { DatabaseError, ErrorName, ValidationError } from "@/types/error";
 

@@ -6,7 +6,6 @@ export const useUserStore = defineStore("user", {
             avatar: null,
             email: null,
             first_name: null,
-            friendId: null,
             id: null,
             last_name: null,
             showNumbers: false,
@@ -17,7 +16,6 @@ export const useUserStore = defineStore("user", {
             avatar: string | null;
             email: string | null;
             first_name: string | null;
-            friendId: string | null;
             id: string | null;
             last_name: string | null;
             showNumbers: boolean;
@@ -38,7 +36,6 @@ export const useUserStore = defineStore("user", {
                 () => client.from("profiles").select(`
                     id, 
                     timezone,
-                    friend_id,
                     username,
                     first_name,
                     last_name,
@@ -65,9 +62,6 @@ export const useUserStore = defineStore("user", {
             if (!data) return;
             const teams = data.map(({ team_id }) => team_id);
             this.setUserTeams(teams);
-            // const [user] = data || [];
-            // const {timezone, id, friend_id:friendId, username, avatar_url: avatarUrl} = user || {};
-            // this.setData({timezone, id, friendId, username, avatarUrl, email})
         },
         setAvatar(path: string) {
             this.avatarUrl = path;
@@ -76,9 +70,6 @@ export const useUserStore = defineStore("user", {
             this.email = email;
         },
 
-        setFriendId(id: string) {
-            this.friendId = id;
-        },
         setId(id: string) {
             this.id = id;
         },

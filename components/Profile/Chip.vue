@@ -5,16 +5,11 @@
 </template>
 <script setup>
 import {useConfirmDialog} from '@vueuse/core'
-import {useDialogStore} from '@/store/dialog'
-const {togglePlayerEditor} = useDialogStore();
     const props = defineProps({
         id: String,
         username: String
     })
 
     const {reveal, isRevealed, confirm, onConfirm, cancel} = useConfirmDialog();
-    onConfirm(() => {
-        togglePlayerEditor({open: true})
-    })
 
 </script>

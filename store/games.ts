@@ -5,7 +5,6 @@ import type Game from "@/types/game";
 import type End from "@/types/end";
 import type { SupabaseGameReturn } from "types/fetch";
 import type { Database } from "@/types/supabase";
-import { BannerColors } from "@/types/color";
 import { useNotificationStore } from "@/store/notification";
 import { useSessionStore } from "@/store/session";
 

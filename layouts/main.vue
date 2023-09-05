@@ -8,7 +8,6 @@
         >
             <slot />
         </q-page-container>
-        <Banner />
     </q-layout>
 </template>
 <style lang="scss" scoped>

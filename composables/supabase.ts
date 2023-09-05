@@ -1,4 +1,3 @@
-import { BannerColors } from "@/types/color";
 import type { Database } from "@/types/supabase";
 import { SUPABASE_AUTH_STORAGE_KEY } from "@/constants/supabase";
 import { PUBLIC_ROUTES } from "@/constants/routes";
@@ -58,24 +57,19 @@ export const useSupabaseFetch = () => {
     ) => {
         await checkHeaders();
         const { data, error } = await promise();
+        let errorMsg;
         if (error) {
             const { code } = error;
             await handleError(code);
             if (callbacks?.onError) {
-                const { setBanner } = useBanner();
-                const errorMsg =
+                errorMsg =
                     typeof callbacks.onError === "function"
                         ? callbacks.onError(error)
                         : callbacks.onError;
-                setBanner(`${errorMsg} (code ${code})`, BannerColors.Negative);
+                
             }
-        } else if (data) {
-            if (callbacks?.onSuccess) {
-                const { setBanner } = useBanner();
-                setBanner(callbacks.onSuccess, BannerColors.Primary);
-            }
-        }
-        return { data: data ?? true, error };
+        } 
+        return { data: data ?? true, error: error || errorMsg };
     };
     return { client, fetchHandler };
 };

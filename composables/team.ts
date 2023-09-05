@@ -1,14 +1,12 @@
 export const useTeam = () => {
-    
-    const getTeamPlayers = async (teamId:number, andRequests: boolean) => {
-        if (!teamId) return []
+    const getTeamPlayers = async (teamId: number, andRequests: boolean) => {
+        if (!teamId) return [];
         const client = useSupabaseClient();
- 
-          
-            const { data } = await client
-                .from("team_profile_junction")
-                .select(
-                    `
+
+        const { data } = await client
+            .from("team_profile_junction")
+            .select(
+                `
             id,
             position,
             is_admin,
@@ -20,15 +18,14 @@ export const useTeam = () => {
                 avatar
             )
         `
-                )
-                .eq("team_id", teamId);
+            )
+            .eq("team_id", teamId);
 
-
-
-            
-            
         if (andRequests) {
-            const {data:requests} = await client.from('team_requests').select(`
+            const { data: requests } = await client
+                .from("team_requests")
+                .select(
+                    `
                 user:requestee_profile_id (
                     id,
                     username,
@@ -38,16 +35,17 @@ export const useTeam = () => {
                 ),
                 status,
                 id
-            `).eq('team_id', teamId).eq('status', 'pending')
+            `
+                )
+                .eq("team_id", teamId)
+                .eq("status", "pending");
             return [...data, ...requests].map((p) => ({
                 rowId: p.id,
                 ...p.user,
                 status: p.status ?? null,
                 avatar: p.user?.avatar ? JSON.parse(p.user.avatar) : {},
-
-            }))
-        } else  {
-
+            }));
+        } else {
             return data.map((p) => ({
                 rowId: p.id,
                 ...p,
@@ -56,9 +54,6 @@ export const useTeam = () => {
                 avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {},
             }));
         }
-    
-            
-        
-    }
+    };
     return { getTeamPlayers };
 };

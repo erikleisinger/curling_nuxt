@@ -16,21 +16,21 @@
         >
     
           
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="accessoriesTypes"
                 v-model="avatar.accessoriesType"
                 title="Accessory"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="clothesType"
                 v-model="avatar.clotheType"
                 title="Clothing"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="hatAndShirtColors"
                 v-model="avatar.clotheColor"
                 title="Shirt color"
@@ -41,21 +41,21 @@
                     avatar.clotheType === 'BlazerShirt'
                 "
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="eyebrowTypes"
                 v-model="avatar.eyebrowType"
                 title="Eyebrows"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="eyeTypes"
                 v-model="avatar.eyeType"
                 title="Eyes"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="topTypes"
                 v-model="avatar.topType"
                 title="Hair / Hats"
@@ -66,42 +66,42 @@
 
 
 
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="hairColors"
                 v-model="avatar.hairColor"
                 title="Hair color"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="hairColors"
                 v-model="avatar.facialHairColor"
                 title="Facial hair color"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="facialHairTypes"
                 v-model="avatar.facialHairType"
                 title="Facial hair"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="GraphicShirtTypes"
                 v-model="avatar.graphicType"
                 title="Logo"
                 class="col-12"
                 :disabled="readOnly || avatar.clotheType !== 'GraphicShirt'"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="mouthTypes"
                 v-model="avatar.mouthType"
                 title="Mouth"
                 class="col-12"
                 :disabled="readOnly"
             />
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="skinColors"
                 v-model="avatar.skinColor"
                 title="Skin color"
@@ -109,7 +109,7 @@
                 :disabled="readOnly"
             />
 
-            <AvatarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="hatAndShirtColors"
                 v-model="avatar.topColor"
                 title="Hat color"

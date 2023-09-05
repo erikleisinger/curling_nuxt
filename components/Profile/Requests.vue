@@ -296,46 +296,6 @@ onMounted(async () => {
             },
             (payload) => handleSubscription(payload, "requestee")
         )
-        // .on(
-        //     "postgres_changes",
-        //     {
-        //         event: "UPDATE",
-        //         schema: "public",
-        //         table: "team_requests",
-        //         filter: `requester_profile_id=eq.${userId}`,
-        //     },
-        //     (payload) => handleUpdate(payload.new, "requester")
-        // )
-        // .on(
-        //     "postgres_changes",
-        //     {
-        //         event: "UPDATE",
-        //         schema: "public",
-        //         table: "team_requests",
-        //         filter: `requestee_profile_id=eq.${userId}`,
-        //     },
-        //     (payload) => handleUpdate(payload.new, "requestee")
-        // )
-        //   .on(
-        //     "postgres_changes",
-        //     {
-        //         event: "DELETE",
-        //         schema: "public",
-        //         table: "team_requests",
-        //         filter: `requestee_profile_id=eq.${userId}`,
-        //     },
-        //     (payload) => handleDelete(payload.new)
-        // )
-        //  .on(
-        //     "postgres_changes",
-        //     {
-        //         event: "DELETE",
-        //         schema: "public",
-        //         table: "team_requests",
-        //         filter: `requester_profile_id=eq.${userId}`,
-        //     },
-        //     (payload) => handleDelete(payload.new)
-        // )
         .subscribe();
 });
 
@@ -352,12 +312,5 @@ const cancelRequest = async ({
 }) => {
     await teamRequestStore.cancelTeamRequest({ team_id, requestee_profile_id });
 
-    // emit("update", {
-    //     teamId: team_id,
-    //     updates: {
-    //         status: null,
-    //         subject: null,
-    //     },
-    // });
 };
 </script>

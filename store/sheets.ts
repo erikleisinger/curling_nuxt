@@ -3,7 +3,6 @@ import {useStorage} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Sheet from "@/types/sheet";
 import type {SupabaseSheetReturn} from "types/fetch";
-import { BannerColors } from "@/types/color";
 
 export const useSheetStore = defineStore("sheets", {
   state: () => {

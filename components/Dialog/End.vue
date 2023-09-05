@@ -5,7 +5,7 @@
                 <h1 style="font-size: 1em">Please input the score for end {{end}}</h1>
             </q-card-section>
             <q-card-section class="q-pt-xs">
-              <GameScoreboard :highlight="end"/>
+              <!-- <GameScoreboard :highlight="end"/> -->
             </q-card-section>
              <slot name="buttons">
             <q-card-actions align="right" class="row justify-between">

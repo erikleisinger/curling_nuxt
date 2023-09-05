@@ -748,6 +748,8 @@ const endComparison = () => {
     h2hTeam.value = null;
     teamViewMode.value = "h2h";
     h2hOpposition.value = null;
+     const {opponent} = currentRoute.value.query;
+    if (!opponent) return;
     navigateTo(`/teams/${props.team.id}`)
 };
 

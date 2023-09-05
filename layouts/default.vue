@@ -94,8 +94,6 @@
         <q-page-container class="page__container--global">
             <slot />
         </q-page-container>
-
-        <Banner />
     </q-layout>
 </template>
 <style lang="scss" scoped>
@@ -165,7 +163,6 @@
 </style>
 <script setup>
 import { useNavigationStore } from "@/store/navigation";
-import { VIEWS } from "@/constants/navigation";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
 import { onClickOutside } from "@vueuse/core";

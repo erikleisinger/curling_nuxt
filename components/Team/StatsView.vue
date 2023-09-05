@@ -7,7 +7,7 @@
             class="col-12 col-sm-6 row full-width view-more__container"
             v-show="!!viewDetails?.length"
         >
-            <ChartTeamHammerEfficiencyTime
+            <ChartTeamStatsTime
                 :teamId="team.id"
                 v-if="!oppositionTeam && !!viewDetails.length"
                 :visibleStats="viewDetails"
@@ -116,50 +116,6 @@
                 </div>
                 <q-separator v-if="index !== fields.length - 1"/>
             </div>
-            <!-- <div
-                class="row justify-between items-center full-width no-wrap stats__container--pie"
-            >
-                <div>
-                    <div class="row">
-                        <h2 class="text-md q-mr-md text-bold clickable">
-                            Points for per game
-                        </h2>
-                    </div>
-                    <h3 class="text-sm clickable">
-                        Average points scored vs. average points conceded
-                    </h3>
-                </div>
-                <div style="margin-right: -8px">
-                    <ChartTeamPointsPerGame
-                        :for="team.points_for / team.games_played"
-                        :against="team.points_against / team.games_played"
-                        :teamId="team.id"
-                        :height="90"
-                    />
-                </div>
-            </div>
-            <div
-                class="row justify-between items-center full-width no-wrap stats__container--pie"
-            >
-                <div>
-                    <div class="row">
-                        <h2 class="text-md q-mr-md text-bold clickable">
-                            Ends per game
-                        </h2>
-                    </div>
-                    <h3 class="text-sm clickable">
-                        Average ends won vs. average ends lost
-                    </h3>
-                </div>
-                <div style="margin-right: -8px">
-                    <ChartTeamPointsPerGame
-                        :for="team.ends_for / team.games_played"
-                        :against="team.ends_against / team.games_played"
-                        :teamId="team.id"
-                        :height="90"
-                    />
-                </div>
-            </div> -->
         </div>
     </div>
 </template>

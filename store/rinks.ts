@@ -3,7 +3,6 @@ import {useStorage} from "@vueuse/core";
 import {TABLE_NAMES} from "@/constants/tables";
 import type Rink from "@/types/rink";
 import type {SupabaseRinkReturn} from "types/fetch";
-import { BannerColors } from "@/types/color";
 
 export const useRinkStore = defineStore("rink", {
   state: () => {

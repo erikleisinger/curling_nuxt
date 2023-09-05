@@ -139,7 +139,6 @@
 import { ref } from "vue";
 import { VALIDATION_RULES } from "@/constants/validation";
 import { useAuthStore } from "@/store/auth";
-import { BannerColors } from "@/types/color";
 
 const TAB_NAMES = ref({
     SIGN_IN: "signin",
@@ -164,8 +163,6 @@ const validatePassword = (val) => {
     return val === password.value || "Passwords do not match";
 };
 
-const { setBanner } = useBanner();
-
 const onSubmit = async (e) => {
     loading.value = true;
     const client = useSupabaseAuthClient();
@@ -179,12 +176,9 @@ const onSubmit = async (e) => {
             authStore.setLoggedIn(true);
             navigateTo('/gateway')
         } else if (error && error.message) {
-            setBanner(error.message, BannerColors.Negative);
+        
         } else {
-            setBanner(
-                "Error logging in (Unknown error)",
-                BannerColors.Negative
-            );
+           
         }
     } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
         const { error } = await client.auth.signUp({
@@ -199,22 +193,7 @@ const onSubmit = async (e) => {
                 },
             },
         });
-        if (error?.message) {
-            setBanner(error.message, BannerColors.Negative);
-        } else if (!error) {
-            setBanner(
-                "Sign up successful. A verification email has been sent to your email address.",
-                BannerColors.Primary
-            );
-            password.value = null;
-            email.value = null;
-            username.value = null;
-            passwordCheck.value = null;
-            firstName.value = null;
-            lastName.value = null;
-            tab.value = TAB_NAMES.SIGN_IN;
-            loginForm.value.reset();
-        }
+        if (error) return;
     }
     loading.value = false;
 };

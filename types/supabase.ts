@@ -95,40 +95,6 @@ export interface Database {
           }
         ]
       }
-      friends: {
-        Row: {
-          created_at: string | null
-          id: number
-          profile_id_1: string | null
-          profile_id_2: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          profile_id_1?: string | null
-          profile_id_2?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          profile_id_1?: string | null
-          profile_id_2?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "friends_profile_id_1_fkey"
-            columns: ["profile_id_1"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "friends_profile_id_2_fkey"
-            columns: ["profile_id_2"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       games: {
         Row: {
           away: number | null
@@ -374,7 +340,6 @@ export interface Database {
           avatar_url: string | null
           created_at: string | null
           first_name: string | null
-          friend_id: string | null
           id: string
           last_name: string | null
           player_id: number | null
@@ -386,7 +351,6 @@ export interface Database {
           avatar_url?: string | null
           created_at?: string | null
           first_name?: string | null
-          friend_id?: string | null
           id: string
           last_name?: string | null
           player_id?: number | null
@@ -397,7 +361,6 @@ export interface Database {
           avatar_url?: string | null
           created_at?: string | null
           first_name?: string | null
-          friend_id?: string | null
           id?: string
           last_name?: string | null
           player_id?: number | null
@@ -584,40 +547,6 @@ export interface Database {
             foreignKeyName: "shots_type_id_fkey"
             columns: ["type_id"]
             referencedRelation: "shottypes"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      shottypes: {
-        Row: {
-          Code: string | null
-          id: number
-          is_global: boolean | null
-          name: string | null
-          profile_id: string | null
-          shot_type: Database["public"]["Enums"]["shot_type_enum"] | null
-        }
-        Insert: {
-          Code?: string | null
-          id?: number
-          is_global?: boolean | null
-          name?: string | null
-          profile_id?: string | null
-          shot_type?: Database["public"]["Enums"]["shot_type_enum"] | null
-        }
-        Update: {
-          Code?: string | null
-          id?: number
-          is_global?: boolean | null
-          name?: string | null
-          profile_id?: string | null
-          shot_type?: Database["public"]["Enums"]["shot_type_enum"] | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shottypes_profile_id_fkey"
-            columns: ["profile_id"]
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
         ]

@@ -3,10 +3,7 @@
     <NuxtPage />
     <NotificationHandler/>
         <DialogTeamViewer v-if="isTeamViewerOpen" />
-        <DialogPlayerEditor v-if="isPlayerEditorOpen" />
         <DialogLinescore v-if="isLinescoreOpen"/>
-
-        <DialogPlayerSelect v-if="isPlayerSelectOpen" />
           <DialogGlobalSearch v-if="isGlobalSearchOpen" />
 </template>
 <style lang="scss">
@@ -59,8 +56,6 @@ client.auth.onAuthStateChange((_, _session) => {
 });
 const dialogStore = useDialogStore()
 const isLinescoreOpen = computed(() => dialogStore.linescore.open);
-const isPlayerEditorOpen = computed(() => dialogStore.playerEditor.open);
-const isPlayerSelectOpen = computed(() => dialogStore.playerSelect.open);
 const isTeamViewerOpen = computed(() => dialogStore.teamViewer.open);
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 </script>

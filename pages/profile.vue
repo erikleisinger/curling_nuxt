@@ -52,45 +52,10 @@
             <label for="timezone" class="label">Timezone</label>
             <div id="timezone">{{ user.timezone }}</div>
         </section>
-        <!-- <section name="timezone" class="section">
-            <label for="friendId" class="label">Friend ID</label>
-            <div class="row no-wrap items-center">
-                <div id="friendId" class="friend__id">
-                    {{ user.friendId }}
-                </div>
-                <q-icon
-                    flat
-                    round
-                    name="content_copy"
-                    color="primary"
-                    @click="copyFriendId"
-                    size="1em"
-                />
-            </div>
-        </section>
-        <section name="timezone" class="section">
-            <label class="label" for="friendId">Add a friend</label>
-            <label class="label sub"
-                >Paste your friend's ID here to add them as a friend</label
-            >
-            <div>
-                <q-input v-model="friendToAdd" rounded outlined class="q-mt-sm">
-                    <template v-slot:after>
-                        <q-btn
-                            color="primary"
-                            round
-                            icon="person_add"
-                            :disable="!friendToAdd"
-                            @click="addFriend"
-                        />
-                    </template>
-                </q-input>
-            </div>
-        </section> -->
     </main>
 
         
-        <PlayerGenerator v-else-if="tab === TAB_NAMES.PLAYER.value && user.id" role="main" v-model="user.avatar" :onSave="updateAvatar"/>
+        <AvataaarGenerator v-else-if="tab === TAB_NAMES.PLAYER.value && user.id" role="main" v-model="user.avatar" :onSave="updateAvatar"/>
 
 </div>
 </NuxtLayout>
@@ -149,18 +114,11 @@
                 margin-bottom: var(--space-sm);
             }
         }
-        .friend__id {
-            margin-right: var(--space-sm);
-        }
     }
 }
 </style>
 <script setup>
 import { useUserStore } from "@/store/user";
-import { BannerColors } from "@/types/color";
-import { useNotificationStore } from "@/store/notification";
-import { useTeamRequestStore } from "@/store/team-requests";
-import { MAX_AVATAR_FILE_SIZE } from "@/constants/supabase";
 import {parseAvatar} from '@/utils/avatar'
 
 const { logout } = useSession();
@@ -182,13 +140,10 @@ const store = useUserStore();
 
 const user = ref({})
 
-const profileAvatar = ref({})
-
 const getUser = () => {
 const {
         id,
         timezone,
-        friendId,
         username,
         player,
         first_name,
@@ -199,7 +154,6 @@ const {
     user.value = {
         id,
         timezone,
-        friendId,
         username,
         player,
         first_name,
@@ -213,74 +167,6 @@ onBeforeMount(() => {
 })
 
 const { toTimezone } = useTime();
-
-const copyFriendId = () => {
-    navigator.clipboard.writeText(friendId);
-    const { setBanner } = useBanner();
-    setBanner("ID copied", BannerColors.Primary);
-};
-
-const friendToAdd = ref(null);
-
-const getError = (msg) => {
-    const keyNotFound = new RegExp("Key is not present");
-    if (keyNotFound.test(msg)) {
-        return "Player does not exist.";
-    }
-    const invalidInput = new RegExp("invalid input");
-    if (invalidInput.test(msg)) {
-        return "Friend ID is invalid. Please double-check that you entered it correctly.";
-    }
-    const alreadyFriend = new RegExp("friend already added");
-    if (alreadyFriend.test(msg)) {
-        return "You are already friends!";
-    }
-
-    const samePerson = new RegExp("check_different_profiles");
-    if (samePerson.test(msg)) {
-        return "You cannot add yourself as a friend! (That is, in the context of this app. In life, we must all be friends to ourselves)";
-    }
-};
-
-const addFriend = async () => {
-    const { client, fetchHandler } = useSupabaseFetch();
-    const { data } = await fetchHandler(
-        () =>
-            client
-                .from("friends")
-                .insert({ profile_id_1: id, profile_id_2: friendToAdd.value }),
-        { onError: (error) => getError(error.details || error.message) }
-    );
-    const { setBanner } = useBanner();
-    if (data) {
-        setBanner("Friend added successfully!", "positive");
-        friendToAdd.value = null;
-        const { initData } = useData();
-        initData();
-    }
-};
-
-
-/**
- * Team requests
- */
-
-const teamRequestStore = useTeamRequestStore();
-const requestsNotifications = computed(() => teamRequestStore.requestsToRespond);
-
-
-
-/**
- * Avatar save
- */
-
-const updatingAvatar = ref(false)
-const updateAvatar = async () => {
-    updatingAvatar.value = true;
-    await store.updateUserAvatar(user.value.avatar)
-    getUser();
-    updatingAvatar.value = false;
-}
 
 </script>
 <script>

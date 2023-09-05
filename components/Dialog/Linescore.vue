@@ -111,7 +111,7 @@
                 <div class="start__padding col-grow" />
 
                 
-                <ScrollerSection
+                <LinescoreScrollerSection
                     @visible="setVisible(end)"
                     v-for="end in endNumbers"
                     :key="`end-input-${end}`"
@@ -134,7 +134,7 @@
                             @shake="concede(end)"
                         />
                     </div>
-                </ScrollerSection>
+                </LinescoreScrollerSection>
                 <div class="start__padding col-grow" />
                 <transition
                     appear

@@ -6,7 +6,6 @@ export const TABLE_NAMES = {
     RINKS: 'rinks',
     ROCKS: 'rocks',
     SHEETS: 'sheets',
-    SHOT_TYPES: 'shottypes',
     SHOTS: 'shots', 
     TEAM_REQUESTS: 'team_requests',
     TEAMS: 'teams',
