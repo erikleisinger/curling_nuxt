@@ -1,12 +1,12 @@
 <template>
     <div class="line-container">
-        <div class="row items-center justify-between title"   v-if="!dense">
+        <div class="row items-center justify-between title" v-if="!dense">
             <div>
                 <div class="row">
-                    <h2 class="text-md q-mr-md  clickable">
+                    <h2 class="text-md q-mr-md clickable">
                         {{ BADGE_TITLES_PLAIN[badge] }}
                     </h2>
-               
+
                     <q-btn
                         flat
                         round
@@ -22,45 +22,21 @@
                 </h3>
             </div>
             <div
-                :style="{ height: BADGE_DIMENSION, width: BADGE_DIMENSION, position: 'relative' }"
-                ref="badgeContainer"
-              
+                :style="{
+                    height: BADGE_DIMENSION,
+                    width: BADGE_DIMENSION,
+                    position: 'relative',
+                }"
             >
-          
-                <div
-                    ref="badgeRef"
-                    class="badge--viewable column items-center"
-                   
-                    :class="{ expanded: viewBadge }"
-                >
-                 <!-- @click="expandBadge" -->
+                <div class="badge--viewable column items-center">
                     <div class="badge-container__wrap">
                         <Badge
                             :badge="badge"
                             :height="BADGE_DIMENSION"
-                            class="clickable "
+                            class="clickable"
                         >
-                            <!-- <div
-                                class="badge-progress"
-                                v-if="!hasBadge(teamId, badge)"
-                            /> -->
                         </Badge>
-                          <div v-show="viewBadge" class="badge__title">
-                        <h4 class="text-bold" style="white-space: nowrap">
-                            {{ BADGE_TITLES[badge] }}
-                        </h4>
-                        <div>  {{BADGE_FORMULAS[badge](percent)}}</div>
-                        <!-- <div
-                            class="text-sm no-badge__container"
-                            
-                        >
-                       
-                          
-                     
-                        </div> -->
                     </div>
-                    </div>
-                  
                 </div>
             </div>
         </div>
@@ -69,7 +45,6 @@
             :percent="percent"
             height="16px"
             :reverse="reverse"
-          
         >
             <!-- <div
                 class="threshold-indicator"
@@ -97,16 +72,19 @@
                     :color="BADGE_COLORS[badge]"
                 />
             </div> -->
-            <q-tooltip anchor="top middle" self="bottom middle" v-if="!$q.screen.xs">
+            <q-tooltip
+                anchor="top middle"
+                self="bottom middle"
+                v-if="!$q.screen.xs"
+            >
                 {{ numerator }} out of {{ denominator }}
                 {{ gameStat ? "games" : "ends" }}
             </q-tooltip>
 
-            <!-- <template v-slot:prepend v-if="reverse">
-                <div class="percent__container" :class="{reverse}">{{ percent.toFixed() }}%</div>
-            </template> -->
-                  <template v-slot:prepend v-if="prependPercent">
-                <div class="percent__container reverse">{{ percent.toFixed() }}%</div>
+            <template v-slot:prepend v-if="prependPercent">
+                <div class="percent__container reverse">
+                    {{ percent.toFixed() }}%
+                </div>
             </template>
             <template v-slot:append v-else>
                 <div class="percent__container">{{ percent.toFixed() }}%</div>
@@ -121,63 +99,12 @@
     flex-direction: column;
     padding: var(--space-md) 0px;
     width: 100%;
-    .q-linear-progress {
-        border-radius: 12px;
-    }
     .title {
         margin-bottom: var(--space-md);
-    }
-    .badge-progress {
-        position: absolute;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        bottom: 0;
-        padding: 2px;
-        background-color: rgba(0, 0, 0, 0.2);
-        -webkit-backdrop-filter: grayscale(1);
-        backdrop-filter: grayscale(1);
     }
     .badge--viewable {
         transition: all 0.3s;
         position: relative;
-     
-
-        &.expanded {
-            transform: v-bind(transformation);
-            transform-origin: top left;
-            z-index: 100000;
-            position: absolute;
-               width: 100px;
-               left: 0;
-               right: 0;
-               margin: auto;
-            .badge__title {
-              
-                text-align: center;
-                transform: scale(0.3) translateY(-100%);
-                background-color: white;
-                padding: var(--space-xs);
-                border-radius: 8px;
-                border: 1px solid $grey-4;
-                      width: 200px;
-                .no-badge__container {
-                    padding: var(--space-xxxs);
-                    border-radius: 8px;
-                    border: 1px solid black;
-                }
-            }
-             .badge-container__wrap {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                max-height: 100px;
-                width: 100%;
-        }
-        }
-
-       
     }
 
     .threshold-indicator {
@@ -192,7 +119,7 @@
     .percent__container {
         width: v-bind(BADGE_DIMENSION);
         display: flex;
-     
+
         justify-content: center;
         font-weight: bold;
         &.reverse {
@@ -216,11 +143,6 @@ import {
     BADGE_FORMULA_EXPLANATIONS,
     BADGE_FORMULAS,
 } from "@/constants/badges";
-import {
-    onClickOutside,
-    useElementBounding,
-    useWindowSize,
-} from "@vueuse/core";
 const props = defineProps({
     badge: String,
     dense: Boolean,
@@ -239,49 +161,11 @@ const props = defineProps({
 
 const emit = defineEmits(["showMore"]);
 
-const {getStatPercent} = useConvert();
+const { getStatPercent } = useConvert();
 
-const percent = getStatPercent(props.numerator, props.denominator, 0)
-
-
-const viewBadge = ref(false);
-
-const badgeRef = ref(null);
-
-const {hasBadge} = useBadge();
-
-onClickOutside(badgeRef, () => {
-    viewBadge.value = false;
-});
+const percent = getStatPercent(props.numerator, props.denominator, 0);
 
 const BADGE_DIMENSION = "3em";
-const EXPANDED_SCALE = 3;
-
-const badgeContainer = ref(null);
-
-const { x, y } = useElementBounding(badgeContainer);
-
-const { height, width } = useWindowSize();
-
-const transformation = ref(null);
 
 const $q = useQuasar();
-
-const getTransformation = () => {
-    const widthHalf = width.value / 2;
-    const heightHalf = height.value / 2;
-    const outsideBounds = height.value - y.value;
-    transformation.value = `scale(${EXPANDED_SCALE}) translateY(${$q.screen.lt.sm ? (heightHalf - y.value - 100) / EXPANDED_SCALE : 0}px)
-   translateX(${-75}px)`;
-    //  
-    // `
-};
-
-const expandBadge = () => {
-    if (!viewBadge.value) {
-        getTransformation();
-    }
-
-    viewBadge.value = !viewBadge.value;
-};
 </script>

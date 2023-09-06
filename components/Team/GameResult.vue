@@ -1,16 +1,8 @@
 <template>
     <div style="position: relative full-width">
-        <div class="result__container--wrap" @click="reveal">
+        <div class="result__container--wrap">
             <div class="row no-wrap">
-                <div style="visibility: hidden; margin-left: -12px">
-                    <q-fab
-                        padding="0px"
-                        flat
-                        icon="more_horiz"
-                        color="grey-8"
-                    />
-                </div>
-                <div class="result__header" ref="container">
+                <div class="result__header">
                     <slot name="before" />
                     <div class="result__container" @click="emit('expand')">
                         <div class="team__profile--container column no-wrap">
@@ -25,7 +17,7 @@
                             </div>
 
                             <h2
-                                class="text-sm truncate-text text-center col-grow row items-center justify-center"
+                                class="text-sm truncate-text text-center col-grow"
                             >
                                 {{ home.name }}
                             </h2>
@@ -190,7 +182,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="margin-left: -12px">
+                <div style="margin-left: -20px; margin-top: -15px">
                     <q-fab
                         padding="0px"
                         flat
@@ -222,7 +214,7 @@
 </template>
 <style lang="scss" scoped>
 $result-height: 50px;
-$columns: 1fr 80px 1fr;
+$columns: 35% 30% 35%;
 $max-container-width: 500px;
 .result__container--wrap {
     max-height: fit-content;
@@ -232,60 +224,31 @@ $max-container-width: 500px;
     overflow: visible;
     margin: auto;
     max-width: $max-container-width;
-    .more-options__container {
-        position: absolute;
-        // right: 0;
-        left: 0;
-        top: 0;
-        margin: auto;
-        width: fit-content;
-        height: 34px;
-    }
-    .start-time--floating {
-        position: absolute;
-        left: 0;
-        right: 0;
-        margin: auto;
-        text-align: center;
-        font-size: var(--text-xs);
-    }
     .result__header {
         padding-bottom: var(--space-xs);
         padding-top: var(--space-xs);
         border-radius: inherit;
-
         width: 100%;
         box-sizing: border-box;
-        .game-request-response__container {
-            margin: 0px var(--space-sm);
-            margin-bottom: var(--space-md);
-        }
     }
 
     .result__container {
         display: grid;
         grid-template-rows: 100%;
         grid-template-columns: $columns;
-        // border-bottom: 1px solid $grey-3;
         max-width: $max-container-width;
         margin: auto;
         position: relative;
 
         .team__profile--container {
+            // max-width: 30%;
             justify-content: center;
             .team-avatar__container {
                 .team-avatar--wrap {
                     position: relative;
                     max-width: $result-height;
                     margin: auto;
-                    .rock__icon {
-                        position: absolute !important;
-                        bottom: 0;
-                        right: 0;
-                        padding: 0;
-                        background-color: transparent !important;
-                        width: calc($result-height / 2.5);
-                    }
+                   
                 }
             }
         }
@@ -307,39 +270,14 @@ $max-container-width: 500px;
         font-size: 35px;
         transition: all 0.2s;
         &.winning {
-            // text-decoration: underline;
-            // text-decoration-color: $green;
-
             font-weight: bold;
         }
-    }
-
-    .view__overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        top: 0;
-        margin: auto;
-        transform-origin: center;
-        transition: all 0.3s;
-        border-radius: 8px;
-        max-width: $max-container-width;
     }
 }
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import { useUserTeamStore } from "@/store/user-teams";
 import { useGameRequestStore } from "@/store/game-requests";
-import {
-    onClickOutside,
-    useElementBounding,
-    useElementSize,
-    useParentElement,
-    watchDebounced,
-    useConfirmDialog,
-} from "@vueuse/core";
 import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
@@ -380,59 +318,9 @@ const home = computed(() => {
     }
 });
 
-const emit = defineEmits(["expand", "update", "remove", "invite"]);
-
-const isVisible = (team, { home_points, away_points }) => {
-    if (team === "home") {
-        return home_points > away_points ? "visible" : "hidden";
-    } else if (team === "away") {
-        return away_points > home_points ? "visible" : "hidden";
-    }
-
-    return "hidden";
-};
-
-const editGame = (gameId) => {
-    dialogStore.toggleLineScore({ open: true, editedGame: { id: gameId } });
-};
-
-const container = ref(null);
-const { height: containerHeight, width: containerWidth } =
-    useElementBounding(container);
-
-const { getEventBackground } = useColor();
-
-const backgroundImage = ref(null);
-
-watch(containerHeight, () => {
-    backgroundImage.value = getEventBackground(
-        props.result.event_color,
-        containerHeight.value,
-        containerWidth.value
-    );
-});
+const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
 
-const { user: userId } = useUser();
 
-const { reveal, isRevealed, confirm, cancel, onConfirm, onCancel } =
-    useConfirmDialog();
-
-onConfirm(() => {
-    return navigateTo(`/games/${props.result?.id}`);
-});
-
-const confirmOverlay = ref(null);
-
-onClickOutside(confirmOverlay, cancel);
-
-// const updateAvatar = () => {
-//     if (home.value.avatar_type === 'upload') {
-// useRepo(Team).where('id', 20).update({avatar_type: 'avataaar'})
-//     } else {
-//         useRepo(Team).where('id', 20).update({avatar_type: 'upload'})
-//     }
-    
-// }
 </script>

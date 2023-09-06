@@ -111,7 +111,6 @@
 .line-chart__container {
     width: 100%;
     height: 100%;
-    // height: calc(100% - 100px);
     .chart-options__container {
         height: 100%;
         width: 100%;
@@ -177,7 +176,6 @@ const options = [
 const visibleItems = ref([...(props.visibleStats ?? [])]);
 
 const toggleVisibility = (chart, index = 0) => {
-    console.log('TOGGLE VISIBLE')
     const { visible } = chart.getDatasetMeta(index);
     chart.setDatasetVisibility(index, !visible);
     chart.update("active");
@@ -202,7 +200,6 @@ watch(() => props.visibleStats, (val) => {
     visibleItems.value = val;
     const {data} = getHammerConversionOverTime();
     chart.data = data;
-    console.log(chart.data)
     chart.update();
 }, {deep: true})
 
@@ -615,6 +612,4 @@ const getHammerConversionOverTime = () => {
         },
     };
 };
-
-// hammerConversionProps.value = getHammerConversionOverTime();
 </script>

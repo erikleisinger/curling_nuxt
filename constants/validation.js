@@ -16,3 +16,5 @@ export const VALIDATION_RULES = {
     }
   
 };
+
+export const MAX_TEAM_NAME_LENGTH = '30'

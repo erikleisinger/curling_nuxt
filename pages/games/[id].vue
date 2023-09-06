@@ -40,9 +40,9 @@
                             />
                         </div>
 
-                        <div class="column items-center">
+                        <div class="column items-center full-width">
                             <div class="text-sm">Team</div>
-                            <h2 class="text-sm text-bold text-center">
+                            <h2 class="text-sm text-bold text-center truncate-text full-width">
                                 {{ home.name }}
                             </h2>
                         </div>
@@ -62,9 +62,9 @@
                             />
                         </div>
 
-                        <div class="column items-center">
+                        <div class="column items-center full-width">
                             <div class="text-sm">Team</div>
-                            <div style="position: relative">
+                            <div style="position: relative" class="full-width">
                                 <div
                                     class="verified__container"
                                     v-if="currentGame.verified"
@@ -91,7 +91,7 @@
                                     </q-tooltip>
                                 </div>
                                 <h2
-                                    class="text-sm text-bold text-center"
+                                    class="text-sm text-bold text-center truncate-text"
                                     style="white-space: nowrap"
                                 >
                                     {{ away.name }}
@@ -214,7 +214,7 @@ $avatar-dimension: 7em;
         }
     }
     .team__header {
-        .avatar__container {
+             .avatar__container {
             height: $avatar-dimension;
             max-width: 100%;
             width: $avatar-dimension;
@@ -339,10 +339,13 @@ const getGames = async () => {
 
 const getScoreDetails = async () => {
     const client = useSupabaseClient();
-
-    const { data } = await client.rpc("get_game_score_detailed", {
-        game_id_param: gameId,
-    });
+    const {data} = await client.from('ends').select(`
+        id,
+        end_number,
+        scoring_team_id,
+        hammer_team_id,
+        points_scored
+    `).eq('game_id', gameId)
     return data;
 };
 const generateFormattedGame = (game) => {
@@ -394,14 +397,14 @@ const generateScore = async (game) => {
                         details[index]?.points_scored === null
                             ? "X"
                             : details[index]?.scoring_team_id ===
-                              details[index]?.home_team
+                              home.value?.id
                             ? details[index]?.points_scored
                             : 0,
                     away:
                         details[index]?.points_scored === null
                             ? "X"
                             : (details[index]?.scoring_team_id ===
-                              details[index]?.away_team || !details[index]?.scoring_team_id)
+                              away.value?.id || !details[index]?.scoring_team_id)
                             ? details[index]?.points_scored
                             : 0,
                     ...details[index],

@@ -32,6 +32,11 @@ export default defineNuxtConfig({
     esbuild: {
         pure: ['console.log'],
       },
+    piniaOrm: {
+        model: {
+            withMeta: true
+        }
+    },
     quasar: {
         
         cssAddon: true,

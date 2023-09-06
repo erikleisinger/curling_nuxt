@@ -102,21 +102,7 @@
 
                         <div class="column items-center">
                             <div class="text-sm">Team</div>
-                            <div style="position: relative">
-                                <h2 class="text-sm text-bold text-center">
-                                    {{ team.name }}
-                                </h2>
-                                <div class="edit--floating" v-if="isAuthorized">
-                                    <q-btn
-                                        flat
-                                        round
-                                        icon="edit"
-                                        color="grey-8"
-                                        size="sm"
-                                        padding="2px"
-                                    />
-                                </div>
-                            </div>
+                           <TeamName :name="team.name" :canEdit="isAuthorized" :teamId="team.id"/>
                             <!-- <div class="row items-center">
                                 <q-icon class="text-sm" name="home" color="grey-8"/>
                             <h2 class="text-sm">St. Vital Curling Club</h2>
@@ -425,7 +411,7 @@
                 <!-- Team players -->
 
                 <div v-if="!comparisonTeam">
-                    <LazyTeamPlayerList :players="players" :teamId="team.id">
+                    <TeamPlayerList :players="players" :teamId="team.id">
                         <template v-slot:title="{ editing, setEditing }">
                             <div class="row justify-between items-end q-my-sm">
                                 <div class="row items-center">
@@ -452,7 +438,7 @@
                             </div>
                             <q-separator />
                         </template>
-                    </LazyTeamPlayerList>
+                    </TeamPlayerList>
                 </div>
 
                 <div>
@@ -475,7 +461,7 @@
                                 v-for="badge in badges"
                                 :key="badge"
                             >
-                                <LazyBadge :badge="badge" height="3em" />
+                                <Badge :badge="badge" height="3em" />
                             </div>
                             <div
                                 v-if="!badges?.length"
@@ -506,7 +492,7 @@
                     <q-separator />
 
                     <div class="stats-view__container">
-                        <LazyTeamStatsView
+                        <TeamStatsView
                             :team="headToHead ? h2hTeam : team"
                             v-if="team"
                             key="stats"
@@ -515,7 +501,7 @@
                                 headToHead ? h2hOpposition : comparisonTeam
                             "
                         >
-                        </LazyTeamStatsView>
+                        </TeamStatsView>
                     </div>
                 </div>
                 <!-- RESULTS -->
@@ -579,7 +565,10 @@
                             </div>
 
                             <div v-else class="game-history__container">
-                                <LazyGameResultList :results="games" :home="team.id" />
+                                <GameResultList
+                                    :results="games"
+                                    :home="team.id"
+                                />
                             </div>
                         </div>
                     </div>
@@ -705,16 +694,15 @@ const team = computed(() => {
     };
 });
 
-// const games = ref([])
-
 const games = computed(() => {
-    const g = useRepo(Game).with("teams").whereHas('teams', (q) => {
-    q.where('team_id', team.value.id)
-}).get()
-    return g
+    const g = useRepo(Game)
+        .with("teams")
+        .whereHas("teams", (q) => {
+            q.where("team_id", team.value.id);
+        })
+        .get();
+    return g;
 });
-
-// const gamesLength = computed(() => useRepo(Game).with("teams").coun
 
 const { getStatPercent } = useConvert();
 
@@ -765,7 +753,6 @@ watchDebounced(
     },
     { debounce: 200, immediate: true }
 );
-
 
 const getComparisonTeam = async (id) => {
     const { data: stats } = await useSupabaseClient()
@@ -823,7 +810,6 @@ const getTeamRecord = async (team_id_param) => {
     });
 
     data.forEach((g) => {
-
         let team;
 
         if (!g.team?.id) {
@@ -847,7 +833,6 @@ const getTeamRecord = async (team_id_param) => {
             points_scored: g.points_scored,
             pending: g.pending,
         });
-        
     });
 
     gettingRecord.value = false;

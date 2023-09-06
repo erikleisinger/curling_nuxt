@@ -7,7 +7,7 @@
             class="col-12 col-sm-6 row full-width view-more__container"
             v-show="!!viewDetails?.length"
         >
-            <ChartTeamStatsTime
+            <LazyChartTeamStatsTime
                 :teamId="team.id"
                 v-if="!oppositionTeam && !!viewDetails.length"
                 :visibleStats="viewDetails"
@@ -124,10 +124,6 @@
     height: 3em;
     width: 3em;
 }
-.stats__container--pie {
-    padding: var(--space-md) 0px;
-    border-bottom: 1px solid $grey-4;
-}
 .stats__container {
     padding: 0px var(--space-md);
     border-radius: 8px;
@@ -139,11 +135,6 @@
     overflow: auto;
     position: relative;
     height: v-bind(viewerHeight);
-    .view-details-back__container {
-        position: absolute;
-        padding: var(--space-xs);
-        right: 0;
-    }
     @include sm {
         border-top: 1px solid $grey-5;
     }
@@ -193,8 +184,6 @@ const viewMore = (str) => {
         viewDetails.value.push(str);
     }
 };
-
-
 
 const reloading = ref(false)
 

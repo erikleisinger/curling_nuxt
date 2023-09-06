@@ -95,7 +95,7 @@ $col-width: 80px;
         max-width: 100%;
         .team-table__item {
             display: grid;
-            grid-template-columns: 1fr repeat(2, $col-width);
+            grid-template-columns: 1fr;
             overflow: hidden;
             @include sm {
                 grid-template-columns: 1fr repeat(4, $col-width);
