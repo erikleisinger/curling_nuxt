@@ -1,9 +1,6 @@
 <template>
     <div style="position: relative full-width">
         <div class="result__container--wrap" @click="reveal">
-            <!-- <div class="more-options__container">
-                      
-                    </div> -->
             <div class="row no-wrap">
                 <div style="visibility: hidden; margin-left: -12px">
                     <q-fab
@@ -20,9 +17,9 @@
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="team1"
-                                        :color="team1.color"
-                                        :viewable="!!team1.id"
+                                        :team="home"
+                                        :color="home.color"
+                                        :viewable="!!home.id"
                                     />
                                 </div>
                             </div>
@@ -30,7 +27,7 @@
                             <h2
                                 class="text-sm truncate-text text-center col-grow row items-center justify-center"
                             >
-                                {{ team1.name }}
+                                {{ home.name }}
                             </h2>
                         </div>
 
@@ -45,11 +42,11 @@
                                         class="score"
                                         :class="{
                                             winning:
-                                                team1.points_scored >
-                                                team2.points_scored,
+                                                home.points_scored >
+                                                away.points_scored,
                                         }"
                                     >
-                                        {{ team1.points_scored}}
+                                        {{ home.points_scored}}
                                     </div>
                                 </div>
                                 <div
@@ -59,11 +56,11 @@
                                         class="score"
                                         :class="{
                                             winning:
-                                                team2.points_scored >
-                                                team2.points_scored,
+                                                away.points_scored >
+                                                away.points_scored,
                                         }"
                                     >
-                                        {{ team2.points_scored }}
+                                        {{ away.points_scored }}
                                     </div>
                                 </div>
                             </div>
@@ -73,11 +70,11 @@
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="team2"
-                                        :color="team2.color"
-                                        :viewable="!!team2.id"
+                                        :team="away"
+                                        :color="away.color"
+                                        :viewable="!away.isPlaceholder"
                                         :invitable="
-                                            !!(!team2?.id && authorized)
+                                            away.isPlaceholder && authorized
                                         "
                                         @invite="
                                             toggleGlobalSearch({
@@ -105,12 +102,12 @@
                                     <div class="verified__container">
                                         <q-icon
                                             :name="
-                                                !!team2?.id
+                                                !away?.isPlaceholder
                                                     ? 'verified'
                                                     : 'o_smart_toy'
                                             "
                                             :color="
-                                                !team2.pending
+                                                !away.pending
                                                     ? 'primary'
                                                     : 'grey-7'
                                             "
@@ -123,17 +120,17 @@
                                             position: relative;
                                         "
                                     >
-                                        {{ team2.name}}
+                                        {{ away.name}}
                                     </h2>
                                 </div>
                                 <q-tooltip v-if="$q.platform.is.desktop">
-                                    <div v-if="!team2.pending">
-                                        {{ team2.name }} has verified that
+                                    <div v-if="!away.pending">
+                                        {{ away.name }} has verified that
                                         this score is accurate.
                                     </div>
                                     <div v-else>
                                         Game is unverified by
-                                        {{ team2.name }} and may not be
+                                        {{ away.name }} and may not be
                                         accurate.
                                     </div>
                                 </q-tooltip>
@@ -344,6 +341,7 @@ import {
     useConfirmDialog,
 } from "@vueuse/core";
 import { numberToLetter } from "@/utils/sheets";
+import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 
 const $q = useQuasar();
@@ -354,6 +352,7 @@ const { toggleGlobalSearch } = dialogStore;
 
 const props = defineProps({
     authorized: Boolean,
+    home: Number,
     notify: {
         type: Boolean,
         default: true,
@@ -361,22 +360,23 @@ const props = defineProps({
     result: Object,
 });
 
-const team1 = computed(() => {
-    const {pending, points_scored, color} = props.result.teams[0] || {}
+
+const away = computed(() => {
+    const {team_id} = props.result.teams.find(({team_id}) => team_id !== props.home) || {}
+    const t = useRepo(GameTeam).with('team').where("team_id", team_id).where('game_id', props.result.id).first() ?? {name: 'Unnamed team'};
     return {
-        ...(useRepo(Team).where("id", props.result.teams[0].team_id).first() ?? {}),
-    color,
-    points_scored,
-    pending,
+        ...t,
+        ...(t.team ?? {}),
+        isPlaceholder: t.isPlaceholder
     }
 });
-const team2 = computed(() => {
-    const {pending, points_scored, color} = props.result.teams[1] || {}
+const home = computed(() => {
+    const {team_id} = props.result.teams.find(({team_id}) => team_id === props.home) || props.result.teams.find(({team_id}) => team_id !== away.value.team_id)
+    const t = useRepo(GameTeam).with('team').where("team_id", team_id).where('game_id', props.result.id).first() ?? {name: 'Unnamed team'};
     return {
-        ...(useRepo(Team).where("id", props.result.teams[1].team_id).first() ?? {name: 'Unnamed team'}),
-    color,
-    points_scored,
-    pending,
+        ...t,
+        ...(t.team ?? {}),
+        isPlaceholder: t.isPlaceholder
     }
 });
 
@@ -426,4 +426,13 @@ onConfirm(() => {
 const confirmOverlay = ref(null);
 
 onClickOutside(confirmOverlay, cancel);
+
+// const updateAvatar = () => {
+//     if (home.value.avatar_type === 'upload') {
+// useRepo(Team).where('id', 20).update({avatar_type: 'avataaar'})
+//     } else {
+//         useRepo(Team).where('id', 20).update({avatar_type: 'upload'})
+//     }
+    
+// }
 </script>

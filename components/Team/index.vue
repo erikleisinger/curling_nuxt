@@ -579,7 +579,7 @@
                             </div>
 
                             <div v-else class="game-history__container">
-                                <LazyGameResultList :results="games" />
+                                <LazyGameResultList :results="games" :home="team.id" />
                             </div>
                         </div>
                     </div>
@@ -707,7 +707,14 @@ const team = computed(() => {
 
 // const games = ref([])
 
-const games = computed(() => useRepo(Game).with("teams").get());
+const games = computed(() => {
+    const g = useRepo(Game).with("teams").whereHas('teams', (q) => {
+    q.where('team_id', team.value.id)
+}).get()
+    return g
+});
+
+// const gamesLength = computed(() => useRepo(Game).with("teams").coun
 
 const { getStatPercent } = useConvert();
 
@@ -759,14 +766,6 @@ watchDebounced(
     { debounce: 200, immediate: true }
 );
 
-watchDebounced(
-    isVisible,
-    (val) => {
-        if (!val || gettingRecord.value) return;
-        if (!games.value.length) getTeamRecord(teamId);
-    },
-    { immediate: true, debounce: 200 }
-);
 
 const getComparisonTeam = async (id) => {
     const { data: stats } = await useSupabaseClient()
@@ -824,12 +823,12 @@ const getTeamRecord = async (team_id_param) => {
     });
 
     data.forEach((g) => {
+
         let team;
-        let uniqueId;
+
         if (!g.team?.id) {
-            uniqueId = Math.floor(100000 + Math.random() * 900000);
             team = {
-                id: uniqueId,
+                id: g.game_id + 100000000,
                 name: g.team?.name,
             };
         } else {
@@ -837,17 +836,18 @@ const getTeamRecord = async (team_id_param) => {
         }
 
         useRepo(Team).save(team);
+        useRepo(Game).save({
+            id: g.game_id,
+        });
         useRepo(GameTeam).save({
-            team_id: g.team_id ?? uniqueId,
+            team_id: g.team_id ?? g.game_id + 100000000,
             game_id: g.game_id,
             id: g.id,
             color: g.color,
             points_scored: g.points_scored,
             pending: g.pending,
         });
-        useRepo(Game).save({
-            id: g.game_id,
-        });
+        
     });
 
     gettingRecord.value = false;
@@ -870,6 +870,7 @@ const getPlayers = async () => {
 
 onMounted(() => {
     getPlayers();
+    getTeamRecord(teamId);
 });
 
 const $q = useQuasar();

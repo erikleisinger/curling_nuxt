@@ -1,7 +1,7 @@
 <template>
     <NuxtLayout>
         <q-inner-loading :showing="loading" color="primary" />
-        <div v-if="!!currentGame" class="game__container">
+        <div v-if="!!currentGame && !loading" class="game__container">
             <header class="game__header">
                 <nav class="row no-wrap justify-center full-width items-center">
                     <div>
@@ -34,30 +34,30 @@
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
                             <TeamAvatar
-                                :team="currentGame?.home"
-                                :color="currentGame.home_color"
-                                :viewable="!!currentGame.home_id"
+                                :team="home"
+                                :color="home.color"
+                                :viewable="!!home.id"
                             />
                         </div>
 
                         <div class="column items-center">
                             <div class="text-sm">Team</div>
                             <h2 class="text-sm text-bold text-center">
-                                {{ currentGame.home_name }}
+                                {{ home.name }}
                             </h2>
                         </div>
                         <div class="score__container">
-                            {{ currentGame.home_points ?? 0 }}
+                            {{ home.points_scored ?? 0 }}
                         </div>
                     </div>
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
                             <TeamAvatar
-                                :team="currentGame.away"
-                                :color="currentGame.away_color"
-                                :viewable="!!currentGame.away_id"
+                                :team="away"
+                                :color="away.color"
+                                :viewable="!!away.id"
                                 :invitable="
-                                    isAuthorized && !currentGame.away_id
+                                    isAuthorized && !away?.id
                                 "
                             />
                         </div>
@@ -85,7 +85,7 @@
                                         </div>
                                         <div v-else>
                                             Game is unverified by
-                                            {{ currentGame.away_name }} and may
+                                            {{ away.name }} and may
                                             not be accurate.
                                         </div>
                                     </q-tooltip>
@@ -94,12 +94,12 @@
                                     class="text-sm text-bold text-center"
                                     style="white-space: nowrap"
                                 >
-                                    {{ currentGame.away_name }}
+                                    {{ away.name }}
                                 </h2>
                             </div>
                         </div>
                         <div class="score__container">
-                            {{ currentGame.away_points ?? 0 }}
+                            {{ away.points_scored ?? 0 }}
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,11 @@
                 <q-separator />
                 <LinescoreGridView
                     v-if="currentGame && score"
-                    :game="currentGame"
+                    :game="{
+                        ...currentGame,
+                        home,
+                        away
+                    }"
                     :endCount="
                         Math.max(
                             currentGame.end_count,
@@ -159,10 +163,11 @@
                         :team="
                             stats.home
                                 ? {
-                                      color: currentGame.home_color,
+                                      color: home.color,
                                       ...stats?.home,
                                       ...stats?.home.team,
                                       id: stats.home.team_id,
+                                      ...home
                                   }
                                 : {}
                         "
@@ -171,10 +176,11 @@
                         :oppositionTeam="
                             stats?.away
                                 ? {
-                                      color: currentGame.away_color,
+                                      color: away.color,
                                       ...stats?.away,
                                       ...stats?.away.team,
                                       id: stats.away.team_id,
+                                      ...away
                                   }
                                 : {}
                         "
@@ -248,6 +254,9 @@ $avatar-dimension: 7em;
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
+import Game from '@/store/models/game'
+import Team from '@/store/models/team';
+import GameTeam from '@/store/models/game-team';
 const route = useRoute();
 const { getGameResult } = useGame();
 
@@ -268,51 +277,69 @@ const score = ref({});
 const stats = ref({});
 
 const init = async () => {
+    loading.value = true;
     await getGames();
 
-    score.value = await generateScore(currentGame.value);
+    setTimeout(async () => {
+        score.value = await generateScore(currentGame.value);
 
     stats.value = await getStatsForGame(currentGame.value);
 
     isAuthorized.value = useUserTeamStore().userTeams.some(
-        ({ id }) => id === currentGame.value.home_id
+        ({ id }) => id === currentGame.value.teams?.find(({pending}) => !pending)?.id
     );
+        loading.value = false;
+    }, 100)
+
 };
 
 const games = ref([]);
-const currentGame = ref(null);
+const currentGame = computed(() => {
+    return useRepo(Game).with('teams').where('id', Number(gameId)).first() || {};
+})
+
+const home = computed(() => {
+    if (!currentGame?.value?.teams?.length) return {};
+    const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[0]?.team_id).first()
+    return {
+        ...team,
+        ...(team?.team ?? {})
+    }
+})
+const away = computed(() => {
+    if (!currentGame?.value?.teams?.length) return {};
+ const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[1]?.team_id).first()
+    return {
+        ...team,
+        ...(team?.team ?? {})
+    }
+})
 
 const getGames = async () => {
     const client = useSupabaseClient();
-    const { data: gameData } = await client
-        .from("games")
-        .select("home")
-        .eq("id", gameId)
-        .single();
-    const { home } = gameData ?? {};
-    if (!home) return;
 
-    const { data } = await client
-        .rpc("get_team_record", { team_ids_param: [home] })
-        .eq("id", gameId);
-    if (data) {
-        currentGame.value = data?.map((d) => ({
-            ...d,
-            end_count: d.end_count,
-            id: d.id,
-            is_home_team: d.is_home_team,
-            event_color: d.event_color,
-            event_name: d.event_name,
-            rink_name: d.rink_name,
-            sheet_name: d.sheet_name,
-            start_time: d.start_time,
-            ...generateFormattedGame(d),
-        }))[0];
-    }
+    const {data} = await client.rpc('get_team_record_new', {
+        team_id_param: null,
+        game_id_param: gameId
+    })
+    const [team1, team2] = data;
+    useRepo(Game).save({
+        id: team1.game_id,
+        end_count: team1.end_count
+    })
+    useRepo(Team).save(team1.team)
+       useRepo(Team).save(team2.team)
+    
+    
+    
+    useRepo(GameTeam).save(team1)
+
+    useRepo(GameTeam).save(team2)
 };
 
-const getScoreDetails = async (gameId) => {
+const getScoreDetails = async () => {
     const client = useSupabaseClient();
+
     const { data } = await client.rpc("get_game_score_detailed", {
         game_id_param: gameId,
     });
@@ -345,9 +372,9 @@ const generateFormattedGame = (game) => {
 
 const generateScore = async (game) => {
     const details = await getScoreDetails(game?.id);
-    return Array.from(
+    const s = Array.from(
         {
-            length: Math.max(game.end_count, details?.length),
+            length: Math.max(currentGame.value.end_count, details?.length),
         },
         (_, i) => i + 1
     ).reduce((all, current, index) => {
@@ -382,6 +409,7 @@ const generateScore = async (game) => {
             };
         }
     }, {});
+    return s
 };
 
 const getStatsForGame = async (game) => {
@@ -401,8 +429,8 @@ const getStatsForGame = async (game) => {
         .eq("game_id", game?.id);
     if (!data?.length) return null;
     return {
-        home: data.find(({ team_id }) => team_id === game?.home_id),
-        away: data.find(({ team_id }) => !team_id || team_id === game?.away_id),
+        home: data.find(({ team_id }) => team_id === home.value.id),
+        away: data.find(({ team_id }) => !team_id || team_id === away.value.id),
     };
 };
 

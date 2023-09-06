@@ -167,7 +167,8 @@ const fetchAvatar = async (path) => {
 
 const avatar = ref(null);
 const avatarType = ref(!props.team.avatar_url ? "avataaar" : props.team_avatar_type);
-const loaded = ref(avatarType.value === "avataaar");
+const loaded = ref(true)
+
 
 const getAvatar = async () => {
     if (avatarType.value === "upload" ) {

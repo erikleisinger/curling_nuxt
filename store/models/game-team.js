@@ -1,5 +1,6 @@
 import { CastAttribute, Model } from "pinia-orm";
 import Team from "@/store/models/team";
+import Game from "@/store/models/team";
 
 // class FormatAvatar extends CastAttribute {
 //     get(value) {
@@ -24,9 +25,13 @@ export default class GameTeam extends Model {
             game_id: this.number(),
             team_id: this.number(),
             color: this.string('red'),
-            team: this.hasOne(Team, 'team_id'),
+            team: this.belongsTo(Team, 'team_id'),
+            game: this.belongsTo(Game, 'game_id'),
             points_scored: this.number(),
             pending: this.boolean()
         };
+    }
+    get isPlaceholder() {
+        return this.game_id + 100000000 === this.team_id;
     }
 }

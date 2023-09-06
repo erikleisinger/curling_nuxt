@@ -679,18 +679,18 @@ const createGameStats = async (team_id_param, game_id_param) => {
 const createTeamGameJunction = async (game, isPending) => {
     const {id: game_id, home_color, away_color, home, away, placeholder_away} = game;
     const {errors} = await useSupabaseClient().from('game_team_junction').insert([
-         {
-            game_id,
-            team_id: away,
-            color: away_color,
-            pending: isPending,
-            placeholder: placeholder_away
-        },
         {
             game_id,
             team_id: home,
             color: home_color,
             pending: false,
+        },
+                 {
+            game_id,
+            team_id: away,
+            color: away_color,
+            pending: isPending,
+            placeholder: placeholder_away
         },
        
         
@@ -698,14 +698,13 @@ const createTeamGameJunction = async (game, isPending) => {
 }
 
 const createGame = async (game) => {
-    console.log(useGameStore())
-    const gameId = await useGameStore().insertGame(game);
+    const gameId = await gameStore.insertGame(game);
     return gameId;
 
 };
 
 const createEnds = async (ends, isEdited) => {
-        const gameStore = useGameStore();
+
      if (isEdited) {
         await gameStore.bulkUpdateGameEnds(ends);
     } else {
@@ -717,6 +716,8 @@ const createEnds = async (ends, isEdited) => {
  * INIT
  */
 
+    const gameStore = useGameStore();
+
 const fetchGame = async (game) => {
     const { id } = game;
     if (!id) {
@@ -724,7 +725,7 @@ const fetchGame = async (game) => {
         return;
     }
 
-    const gameStore = useGameStore();
+
 
     const gameFromStore = await gameStore.getGame(id, true);
     const {

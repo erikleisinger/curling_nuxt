@@ -7,13 +7,14 @@
         <LazyTeamGameResult
             :result="game"
             :notify="canVerify(game)"
-            :authorized="!!isAuthorized(game.home_id)"
+            :authorized="!!isAuthorized(game.teams.find(({team_id}) => team_id === home)?.team_id)"
             @invite="inviteTeam($event, game)"
+            :home="home"
         >
             <!-- Verification -->
             <template
                 v-slot:actions
-                v-if="canVerify(game) || isAuthorized(game.home_id)"
+                v-if="canVerify(game) || isAuthorized(game.teams[0]?.team_id)"
             >
                 <q-fab-action
                     v-if="canVerify(game)"
@@ -21,7 +22,7 @@
                     text-color="primary"
                     icon="verified"
                     @click="
-                        respondToRequest(game.id, true, index, game.away_id)
+                        respondToRequest(game.id, true, index, game.teams[1]?.team_id)
                     "
                     >Verify game</q-fab-action
                 >
@@ -62,7 +63,10 @@
 import { useUserTeamStore } from "@/store/user-teams";
 import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
+import {isPlaceholder} from '@/utils/team'
+import GameTeam from '@/store/models/game-team'
 const props = defineProps({
+    home: Number,
     results: {
         type: Array,
         default: [],
@@ -74,11 +78,13 @@ const games = ref([]);
 const confirmUnsaved = ref(false);
 
 const requiresVerification = (game) => {
-    return !game.verified && game.away_id
+    const awayTeam = game.teams.find(({team_id}) => team_id !== props.home) ?? {};
+    if (awayTeam.pending) return true;
+    return isPlaceholder(awayTeam.team_id, game.id)
 }
 
 const canVerify = (game) => {
-    return requiresVerification(game) && isAuthorized(game.away_id);
+    return requiresVerification(game) && isAuthorized(game.teams.find(({team_id}) => team_id !== props.home)?.team_id);
 };
 
 watch(
@@ -100,8 +106,9 @@ const respondToRequest = useThrottleFn(
         });
         responding.value = true;
         let updates;
-        if (accepted) {
-            await acceptRequest(gameId, teamid)
+        try {
+ if (accepted) {
+            await acceptRequest(gameId, teamId)
             // updates = {
             //     verified: true,
             //     away: teamId,
@@ -113,6 +120,13 @@ const respondToRequest = useThrottleFn(
             //     verified: false,
             // };
         }
+        } catch(e) {
+              notStore.updateNotification(notId, {
+            state: "failed",
+            text: `Error occured when ${accepted ? 'verifying' : 'rejecting'} game (code: ${e.code})`,
+        });
+        }
+       
         // const { data: updated } = await useSupabaseClient()
         //     .from("game_team_junction")
         //     .update(updates)
@@ -135,11 +149,17 @@ const respondToRequest = useThrottleFn(
 );
 
 const acceptRequest = async (game_id, team_id) => {
-    await useSupabaseClient().from('game_team_junction').update({
+    const {data, errors} = await useSupabaseClient().from('game_team_junction').update({
         team_id,
         game_id,
         pending: false
-    })
+    }).eq('game_id', game_id).eq('team_id', team_id).select('pending')
+    if (errors) throw new Error(errors);
+
+    const [updates] = data;
+    useRepo(GameTeam).where('team_id', team_id).where('game_id', game_id).update(updates);
+    
+
 }
 
 const declineRequest = async (game_id, team_id) => {
@@ -160,7 +180,14 @@ const inviteTeam = async (team, game) => {
         text: 'Inviting team to verify game...',
         state: 'pending'
     })
-    const {errors} = await useSupabaseClient().from('game_team_junction').insert({team_id: team.id, game_id: game.id, pending: true}).eq('id', game.id)
+    const homeId = game.teams.find(({team_id}) => team_id === props.home)?.team_id
+    const {data, errors} = await useSupabaseClient().from('game_team_junction').update({team_id: team.id, game_id: game.id, pending: true}).eq('game_id', game.id).is('team_id', null).select(`*`)
+    console.log('ERRORS: ', errors)
+    if (errors) return;
+    const [updates] = data;
+    const {created_at, ...newGameTeam} = updates;
+    useRepo(GameTeam).where('team_id', updates.game_id + 100000000).delete();
+    useRepo(GameTeam).save(newGameTeam)
 
 
     if (errors) {
@@ -171,16 +198,8 @@ const inviteTeam = async (team, game) => {
     return;
     }
 
-    // const index = games.value.findIndex(({id}) => id === game.id);
-    // if (index !== -1) games.value.splice(index, 1, {
-    //     ...games.value[index],
-    //     away_id: updatedGame.away.id,
-    //     away_avatar_type: updatedGame.away.avatar_type,
-    //     away_avatar_url: updatedGame.away.avatar_url,
-    //     away_avatar: updatedGame.away.team_avatar,
-    //     away_name: updatedGame.away.name,
-    //     verified: updatedGame.verified
-    // })
+    useRepo(GameTeam).where('id', 20).update({avatar_type: 'avataaar'})
+
          notStore.updateNotification(notId,{
         text: `${team.name} was invited to verify the game.`,
         state: 'completed'
