@@ -4,16 +4,19 @@
         :key="game.id"
         class="result__container"
     >
-        <LazyTeamGameResult :result="game" :notify="canVerify(game)" :authorized="!!isAuthorized(game.home_id)" @invite="inviteTeam($event, game)">
+        <LazyTeamGameResult
+            :result="game"
+            :notify="canVerify(game)"
+            :authorized="!!isAuthorized(game.home_id)"
+            @invite="inviteTeam($event, game)"
+        >
             <!-- Verification -->
             <template
                 v-slot:actions
-                v-if="canVerify(game) || isAuthorized(game.home_id)
-                       
-                    "
+                v-if="canVerify(game) || isAuthorized(game.home_id)"
             >
                 <q-fab-action
-                v-if="canVerify(game)"
+                    v-if="canVerify(game)"
                     color="white"
                     text-color="primary"
                     icon="verified"
@@ -23,20 +26,21 @@
                     >Verify game</q-fab-action
                 >
                 <q-fab-action
-                  v-if="canVerify(game)"
+                    v-if="canVerify(game)"
                     color="white"
                     text-color="red"
                     icon="new_releases"
                     @click="respondToRequest(game.id, false, index)"
                     >Reject game</q-fab-action
                 >
-                  <q-fab-action
-                  v-if="isAuthorized(game.home_id) && requiresVerification(game)"
+                <q-fab-action
+                    v-if="
+                        isAuthorized(game.home_id) && requiresVerification(game)
+                    "
                     color="white"
                     text-color="red"
                     icon="new_releases"
                     @click="cancelRequest(game)"
-
                     >Cancel verification request</q-fab-action
                 >
             </template>
@@ -97,28 +101,30 @@ const respondToRequest = useThrottleFn(
         responding.value = true;
         let updates;
         if (accepted) {
-            updates = {
-                verified: true,
-                away: teamId,
-            };
+            await acceptRequest(gameId, teamid)
+            // updates = {
+            //     verified: true,
+            //     away: teamId,
+            // };
         } else {
-            updates = {
-                away: null,
-                verified: false,
-            };
+            await declineRequest(gameId, teamId)
+            // updates = {
+            //     away: null,
+            //     verified: false,
+            // };
         }
-        const { data: updated } = await useSupabaseClient()
-            .from("games")
-            .update(updates)
-            .eq("id", gameId)
-            .select("verified,away")
-            .single();
-        const newGame = {
-            ...games.value[index],
-            verified: updated.verified,
-            away_id: updated.away,
-        };
-        games.value[index] = newGame;
+        // const { data: updated } = await useSupabaseClient()
+        //     .from("game_team_junction")
+        //     .update(updates)
+        //     .eq("id", gameId)
+        //     .select("verified,away")
+        //     .single();
+        // const newGame = {
+        //     ...games.value[index],
+        //     verified: updated.verified,
+        //     away_id: updated.away,
+        // };
+        // games.value[index] = newGame;
         responding.value = false;
         notStore.updateNotification(notId, {
             state: "completed",
@@ -127,6 +133,18 @@ const respondToRequest = useThrottleFn(
     },
     1000
 );
+
+const acceptRequest = async (game_id, team_id) => {
+    await useSupabaseClient().from('game_team_junction').update({
+        team_id,
+        game_id,
+        pending: false
+    })
+}
+
+const declineRequest = async (game_id, team_id) => {
+    await useSupabaseClient().from('game_team_junction').delete().eq('game_id', game_id).eq('team_id', team_id)
+}
 
 const isAuthorized = (teamId) => {
     return useUserTeamStore().userTeams.some(
@@ -142,43 +160,32 @@ const inviteTeam = async (team, game) => {
         text: 'Inviting team to verify game...',
         state: 'pending'
     })
-    const {data, error} = await useSupabaseClient().from('games').update({away: team.id}).eq('id', game.id).select(`
-    away (
-        id,
-        name,
-        avatar_url,
-        avatar_type,
-        team_avatar
-    ),
-    verified
-    `)
+    const {errors} = await useSupabaseClient().from('game_team_junction').insert({team_id: team.id, game_id: game.id, pending: true}).eq('id', game.id)
 
 
-     const [updatedGame] = data;
-
-    if (error || !updatedGame) {
+    if (errors) {
         notStore.updateNotification(notId,{
-        text: `Error inviting ${team.name} (code ${error.code})`,
+        text: `Error inviting ${team.name} (code ${errors.code})`,
         state: 'failed'
     })
     return;
-    } 
-   
-    const index = games.value.findIndex(({id}) => id === game.id);
-    if (index !== -1) games.value.splice(index, 1, {
-        ...games.value[index],
-        away_id: updatedGame.away.id,
-        away_avatar_type: updatedGame.away.avatar_type,
-        away_avatar_url: updatedGame.away.avatar_url,
-        away_avatar: updatedGame.away.team_avatar,
-        away_name: updatedGame.away.name,
-        verified: updatedGame.verified
-    })
+    }
+
+    // const index = games.value.findIndex(({id}) => id === game.id);
+    // if (index !== -1) games.value.splice(index, 1, {
+    //     ...games.value[index],
+    //     away_id: updatedGame.away.id,
+    //     away_avatar_type: updatedGame.away.avatar_type,
+    //     away_avatar_url: updatedGame.away.avatar_url,
+    //     away_avatar: updatedGame.away.team_avatar,
+    //     away_name: updatedGame.away.name,
+    //     verified: updatedGame.verified
+    // })
          notStore.updateNotification(notId,{
         text: `${team.name} was invited to verify the game.`,
         state: 'completed'
     })
-    
+
 }
 
 const cancelRequest = async (game) => {
@@ -203,8 +210,8 @@ const cancelRequest = async (game) => {
         state: 'failed'
     })
     return;
-    } 
-   
+    }
+
     const index = games.value.findIndex(({id}) => id === game.id);
     if (index !== -1) games.value.splice(index, 1, {
         ...games.value[index],
@@ -220,6 +227,6 @@ const cancelRequest = async (game) => {
         text: `Invitation to ${game.away_name} was cancelled.`,
         state: 'completed'
     })
-    
+
 }
 </script>

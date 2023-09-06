@@ -1,14 +1,11 @@
 <template>
     <div style="position: relative full-width">
-        <div
-            class="result__container--wrap"
-            @click="reveal"
-        >
+        <div class="result__container--wrap" @click="reveal">
             <!-- <div class="more-options__container">
                       
                     </div> -->
             <div class="row no-wrap">
-                 <div style="visibility:hidden; margin-left: -12px">
+                <div style="visibility: hidden; margin-left: -12px">
                     <q-fab
                         padding="0px"
                         flat
@@ -20,21 +17,12 @@
                     <slot name="before" />
                     <div class="result__container" @click="emit('expand')">
                         <div class="team__profile--container column no-wrap">
-                            <div
-                                class="team-avatar__container"
-                               
-                            >
+                            <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="{
-                                            id: result.home_id,
-                                            team_avatar: result.home_avatar,
-                                            avatar_type:
-                                                result.home_avatar_type,
-                                            avatar_url: result.home_avatar_url,
-                                        }"
-                                        :color="result.home_color"
-                                        :viewable="!!result.home_id"
+                                        :team="team1"
+                                        :color="team1.color"
+                                        :viewable="!!team1.id"
                                     />
                                 </div>
                             </div>
@@ -42,7 +30,7 @@
                             <h2
                                 class="text-sm truncate-text text-center col-grow row items-center justify-center"
                             >
-                                {{ result.home_name }}
+                                {{ team1.name }}
                             </h2>
                         </div>
 
@@ -57,11 +45,11 @@
                                         class="score"
                                         :class="{
                                             winning:
-                                                result.home_points >
-                                                result.away_points,
+                                                team1.points_scored >
+                                                team2.points_scored,
                                         }"
                                     >
-                                        {{ result.home_points ?? 0 }}
+                                        {{ team1.points_scored}}
                                     </div>
                                 </div>
                                 <div
@@ -71,11 +59,11 @@
                                         class="score"
                                         :class="{
                                             winning:
-                                                result.away_points >
-                                                result.home_points,
+                                                team2.points_scored >
+                                                team2.points_scored,
                                         }"
                                     >
-                                        {{ result.away_points ?? 0 }}
+                                        {{ team2.points_scored }}
                                     </div>
                                 </div>
                             </div>
@@ -83,31 +71,27 @@
 
                         <div class="team__profile--container column no-wrap">
                             <div class="team-avatar__container">
-                                <div
-                                    class="team-avatar--wrap"
-                                
-                                >
+                                <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="{
-                                            id: result.away_id,
-                                            team_avatar: result.away_avatar,
-                                            avatar_type:
-                                                result.away_avatar_type,
-                                            avatar_url: result.away_avatar_url,
-                                        }"
-                                        :color="result.away_color"
-                                        :viewable="!!result.away_id"
-                                        :invitable="!!(!result.away_id && authorized)"
-                                        @invite="toggleGlobalSearch({
-                                            open: true,
-                                            options: {
-                                                inputLabel: 'Search for a team to invite',
-                                                resourceTypes: ['team'],
-                                                filterIds: [result.home_id],
-                                                callback: (team) => emit('invite', team),
-                                            }
-                                        })"
-                                       
+                                        :team="team2"
+                                        :color="team2.color"
+                                        :viewable="!!team2.id"
+                                        :invitable="
+                                            !!(!team2?.id && authorized)
+                                        "
+                                        @invite="
+                                            toggleGlobalSearch({
+                                                open: true,
+                                                options: {
+                                                    inputLabel:
+                                                        'Search for a team to invite',
+                                                    resourceTypes: ['team'],
+                                                    filterIds: [result.home_id],
+                                                    callback: (team) =>
+                                                        emit('invite', team),
+                                                },
+                                            })
+                                        "
                                     />
                                 </div>
                             </div>
@@ -118,11 +102,15 @@
                                         position: relative;
                                     "
                                 >
-                                    <div class="verified__container" >
+                                    <div class="verified__container">
                                         <q-icon
-                                            :name="!!result.away_id ? 'verified' : 'o_smart_toy'"
+                                            :name="
+                                                !!team2?.id
+                                                    ? 'verified'
+                                                    : 'o_smart_toy'
+                                            "
                                             :color="
-                                                result.verified
+                                                !team2.pending
                                                     ? 'primary'
                                                     : 'grey-7'
                                             "
@@ -135,17 +123,17 @@
                                             position: relative;
                                         "
                                     >
-                                        {{ result.away_name ?? "Unnamed team" }}
+                                        {{ team2.name}}
                                     </h2>
                                 </div>
                                 <q-tooltip v-if="$q.platform.is.desktop">
-                                    <div v-if="result.verified">
-                                        {{ result.away_name }} has verified that
+                                    <div v-if="!team2.pending">
+                                        {{ team2.name }} has verified that
                                         this score is accurate.
                                     </div>
                                     <div v-else>
                                         Game is unverified by
-                                        {{ result.away_name }} and may not be
+                                        {{ team2.name }} and may not be
                                         accurate.
                                     </div>
                                 </q-tooltip>
@@ -205,8 +193,7 @@
                         </div>
                     </div>
                 </div>
-                <div    style=" margin-left: -12px">
-                   
+                <div style="margin-left: -12px">
                     <q-fab
                         padding="0px"
                         flat
@@ -214,26 +201,23 @@
                         color="grey-8"
                         direction="down"
                         vertical-actions-align="right"
-                        
-                      
-                     
                     >
-                     
-        <q-fab-action icon="visibility" color="primary" label="View game" :to="`/games/${result.id}`"/>
-        <slot name="actions"/>
-            
+                        <q-fab-action
+                            icon="visibility"
+                            color="primary"
+                            label="View game"
+                            :to="`/games/${result.id}`"
+                        />
+                        <slot name="actions" />
                     </q-fab>
                     <q-badge
-                       
                         color="deep-purple"
                         rounded
                         floating
                         style="margin-top: 4px"
                         v-if="notify"
-                      
                     >
-                       </q-badge>
-                   
+                    </q-badge>
                 </div>
             </div>
         </div>
@@ -244,7 +228,7 @@ $result-height: 50px;
 $columns: 1fr 80px 1fr;
 $max-container-width: 500px;
 .result__container--wrap {
-     max-height: fit-content;
+    max-height: fit-content;
     box-sizing: border-box;
     transition: all 1s;
     position: relative;
@@ -360,6 +344,7 @@ import {
     useConfirmDialog,
 } from "@vueuse/core";
 import { numberToLetter } from "@/utils/sheets";
+import Team from "@/store/models/team";
 
 const $q = useQuasar();
 
@@ -376,7 +361,26 @@ const props = defineProps({
     result: Object,
 });
 
-const emit = defineEmits(["expand", "update", "remove", 'invite']);
+const team1 = computed(() => {
+    const {pending, points_scored, color} = props.result.teams[0] || {}
+    return {
+        ...(useRepo(Team).where("id", props.result.teams[0].team_id).first() ?? {}),
+    color,
+    points_scored,
+    pending,
+    }
+});
+const team2 = computed(() => {
+    const {pending, points_scored, color} = props.result.teams[1] || {}
+    return {
+        ...(useRepo(Team).where("id", props.result.teams[1].team_id).first() ?? {name: 'Unnamed team'}),
+    color,
+    points_scored,
+    pending,
+    }
+});
+
+const emit = defineEmits(["expand", "update", "remove", "invite"]);
 
 const isVisible = (team, { home_points, away_points }) => {
     if (team === "home") {
@@ -408,20 +412,9 @@ watch(containerHeight, () => {
     );
 });
 
-
-
 const { format, toTimezone } = useTime();
 
 const { user: userId } = useUser();
-
-const updateResult = async () => {
-    const { getGameResult } = useGame();
-    const [result] = await getGameResult(
-        [props.result.home_id],
-        props.result.id
-    );
-    emit("update", result);
-};
 
 const { reveal, isRevealed, confirm, cancel, onConfirm, onCancel } =
     useConfirmDialog();
@@ -433,5 +426,4 @@ onConfirm(() => {
 const confirmOverlay = ref(null);
 
 onClickOutside(confirmOverlay, cancel);
-
 </script>

@@ -373,8 +373,8 @@ const generateScore = async (game) => {
                     away:
                         details[index]?.points_scored === null
                             ? "X"
-                            : details[index]?.scoring_team_id ===
-                              details[index]?.away_team
+                            : (details[index]?.scoring_team_id ===
+                              details[index]?.away_team || !details[index]?.scoring_team_id)
                             ? details[index]?.points_scored
                             : 0,
                     ...details[index],
@@ -402,7 +402,7 @@ const getStatsForGame = async (game) => {
     if (!data?.length) return null;
     return {
         home: data.find(({ team_id }) => team_id === game?.home_id),
-        away: data.find(({ team_id }) => team_id === game?.away_id),
+        away: data.find(({ team_id }) => !team_id || team_id === game?.away_id),
     };
 };
 

@@ -1,14 +1,19 @@
 <template>
     <NuxtLayout>
-        <Team v-if="team && !loading" :team="team"> </Team>
-        <div v-else />
+        <Team v-if="!loading" > </Team>
         <q-inner-loading :showing="loading" color="primary" />
     </NuxtLayout>
 </template>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
+import TeamModel from '@/store/models/team'
+
+const teamRepo = useRepo(TeamModel);
+
+
+
 const route = useRoute();
-const loading = ref(false);
+const loading = ref(true);
 const team = ref(null);
 onMounted(async () => {
     loading.value = true;
@@ -21,16 +26,28 @@ onMounted(async () => {
 
     const [t] = data;
 
-    const { id: teamId } = t;
+const {avatar_type, avatar_url, team_avatar, id, name, ...stats} = t;
 
-    const is_admin = !!useUserTeamStore().userTeams.find(
-        ({ id }) => id === teamId
-    )?.is_admin;
+const obj = {
+    avatar_type,
+    avatar_url,
+    team_avatar,
+    id,
+    name,
+    stats: [
+        {
+        ...stats,
+        team_id: id,
+        game_id: 0,
+ 
+    }
+    ]
+}
+teamRepo.save(obj)
+setTimeout(() => {
+  loading.value = false;
+}, 10)
 
-    team.value = {
-        ...t,
-        is_admin,
-    };
-    loading.value = false;
+  
 });
 </script>

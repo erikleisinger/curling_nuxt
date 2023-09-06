@@ -377,6 +377,7 @@ import { generateEnds } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
 import {views} from '@/constants/linescore'
+import team from "tests/__mock__/team";
 
 const dayjs = useDayjs();
 const $q = useQuasar();
@@ -599,6 +600,7 @@ const save = async () => {
     const scoreCopy = { ...score.value };
     const rinkCopy = rink.value;
     const sheetCopy = sheet.value;
+    const editedIdCopy = editedId.value;
 
     let shouldSendInvitation = false
 
@@ -623,7 +625,6 @@ const save = async () => {
         start_time: dayjs(start_time.value, "YYYY MM DD hh mm a").toISOString(),
         rink_id: rink.value?.id,
         sheet_id: sheetId,
-        verified: !shouldSendInvitation
     };
 
     if (!!params?.away?.id) {
@@ -632,38 +633,85 @@ const save = async () => {
         gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
     }
 
-    if (editedId.value) {
-        gameToCreate.id = editedId.value;
+    if (editedIdCopy) {
+        gameToCreate.id = editedIdCopy.value;
     }
 
-    const gameId = await createGame({
-        game: gameToCreate,
-        score: scoreCopy,
-    });
+    const gameId = await createGame(gameToCreate);
+    if (!gameId) return;
+    
 
-    await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
+    const ends = generateEnds(
+        scoreCopy,
+        gameToCreate?.hammer_first_end,
+        gameToCreate?.home,
+        shouldSendInvitation ? null : gameToCreate?.away,
+        gameId
+    );
+    await createEnds(ends, !!editedIdCopy)
+
+    await createTeamGameJunction({...gameToCreate, id: gameId}, shouldSendInvitation)
+
+    createGameStats(gameToCreate?.home, gameId)
+    createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId)
+    
+    
+
+    // await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
+  
 
     return navigateTo(`/games/${gameId}`)
 };
 
-const createGame = async ({ game, score }) => {
-    const gameStore = useGameStore();
-    const gameId = await gameStore.insertGame(game);
-    if (!gameId) return null;
-    const ends = generateEnds(
-        score,
-        game?.hammer_first_end,
-        game?.home,
-        game?.away,
-        gameId
-    );
-    if (editedId.value) {
+const createGameStats = async (team_id_param, game_id_param) => {
+    const client = useSupabaseClient()
+    const {data} = await client.rpc('get_team_game_statistics', {team_id_param, game_id_param})
+    const [stats] = data;
+    if (!stats) return;
+    const {errors} = await client.from('team_stats').insert({
+        ...stats,
+        team_id: team_id_param,
+        game_id: game_id_param
+    })
+    if(errors) console.error(errors)
+}
+
+const createTeamGameJunction = async (game, isPending) => {
+    const {id: game_id, home_color, away_color, home, away, placeholder_away} = game;
+    const {errors} = await useSupabaseClient().from('game_team_junction').insert([
+         {
+            game_id,
+            team_id: away,
+            color: away_color,
+            pending: isPending,
+            placeholder: placeholder_away
+        },
+        {
+            game_id,
+            team_id: home,
+            color: home_color,
+            pending: false,
+        },
+       
+        
+    ])
+}
+
+const createGame = async (game) => {
+    console.log(useGameStore())
+    const gameId = await useGameStore().insertGame(game);
+    return gameId;
+
+};
+
+const createEnds = async (ends, isEdited) => {
+        const gameStore = useGameStore();
+     if (isEdited) {
         await gameStore.bulkUpdateGameEnds(ends);
     } else {
         await gameStore.createGameEnds(ends);
     }
-    return gameId;
-};
+}
 
 /**
  * INIT

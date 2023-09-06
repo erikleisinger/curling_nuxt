@@ -3,7 +3,7 @@
         <div
             class="avatar-inner"
             :class="{
-                upload: avatarType === 'upload' && avatarUrl,
+                upload: avatarType === 'upload',
 
                 viewable,
             }"
@@ -166,12 +166,18 @@ const fetchAvatar = async (path) => {
 };
 
 const avatar = ref(null);
-const avatarType = ref(props.team.avatar_type || "avataaar");
+const avatarType = ref(!props.team.avatar_url ? "avataaar" : props.team_avatar_type);
 const loaded = ref(avatarType.value === "avataaar");
 
 const getAvatar = async () => {
-    if (avatarType.value === "upload" && props.team.avatar_url) {
-        fetchAvatar(props.team.avatar_url);
+    if (avatarType.value === "upload" ) {
+        if (props.team.avatar_url) {
+fetchAvatar(props.team.avatar_url);
+        } else {
+            avatarType.value = 'avataaar';
+            avatar.value = {}
+        }
+        
     } else {
         avatar.value = props.team.team_avatar;
     }

@@ -64,18 +64,7 @@ export const useGameStore = defineStore("games", {
                 this.games.splice(index, 1);
             }
         },
-        async fetchGames(force: boolean) {
-            if (this.games?.length && !force) return;
 
-            const { client, fetchHandler } = useSupabaseFetch();
-            const { data } = (await fetchHandler(
-                () => client.rpc("get_games"),
-                { onError: "Error getting games." }
-            )) as SupabaseGameReturn;
-            if (data) {
-                this.games = data ?? [];
-            }
-        },
         /**
          *
          * @param id - id of a game to fetch
