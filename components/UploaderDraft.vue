@@ -19,20 +19,21 @@
 import imageCompression from "browser-image-compression";
 import {useTeamStore} from '@/store/teams'
 import {useNotificationStore} from '@/store/notification'
+import Team from '@/store/models/team'
 const props = defineProps({
     emitOnly: Boolean,
     resourceType: String,
     resourceId: [Number, String],
 });
 
-const emit = defineEmits("upload");
+const emit = defineEmits(["upload"]);
 
 const uploading = ref(false);
 const src = ref("");
 const files = ref(null);
 const fileUpload = ref(null);
 
-const compressFile = async (file) => {
+const compressFile = async (file) => {  
     const options = {
         maxSizeMB: 0.029,
         maxWidthOrHeight: 300,
@@ -47,6 +48,7 @@ const compressFile = async (file) => {
 
 const handleUpload = async (e) => {
     uploading.value = true;
+    console.log('UPLOAD: ', props.emitOnly)
     if (props.emitOnly) {
         const file = await createFile(e)
         emit('upload', file)
@@ -89,7 +91,8 @@ const uploadAvatar = async (evt) => {
     try {
         const {path, file} = await createFile(evt)
         if (props.resourceType === "team") {
-                 await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
+            const {updates} = await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
+            useRepo(Team).where('id', props.resourceId).update(updates)
         }
         notStore.updateNotification(notId, {
             state: "completed",

@@ -7,6 +7,7 @@
 
                 viewable,
             }"
+            :style="{height: teamId === null ? '100%' : 'unset'}"
             @click="clickAvatar"
             ref="innerContainer"
         >
@@ -32,7 +33,7 @@
            
             <div class="inner-wrap">
 
-                <UploaderDraft v-if="editable && visible" style="z-index: 10" @upload="emit('update')"/>
+                <UploaderDraft v-if="editable && visible" style="z-index: 10" @upload="emit('update', $event)" :emitOnly="create"/>
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
                         v-if="avatarType === 'upload' && avatarUrl"
@@ -60,10 +61,12 @@
 .avatar-outer__container {
     position: relative;
     margin-top: -16%;
+    height: 100%;
 
     .avatar-inner {
         transition: transform 0.3s;
         position: relative;
+        // height: 100%;
 
         &.upload {
             padding-top: 16%;
@@ -143,6 +146,7 @@ import { onClickOutside, useElementHover } from "@vueuse/core";
 import Team from '@/store/models/team'
 const props = defineProps({
     color: String,
+    create: Boolean,
     editable: Boolean,
     invitable: Boolean,
     teamId: Number,
@@ -167,7 +171,7 @@ const avatarType = computed(() => {
     if (team.value.avatar_type === 'upload') {
         return team.value.avatar_url ? 'upload' : 'avataaar'
     }
-    return team.value.avatar_type
+    return team.value.avatar_type ?? 'avataaar'
 })
 
 const fetchAvatar = async (path) => {

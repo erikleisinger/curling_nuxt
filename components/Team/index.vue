@@ -78,150 +78,274 @@
                     </q-btn-toggle>
                 </div>
                 <div
-                    class="row no-wrap"
+                    class="row no-wrap full-width"
                     :class="{
                         'justify-between': !!comparisonTeam,
                         'justify-center': !comparisonTeam,
-                        'col-12': !!comparisonTeam || $q.screen.xs,
-                        'col-6': !comparisonTeam && !$q.screen.xs,
+                        'col-12': !comparisonTeam,
                     }"
                 >
-                    <div
-                        class="column team__header items-center"
+                    <TeamProfile
+                        :teamId="teamId"
+                        :canEdit="isAuthorized && !headToHead"
+                        :showPlayers="!headToHead"
                         :class="comparisonTeam ? 'col-6' : 'col-12'"
                     >
-                        <div class="avatar__container q-mb-sm">
-                            <TeamAvatar
-                                :teamId="teamId"
-                                :viewable="false"
-                                :editable="isAuthorized"
-                            />
-                        </div>
-
-                        <div class="column items-center">
-                            <div class="text-sm">Team</div>
-                            <TeamName
-                                :canEdit="isAuthorized && !headToHead"
-                                :teamId="team.id"
-                            />
-                            <!-- <div class="row items-center">
-                                <q-icon class="text-sm" name="home" color="grey-8"/>
-                            <h2 class="text-sm">St. Vital Curling Club</h2>
-                            </div> -->
-                        </div>
-                    </div>
-
-                    <div
-                        class="column team__header items-center col-6"
-                        v-if="comparisonTeam"
-                    >
-                        <div class="avatar__container q-mb-sm">
-                            <LazyTeamAvatar :teamId="comparisonTeam?.id" />
-                        </div>
-
-                        <div class="column items-center">
-                            <div class="text-sm">Team</div>
-                            <h2
-                                class="text-sm text-bold text-center"
-                                style="white-space: nowrap"
+                        <div class="row justify-around col-12 q-mt-md">
+                            <TeamAttribute
+                                title="Games played"
+                                icon="track_changes"
+                                color="primary"
+                                class="col-5"
+                                v-memo="[team?.games_played, team.games_played]"
                             >
-                                {{ comparisonTeam.name }}
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-around col-12 q-mt-md">
-                    <TeamAttribute
-                        title="Games played"
-                        icon="track_changes"
-                        color="primary"
-                        class="col-5"
-                        v-memo="[team?.games_played, team.games_played]"
-                    >
-                        <div class="row no-wrap items-center">
-                            <div>
-                                {{
-                                    headToHead
-                                        ? comparisonTeam?.games_played
-                                        : team.games_played
-                                }}
-                            </div>
-                            <h2
-                                class="text-xs text-underline clickable q-pl-sm"
-                                style="margin-top: 1px"
-                                @click="browseGames"
-                                v-if="teamViewMode !== 'total'"
+                                <div class="row no-wrap items-center">
+                                    <div>
+                                        {{
+                                            headToHead
+                                                ? comparisonTeam?.games_played
+                                                : team.games_played
+                                        }}
+                                    </div>
+                                    <h2
+                                        class="text-xs text-underline clickable q-pl-sm"
+                                        style="margin-top: 1px"
+                                        @click="browseGames"
+                                        v-if="teamViewMode !== 'total'"
+                                    >
+                                        Browse
+                                    </h2>
+                                </div>
+                            </TeamAttribute>
+                            <LazyTeamAttribute
+                                title="Win percentage"
+                                color="amber"
+                                icon="emoji_events"
+                                class="col-5"
+                                v-if="!headToHead"
                             >
-                                Browse
-                            </h2>
-                        </div>
-                    </TeamAttribute>
-                    <LazyTeamAttribute
-                        title="Head to head"
-                        color="red"
-                        icon="leaderboard"
-                        class="col-5"
-                        v-if="headToHead"
-                    >
-                        <div class="row items-center" v-if="typeof comparisonTeam.win === 'number' && typeof team.win === 'number'">
-                            <div class="q-mr-xs" >
-                                <span v-if="team.win !== comparisonTeam?.win">
-                                    +{{
-                                        Math.abs(
-                                            team?.win - comparisonTeam?.win
-                                        )
-                                    }}
+                                <span v-if="team.games_played">
+                                    {{
+                                        headToHead
+                                            ? getStatPercent(
+                                                  team.win,
+                                                  team.games_played
+                                              )
+                                            : getStatPercent(
+                                                  team.win,
+                                                  team.games_played
+                                              )
+                                    }}%
                                 </span>
+                                <span v-else>-</span>
 
-                                <span v-else>Even</span>
-                            </div>
-                            <div
-                                style="height: 1em; width: 1em"
-                                v-if="team?.win !== comparisonTeam?.win"
-                            >
-                                <LazyTeamAvatar
-                                    :teamId="
-                                        team?.win > comparisonTeam?.win
-                                            ? team?.id
-                                            : comparisonTeam?.id
+                                <span
+                                    class="text-xs text-regular text-grey-8"
+                                    v-if="
+                                        (headToHead && team.tie) ||
+                                        (!headToHead && team.tie)
                                     "
-                                />
-                            </div>
-                        </div>
-                        <div style="visibility: hidden" v-else>
-                            -
-                        </div>
-                    
-                        <template v-slot:tooltip>
-                            <q-tooltip v-if="$q.platform.is.desktop">
-                                <div v-if="!!team && !!comparisonTeam">
-                                    <div>
-                                        <span class="text-bold">{{
-                                            team.name
+                                    >({{
+                                        headToHead
+                                            ? getStatPercent(
+                                                  team.tie,
+                                                  team.games_played
+                                              )
+                                            : getStatPercent(
+                                                  team.tie,
+                                                  team.games_played
+                                              )
+                                    }}% tie)</span
+                                >
+                            </LazyTeamAttribute>
+                            <LazyTeamAttribute
+                                title="Points per game"
+                                v-if="!comparisonTeam"
+                                class="col-5"
+                                icon="o_looks_one"
+                                color="blue"
+                            >
+                                <span v-if="team.games_played">
+                                    {{
+                                        `${
+                                            team.points_for /
+                                                team.games_played -
+                                                team.points_against /
+                                                    team.games_played >
+                                            0
+                                                ? "+"
+                                                : ""
+                                        }${(
+                                            team.points_for /
+                                                team.games_played -
+                                            team.points_against /
+                                                team.games_played
+                                        ).toFixed(1)}`
+                                    }}
+                                    <span
+                                        class="text-xs text-regular text-grey-8"
+                                        >{{
+                                            `(${(
+                                                team.points_for /
+                                                team.games_played
+                                            ).toFixed(1)} - ${(
+                                                team.points_against /
+                                                team.games_played
+                                            ).toFixed(1)})`
                                         }}</span
-                                        >: {{ team.win }} wins
-                                    </div>
-                                    <div>
-                                        <span class="text-bold">{{
-                                            comparisonTeam.name
+                                    >
+                                </span>
+                                <span v-else>-</span>
+                            </LazyTeamAttribute>
+                            <LazyTeamAttribute
+                                v-if="!comparisonTeam"
+                                title="Ends per game"
+                                class="col-5"
+                                color="blue"
+                                icon="filter_1"
+                            >
+                                <span v-if="team.games_played">
+                                    {{
+                                        `${
+                                            team.ends_for / team.games_played -
+                                                team.ends_against /
+                                                    team.games_played >
+                                            0
+                                                ? "+"
+                                                : ""
+                                        }${(
+                                            team.ends_for / team.games_played -
+                                            team.ends_against /
+                                                team.games_played
+                                        ).toFixed(1)}`
+                                    }}
+                                    <span
+                                        class="text-xs text-regular text-grey-8"
+                                        >{{
+                                            `(${(
+                                                team.ends_for /
+                                                team.games_played
+                                            ).toFixed(1)} - ${(
+                                                team.ends_against /
+                                                team.games_played
+                                            ).toFixed(1)})`
                                         }}</span
-                                        >: {{ comparisonTeam.win }} wins
-                                    </div>
-                                    <div>
-                                        <span class="text-bold">Ties</span>:
-                                        {{ team.tie }}
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    {{ team.name }} and
-                                    {{ comparisonTeam.name }} have played no
-                                    games.
-                                </div>
-                            </q-tooltip>
-                        </template>
-                    </LazyTeamAttribute>
+                                    >
+                                </span>
+                                <span v-else>-</span>
 
-                    <LazyTeamAttribute
+                                <template v-slot:tooltip>
+                                    <q-tooltip v-if="$q.platform.is.desktop">
+                                        <div>
+                                            <span class="text-bold"
+                                                >Avg ends won:
+                                            </span>
+                                            {{
+                                                (
+                                                    team.ends_for /
+                                                    team.games_played
+                                                ).toFixed(1)
+                                            }}
+                                        </div>
+                                        <div>
+                                            <span class="text-bold"
+                                                >Avgs ends lost:
+                                            </span>
+                                            {{
+                                                (
+                                                    team.ends_against /
+                                                    team.games_played
+                                                ).toFixed(1)
+                                            }}
+                                        </div>
+                                    </q-tooltip>
+                                </template>
+                            </LazyTeamAttribute>
+                        </div>
+                    </TeamProfile>
+                    <TeamProfile
+                        v-if="comparisonTeam"
+                        :teamId="comparisonTeam?.id"
+                        class="col-6"
+                    >
+                         <div class="row justify-around col-12 q-mt-md">
+                            <LazyTeamAttribute
+                                title="Head to head"
+                                color="red"
+                                icon="leaderboard"
+                                class="col-5"
+                                v-if="headToHead"
+                            >
+                                <div
+                                    class="row items-center"
+                                    v-if="
+                                        typeof comparisonTeam.win ===
+                                            'number' &&
+                                        typeof team.win === 'number'
+                                    "
+                                >
+                                    <div class="q-mr-xs">
+                                        <span
+                                            v-if="
+                                                team.win !== comparisonTeam?.win
+                                            "
+                                        >
+                                            +{{
+                                                Math.abs(
+                                                    team?.win -
+                                                        comparisonTeam?.win
+                                                )
+                                            }}
+                                        </span>
+
+                                        <span v-else>Even</span>
+                                    </div>
+                                    <div
+                                        style="height: 1em; width: 1em"
+                                        v-if="team?.win !== comparisonTeam?.win"
+                                    >
+                                        <LazyTeamAvatar
+                                            :teamId="
+                                                team?.win > comparisonTeam?.win
+                                                    ? team?.id
+                                                    : comparisonTeam?.id
+                                            "
+                                        />
+                                    </div>
+                                </div>
+                                <div style="visibility: hidden" v-else>-</div>
+
+                                <template v-slot:tooltip>
+                                    <q-tooltip v-if="$q.platform.is.desktop">
+                                        <div v-if="!!team && !!comparisonTeam">
+                                            <div>
+                                                <span class="text-bold">{{
+                                                    team.name
+                                                }}</span
+                                                >: {{ team.win }} wins
+                                            </div>
+                                            <div>
+                                                <span class="text-bold">{{
+                                                    comparisonTeam.name
+                                                }}</span
+                                                >: {{ comparisonTeam.win }} wins
+                                            </div>
+                                            <div>
+                                                <span class="text-bold"
+                                                    >Ties</span
+                                                >:
+                                                {{ team.tie }}
+                                            </div>
+                                        </div>
+                                        <div v-else>
+                                            {{ team.name }} and
+                                            {{ comparisonTeam.name }} have
+                                            played no games.
+                                        </div>
+                                    </q-tooltip>
+                                </template>
+                            </LazyTeamAttribute>
+                             <LazyTeamAttribute
                         title="Games played"
                         icon="track_changes"
                         color="primary"
@@ -234,47 +358,7 @@
                                 : comparisonTeam.games_played
                         }}
                     </LazyTeamAttribute>
-                    <LazyTeamAttribute
-                        title="Win percentage"
-                        color="amber"
-                        icon="emoji_events"
-                        class="col-5"
-                        v-if="!headToHead"
-                    >
-                        <span v-if="team.games_played">
-                            {{
-                                headToHead
-                                    ? getStatPercent(
-                                          team.win,
-                                          team.games_played
-                                      )
-                                    : getStatPercent(
-                                          team.win,
-                                          team.games_played
-                                      )
-                            }}%
-                        </span>
-                        <span v-else>-</span>
 
-                        <span
-                            class="text-xs text-regular text-grey-8"
-                            v-if="
-                                (headToHead && team.tie) ||
-                                (!headToHead && team.tie)
-                            "
-                            >({{
-                                headToHead
-                                    ? getStatPercent(
-                                          team.tie,
-                                          team.games_played
-                                      )
-                                    : getStatPercent(
-                                          team.tie,
-                                          team.games_played
-                                      )
-                            }}% tie)</span
-                        >
-                    </LazyTeamAttribute>
                     <LazyTeamAttribute
                         title="Win percentage"
                         color="amber"
@@ -313,147 +397,14 @@
                             }}%)</span
                         >
                     </LazyTeamAttribute>
-                    <LazyTeamAttribute
-                        title="Points per game"
-                        v-if="!comparisonTeam"
-                        class="col-5"
-                        icon="o_looks_one"
-                        color="blue"
-                    >
-                        <span v-if="team.games_played">
-                            {{
-                                `${
-                                    team.points_for / team.games_played -
-                                        team.points_against /
-                                            team.games_played >
-                                    0
-                                        ? "+"
-                                        : ""
-                                }${(
-                                    team.points_for / team.games_played -
-                                    team.points_against / team.games_played
-                                ).toFixed(1)}`
-                            }}
-                            <span class="text-xs text-regular text-grey-8">{{
-                                `(${(
-                                    team.points_for / team.games_played
-                                ).toFixed(1)} - ${(
-                                    team.points_against / team.games_played
-                                ).toFixed(1)})`
-                            }}</span>
-                        </span>
-                        <span v-else>-</span>
-                    </LazyTeamAttribute>
-                    <LazyTeamAttribute
-                        v-if="!comparisonTeam"
-                        title="Ends per game"
-                        class="col-5"
-                        color="blue"
-                        icon="filter_1"
-                    >
-                        <span v-if="team.games_played">
-                            {{
-                                `${
-                                    team.ends_for / team.games_played -
-                                        team.ends_against / team.games_played >
-                                    0
-                                        ? "+"
-                                        : ""
-                                }${(
-                                    team.ends_for / team.games_played -
-                                    team.ends_against / team.games_played
-                                ).toFixed(1)}`
-                            }}
-                            <span class="text-xs text-regular text-grey-8">{{
-                                `(${(team.ends_for / team.games_played).toFixed(
-                                    1
-                                )} - ${(
-                                    team.ends_against / team.games_played
-                                ).toFixed(1)})`
-                            }}</span>
-                        </span>
-                        <span v-else>-</span>
-
-                        <template v-slot:tooltip>
-                            <q-tooltip v-if="$q.platform.is.desktop">
-                                <div>
-                                    <span class="text-bold"
-                                        >Avg ends won:
-                                    </span>
-                                    {{
-                                        (
-                                            team.ends_for / team.games_played
-                                        ).toFixed(1)
-                                    }}
-                                </div>
-                                <div>
-                                    <span class="text-bold"
-                                        >Avgs ends lost:
-                                    </span>
-                                    {{
-                                        (
-                                            team.ends_against /
-                                            team.games_played
-                                        ).toFixed(1)
-                                    }}
-                                </div>
-                            </q-tooltip>
-                        </template>
-                    </LazyTeamAttribute>
+                        </div>
+                    </TeamProfile>
                 </div>
-                <!-- Comparison stats -->
-                <div
-                    class="row full-width justify-around"
-                    v-if="(comparisonTeam || team) && headToHead"
-                ></div>
+
             </header>
 
             <main class="main__content">
-                <!-- Team players -->
-
-                <div v-if="!comparisonTeam">
-                    <TeamPlayerList
-                        :teamId="team.id"
-                        :showPending="isAuthorized"
-                        @loaded="showGames = true"
-                    >
-                        <template
-                            v-slot:title="{ editing, setEditing, loading }"
-                        >
-                            <div class="row justify-between items-end q-my-sm">
-                                <div class="row items-center">
-                                    <q-icon
-                                        name="groups_2"
-                                        color="primary"
-                                        class="text-md q-mr-sm"
-                                    />
-                                    <h2 class="text-md text-bold">
-                                        Team members
-                                    </h2>
-
-                                    <q-circular-progress
-                                        v-if="loading"
-                                        indeterminate
-                                        color="primary"
-                                        class="q-ml-sm"
-                                    />
-                                </div>
-                                <div v-if="isAuthorized">
-                                    <q-btn
-                                        :icon="editing ? 'close' : 'edit'"
-                                        flat
-                                        round
-                                        dense
-                                        :color="editing ? 'blue' : 'grey-7'"
-                                        padding="4px"
-                                        @click="setEditing(!editing)"
-                                    />
-                                </div>
-                            </div>
-                            <q-separator />
-                        </template>
-                    </TeamPlayerList>
-                </div>
+     
 
                 <div>
                     <!-- BADGES -->
@@ -824,9 +775,8 @@ const onSelect = async ({ id }) => {
     if (currentRoute.value.query.opponent) {
         loadComparison();
     } else {
- navigateTo(`?opponent=${id}`);
+        navigateTo(`?opponent=${id}`);
     }
-   
 };
 
 const gamesContainer = ref(null);
@@ -929,7 +879,6 @@ const respondToRequest = async (response) => {
     useUserTeamStore().fetchUserTeams(true);
     if (!!response) getPlayers();
 };
-
 </script>
 <script>
 export default {

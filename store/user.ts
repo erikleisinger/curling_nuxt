@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/notification";
+import Player from '@/store/models/player'
 export const useUserStore = defineStore("user", {
     state: () => {
         return {
@@ -46,6 +47,7 @@ export const useUserStore = defineStore("user", {
             const [user] = data;
             if (!user) return;
             Object.assign(this, user);
+            useRepo(Player).save(user)
             // await this.getUserTeams();
         },
         async getUserTeams() {

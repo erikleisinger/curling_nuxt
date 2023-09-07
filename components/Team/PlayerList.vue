@@ -14,10 +14,16 @@
             :editing="editing"
             @cancelInvitation="cancelRequest"
             @removePlayer="playerToRemove = $event"
-            v-memo="[player?.first_name, player?.last_name, player?.username, editing, player?.position]"
+            v-memo="[
+                player?.first_name,
+                player?.last_name,
+                player?.username,
+                editing,
+                player?.position,
+            ]"
             :teamId="teamId"
         />
-        <TeamPlayer v-if="editing" editing>
+        <TeamPlayer v-if="create || editing" editing>
             <div
                 class="full-height full-width row justify-center items-center no-wrap"
                 v-ripple
@@ -28,7 +34,7 @@
                             inputLabel: 'Search for a user to invite',
                             resourceTypes: ['profile'],
                             filterIds: players.map(({ id }) => id),
-                            callback: inviteUser,
+                            callback: onSearchSelect,
                         },
                     })
                 "
@@ -102,38 +108,42 @@ const { deleteTeamRequest, sendTeamRequest, updateTeamRequestStatus } =
 const { toggleGlobalSearch } = useDialogStore();
 
 const props = defineProps({
+    create: Boolean,
     showPending: Boolean,
     teamId: Number,
 });
-const emit = defineEmits(['loaded'])
+const emit = defineEmits(["loaded", "update"]);
 
 const players = computed(() => {
-    const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
-    return p.map(({ player, status, position }) => ({
-        ...player,
-        status,
-        position
-    }));
+        const p = useRepo(TP)
+            .with("player")
+            .where("team_id", props.teamId)
+            .get();
+        return p.map(({ player, status, position }) => ({
+            ...player,
+            status,
+            position,
+        }));
+    
 });
 const getPlayers = async () => {
     loading.value = true;
     const { getTeamPlayers } = useTeam();
     await getTeamPlayers(props.teamId, props.showPending);
     loading.value = false;
-    emit('loaded')
-    
+    emit("loaded");
 };
 
 const loading = ref(false);
 
 onMounted(() => {
+    if (props.create) return;
     nextTick(() => {
-  getPlayers();
-    })
-  
+        getPlayers();
+    });
 });
 
-const editing = ref(false);
+const editing = ref(props.create);
 const setEditing = (bool) => {
     editing.value = bool;
 };
@@ -162,6 +172,20 @@ const inviteUser = async (user) => {
         avatar: user.avatar ? JSON.parse(user.avatar) : {},
     };
     players.value.push(newUser);
+};
+
+const onSearchSelect = (user) => {
+    if (props.create) {
+        const formattedUser = {
+            ...user,
+            id: user.profile_id,
+            username: user.name
+        }
+        useRepo(Player).save(formattedUser)
+        emit("update", [...players.value, formattedUser]);
+    } else {
+        inviteUser(user);
+    }
 };
 
 const cancelRequest = async (id) => {

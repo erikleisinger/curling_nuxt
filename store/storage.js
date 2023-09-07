@@ -36,6 +36,9 @@ export const useStorageStore = defineStore("storage", {
        
     },
     actions: {
+        addAvatar(blob, teamId) {
+            this.teamAvatars[teamId] = URL.createObjectURL(blob)
+        },
         getTeamAvatar(teamId, avatarUrl) {
             this.fetchQueue.push({teamId, avatarUrl})
             if (!this.fetching) {
@@ -43,6 +46,9 @@ export const useStorageStore = defineStore("storage", {
             }
 
         },
+        removeAvatar(teamId) {
+            delete this.teamAvatars[teamId]
+        },  
         setFetch(bool) {
             this.fetching = bool;
         }

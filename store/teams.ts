@@ -413,10 +413,11 @@ export const useTeamStore = defineStore("team", {
                 return false;
             }
 
-            const { errors: errors2 } = await client
+            const { data, errors: errors2 } = await client
                 .from("teams")
                 .update({ avatar_type: "upload", avatar_url: fileName })
-                .eq("id", teamId);
+                .eq("id", teamId)
+                .select('avatar_url')
 
             if (errors2) {
                 notStore.updateNotification(notId, {
@@ -429,7 +430,8 @@ export const useTeamStore = defineStore("team", {
                     state: "completed",
                     text: `Avatar uploaded!`,
                 });
-                return true;
+                const [updates] = data;
+                return updates;
             }
         },
     },

@@ -1,13 +1,13 @@
 <template>
     <div style="position: relative">
-        <h2 class="text-sm text-bold text-center" v-if="!editing">
+        <h2 class="text-sm text-bold text-center" v-if="!editing && !create">
             {{ name }}
         </h2>
         <q-input
             dense
             rounded
             outlined
-            label="Update team name"
+            :label="create ? 'Enter team name' : 'Update team name'"
             v-model="editedName"
             autofocus
             :maxlength="MAX_TEAM_NAME_LENGTH"
@@ -23,6 +23,7 @@
                     padding="2px"
                     @click="toggleEdit(false)"
                     :disable="saving"
+                      v-if="!create"
                 />
             </template>
             <template v-slot:after>
@@ -34,10 +35,11 @@
                     padding="2px"
                     @click="saveName"
                     :loading="saving"
+                    v-if="!create"
                 />
             </template>
         </q-input>
-        <div class="edit--floating" v-if="canEdit && !editing">
+        <div class="edit--floating" v-if="!create && canEdit && !editing">
             <q-btn
                 flat
                 round
@@ -59,11 +61,15 @@
 </style>
 <script setup>
 import {MAX_TEAM_NAME_LENGTH} from '@/constants/validation'
+import {watchDebounced} from '@vueuse/core'
 import Team from "@/store/models/team";
 const props = defineProps({
     canEdit: Boolean,
+    create: Boolean,
     teamId: Number,
 });
+
+const emit = defineEmits(['update'])
 
 const name = computed(() => useRepo(Team).where('id', props.teamId).first()?.name || 'Unnamed team')
 
@@ -79,6 +85,10 @@ const toggleEdit = (open) => {
 
     editing.value = open;
 };
+
+watchDebounced(editedName, (val) => {
+    emit('update', val)
+}, {debounce: 200})
 
 const saving = ref(false);
 

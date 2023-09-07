@@ -12,8 +12,8 @@
                 <span v-if="!player.status">
                 {{ positions[player.position]?.name ?? "Member" }}
                 </span>
-                <span v-else>
-                    Invitation sent
+                <span v-else-if="player.status === 'pending'">
+                Invitation sent
                 </span>
             </div>
         </div>
