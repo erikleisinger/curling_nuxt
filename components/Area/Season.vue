@@ -33,7 +33,7 @@
                                     rounded
                                     color="primary"
                                     icon="add"
-                                    @click="toggleTeamViewer({ open: true })"
+                                    to="/teams/create"
                                     no-wrap
                                     ref="buttonOption"
                                     style="width: fit-content"
