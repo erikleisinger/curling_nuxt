@@ -1,15 +1,22 @@
 <template>
-    <slot name="title" :editing="editing" :setEditing="setEditing" />
+    <slot
+        name="title"
+        :editing="editing"
+        :setEditing="setEditing"
+        :loading="loading"
+    />
+
     <div class="row">
-        <LazyTeamPlayer
-            v-for="player in playerList"
+        <TeamPlayer
+            v-for="player in players"
             :key="player.id"
             :player="player"
             :editing="editing"
             @cancelInvitation="cancelRequest"
             @removePlayer="playerToRemove = $event"
+            v-memo="[player?.first_name, player?.last_name, player?.username]"
         />
-        <LazyTeamPlayer v-if="editing" editing>
+        <TeamPlayer v-if="editing" editing>
             <div
                 class="full-height full-width row justify-center items-center no-wrap"
                 v-ripple
@@ -19,7 +26,7 @@
                         options: {
                             inputLabel: 'Search for a user to invite',
                             resourceTypes: ['profile'],
-                            filterIds: playerList.map(({ id }) => id),
+                            filterIds: players.map(({ id }) => id),
                             callback: inviteUser,
                         },
                     })
@@ -28,9 +35,9 @@
                 <q-icon name="add" color="blue" size="1.2em" />
                 Invite player
             </div>
-        </LazyTeamPlayer>
+        </TeamPlayer>
     </div>
-        <LazyDialogConfirmation
+    <LazyDialogConfirmation
         v-if="!!playerToRemove"
         confirmButtonText="Remove from team"
         cancelButtonText="Cancel"
@@ -39,7 +46,8 @@
         cancelColor=""
         confirmColor="negative"
     >
-       Are you sure you want to remove {{playerToRemove.first_name}} {{playerToRemove.last_name}} from the team? 
+        Are you sure you want to remove {{ playerToRemove.first_name }}
+        {{ playerToRemove.last_name }} from the team?
     </LazyDialogConfirmation>
 </template>
 <style lang="scss" scoped>
@@ -83,58 +91,45 @@
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useDialogStore } from "@/store/dialog";
 import { toRef } from "@vueuse/core";
+import { TEAM_POSITIONS } from "@/constants/team";
+import Player from "@/store/models/player";
+import TP from "@/store/models/team-player";
+import Team from "@/store/models/team";
 
 const { deleteTeamRequest, sendTeamRequest, updateTeamRequestStatus } =
     useTeamRequestStore();
 const { toggleGlobalSearch } = useDialogStore();
 
 const props = defineProps({
-    players: Array,
+    showPending: Boolean,
     teamId: Number,
 });
+const emit = defineEmits(['loaded'])
 
-const positions = {
-    lead: {
-        name: "Lead",
-        icon: "looks_one",
-        value: "lead",
-    },
-    second: {
-        name: "Second",
-        icon: "looks_two",
-        value: "second",
-    },
-    third: {
-        name: "Third",
-        icon: "looks_three",
-        value: "third",
-    },
-    fourth: {
-        name: "Fourth",
-        icon: "looks_four",
-        value: "fourth",
-    },
-    fifth: {
-        name: "Fifth",
-        icon: "looks_five",
-        value: "fifth",
-    },
-    coach: {
-        name: "Coach",
-        icon: "assignment",
-        value: "coach",
-    },
-    alternate: {
-        name: "Alternate",
-        icon: "exposure_zero",
-        value: "alternate",
-    },
-    skip: {
-        name: "Skip",
-        icon: "psychology",
-        value: "skip",
-    },
+const players = computed(() => {
+    const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
+    return p.map(({ player, status }) => ({
+        ...player,
+        status,
+    }));
+});
+const getPlayers = async () => {
+    loading.value = true;
+    const { getTeamPlayers } = useTeam();
+    await getTeamPlayers(props.teamId, props.showPending);
+    loading.value = false;
+    emit('loaded')
+    
 };
+
+const loading = ref(false);
+
+onMounted(() => {
+    nextTick(() => {
+  getPlayers();
+    })
+  
+});
 
 const editing = ref(false);
 const setEditing = (bool) => {
@@ -164,18 +159,18 @@ const inviteUser = async (user) => {
         username: user.name,
         avatar: user.avatar ? JSON.parse(user.avatar) : {},
     };
-    playerList.value.push(newUser);
+    players.value.push(newUser);
 };
 
 const cancelRequest = async (id) => {
     const success = await deleteTeamRequest(id);
     if (!success) return;
-    const index = playerList.value.findIndex(({ rowId }) => rowId === id);
+    const index = players.value.findIndex(({ rowId }) => rowId === id);
     if (index === -1) return;
-    playerList.value.splice(index, 1);
+    players.value.splice(index, 1);
 };
 
-const playerToRemove = ref(null)
+const playerToRemove = ref(null);
 
 const removePlayer = async () => {
     const { error } = await useSupabaseClient()
@@ -185,25 +180,32 @@ const removePlayer = async () => {
         .eq("profile_id", playerToRemove.value?.id);
 
     if (error) return;
-    const index = playerList.value.findIndex(({ id }) => playerToRemove.value?.id === id);
+    const index = players.value.findIndex(
+        ({ id }) => playerToRemove.value?.id === id
+    );
     if (index === -1) return;
 
-    playerList.value.splice(index, 1);
+    players.value.splice(index, 1);
 };
 
 const closeRemovePlayerDialog = () => {
     setTimeout(() => {
         playerToRemove.value = null;
-    }, 200)
-}
+    }, 200);
+};
 
-const playerList = ref([]);
+// const players = ref([]);
 
-watch(
-    () => props.players,
-    () => {
-        playerList.value = [...props.players];
-    },
-    { immediate: true }
-);
+// watch(
+//     () => props.players,
+//     () => {
+//         players.value = [...props.players];
+//     },
+//     { immediate: true }
+// );
+</script>
+<script>
+export default {
+    name: "TeamPlayers",
+};
 </script>

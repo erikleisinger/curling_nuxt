@@ -46,7 +46,7 @@
                                     inputLabel: 'Search for a team to compare',
                                     resourceTypes: ['team'],
                                     callback: onSelect,
-                                    filterIds: [team.id],
+                                    filterIds: [teamId],
                                 },
                             })
                         "
@@ -93,7 +93,7 @@
                     >
                         <div class="avatar__container q-mb-sm">
                             <TeamAvatar
-                                :team="team"
+                                :teamId="teamId"
                                 :viewable="false"
                                 :editable="isAuthorized"
                                 @update="editAvatar"
@@ -102,7 +102,10 @@
 
                         <div class="column items-center">
                             <div class="text-sm">Team</div>
-                           <TeamName :name="team.name" :canEdit="isAuthorized" :teamId="team.id"/>
+                            <TeamName
+                                :canEdit="isAuthorized"
+                                :teamId="team.id"
+                            />
                             <!-- <div class="row items-center">
                                 <q-icon class="text-sm" name="home" color="grey-8"/>
                             <h2 class="text-sm">St. Vital Curling Club</h2>
@@ -115,7 +118,7 @@
                         v-if="comparisonTeam"
                     >
                         <div class="avatar__container q-mb-sm">
-                            <LazyTeamAvatar :team="comparisonTeam" />
+                            <LazyTeamAvatar :teamId="comparisonTeam?.id" />
                         </div>
 
                         <div class="column items-center">
@@ -183,10 +186,10 @@
                                 v-if="h2hTeam?.win !== h2hOpposition?.win"
                             >
                                 <LazyTeamAvatar
-                                    :team="
+                                    :teamId="
                                         h2hTeam?.win > h2hOpposition?.win
-                                            ? h2hTeam
-                                            : h2hOpposition
+                                            ? h2hTeam?.id
+                                            : h2hOpposition?.id
                                     "
                                 />
                             </div>
@@ -411,8 +414,14 @@
                 <!-- Team players -->
 
                 <div v-if="!comparisonTeam">
-                    <TeamPlayerList :players="players" :teamId="team.id">
-                        <template v-slot:title="{ editing, setEditing }">
+                    <TeamPlayerList
+                        :teamId="team.id"
+                        :showPending="isAuthorized"
+                        @loaded="onPlayerLoad"
+                    >
+                        <template
+                            v-slot:title="{ editing, setEditing, loading }"
+                        >
                             <div class="row justify-between items-end q-my-sm">
                                 <div class="row items-center">
                                     <q-icon
@@ -423,6 +432,13 @@
                                     <h2 class="text-md text-bold">
                                         Team members
                                     </h2>
+
+                                    <q-circular-progress
+                                        v-if="loading"
+                                        indeterminate
+                                        color="primary"
+                                        class="q-ml-sm"
+                                    />
                                 </div>
                                 <div v-if="isAuthorized">
                                     <q-btn
@@ -493,13 +509,20 @@
 
                     <div class="stats-view__container">
                         <TeamStatsView
-                            :team="headToHead ? h2hTeam : team"
-                            v-if="team"
+                            :teamId="headToHead ? h2hTeam.id : team.id"
                             key="stats"
                             viewerHeight="400px"
-                            :oppositionTeam="
-                                headToHead ? h2hOpposition : comparisonTeam
+                            :oppositionId="
+                                headToHead
+                                    ? h2hOpposition?.id
+                                    : comparisonTeam?.id
                             "
+                            v-memo="[
+                                team?.id,
+                                h2hTeam?.id,
+                                h2hOpposition?.id,
+                                comparisonTeam?.id,
+                            ]"
                         >
                         </TeamStatsView>
                     </div>
@@ -546,8 +569,8 @@
                             />
                         </div>
                         <q-separator />
-                        <div class="stats-view__container">
-                            <div
+                        <div class="stats-view__container" v-if="showGames">
+                            <!-- <div
                                 v-if="!recordLoaded || gettingRecord"
                                 class="q-pa-sm row justify-center items-center"
                             >
@@ -555,20 +578,10 @@
                                     indeterminate
                                     color="primary"
                                 />
-                            </div>
-                            <div v-else-if="!games.length">
-                                <div
-                                    class="row full-width justify-center q-pa-md"
-                                >
-                                    {{ team.name }} has played no games.
-                                </div>
-                            </div>
+                            </div> -->
 
-                            <div v-else class="game-history__container">
-                                <GameResultList
-                                    :results="games"
-                                    :home="team.id"
-                                />
+                            <div class="game-history__container">
+                                <LazyGameResultList :teamId="teamId" />
                             </div>
                         </div>
                     </div>
@@ -688,20 +701,28 @@ const teamId = Number.parseInt(currentRoute.value.params.id);
 
 const team = computed(() => {
     const t = useRepo(Team).with("stats").where("id", teamId).first() || {};
+    const [stats] = t.stats;
+    const {
+        games_played,
+        points_for,
+        points_against,
+        ends_for,
+        ends_against,
+        win,
+        loss,
+        tie,
+    } = stats;
     return {
         ...t,
-        ...t.totalStats,
+        games_played,
+        points_for,
+        points_against,
+        ends_for,
+        ends_against,
+        win,
+        loss,
+        tie,
     };
-});
-
-const games = computed(() => {
-    const g = useRepo(Game)
-        .with("teams")
-        .whereHas("teams", (q) => {
-            q.where("team_id", team.value.id);
-        })
-        .get();
-    return g;
 });
 
 const { getStatPercent } = useConvert();
@@ -709,12 +730,19 @@ const { getStatPercent } = useConvert();
 const index = ref(0);
 
 const { hasBadge } = useBadge();
-const badges = ref(
-    Object.keys(BADGE_FIELDS).reduce((all, key) => {
-        if (hasBadge(null, key, team.value)) return [...all, key];
+const badges = ref([]);
+
+const calculateBadges = () => {
+    const [stats] = team.value?.stats ?? [];
+    badges.value = Object.keys(BADGE_FIELDS).reduce((all, key) => {
+        if (hasBadge(null, key, stats)) return [...all, key];
         return all;
-    }, [])
-);
+    }, []);
+};
+
+onMounted(() => {
+    calculateBadges();
+});
 
 const { toggleGlobalSearch, toggleLineScore } = useDialogStore();
 
@@ -796,46 +824,11 @@ const endComparison = () => {
     navigateTo(`/teams/${team.value.id}`);
 };
 
-// const games = ref([]);
-const gettingRecord = ref(false);
-const recordLoaded = ref(false);
+const showGames = ref(false);
 
-const getTeamRecord = async (team_id_param) => {
-    recordLoaded.value = true;
-    gettingRecord.value = true;
-
-    const { data } = await useSupabaseClient().rpc("get_team_record_new", {
-        team_id_param,
-        game_id_param: null,
-    });
-
-    data.forEach((g) => {
-        let team;
-
-        if (!g.team?.id) {
-            team = {
-                id: g.game_id + 100000000,
-                name: g.team?.name,
-            };
-        } else {
-            team = g.team;
-        }
-
-        useRepo(Team).save(team);
-        useRepo(Game).save({
-            id: g.game_id,
-        });
-        useRepo(GameTeam).save({
-            team_id: g.team_id ?? g.game_id + 100000000,
-            game_id: g.game_id,
-            id: g.id,
-            color: g.color,
-            points_scored: g.points_scored,
-            pending: g.pending,
-        });
-    });
-
-    gettingRecord.value = false;
+const onPlayerLoad = () => {
+    console.log("PLAYERS LOADED");
+    showGames.value = true;
 };
 
 const getHeadToHeadRecord = async (opponentId) => {
@@ -846,17 +839,6 @@ const getHeadToHeadRecord = async (opponentId) => {
 
     games.value = data ?? [];
 };
-
-const players = ref([]);
-const getPlayers = async () => {
-    const { getTeamPlayers } = useTeam();
-    players.value = await getTeamPlayers(team.value.id, isAuthorized.value);
-};
-
-onMounted(() => {
-    getPlayers();
-    getTeamRecord(teamId);
-});
 
 const $q = useQuasar();
 
@@ -879,7 +861,7 @@ const browseGames = () => {
 };
 
 const isAuthorized = computed(() => {
-    return useUserTeamStore().userTeams.some(({ id }) => id === team.value.id);
+    return useUserTeamStore().userTeams.some(({ id }) => id === teamId);
 });
 
 const pendingTeamRequest = computed(() => {

@@ -62,16 +62,17 @@ import {MAX_TEAM_NAME_LENGTH} from '@/constants/validation'
 import Team from "@/store/models/team";
 const props = defineProps({
     canEdit: Boolean,
-    name: String,
     teamId: Number,
 });
+
+const name = computed(() => useRepo(Team).where('id', props.teamId).first()?.name || 'Unnamed team')
 
 const editing = ref(false);
 
 const editedName = ref(null);
 const toggleEdit = (open) => {
     if (open) {
-        editedName.value = props.name;
+        editedName.value = name.value;
     } else {
         editedName.value = null;
     }
@@ -99,4 +100,9 @@ const saveName = async () => {
     saving.value = false;
     editing.value = false;
 };
+</script>
+<script>
+    export default {
+        name: 'TeamName'
+    }
 </script>

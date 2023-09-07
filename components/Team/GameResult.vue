@@ -9,7 +9,7 @@
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="home"
+                                        :teamId="home.id"
                                         :color="home.color"
                                         :viewable="!!home.id"
                                     />
@@ -62,7 +62,7 @@
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
-                                        :team="away"
+                                        :teamId="away.id"
                                         :color="away.color"
                                         :viewable="!away.isPlaceholder"
                                         :invitable="
@@ -75,7 +75,7 @@
                                                     inputLabel:
                                                         'Search for a team to invite',
                                                     resourceTypes: ['team'],
-                                                    filterIds: [result.home_id],
+                                                    filterIds: [home.id],
                                                     callback: (team) =>
                                                         emit('invite', team),
                                                 },
@@ -134,10 +134,7 @@
                     <div
                         class="column items-center q-pt-sm game-details"
                         v-if="
-                            result.rink_name ||
-                            result.sheet_name ||
-                            result.event_name ||
-                            result.start_time
+                           false
                         "
                     >
                         <div class="text-xs">
@@ -182,7 +179,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="margin-left: -20px; margin-top: -15px">
+                <div style="margin-left: -20px; margin-top: 0px" class="column">
                     <q-fab
                         padding="0px"
                         flat
@@ -195,7 +192,7 @@
                             icon="visibility"
                             color="primary"
                             label="View game"
-                            :to="`/games/${result.id}`"
+                            :to="`/games/${gameId}`"
                         />
                         <slot name="actions" />
                     </q-fab>
@@ -203,7 +200,7 @@
                         color="deep-purple"
                         rounded
                         floating
-                        style="margin-top: 4px"
+                        
                         v-if="notify"
                     >
                     </q-badge>
@@ -273,6 +270,9 @@ $max-container-width: 500px;
             font-weight: bold;
         }
     }
+    .notify-badge {
+        position: absolute;
+    }
 }
 </style>
 <script setup>
@@ -295,13 +295,12 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    result: Object,
+    gameId: Number,
 });
 
 
 const away = computed(() => {
-    const {team_id} = props.result.teams.find(({team_id}) => team_id !== props.home) || {}
-    const t = useRepo(GameTeam).with('team').where("team_id", team_id).where('game_id', props.result.id).first() ?? {name: 'Unnamed team'};
+    const t = useRepo(GameTeam).with('team').where("team_id", (val) => val !== props.home).where('game_id', props.gameId).first() ?? {name: 'Unnamed team'};
     return {
         ...t,
         ...(t.team ?? {}),
@@ -309,8 +308,7 @@ const away = computed(() => {
     }
 });
 const home = computed(() => {
-    const {team_id} = props.result.teams.find(({team_id}) => team_id === props.home) || props.result.teams.find(({team_id}) => team_id !== away.value.team_id)
-    const t = useRepo(GameTeam).with('team').where("team_id", team_id).where('game_id', props.result.id).first() ?? {name: 'Unnamed team'};
+    const t = useRepo(GameTeam).with('team').where("team_id", (val) => val === props.home).where('game_id', props.gameId).first() ?? {name: 'Unnamed team'};
     return {
         ...t,
         ...(t.team ?? {}),

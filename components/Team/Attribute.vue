@@ -68,3 +68,8 @@ const styleObj = computed(() => {
 const {getColor} = useColor()
 const highlightBorder = `2px solid ${getColor(props.color)}`
 </script>
+<script>
+    export default {
+        name: 'TeamAttribute'
+    }
+</script>

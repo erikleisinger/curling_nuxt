@@ -38,3 +38,8 @@
         })
     }
 </script>
+<script>
+export default {
+    name: 'GlobalLoading'
+}
+</script>

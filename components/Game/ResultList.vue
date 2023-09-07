@@ -1,15 +1,24 @@
 <template>
+<div v-element-visibility="onElementVis" >
+    <div class="loading-container" v-if="loading">
+    <q-inner-loading :showing="true" color="primary"/>
+    </div>
     <div
         v-for="(game, index) in games"
         :key="game.id"
         class="result__container"
+        
     >
-        <LazyTeamGameResult
-            :result="game"
+        <TeamGameResult
+            :gameId="game.id"
             :notify="canVerify(game)"
-            :authorized="!!isAuthorized(game.teams.find(({team_id}) => team_id === home)?.team_id)"
+            :authorized="
+                !!isAuthorized(
+                    game.teams.find(({ team_id }) => team_id === teamId)?.team_id
+                )
+            "
             @invite="inviteTeam($event, game)"
-            :home="home"
+            :home="teamId"
         >
             <!-- Verification -->
             <template
@@ -22,7 +31,12 @@
                     text-color="primary"
                     icon="verified"
                     @click="
-                        respondToRequest(game.id, true, index, game.teams[1]?.team_id)
+                        respondToRequest(
+                            game.id,
+                            true,
+                            index,
+                            game.teams[1]?.team_id
+                        )
                     "
                     >Verify game</q-fab-action
                 >
@@ -50,11 +64,16 @@
                     class="game-request-response__container row items-center no-wrap"
                 ></div>
             </template>
-        </LazyTeamGameResult>
+        </TeamGameResult>
         <q-separator />
     </div>
+</div>
 </template>
 <style lang="scss">
+.loading-container {
+    min-height: 100px;
+    position: relative;
+}
 .result__container {
     padding-top: var(--space-xxxs);
 }
@@ -63,37 +82,92 @@
 import { useUserTeamStore } from "@/store/user-teams";
 import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
-import {isPlaceholder} from '@/utils/team'
-import GameTeam from '@/store/models/game-team'
+import { vElementVisibility } from "@vueuse/components";
+import { isPlaceholder } from "@/utils/team";
+import GameTeam from "@/store/models/game-team";
+import Game from "@/store/models/game";
+import Team from "@/store/models/team";
 const props = defineProps({
-    home: Number,
-    results: {
-        type: Array,
-        default: [],
-    },
+    teamId: Number,
 });
 
-const games = ref([]);
+const initialized = ref(false);
+
+const games = computed(() =>
+loading.value ? [] :
+    useRepo(Game)
+        .with("teams")
+        .whereHas("teams", (q) => {
+            q.where("team_id", props.teamId);
+        })
+        .get() ?? []
+);
+
+const onElementVis = (val) => {
+    if (!val) return;
+    if (initialized.value) return;
+    initialized.value = true;
+    getGames();
+}
+
+const loading = ref(true)
+
+const getGames = async () => {
+    loading.value = true;
+
+    await nextTick();
+
+    const { data } = await useSupabaseClient().rpc("get_team_record_new", {
+        team_id_param: props.teamId,
+        game_id_param: null,
+    });
+
+    data.forEach((g) => {
+        let team;
+
+        if (!g.team?.id) {
+            team = {
+                id: g.game_id + 100000000,
+                name: g.team?.name,
+            };
+        } else {
+            team = g.team;
+        }
+
+        useRepo(Team).save(team);
+        useRepo(Game).save({
+            id: g.game_id,
+        });
+        useRepo(GameTeam).save({
+            team_id: g.team_id ?? g.game_id + 100000000,
+            game_id: g.game_id,
+            id: g.id,
+            color: g.color,
+            points_scored: g.points_scored,
+            pending: g.pending,
+        });
+    });
+
+    loading.value = false;
+};
 
 const confirmUnsaved = ref(false);
 
 const requiresVerification = (game) => {
-    const awayTeam = game.teams.find(({team_id}) => team_id !== props.home) ?? {};
+    const awayTeam =
+        game.teams.find(({ team_id }) => team_id !== props.teamId) ?? {};
     if (awayTeam.pending) return true;
-    return isPlaceholder(awayTeam.team_id, game.id)
-}
-
-const canVerify = (game) => {
-    return requiresVerification(game) && isAuthorized(game.teams.find(({team_id}) => team_id !== props.home)?.team_id);
+    return isPlaceholder(awayTeam.team_id, game.id);
 };
 
-watch(
-    () => props.results,
-    () => {
-        games.value = [...props.results];
-    },
-    { immediate: true }
-);
+const canVerify = (game) => {
+    return (
+        requiresVerification(game) &&
+        isAuthorized(
+            game.teams.find(({ team_id }) => team_id !== props.teamId)?.team_id
+        )
+    );
+};
 
 const responding = ref(false);
 
@@ -107,26 +181,28 @@ const respondToRequest = useThrottleFn(
         responding.value = true;
         let updates;
         try {
- if (accepted) {
-            await acceptRequest(gameId, teamId)
-            // updates = {
-            //     verified: true,
-            //     away: teamId,
-            // };
-        } else {
-            await declineRequest(gameId, teamId)
-            // updates = {
-            //     away: null,
-            //     verified: false,
-            // };
+            if (accepted) {
+                await acceptRequest(gameId, teamId);
+                // updates = {
+                //     verified: true,
+                //     away: teamId,
+                // };
+            } else {
+                await declineRequest(gameId, teamId);
+                // updates = {
+                //     away: null,
+                //     verified: false,
+                // };
+            }
+        } catch (e) {
+            notStore.updateNotification(notId, {
+                state: "failed",
+                text: `Error occured when ${
+                    accepted ? "verifying" : "rejecting"
+                } game (code: ${e.code})`,
+            });
         }
-        } catch(e) {
-              notStore.updateNotification(notId, {
-            state: "failed",
-            text: `Error occured when ${accepted ? 'verifying' : 'rejecting'} game (code: ${e.code})`,
-        });
-        }
-       
+
         // const { data: updated } = await useSupabaseClient()
         //     .from("game_team_junction")
         //     .update(updates)
@@ -149,22 +225,32 @@ const respondToRequest = useThrottleFn(
 );
 
 const acceptRequest = async (game_id, team_id) => {
-    const {data, errors} = await useSupabaseClient().from('game_team_junction').update({
-        team_id,
-        game_id,
-        pending: false
-    }).eq('game_id', game_id).eq('team_id', team_id).select('pending')
+    const { data, errors } = await useSupabaseClient()
+        .from("game_team_junction")
+        .update({
+            team_id,
+            game_id,
+            pending: false,
+        })
+        .eq("game_id", game_id)
+        .eq("team_id", team_id)
+        .select("pending");
     if (errors) throw new Error(errors);
 
     const [updates] = data;
-    useRepo(GameTeam).where('team_id', team_id).where('game_id', game_id).update(updates);
-    
-
-}
+    useRepo(GameTeam)
+        .where("team_id", team_id)
+        .where("game_id", game_id)
+        .update(updates);
+};
 
 const declineRequest = async (game_id, team_id) => {
-    await useSupabaseClient().from('game_team_junction').delete().eq('game_id', game_id).eq('team_id', team_id)
-}
+    await useSupabaseClient()
+        .from("game_team_junction")
+        .delete()
+        .eq("game_id", game_id)
+        .eq("team_id", team_id);
+};
 
 const isAuthorized = (teamId) => {
     return useUserTeamStore().userTeams.some(
@@ -174,78 +260,85 @@ const isAuthorized = (teamId) => {
 
 const inviteTeam = async (team, game) => {
     if (!team?.id || !game?.id || !isAuthorized(team?.id)) return;
-    const notStore= useNotificationStore();
+    const notStore = useNotificationStore();
 
     const notId = notStore.addNotification({
-        text: 'Inviting team to verify game...',
-        state: 'pending'
-    })
-    const homeId = game.teams.find(({team_id}) => team_id === props.home)?.team_id
-    const {data, errors} = await useSupabaseClient().from('game_team_junction').update({team_id: team.id, game_id: game.id, pending: true}).eq('game_id', game.id).is('team_id', null).select(`*`)
-    console.log('ERRORS: ', errors)
+        text: "Inviting team to verify game...",
+        state: "pending",
+    });
+    const homeId = game.teams.find(
+        ({ team_id }) => team_id === props.teamId
+    )?.team_id;
+    const { data, errors } = await useSupabaseClient()
+        .from("game_team_junction")
+        .update({ team_id: team.id, game_id: game.id, pending: true })
+        .eq("game_id", game.id)
+        .is("team_id", null)
+        .select(`*`);
     if (errors) return;
     const [updates] = data;
-    const {created_at, ...newGameTeam} = updates;
-    useRepo(GameTeam).where('team_id', updates.game_id + 100000000).delete();
-    useRepo(GameTeam).save(newGameTeam)
-
+    const { created_at, ...newGameTeam } = updates;
+    useRepo(GameTeam)
+        .where("team_id", updates.game_id + 100000000)
+        .delete();
+    useRepo(GameTeam).save(newGameTeam);
 
     if (errors) {
-        notStore.updateNotification(notId,{
-        text: `Error inviting ${team.name} (code ${errors.code})`,
-        state: 'failed'
-    })
-    return;
+        notStore.updateNotification(notId, {
+            text: `Error inviting ${team.name} (code ${errors.code})`,
+            state: "failed",
+        });
+        return;
     }
 
-    useRepo(GameTeam).where('id', 20).update({avatar_type: 'avataaar'})
+    useRepo(GameTeam).where("id", 20).update({ avatar_type: "avataaar" });
 
-         notStore.updateNotification(notId,{
+    notStore.updateNotification(notId, {
         text: `${team.name} was invited to verify the game.`,
-        state: 'completed'
-    })
-
-}
+        state: "completed",
+    });
+};
 
 const cancelRequest = async (game) => {
     if (!game?.id) return;
-    const notStore= useNotificationStore();
+    const notStore = useNotificationStore();
 
     const notId = notStore.addNotification({
         text: `Cancelling invitation to ${game.away_name}...`,
-        state: 'pending'
-    })
-    const {data, error} = await useSupabaseClient().from('games').update({away: null}).eq('id', game.id).select(`
+        state: "pending",
+    });
+    const { data, error } = await useSupabaseClient()
+        .from("games")
+        .update({ away: null })
+        .eq("id", game.id).select(`
     placeholder_away,
     verified
-    `)
+    `);
 
-
-     const [updatedGame] = data;
+    const [updatedGame] = data;
 
     if (error || !updatedGame) {
-        notStore.updateNotification(notId,{
-        text: `Error cancelling invitation to ${game.away_name} (code ${error.code})`,
-        state: 'failed'
-    })
-    return;
+        notStore.updateNotification(notId, {
+            text: `Error cancelling invitation to ${game.away_name} (code ${error.code})`,
+            state: "failed",
+        });
+        return;
     }
 
-    const index = games.value.findIndex(({id}) => id === game.id);
-    if (index !== -1) games.value.splice(index, 1, {
-        ...games.value[index],
-        away_id: updatedGame.away?.id,
-        away_avatar_type: null,
-        away_avatar_url:null,
-        away_avatar: null,
-        away_name: updatedGame.placeholder_away,
-        verified: updatedGame.verified
-
-    })
-         notStore.updateNotification(notId,{
+    const index = games.value.findIndex(({ id }) => id === game.id);
+    if (index !== -1)
+        games.value.splice(index, 1, {
+            ...games.value[index],
+            away_id: updatedGame.away?.id,
+            away_avatar_type: null,
+            away_avatar_url: null,
+            away_avatar: null,
+            away_name: updatedGame.placeholder_away,
+            verified: updatedGame.verified,
+        });
+    notStore.updateNotification(notId, {
         text: `Invitation to ${game.away_name} was cancelled.`,
-        state: 'completed'
-    })
-
-}
+        state: "completed",
+    });
+};
 </script>

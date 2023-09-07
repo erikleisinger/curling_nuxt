@@ -1,18 +1,6 @@
-import { CastAttribute, Model } from "pinia-orm";
+import { Model } from "pinia-orm";
 import Team from "@/store/models/team";
 import Game from "@/store/models/team";
-
-// class FormatAvatar extends CastAttribute {
-//     get(value) {
-//       if (!value) return {};
-//       if (typeof value === 'string') return JSON.parse(value);
-//       if (typeof value === 'object') return value;
-//       return {}
-//     }
-//     set(value) {
-//       return this.get(value)
-//     }
-//   }
 
 export default class GameTeam extends Model {
     static entity = "game-teams";

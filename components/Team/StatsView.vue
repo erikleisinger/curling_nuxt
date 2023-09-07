@@ -148,14 +148,15 @@ import {
     BADGE_TITLES_PLAIN,
     BADGE_DESCRIPTIONS_PLAIN,
 } from "@/constants/badges";
+import Team from '@/store/models/team'
 
 const props = defineProps({
     exclude: {
         type: Array,
         default: []
     },
-    team: Object,
-    oppositionTeam: Object,
+
+    oppositionId: Object,
     // Requires 'color' to be included in team/oppositionTeam props
     showColors: Boolean,
     teamId: Number,
@@ -165,6 +166,23 @@ const props = defineProps({
     },
     viewerHeight: String,
 });
+
+const team = computed(() => {
+    const t = useRepo(Team).with('stats').where('id', props.teamId).first() ?? {}
+    return {
+        ...t,
+        ...t.totalStats
+    }
+})
+
+const oppositionTeam = computed(() => {
+    if (!props.oppositionId) return null;
+    const t = useRepo(Team).with('stats').where('id', props.oppositionId).first() ?? {}
+    return {
+        ...t,
+        ...t.totalStats
+    }
+})
 
 const EXCLUDE_FIELDS = ["survivalist", ...props.exclude];
 const fields = Object.keys(BADGE_FIELDS).filter(
@@ -187,11 +205,16 @@ const viewMore = (str) => {
 
 const reloading = ref(false)
 
-watch(() => props.team || props.oppositionTeam, () => {
-    reloading.value = true;
-    nextTick(() => {
-        reloading.value = false;
-    })
-})
+// watch(() => props.team || props.oppositionTeam, () => {
+//     reloading.value = true;
+//     nextTick(() => {
+//         reloading.value = false;
+//     })
+// })
 
+</script>
+<script>
+    export default {
+        name: 'TeamStatsView'
+    }
 </script>

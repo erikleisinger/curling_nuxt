@@ -1,7 +1,11 @@
+import Player from '@/store/models/player'
+import TeamPlayer from '@/store/models/team-player'
 export const useTeam = () => {
     const getTeamPlayers = async (teamId: number, andRequests: boolean) => {
         if (!teamId) return [];
         const client = useSupabaseClient();
+
+        let returnVal;
 
         const { data } = await client
             .from("team_profile_junction")
@@ -39,21 +43,33 @@ export const useTeam = () => {
                 )
                 .eq("team_id", teamId)
                 .eq("status", "pending");
-            return [...data, ...requests].map((p) => ({
-                rowId: p.id,
-                ...p.user,
-                status: p.status ?? null,
-                avatar: p.user?.avatar ? JSON.parse(p.user.avatar) : {},
-            }));
+            const playerRepo = useRepo(Player);
+            const teamPlayerRepo = useRepo(TeamPlayer);
+            [...data, ...requests].forEach((p) => {
+                const status = p.status ?? null
+                playerRepo.save(p.user);
+                teamPlayerRepo.save({
+                    id: p.id,
+                    player_id: p.user.id,
+                    team_id: teamId,
+                    status,
+                })  
+            });
         } else {
-            return data.map((p) => ({
-                rowId: p.id,
-                ...p,
-                ...p.user,
-                status: null,
-                avatar: p.user.avatar ? JSON.parse(p.user.avatar) : {},
-            }));
+            const playerRepo = useRepo(Player);
+            const teamPlayerRepo = useRepo(TeamPlayer);
+
+            data?.forEach((p) => {
+                playerRepo.save(p.user);
+                teamPlayerRepo.save({
+                    id: p.id,
+                    player_id: p.user.id,
+                    team_id: teamId,
+                    status: null
+                })  
+            })
         }
+        return returnVal;
     };
     return { getTeamPlayers };
 };

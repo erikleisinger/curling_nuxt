@@ -49,10 +49,7 @@
                 </div>
                 <Avataaar
                     v-else-if="avatarType === 'avataaar'"
-                    v-bind="
-                        typeof avatar === 'string'
-                            ? parseAvatar(avatar)
-                            : avatar ?? {}
+                    v-bind="team.team_avatar
                     "
                 />
             </div>
@@ -70,6 +67,7 @@
 
         &.upload {
             padding-top: 16%;
+          
         }
 
         @include sm {
@@ -142,15 +140,19 @@
 <script setup>
 import { useStorageStore } from "@/store/storage";
 import { onClickOutside, useElementHover } from "@vueuse/core";
+import Team from '@/store/models/team'
 const props = defineProps({
     color: String,
     editable: Boolean,
     invitable: Boolean,
-    team: Object,
+    teamId: Number,
     viewable: Boolean,
 });
 
 const emit = defineEmits(['edit', 'invite', 'update'])
+
+
+const team = computed(() => useRepo(Team).where('id', props.teamId).first() ?? {})
 
 const storage = useStorageStore();
 
@@ -159,47 +161,57 @@ const $q = useQuasar();
 const visible = ref(false);
 
 
-const avatarUrl = computed(() => storage.teamAvatars[props.team.id]);
+const avatarUrl = computed(() => storage.teamAvatars[team.value.id]);
+
+const avatarType = computed(() => {
+    if (team.value.avatar_type === 'upload') {
+        return team.value.avatar_url ? 'upload' : 'avataaar'
+    }
+    return team.value.avatar_type
+})
 
 const fetchAvatar = async (path) => {
-    storage.getTeamAvatar(props.team.id, path);
+    storage.getTeamAvatar(team.value.id, path);d
 };
 
 const avatar = ref(null);
-const avatarType = ref(!props.team.avatar_url ? "avataaar" : props.team_avatar_type);
 const loaded = ref(true)
 
 
 const getAvatar = async () => {
-    if (avatarType.value === "upload" ) {
-        if (props.team.avatar_url) {
-fetchAvatar(props.team.avatar_url);
+    if (team.value.avatar_type === "upload" ) {
+        if (team.value.avatar_url) {
+fetchAvatar(team.value.avatar_url);
         } else {
-            avatarType.value = 'avataaar';
+            team.value.avatar_type = 'avataaar';
             avatar.value = {}
         }
         
     } else {
-        avatar.value = props.team.team_avatar;
+        avatar.value = team.value.team_avatar;
     }
 };
 
+onMounted(() => {
+    getAvatar();
+})
+
 const className = ref('dummy')
 
-watch(
-    () => props.team,
-    (val) => {
-        if (!val?.avatar_type) {
-            avatar.value = null;
-            avatarType.value = "avataaar";
-        } else {
-            avatarType.value = val.avatar_type;
-            getAvatar();
-        }
-        className.value = !val?.id ? "dummy" : "user-team";
-    },
-    { immediate: true }
-);
+// watch(
+//     () => props.team,
+//     (val) => {
+//         if (!val?.avatar_type) {
+//             avatar.value = null;
+//             team.value.avatar_type = "avataaar";
+//         } else {
+//             team.value.avatar_type = val.avatar_type;
+//             getAvatar();
+//         }
+//         className.value = !val?.id ? "dummy" : "user-team";
+//     },
+//     { immediate: true }
+// );
 
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));
@@ -216,7 +228,7 @@ const clickAvatar = () => {
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
 } else if (props.viewable) {
-        return navigateTo(`/teams/${props.team.id}`);
+        return navigateTo(`/teams/${team.value.id}`);
     } else if (props.invitable) {
         emit('invite')
     } 
@@ -234,3 +246,9 @@ const styleObj = computed(() => {
     }
 })
 </script>
+<script>
+export default {
+    name: 'TeamAvatar'
+}
+</script>
+
