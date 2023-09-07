@@ -1,27 +1,27 @@
 export const TEAM_POSITIONS = {
     lead: {
         name: "Lead",
-        icon: "looks_one",
+        icon: "o_looks_one",
         value: "lead",
     },
     second: {
         name: "Second",
-        icon: "looks_two",
+        icon: "o_looks_two",
         value: "second",
     },
     third: {
         name: "Third",
-        icon: "looks_three",
+        icon: "o_looks_3",
         value: "third",
     },
     fourth: {
         name: "Fourth",
-        icon: "looks_four",
+        icon: "o_looks_4",
         value: "fourth",
     },
     fifth: {
         name: "Fifth",
-        icon: "looks_five",
+        icon: "o_looks_5",
         value: "fifth",
     },
     coach: {

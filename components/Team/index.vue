@@ -64,6 +64,7 @@
                         toggle-color="primary"
                         color="white"
                         text-color="primary"
+                        :disable="true"
                         :options="[
                             { label: 'Head to head', value: 'h2h' },
                             { label: 'All time totals', value: 'total' },
@@ -94,14 +95,13 @@
                                 :teamId="teamId"
                                 :viewable="false"
                                 :editable="isAuthorized"
-                                @update="editAvatar"
                             />
                         </div>
 
                         <div class="column items-center">
                             <div class="text-sm">Team</div>
                             <TeamName
-                                :canEdit="isAuthorized"
+                                :canEdit="isAuthorized && !headToHead"
                                 :teamId="team.id"
                             />
                             <!-- <div class="row items-center">
@@ -163,8 +163,8 @@
                         class="col-5"
                         v-if="headToHead"
                     >
-                        <div class="row items-center">
-                            <div class="q-mr-xs">
+                        <div class="row items-center" v-if="typeof comparisonTeam.win === 'number' && typeof team.win === 'number'">
+                            <div class="q-mr-xs" >
                                 <span v-if="team.win !== comparisonTeam?.win">
                                     +{{
                                         Math.abs(
@@ -188,6 +188,10 @@
                                 />
                             </div>
                         </div>
+                        <div style="visibility: hidden" v-else>
+                            -
+                        </div>
+                    
                         <template v-slot:tooltip>
                             <q-tooltip v-if="$q.platform.is.desktop">
                                 <div v-if="!!team && !!comparisonTeam">
@@ -817,7 +821,12 @@ const { history } = useRefHistory(currentRoute);
 
 const onSelect = async ({ id }) => {
     toggleGlobalSearch({ open: false });
-    navigateTo(`?opponent=${id}`);
+    if (currentRoute.value.query.opponent) {
+        loadComparison();
+    } else {
+ navigateTo(`?opponent=${id}`);
+    }
+   
 };
 
 const gamesContainer = ref(null);
@@ -921,14 +930,6 @@ const respondToRequest = async (response) => {
     if (!!response) getPlayers();
 };
 
-/**
- *
- * EDITING
- */
-
-const editAvatar = () => {
-    console.log("edit avatar");
-};
 </script>
 <script>
 export default {

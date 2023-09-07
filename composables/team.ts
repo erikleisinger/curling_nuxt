@@ -53,6 +53,7 @@ export const useTeam = () => {
                     player_id: p.user.id,
                     team_id: teamId,
                     status,
+                    position: p.position
                 })  
             });
         } else {
@@ -65,7 +66,8 @@ export const useTeam = () => {
                     id: p.id,
                     player_id: p.user.id,
                     team_id: teamId,
-                    status: null
+                    status: null,
+                    position: p.position
                 })  
             })
         }

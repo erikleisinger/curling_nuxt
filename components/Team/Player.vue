@@ -32,14 +32,16 @@
                     <q-btn flat color="red" stretch class="full-width" @click="emit('removePlayer', player)">Remove from team</q-btn>
                 </div>
                 <div class="row justify-center items-center full-height full-width">
-                    <q-btn flat color="white" stretch class="full-width" v-if="!player.status">Edit position</q-btn>
+                    <q-btn flat color="white" stretch class="full-width" v-if="!player.status" @click="showSelect = true">Edit position</q-btn>
                       <q-btn flat color="red" stretch class="full-width" v-if="!!player.status" @click="emit('cancelInvitation', player.rowId)">Cancel invitation</q-btn>
                 </div>
             </div>
         </div>
         </transition>
         </slot>
+            <DialogSelectPosition v-if="showSelect" :playerId="player?.id" @close="showSelect = false" :teamId="teamId"/>
     </div>
+
 </template>
 <style lang="scss" scoped>
 .player__container {
@@ -47,7 +49,7 @@
     padding: var(--space-xxs);
     border: 1px solid $grey-4;
     border-radius: 8px;
-    margin: var(--space-xs);
+    // margin: var(--space-xs);
     transition: all 0.2s;
     position: relative;
     overflow: hidden;
@@ -92,6 +94,7 @@ import {useElementHover, onClickOutside} from '@vueuse/core'
 const props = defineProps({
     editing: Boolean,
     player: Object,
+    teamId: Number,
 });
 
 const $q = useQuasar();
@@ -155,5 +158,7 @@ onClickOutside(container, () => {
     if (!$q.screen.xs) return;
      showEdit.value = false;
 })
+
+const showSelect = ref(false)
 
 </script>

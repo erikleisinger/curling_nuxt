@@ -14,7 +14,8 @@
             :editing="editing"
             @cancelInvitation="cancelRequest"
             @removePlayer="playerToRemove = $event"
-            v-memo="[player?.first_name, player?.last_name, player?.username]"
+            v-memo="[player?.first_name, player?.last_name, player?.username, editing, player?.position]"
+            :teamId="teamId"
         />
         <TeamPlayer v-if="editing" editing>
             <div
@@ -108,9 +109,10 @@ const emit = defineEmits(['loaded'])
 
 const players = computed(() => {
     const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
-    return p.map(({ player, status }) => ({
+    return p.map(({ player, status, position }) => ({
         ...player,
         status,
+        position
     }));
 });
 const getPlayers = async () => {
