@@ -23,7 +23,6 @@ onMounted(async () => {
         .rpc("get_user_teams")
         .eq("id", route.params.id)
         .limit(1);
-        console.log('data: ', data)
 
     const [t] = data;
 

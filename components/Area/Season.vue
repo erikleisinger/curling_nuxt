@@ -11,7 +11,7 @@
                     <ProfileCard type="team" :item="team">
                         {{ team.name }}
                         <template v-slot:avatar>
-                            <TeamAvatar :team="team" viewable />
+                            <TeamAvatar :teamId="team?.id" viewable />
                         </template>
                         <template v-slot:append> </template>
                     </ProfileCard>
@@ -108,6 +108,7 @@ $col-width: 80px;
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useElementBounding } from "@vueuse/core";
+import Team from '@/store/models/team'
 
 const $q = useQuasar();
 
@@ -117,7 +118,7 @@ const userTeamStore = useUserTeamStore();
  * teams
  */
 
-const teams = computed(() => userTeamStore.userTeams);
+const teams = computed(() => useRepo(Team).where('id', (val) => userTeamStore.userTeams.some(({id}) => id === val)).get());
 
 /**
  * element height calculations

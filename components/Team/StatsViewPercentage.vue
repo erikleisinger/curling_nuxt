@@ -45,6 +45,7 @@
             :percent="percent"
             height="16px"
             :reverse="reverse"
+            v-if="rendered"
         >
             <!-- <div
                 class="threshold-indicator"
@@ -163,7 +164,16 @@ const emit = defineEmits(["showMore"]);
 
 const { getStatPercent } = useConvert();
 
-const percent = getStatPercent(props.numerator, props.denominator, 0);
+const rendered = ref(true)
+
+const percent = computed(() => getStatPercent(props.numerator, props.denominator, 0)) ;
+
+watch(percent, () => {
+    rendered.value = false;
+    nextTick(() => {
+        rendered.value = true;
+    })
+})
 
 const BADGE_DIMENSION = "3em";
 

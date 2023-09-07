@@ -171,7 +171,7 @@ const avatarType = computed(() => {
 })
 
 const fetchAvatar = async (path) => {
-    storage.getTeamAvatar(team.value.id, path);d
+    storage.getTeamAvatar(team.value.id, path);
 };
 
 const avatar = ref(null);

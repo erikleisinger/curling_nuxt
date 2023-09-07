@@ -1,73 +1,77 @@
 <template>
-<div v-element-visibility="onElementVis" >
-    <div class="loading-container" v-if="loading">
-    <q-inner-loading :showing="true" color="primary"/>
-    </div>
-    <div
-        v-for="(game, index) in games"
-        :key="game.id"
-        class="result__container"
-        
-    >
-        <TeamGameResult
-            :gameId="game.id"
-            :notify="canVerify(game)"
-            :authorized="
-                !!isAuthorized(
-                    game.teams.find(({ team_id }) => team_id === teamId)?.team_id
-                )
-            "
-            @invite="inviteTeam($event, game)"
-            :home="teamId"
+    <!-- v-element-visibility="onElementVis" -->
+    <div>
+        <div class="loading-container" v-if="loading">
+            <q-inner-loading :showing="true" color="primary" />
+        </div>
+        <div
+            v-for="(game, index) in games"
+            :key="game.id"
+            class="result__container"
         >
-            <!-- Verification -->
-            <template
-                v-slot:actions
-                v-if="canVerify(game) || isAuthorized(game.teams[0]?.team_id)"
+            <TeamGameResult
+                :gameId="game.id"
+                :notify="canVerify(game)"
+                :authorized="
+                    !!isAuthorized(
+                        game.teams.find(({ team_id }) => team_id === teamId)
+                            ?.team_id
+                    )
+                "
+                @invite="inviteTeam($event, game)"
+                :home="teamId"
             >
-                <q-fab-action
-                    v-if="canVerify(game)"
-                    color="white"
-                    text-color="primary"
-                    icon="verified"
-                    @click="
-                        respondToRequest(
-                            game.id,
-                            true,
-                            index,
-                            game.teams[1]?.team_id
-                        )
-                    "
-                    >Verify game</q-fab-action
-                >
-                <q-fab-action
-                    v-if="canVerify(game)"
-                    color="white"
-                    text-color="red"
-                    icon="new_releases"
-                    @click="respondToRequest(game.id, false, index)"
-                    >Reject game</q-fab-action
-                >
-                <q-fab-action
+                <!-- Verification -->
+                <template
+                    v-slot:actions
                     v-if="
-                        isAuthorized(game.home_id) && requiresVerification(game)
+                        canVerify(game) || isAuthorized(game.teams[0]?.team_id)
                     "
-                    color="white"
-                    text-color="red"
-                    icon="new_releases"
-                    @click="cancelRequest(game)"
-                    >Cancel verification request</q-fab-action
                 >
-            </template>
-            <template v-slot:before>
-                <div
-                    class="game-request-response__container row items-center no-wrap"
-                ></div>
-            </template>
-        </TeamGameResult>
-        <q-separator />
+                    <q-fab-action
+                        v-if="canVerify(game)"
+                        color="white"
+                        text-color="primary"
+                        icon="verified"
+                        @click="
+                            respondToRequest(
+                                game.id,
+                                true,
+                                index,
+                                game.teams[1]?.team_id
+                            )
+                        "
+                        >Verify game</q-fab-action
+                    >
+                    <q-fab-action
+                        v-if="canVerify(game)"
+                        color="white"
+                        text-color="red"
+                        icon="new_releases"
+                        @click="respondToRequest(game.id, false, index)"
+                        >Reject game</q-fab-action
+                    >
+                    <q-fab-action
+                        v-if="
+                            isAuthorized(game.home_id) &&
+                            requiresVerification(game)
+                        "
+                        color="white"
+                        text-color="red"
+                        icon="new_releases"
+                        @click="cancelRequest(game)"
+                        >Cancel verification request</q-fab-action
+                    >
+                </template>
+                <template v-slot:before>
+                    <div
+                        class="game-request-response__container row items-center no-wrap"
+                    ></div>
+                </template>
+            </TeamGameResult>
+            <q-separator />
+        </div>
     </div>
-</div>
 </template>
 <style lang="scss">
 .loading-container {
@@ -89,28 +93,43 @@ import Game from "@/store/models/game";
 import Team from "@/store/models/team";
 const props = defineProps({
     teamId: Number,
+    filterOpposition: {
+        type: Array,
+        default: [],
+    },
 });
 
 const initialized = ref(false);
 
-const games = computed(() =>
-loading.value ? [] :
-    useRepo(Game)
-        .with("teams")
-        .whereHas("teams", (q) => {
-            q.where("team_id", props.teamId);
-        })
-        .get() ?? []
-);
+const games = computed(() => {
+    if (loading.value) return [];
 
-const onElementVis = (val) => {
-    if (!val) return;
-    if (initialized.value) return;
-    initialized.value = true;
-    getGames();
-}
+    const t =
+        useRepo(Game)
+            .query()
+            .with("teams")
 
-const loading = ref(true)
+            .whereHas("teams", (q) => {
+                return q.whereIn("team_id", [props.teamId]);
+            })
+            .whereHas("teams", (q) => {
+                return q.whereIn("team_id", [
+                    ...(props.filterOpposition?.length ? [] : [props.teamId]),
+                    ...props.filterOpposition,
+                ]);
+            })
+            .get() ?? [];
+    return t;
+});
+
+// const onElementVis = (val) => {
+//     if (!val) return;
+//     if (initialized.value) return;
+//     initialized.value = true;
+//     getGames();
+// }
+
+const loading = ref(true);
 
 const getGames = async () => {
     loading.value = true;
@@ -150,6 +169,16 @@ const getGames = async () => {
 
     loading.value = false;
 };
+
+onMounted(() => {
+    getGames();
+});
+
+// watch(() => {
+//     return [props.teamId, ...props.filterOpposition]
+// }, () => {
+//     getGames();
+// }, {immediate: true})
 
 const confirmUnsaved = ref(false);
 

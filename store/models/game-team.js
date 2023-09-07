@@ -2,6 +2,7 @@ import { Model } from "pinia-orm";
 import Team from "@/store/models/team";
 import Game from "@/store/models/team";
 
+import TeamStat from "@/store/models/team-stats";
 export default class GameTeam extends Model {
     static entity = "game-teams";
 
@@ -14,7 +15,8 @@ export default class GameTeam extends Model {
             team_id: this.number(),
             color: this.string('red'),
             team: this.belongsTo(Team, 'team_id'),
-            game: this.belongsTo(Game, 'game_id'),
+            game: this.belongsTo(Game, 'game_id', 'id'),
+            stats: this.hasOne(TeamStat, ['team_id', 'game_id']),
             points_scored: this.number(),
             pending: this.boolean()
         };

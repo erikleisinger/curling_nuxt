@@ -1,7 +1,5 @@
 <template>
     <div class="row no-wrap" style="overflow: hidden">
-        <q-inner-loading :showing="loadingComparison" color="primary" />
-
         <div class="overview__container row" key="overview">
             <div
                 v-if="pendingTeamRequest && !comparisonTeam"
@@ -70,9 +68,9 @@
                             { label: 'Head to head', value: 'h2h' },
                             { label: 'All time totals', value: 'total' },
                         ]"
-                        :readonly="!h2hOpposition || !h2hTeam"
+                        :readonly="!comparisonTeam || !team"
                     >
-                        <q-tooltip v-if="!h2hOpposition || !h2hTeam">
+                        <q-tooltip v-if="!comparisonTeam || !team">
                             {{ team.name }} and {{ comparisonTeam.name }} have
                             not played any games.
                         </q-tooltip>
@@ -138,13 +136,13 @@
                         icon="track_changes"
                         color="primary"
                         class="col-5"
-                        v-memo="[h2hTeam?.games_played, team.games_played]"
+                        v-memo="[team?.games_played, team.games_played]"
                     >
                         <div class="row no-wrap items-center">
                             <div>
                                 {{
                                     headToHead
-                                        ? h2hTeam?.games_played
+                                        ? comparisonTeam?.games_played
                                         : team.games_played
                                 }}
                             </div>
@@ -167,51 +165,47 @@
                     >
                         <div class="row items-center">
                             <div class="q-mr-xs">
-                                <span
-                                    v-if="h2hTeam?.win !== h2hOpposition?.win"
-                                >
+                                <span v-if="team.win !== comparisonTeam?.win">
                                     +{{
                                         Math.abs(
-                                            h2hTeam?.win - h2hOpposition?.win
+                                            team?.win - comparisonTeam?.win
                                         )
                                     }}
                                 </span>
-                                <span v-else-if="!h2hTeam && !h2hOpposition"
-                                    >-</span
-                                >
+
                                 <span v-else>Even</span>
                             </div>
                             <div
                                 style="height: 1em; width: 1em"
-                                v-if="h2hTeam?.win !== h2hOpposition?.win"
+                                v-if="team?.win !== comparisonTeam?.win"
                             >
                                 <LazyTeamAvatar
                                     :teamId="
-                                        h2hTeam?.win > h2hOpposition?.win
-                                            ? h2hTeam?.id
-                                            : h2hOpposition?.id
+                                        team?.win > comparisonTeam?.win
+                                            ? team?.id
+                                            : comparisonTeam?.id
                                     "
                                 />
                             </div>
                         </div>
                         <template v-slot:tooltip>
                             <q-tooltip v-if="$q.platform.is.desktop">
-                                <div v-if="!!h2hTeam && !!h2hOpposition">
+                                <div v-if="!!team && !!comparisonTeam">
                                     <div>
                                         <span class="text-bold">{{
-                                            h2hTeam.name
+                                            team.name
                                         }}</span
-                                        >: {{ h2hTeam.win }} wins
+                                        >: {{ team.win }} wins
                                     </div>
                                     <div>
                                         <span class="text-bold">{{
-                                            h2hOpposition.name
+                                            comparisonTeam.name
                                         }}</span
-                                        >: {{ h2hOpposition.win }} wins
+                                        >: {{ comparisonTeam.win }} wins
                                     </div>
                                     <div>
                                         <span class="text-bold">Ties</span>:
-                                        {{ h2hTeam.tie }}
+                                        {{ team.tie }}
                                     </div>
                                 </div>
                                 <div v-else>
@@ -232,7 +226,7 @@
                     >
                         {{
                             headToHead
-                                ? h2hOpposition.games_played
+                                ? comparisonTeam.games_played
                                 : comparisonTeam.games_played
                         }}
                     </LazyTeamAttribute>
@@ -247,8 +241,8 @@
                             {{
                                 headToHead
                                     ? getStatPercent(
-                                          h2hTeam.win,
-                                          h2hTeam.games_played
+                                          team.win,
+                                          team.games_played
                                       )
                                     : getStatPercent(
                                           team.win,
@@ -261,14 +255,14 @@
                         <span
                             class="text-xs text-regular text-grey-8"
                             v-if="
-                                (headToHead && h2hTeam.tie) ||
+                                (headToHead && team.tie) ||
                                 (!headToHead && team.tie)
                             "
                             >({{
                                 headToHead
                                     ? getStatPercent(
-                                          h2hTeam.tie,
-                                          h2hTeam.games_played
+                                          team.tie,
+                                          team.games_played
                                       )
                                     : getStatPercent(
                                           team.tie,
@@ -287,8 +281,8 @@
                         {{
                             headToHead
                                 ? getStatPercent(
-                                      h2hOpposition.win,
-                                      h2hOpposition.games_played
+                                      comparisonTeam.win,
+                                      comparisonTeam.games_played
                                   )
                                 : getStatPercent(
                                       comparisonTeam.win,
@@ -299,14 +293,14 @@
                         <span
                             class="text-xs"
                             v-if="
-                                (headToHead && h2hOpposition.tie) ||
+                                (headToHead && comparisonTeam.tie) ||
                                 (!headToHead && comparisonTeam.tie)
                             "
                             >({{
                                 headToHead
                                     ? getStatPercent(
-                                          h2hOpposition.tie,
-                                          h2hOpposition.games_played
+                                          comparisonTeam.tie,
+                                          comparisonTeam.games_played
                                       )
                                     : getStatPercent(
                                           comparisonTeam.tie,
@@ -406,7 +400,7 @@
                 <!-- Comparison stats -->
                 <div
                     class="row full-width justify-around"
-                    v-if="(comparisonTeam || h2hTeam) && headToHead"
+                    v-if="(comparisonTeam || team) && headToHead"
                 ></div>
             </header>
 
@@ -417,7 +411,7 @@
                     <TeamPlayerList
                         :teamId="team.id"
                         :showPending="isAuthorized"
-                        @loaded="onPlayerLoad"
+                        @loaded="showGames = true"
                     >
                         <template
                             v-slot:title="{ editing, setEditing, loading }"
@@ -509,18 +503,15 @@
 
                     <div class="stats-view__container">
                         <TeamStatsView
-                            :teamId="headToHead ? h2hTeam.id : team.id"
+                            :teamId="team.id"
                             key="stats"
                             viewerHeight="400px"
-                            :oppositionId="
-                                headToHead
-                                    ? h2hOpposition?.id
-                                    : comparisonTeam?.id
-                            "
+                            :oppositionId="Number(comparisonTeam?.id)"
+                            :h2h="headToHead"
                             v-memo="[
                                 team?.id,
-                                h2hTeam?.id,
-                                h2hOpposition?.id,
+                                team?.id,
+                                comparisonTeam?.id,
                                 comparisonTeam?.id,
                             ]"
                         >
@@ -581,7 +572,19 @@
                             </div> -->
 
                             <div class="game-history__container">
-                                <LazyGameResultList :teamId="teamId" />
+                                <LazyGameResultList
+                                    :teamId="teamId"
+                                    :filterOpposition="
+                                        currentRoute.query.opponent
+                                            ? [
+                                                  Number(
+                                                      currentRoute.query
+                                                          .opponent
+                                                  ),
+                                              ]
+                                            : []
+                                    "
+                                />
                             </div>
                         </div>
                     </div>
@@ -701,28 +704,89 @@ const teamId = Number.parseInt(currentRoute.value.params.id);
 
 const team = computed(() => {
     const t = useRepo(Team).with("stats").where("id", teamId).first() || {};
-    const [stats] = t.stats;
-    const {
-        games_played,
-        points_for,
-        points_against,
-        ends_for,
-        ends_against,
-        win,
-        loss,
-        tie,
-    } = stats;
-    return {
-        ...t,
-        games_played,
-        points_for,
-        points_against,
-        ends_for,
-        ends_against,
-        win,
-        loss,
-        tie,
-    };
+    if (!t) return {};
+
+    if (headToHead.value) {
+        return {
+            ...t,
+            ...getCumulativeStats(t.stats ?? []),
+            games_played: t.stats?.length ?? 0,
+        };
+    } else {
+        const stats = t.stats.find(({ game_id }) => game_id === 0);
+        if (!stats) return null;
+        const {
+            games_played,
+            points_for,
+            points_against,
+            ends_for,
+            ends_against,
+            win,
+            loss,
+            tie,
+        } = stats;
+        return {
+            ...t,
+            games_played,
+            points_for,
+            points_against,
+            ends_for,
+            ends_against,
+            win,
+            loss,
+            tie,
+        };
+    }
+});
+
+const getCumulativeStats = (statsArray) => {
+    return statsArray.reduce((all, current) => {
+        const allCopy = { ...all };
+        Object.keys(current).forEach((key) => {
+            allCopy[key] = allCopy[key] ?? 0 + current[key];
+        });
+        return allCopy;
+    }, {});
+};
+
+const comparisonTeam = computed(() => {
+    const { opponent } = currentRoute.value.query;
+    if (!opponent) return null;
+    const t =
+        useRepo(Team).with("stats").where("id", Number(opponent)).first() || {};
+    if (!t) return {};
+
+    if (headToHead.value) {
+        return {
+            ...t,
+            ...getCumulativeStats(t.stats ?? []),
+            games_played: t.stats?.length ?? 0,
+        };
+    } else {
+        const stats = t.stats.find(({ game_id }) => game_id === 0);
+        if (!stats) return null;
+        const {
+            games_played,
+            points_for,
+            points_against,
+            ends_for,
+            ends_against,
+            win,
+            loss,
+            tie,
+        } = stats;
+        return {
+            ...t,
+            games_played,
+            points_for,
+            points_against,
+            ends_for,
+            ends_against,
+            win,
+            loss,
+            tie,
+        };
+    }
 });
 
 const { getStatPercent } = useConvert();
@@ -749,9 +813,6 @@ const { toggleGlobalSearch, toggleLineScore } = useDialogStore();
 const showPlayers = ref(true);
 const editingPlayers = ref(false);
 
-const comparisonTeam = ref(null);
-const loadingComparison = ref(false);
-
 const { history } = useRefHistory(currentRoute);
 
 const onSelect = async ({ id }) => {
@@ -759,15 +820,22 @@ const onSelect = async ({ id }) => {
     navigateTo(`?opponent=${id}`);
 };
 
-const loadComparison = async (id) => {
-    loadingComparison.value = true;
-    await Promise.all([getComparisonTeam(id), getH2h(id)]);
-    loadingComparison.value = false;
-};
-
 const gamesContainer = ref(null);
 
 const isVisible = useElementVisibility(gamesContainer);
+
+const getH2h = async (oppositionId) => {
+    const { getHeadToHead } = useGame();
+    await getHeadToHead(team.value.id, Number.parseInt(oppositionId));
+};
+
+const loadingComparison = ref(false);
+
+const loadComparison = async (id) => {
+    loadingComparison.value = true;
+    await getH2h(id);
+    loadingComparison.value = false;
+};
 
 watchDebounced(
     currentRoute,
@@ -776,49 +844,18 @@ watchDebounced(
         if (!opponent) {
             endComparison();
         } else {
+            showGames.value = true;
             loadComparison(opponent);
         }
     },
     { debounce: 200, immediate: true }
 );
 
-const getComparisonTeam = async (id) => {
-    const { data: stats } = await useSupabaseClient()
-        .rpc("get_user_teams")
-        .eq("id", id)
-        .limit(1);
-    const [t] = stats;
-    comparisonTeam.value = t;
-};
-
 const headToHead = computed(
-    () => teamViewMode.value === "h2h" && h2hTeam.value && h2hOpposition.value
+    () => teamViewMode.value === "h2h" && !!currentRoute.value.query.opponent
 );
 
-const h2hTeam = ref(null);
-const h2hOpposition = ref(null);
-
-const getH2h = async (oppositionId) => {
-    const { getHeadToHead } = useGame();
-    const data = await getHeadToHead(
-        team.value.id,
-        Number.parseInt(oppositionId)
-    );
-    if (!data) {
-        teamViewMode.value = "total";
-        return;
-    }
-    const { team1, team2 } = data || {};
-    h2hTeam.value = { ...team1, id: team.value.id };
-    h2hOpposition.value = { ...team2, id: oppositionId };
-    getHeadToHeadRecord(oppositionId);
-};
-
 const endComparison = () => {
-    comparisonTeam.value = null;
-    h2hTeam.value = null;
-    teamViewMode.value = "h2h";
-    h2hOpposition.value = null;
     const { opponent } = currentRoute.value.query;
     if (!opponent) return;
     navigateTo(`/teams/${team.value.id}`);
@@ -826,18 +863,11 @@ const endComparison = () => {
 
 const showGames = ref(false);
 
-const onPlayerLoad = () => {
-    console.log("PLAYERS LOADED");
-    showGames.value = true;
-};
-
 const getHeadToHeadRecord = async (opponentId) => {
     const { data } = await useSupabaseClient()
         .rpc("get_team_record", { team_ids_param: [team.value.id] })
         .order("start_time", { ascending: false })
         .or(`home_id.eq.${opponentId},away_id.eq.${opponentId}`);
-
-    games.value = data ?? [];
 };
 
 const $q = useQuasar();

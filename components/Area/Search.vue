@@ -83,13 +83,7 @@
 
                         <!-- TEAM result -->
                         <div v-if="result.resourcetype === 'team'">
-                            <TeamAvatar :team="{
-                                id: result.id,
-
-                                avatar_type: result.avatar_type,
-                                avatar_url: result.avatar_url,
-                                team_avatar: result.avatar
-                            }" />
+                            <TeamAvatar :teamId="result.id" />
                         </div>
                         <div
                             v-if="result.resourcetype === 'team'"

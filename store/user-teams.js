@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { useNotificationStore } from "@/store/notification";
+import Team from '@/store/models/team'
 
 export const useUserTeamStore = defineStore("user-teams", {
     state: () => {
@@ -48,6 +49,7 @@ export const useUserTeamStore = defineStore("user-teams", {
             const { user: userId } = useUser();
             const client = useSupabaseClient();
             const {data} = await client.rpc('get_user_teams').eq('profile_id', userId.value)
+           useRepo(Team).save(data)
 
            
             this.userTeams = data ?? []

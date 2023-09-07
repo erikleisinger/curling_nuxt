@@ -1,3 +1,8 @@
+import GameTeam from '@/store/models/game-team'
+import TeamStats from '@/store/models/team-stats'
+import Team from '@/store/models/team'
+import Game from '@/store/models/game'
+
 export const useGame = () => {
     const getTeamGames = async (team_ids_param: number[], start: number = 0, end: number = 5) => {
         const client = useSupabaseClient();
@@ -33,14 +38,26 @@ export const useGame = () => {
     }
 
     const getHeadToHead = async (homeTeamId: number, awayTeamId: number) => {
-        const { data } = await useSupabaseClient()
-            .from("games")
-            .select("id")
-            .or(`home.eq.${homeTeamId},away.eq.${homeTeamId}`)
-            .or(`home.eq.${awayTeamId},away.eq.${awayTeamId}`);
-        const games = data?.map(({ id }) => id) || [];
+         
+        const {data} = await useSupabaseClient().from('game_team_junction').select(`
+            id,
+            team_id,
+            pending,
+            game_id,
+            game: game_id (
+                id,
+                end_count,
+                name
+            ),
+            color
+        `).in('team_id', [homeTeamId, awayTeamId])
+        console.log('games: ', data)
+        const games = data?.filter(({game_id}) => data.filter((g) => g.game_id === game_id)?.length > 1);
+        useRepo(Game).save(games?.map(({game}) => game))
+        useRepo(GameTeam).save(games)
+       
         //TODO inform user there have been no games
-        if (!games?.length) return null;
+        // if (!games?.length) return null;
     
         const { data: stats } = await useSupabaseClient()
             .from("team_stats")
@@ -48,6 +65,7 @@ export const useGame = () => {
                 `
             *,
             team:team_id (
+                id,
                 name,
                 team_avatar,
                 avatar_url,
@@ -55,62 +73,77 @@ export const useGame = () => {
             )
             `
             )
-            .in("game_id", games);
-    
-        const [reference] = stats;
-    
-        const EXCLUDE_STATS_FROM_COMPARISON = [
-            "id",
-            "created_at",
-            "game_id",
-            "team_id",
-            "team",
-        ];
-    
-        const keys = Object.keys(reference).filter(
-            (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
-        );
-    
-        const myTeam = {};
-        const oppTeam = {};
-    
-        keys.forEach((key) => {
-            myTeam[key] = stats.reduce((all, current) => {
-                if (current.team_id !== homeTeamId) return all;
-                return all + current[key];
-            }, 0);
-    
-            oppTeam[key] = stats.reduce((all, current) => {
-                if (current.team_id !== awayTeamId) return all;
-                return all + current[key];
-            }, 0);
-        });
-    
-        const oneOppositionEntry = stats.find(
-            ({ team_id }) => {
-                return team_id === awayTeamId
-            }
-        );
+            .in("game_id", games?.map(({game_id}) => game_id));
+            console.log('stats: ', stats)
 
-        const oneHomeEntry = stats?.find( ({ team_id }) => team_id === homeTeamId)
-    
-        const { avatar_type, avatar_url, team_avatar, name } = { ...(oneHomeEntry?.team ?? {}) };
-    
-        const team1 = {
-            ...myTeam,
-            games_played: stats?.length / 2,
-            avatar_type,
-            avatar_url,
-            team_avatar,
-            name,
-        };
-        const team2 = {
-            ...oppTeam,
-            games_played: stats?.length / 2,
-            ...oneOppositionEntry.team,
-        };
+        stats?.forEach((stat) => {
+            useRepo(GameTeam).where('team_id', stat.team_id).where('game_id', stat.game_id).update({
+                points_scored: stat.points_for
+            })
+            if (stat.team) useRepo(Team).save(stat.team)
+           
 
-        return {team1, team2, allGames: stats}
+            
+        })
+        const filtered = stats.filter(({team_id}) => !!team_id)
+
+        useRepo(TeamStats).save(filtered)
+    
+        // const [reference] = stats;
+    
+        // const EXCLUDE_STATS_FROM_COMPARISON = [
+        //     "id",
+        //     "created_at",
+        //     "game_id",
+        //     "team_id",
+        //     "team",
+        // ];
+    
+        // const keys = Object.keys(reference).filter(
+        //     (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
+        // );
+    
+        // const myTeam = {};
+        // const oppTeam = {};
+    
+        // keys.forEach((key) => {
+        //     myTeam[key] = stats.reduce((all, current) => {
+        //         if (current.team_id !== homeTeamId) return all;
+        //         return all + current[key];
+        //     }, 0);
+    
+        //     oppTeam[key] = stats.reduce((all, current) => {
+        //         if (current.team_id !== awayTeamId) return all;
+        //         return all + current[key];
+        //     }, 0);
+        // });
+    
+        // const oneOppositionEntry = stats.find(
+        //     ({ team_id }) => {
+        //         return team_id === awayTeamId
+        //     }
+        // );
+
+        // const oneHomeEntry = stats?.find( ({ team_id }) => team_id === homeTeamId)
+    
+        // const { avatar_type, avatar_url, team_avatar, name } = { ...(oneHomeEntry?.team ?? {}) };
+    
+        // const team1 = {
+        //     ...myTeam,
+        //     games_played: stats?.length / 2,
+        //     avatar_type,
+        //     avatar_url,
+        //     team_avatar,
+        //     name,
+        // };
+        // const team2 = {
+        //     ...oppTeam,
+        //     games_played: stats?.length / 2,
+        //     ...oneOppositionEntry.team,
+        // };
+
+        // return {team1, team2, allGames: stats}
+        return {}
     };
 
     return { getGameResult, getHeadToHead, getTeamGames };

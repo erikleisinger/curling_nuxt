@@ -1,7 +1,7 @@
 <template>
     <div
         class="full-height no-wrap"
-        :class="{ column: !oppositionTeam, row: !!oppositionTeam }"
+        :class="{ column: !oppositionId, row: !!oppositionId }"
     >
         <div
             class="col-12 col-sm-6 row full-width view-more__container"
@@ -9,7 +9,7 @@
         >
             <LazyChartTeamStatsTime
                 :teamId="team.id"
-                v-if="!oppositionTeam && !!viewDetails.length"
+                v-if="!oppositionId && !!viewDetails.length"
                 :visibleStats="viewDetails"
                 @close="viewDetails = []"
             />
@@ -17,9 +17,7 @@
 
         <div
             class="stats__container column no-wrap"
-            v-if="
-                ($q.screen.gt.xs || !viewDetails?.length)
-            "
+            v-if="$q.screen.gt.xs || !viewDetails?.length"
             :class="{
                 'col-12': $q.screen.xs || !viewDetails.length,
                 'col-6': viewDetails.length && !$q.screen.xs,
@@ -30,23 +28,18 @@
                 v-for="(badge, index) in fields"
                 :key="`percentage-${badge}`"
             >
-                <div
-                    v-if="!!oppositionTeam"
-                    class="q-mt-md row no-wrap"
-                >
+                <div v-if="!!oppositionTeam" class="q-mt-md row no-wrap">
                     <div class="row col-grow justify-start items-center">
                         <div class="team-avatar__container">
                             <TeamAvatar
-                                :team="team"
+                                :teamId="team.id"
                                 :color="showColors ? team.color : null"
-                                        :viewable="!!team.id"
-                               
+                                :viewable="!!team.id"
                             />
-                           
                         </div>
                     </div>
                     <div>
-                        <h2 class="text-md q-mr-md  text-center">
+                        <h2 class="text-md q-mr-md text-center">
                             {{ BADGE_TITLES_PLAIN[badge] }}
                         </h2>
                         <h3 class="text-sm text-center">
@@ -56,54 +49,54 @@
                     <div class="row col-grow justify-end items-center">
                         <div class="team-avatar__container">
                             <TeamAvatar
-                                :team="oppositionTeam"
-                                :color="showColors ? oppositionTeam.color : null"
-                                :viewable="!!oppositionTeam.id"
-                                
+                                :teamId="oppositionId"
+                                :color="
+                                    showColors ? oppositionTeam?.color : null
+                                "
+                                :viewable="!!oppositionId"
                             />
-                          
                         </div>
                     </div>
                 </div>
 
-                <div class="row no-wrap">
+                <div class="row no-wrap" v-if="stats?.team">
                     <div
-                        :class="
-                            !!oppositionTeam
-                                ? 'col-6 q-pr-md'
-                                : 'col-12'
-                        "
+                        :class="!!oppositionTeam ? 'col-6 q-pr-md' : 'col-12'"
                         v-if="!reloading"
                     >
                         <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
-                            :teamId="Number.parseInt(team.id)"
-                            :numerator="team[BADGE_FIELDS[badge].numerator]"
-                            :denominator="team[BADGE_FIELDS[badge].denominator]"
+                            :teamId="Number.parseInt(teamId)"
+                            :numerator="
+                                stats.team[BADGE_FIELDS[badge].numerator]
+                            "
+                            :denominator="
+                                stats.team[BADGE_FIELDS[badge].denominator]
+                            "
                             @showMore="viewMore(BADGE_TITLES_PLAIN[badge])"
                             :visible="
                                 viewDetails.includes(BADGE_TITLES_PLAIN[badge])
                             "
-                            :dense="!!oppositionTeam"
-                            :prependPercent="
-                                !!oppositionTeam
-                            "
+                            :dense="!!oppositionId"
+                            :prependPercent="!!oppositionId"
                         />
                     </div>
                     <div
                         class="col-6 q-pl-md"
-                        v-if="!reloading && oppositionTeam"
+                        v-if="!reloading && oppositionId && oppositionTeam"
                     >
                         <LazyTeamStatsViewPercentage
                             class="full-width"
                             :badge="badge"
-                            :teamId="Number.parseInt(oppositionTeam.id)"
+                            :teamId="Number.parseInt(oppositionId)"
                             :numerator="
-                                oppositionTeam[BADGE_FIELDS[badge].numerator]
+                                stats.opposition[BADGE_FIELDS[badge].numerator]
                             "
                             :denominator="
-                                oppositionTeam[BADGE_FIELDS[badge].denominator]
+                                stats.opposition[
+                                    BADGE_FIELDS[badge].denominator
+                                ]
                             "
                             @showMore="viewMore(BADGE_TITLES_PLAIN[badge])"
                             :visible="
@@ -114,7 +107,7 @@
                         />
                     </div>
                 </div>
-                <q-separator v-if="index !== fields.length - 1"/>
+                <q-separator v-if="index !== fields.length - 1" />
             </div>
         </div>
     </div>
@@ -148,15 +141,17 @@ import {
     BADGE_TITLES_PLAIN,
     BADGE_DESCRIPTIONS_PLAIN,
 } from "@/constants/badges";
-import Team from '@/store/models/team'
+import Team from "@/store/models/team";
+import Game from "@/store/models/game";
+import TeamStats from "@/store/models/team-stats";
 
 const props = defineProps({
     exclude: {
         type: Array,
-        default: []
+        default: [],
     },
-
-    oppositionId: Object,
+    h2h: Boolean,
+    oppositionId: Number,
     // Requires 'color' to be included in team/oppositionTeam props
     showColors: Boolean,
     teamId: Number,
@@ -168,21 +163,93 @@ const props = defineProps({
 });
 
 const team = computed(() => {
-    const t = useRepo(Team).with('stats').where('id', props.teamId).first() ?? {}
+    const t =
+        useRepo(Team).with("stats").where("id", props.teamId).first() ?? {};
     return {
         ...t,
-        ...t.totalStats
-    }
-})
+        ...t.totalStats,
+    };
+});
 
+const getCumulativeStats = (statsArray) => {
+    return statsArray.reduce((all, current) => {
+        const allCopy = { ...all };
+        Object.keys(current).forEach((key) => {
+            allCopy[key] = allCopy[key] ?? 0 + current[key];
+        });
+        return allCopy;
+    }, {});
+};
+
+const stats = computed(() => {
+    let games;
+    if (!props.h2h) {
+        games =
+            (useRepo(Game)
+                .query()
+                .with("teams")
+
+                .whereHas("teams", (q) => {
+                    return q.whereIn("team_id", [props.teamId]);
+                })
+
+                .get() ?? []).map(({id}) => id);
+    } else {
+        games =
+            (useRepo(Game)
+                .query()
+                .with("teams")
+
+                .whereHas("teams", (q) => {
+                    return q.whereIn("team_id", [props.teamId]);
+                })
+                .whereHas("teams", (q) => {
+                    return q.whereIn("team_id", [props.oppositionId]);
+                })
+
+                .get() ?? []).map(({id}) => id);
+    }
+    if (!props.h2h) {
+        return {
+            team: useRepo(TeamStats)
+                .where("team_id", props.teamId)
+                .where("game_id", 0)
+                .first(),
+            opposition: useRepo(TeamStats)
+                .where("team_id", props.oppositionId)
+                .where("game_id", 0)
+                .first(),
+        };
+    } else {
+        return {
+            team: getCumulativeStats(
+                useRepo(TeamStats)
+                    .where("team_id", props.teamId)
+                    .whereIn("game_id", games)
+                    .get()
+            ),
+            opposition: getCumulativeStats(
+                useRepo(TeamStats)
+                    .where("team_id", props.oppositionId)
+                    .whereIn("game_id", games)
+                    .get()
+            ),
+        };
+    }
+});
 const oppositionTeam = computed(() => {
     if (!props.oppositionId) return null;
-    const t = useRepo(Team).with('stats').where('id', props.oppositionId).first() ?? {}
+    const t =
+        useRepo(Team)
+            .with("stats")
+            .with("games")
+            .where("id", props.oppositionId)
+            .first() ?? {};
     return {
         ...t,
-        ...t.totalStats
-    }
-})
+        ...t.totalStats,
+    };
+});
 
 const EXCLUDE_FIELDS = ["survivalist", ...props.exclude];
 const fields = Object.keys(BADGE_FIELDS).filter(
@@ -203,18 +270,10 @@ const viewMore = (str) => {
     }
 };
 
-const reloading = ref(false)
-
-// watch(() => props.team || props.oppositionTeam, () => {
-//     reloading.value = true;
-//     nextTick(() => {
-//         reloading.value = false;
-//     })
-// })
-
+const reloading = ref(false);
 </script>
 <script>
-    export default {
-        name: 'TeamStatsView'
-    }
+export default {
+    name: "TeamStatsView",
+};
 </script>
