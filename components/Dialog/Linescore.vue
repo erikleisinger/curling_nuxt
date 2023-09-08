@@ -3,9 +3,12 @@
         @close="toggleLineScore({ open: false })"
         :backable="false"
         :loading="loading"
-        :maxWidth="view === views.LINESCORE  && $q.platform.is.desktop ? 'unset' : '700px'"
+        :maxWidth="
+            view === views.LINESCORE && $q.platform.is.desktop
+                ? 'unset'
+                : '700px'
+        "
     >
-
         <template v-slot:footer v-if="view !== views.NO_TEAM">
             <div class="row">
                 <q-btn
@@ -34,29 +37,72 @@
             <q-btn flat round icon="close" @click="confirmUnsaved = true" />
         </template>
 
-        <div v-if="view === views.NO_TEAM" class="full-height full-width row justify-center q-pa-md" style="box-sizing: border-box">
-           <div class="column">
-            <h1>You aren't on a team!</h1>
-            <div>You may only enter linescores for teams on which you are a member.</div>
-                   <div class="full-width column items-center q-mt-md">
-                    <q-btn rounded color="primary" @click="createTeam">Create new team</q-btn>
-                    <q-btn class="q-mt-md" rounded color="primary" @click="searchForTeam">Search existing teams</q-btn>
-                   </div>
-           </div>
-        </div>  
+        <div
+            v-if="view === views.NO_TEAM"
+            class="full-height full-width row justify-center q-pa-md"
+            style="box-sizing: border-box"
+        >
+            <div class="column">
+                <h1>You aren't on a team!</h1>
+                <div>
+                    You may only enter linescores for teams on which you are a
+                    member.
+                </div>
+                <div class="full-width column items-center q-mt-md">
+                    <q-btn rounded color="primary" @click="createTeam"
+                        >Create new team</q-btn
+                    >
+                    <q-btn
+                        class="q-mt-md"
+                        rounded
+                        color="primary"
+                        @click="searchForTeam"
+                        >Search existing teams</q-btn
+                    >
+                </div>
+            </div>
+        </div>
 
         <!-- STEP 1: Game params -->
-        <LinescoreTeamSelect
+        <GameSummary
+            v-model="gameParams"
+            v-if="
+                view === views.HOME_SELECT ||
+                view === views.AWAY_SELECT ||
+                view === views.COLOR_SELECT ||
+                view === views.HAMMER_SELECT ||
+                view === views.END_COUNT_SELECT
+            "
+            :endCount="endCount"
+            :hideValues="hideValues[view]"
+            @avatarClick="onAvatarClick"
+            static
+            :selectionMode="selectionMode[view]"
+            :score="score"
+            @update:endCount="updateEndCount"
+         
+        >
+    <template v-slot:prepend>
+       <div class="q-pa-sm q-mb-lg">
+        <h2 class="text-md text-bold text-center">{{viewTitle}}</h2>
+         <h3 class="text-sm  text-center">{{viewSubtitle}}</h3>
+       </div>
+    </template>
+    <template v-slot:awayName v-if="!gameParams?.away?.id && view === views.AWAY_SELECT">
+        <q-input dense rounded outlined label="Enter custom name" v-model="gameParams.away.name"/>
+    </template>
+        </GameSummary>  
+        <!-- <LinescoreTeamSelect
             v-if="view === views.HOME_SELECT"
             v-model="gameParams.home"
             :restrictIds="userTeams.map(({id}) => id)"
-        >
-        Select your team
+        > -->
+        <!-- Select your team
         <template v-slot:subtitle>
             You may only select teams on which you are a member.
         </template>
-        </LinescoreTeamSelect>
-         <LinescoreTeamSelect
+        </LinescoreTeamSelect> -->
+        <!-- <LinescoreTeamSelect
             v-if="view === views.AWAY_SELECT"
             v-model="gameParams.away"
             allowCustom
@@ -64,20 +110,18 @@
           
         >
     Select an opposition
-    <!-- <template v-slot:subtitle>
-        If you select a team you are not on, an invitation will be sent to that team.
-    </template> -->
-         </LinescoreTeamSelect>
 
-        <LinescoreColorSelect v-if="view === views.COLOR_SELECT" v-model="gameParams"/>
-        <LinescoreHammerSelect v-if="view === views.HAMMER_SELECT" v-model="gameParams"/>
+         </LinescoreTeamSelect> -->
+
+        <!-- <LinescoreColorSelect v-if="view === views.COLOR_SELECT" v-model="gameParams"/> -->
+        <!-- <LinescoreHammerSelect v-if="view === views.HAMMER_SELECT" v-model="gameParams"/> -->
         <!-- STEP 2: End count select -->
 
-        <LinescoreEndCountSelect
+        <!-- <LinescoreEndCountSelect
             v-if="view === views.END_COUNT_SELECT"
             @select="view = views.LINESCORE"
             v-model="endCount"
-        />
+        /> -->
 
         <!-- STEP 4: Line score input -->
 
@@ -92,7 +136,7 @@
                     away: gameParams.away,
                     home_color: gameParams.homeColor,
                     away_color: gameParams.awayColor,
-                    hammerFirstEnd: gameParams.hammerFirstEndTeam
+                    hammerFirstEnd: gameParams.hammerFirstEndTeam,
                 }"
                 :endCount="endNumbers.length"
                 :score="score"
@@ -110,17 +154,22 @@
             >
                 <div class="start__padding col-grow" />
 
-                
                 <LinescoreScrollerSection
                     @visible="setVisible(end)"
                     v-for="end in endNumbers"
                     :key="`end-input-${end}`"
-                   
                 >
                     <div
                         :id="`scoreboard-end-${end}`"
                         class="scoreboard__end-container"
-                        :style="{maxWidth: $q.platform.is.desktop ? `${colWidth()}vw` : 'unset', minWidth: $q.platform.is.desktop ? `${colWidth()}vw` : '26vh'}"
+                        :style="{
+                            maxWidth: $q.platform.is.desktop
+                                ? `${colWidth()}vw`
+                                : 'unset',
+                            minWidth: $q.platform.is.desktop
+                                ? `${colWidth()}vw`
+                                : '26vh',
+                        }"
                     >
                         <LinescoreColumn
                             v-model="score[end]"
@@ -143,7 +192,10 @@
                 >
                     <div
                         class="next-options__container column"
-                        v-if="visible === Object.keys(score).length && visible < endCount + 3"
+                        v-if="
+                            visible === Object.keys(score).length &&
+                            visible < endCount + 3
+                        "
                         style="min-width: 10vw"
                     >
                         <q-btn
@@ -175,35 +227,35 @@
                 :style="{ height: contentHeight }"
                 v-else
             >
-       
-
-                
-                
-                    <div
-                        :id="`scoreboard-end-${end}`"
-                        class="scoreboard__end-container"
-                         v-for="end in endNumbers"
+                <div
+                    :id="`scoreboard-end-${end}`"
+                    class="scoreboard__end-container"
+                    v-for="end in endNumbers"
                     :key="`end-input-${end}`"
-                        :style="{maxWidth: $q.platform.is.desktop ? `${colWidth()}vw` : 'unset', minWidth: $q.platform.is.desktop ? `${colWidth()}vw` : '26vh'}"
-                    >
-                        <LinescoreColumn
-                            v-model="score[end]"
-                            :visible="true"
-                            :endno="end"
-                            :extra="end > endCount"
-                            :canExtra="(end >= endCount) && score[end].home !== 'X'"
-                            @remove="removeEnd(end)"
-                            :shakeable="
-                                end < endCount && score[end].home !== 'X'
-                            "
-                            @shake="concede(end)"
-                                       />
-                    </div>
-       
+                    :style="{
+                        maxWidth: $q.platform.is.desktop
+                            ? `${colWidth()}vw`
+                            : 'unset',
+                        minWidth: $q.platform.is.desktop
+                            ? `${colWidth()}vw`
+                            : '26vh',
+                    }"
+                >
+                    <LinescoreColumn
+                        v-model="score[end]"
+                        :visible="true"
+                        :endno="end"
+                        :extra="end > endCount"
+                        :canExtra="end >= endCount && score[end].home !== 'X'"
+                        @remove="removeEnd(end)"
+                        :shakeable="end < endCount && score[end].home !== 'X'"
+                        @shake="concede(end)"
+                    />
+                </div>
             </div>
         </div>
 
-        <LinescoreTimeSelect
+        <!-- <LinescoreTimeSelect
             v-if="view === views.DETAILS"
             v-model="start_time"
         />
@@ -213,8 +265,8 @@
             @update:rink="rink = $event"
             :sheet="sheet"
             @update:sheet="sheet = $event"
-        />
-        <LinescoreConfirmation
+        /> -->
+        <!-- <LinescoreConfirmation
             :score="{ home: homeTotal, away: awayTotal, finalEndCount: getFinalEndCount(), totalEndCount: endCount }"
             :gameParams="gameParams"
             :startTime="start_time"
@@ -223,6 +275,17 @@
             v-if="view === views.CONFIRM"
             @save="save"
             @nav="goToView"
+        /> -->
+         <GameSummary
+            v-model="gameParams"
+            v-if="
+                view === views.CONFIRM 
+            "
+            :endCount="endCount"
+            static
+            :score="score"
+               :homePoints="homeTotal"
+            :awayPoints="awayTotal"
         />
     </DialogFloating>
     <DialogConfirmation
@@ -236,7 +299,7 @@
     >
         Are you sure you want to close? All unsaved changes will be lost.
     </DialogConfirmation>
-        <DialogConfirmation
+    <DialogConfirmation
         v-if="!!showInvitation"
         confirmButtonText="Discard"
         cancelButtonText="Cancel"
@@ -253,8 +316,6 @@ $column-width: 26vh;
 $gutter-width: 20vw;
 $scroll-margin: -100px;
 $team-nav-margin: 6vh;
-
-
 
 .scoreboard__container {
     width: 100%;
@@ -332,9 +393,9 @@ $team-nav-margin: 6vh;
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
 import { useGameStore } from "@/store/games";
-import {useGameRequestStore} from '@/store/game-requests'
-import {useUserTeamStore} from '@/store/user-teams'
-import {useUserStore} from '@/store/user'
+import { useGameRequestStore } from "@/store/game-requests";
+import { useUserTeamStore } from "@/store/user-teams";
+import { useUserStore } from "@/store/user";
 import {
     useElementSize,
     useScroll,
@@ -346,7 +407,7 @@ import {
 import { generateEnds } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
-import {views} from '@/constants/linescore'
+import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
 
 const dayjs = useDayjs();
@@ -411,7 +472,7 @@ const defaultScore = {
         home: 0,
         away: 0,
     },
-}
+};
 
 const score = ref(defaultScore);
 
@@ -436,10 +497,14 @@ const endNumbers = computed(() =>
 
 const getFinalEndCount = () => {
     return Object.keys(score.value).reduce((all, current) => {
-        if (score.value[current]?.home === 'X' && score.value[current]?.away === 'X') return all;
+        if (
+            score.value[current]?.home === "X" &&
+            score.value[current]?.away === "X"
+        )
+            return all;
         return all + 1;
-    }, 0)
-}
+    }, 0);
+};
 
 /**
  * Update default score when end count changes;
@@ -467,22 +532,20 @@ watch(
 
 const view = ref(null);
 
-
 const viewOrder = [
-
     views.HOME_SELECT,
-        views.AWAY_SELECT,
+    views.AWAY_SELECT,
     views.COLOR_SELECT,
     views.HAMMER_SELECT,
     views.END_COUNT_SELECT,
     views.LINESCORE,
-    views.DETAILS,
+    // views.DETAILS,
     views.CONFIRM,
 ];
 
 const goToView = useThrottleFn((v) => {
     view.value = v;
-})
+});
 
 const changeView = useThrottleFn((inc) => {
     const index = viewOrder.indexOf(view.value);
@@ -493,9 +556,9 @@ const changeView = useThrottleFn((inc) => {
 const nextDisabled = computed(() => {
     if (view.value === views.NO_TEAM) return true;
     if (view.value === views.HOME_SELECT) {
-        return !gameParams.value.home?.id
+        return !gameParams.value.home?.id;
     } else if (view.value === views.AWAY_SELECT) {
-return !gameParams.value.away?.id && !gameParams.value.away?.name
+        return !gameParams.value.away?.id && !gameParams.value.away?.name;
     }
     return false;
 });
@@ -503,11 +566,18 @@ return !gameParams.value.away?.id && !gameParams.value.away?.name
 const handleNext = () => {
     if (view.value !== views.CONFIRM) {
         changeView(+1);
+        if (
+            view.value === views.HAMMER_SELECT &&
+            !gameParams.value.hammerFirstEndTeam
+        ) {
+            gameParams.value.hammerFirstEndTeam =
+                gameParams.value.home?.id || gameParams.value.away?.id;
+        }
         return;
     } else if (view.value === views.CONFIRM) {
         save();
     }
-}
+};
 
 const confirmUnsaved = ref(false);
 
@@ -565,8 +635,8 @@ const createSheet = async (rink_id, sheet_number) => {
     return sheetFromDb?.id;
 };
 
-const showInvitation = ref(false)
-const saving = ref(false)
+const showInvitation = ref(false);
+const saving = ref(false);
 const save = async () => {
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
@@ -574,12 +644,13 @@ const save = async () => {
     const sheetCopy = sheet.value;
     const editedIdCopy = editedId.value;
 
-    let shouldSendInvitation = false
+    let shouldSendInvitation = false;
 
-    if (!params.away?.id || !userTeams.value.some(({id}) => id === params?.away?.id)) shouldSendInvitation = true;
-
-
-
+    if (
+        !params.away?.id ||
+        !userTeams.value.some(({ id }) => id === params?.away?.id)
+    )
+        shouldSendInvitation = true;
 
     toggleLineScore({ open: false });
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
@@ -590,7 +661,10 @@ const save = async () => {
         home: params?.home?.id,
         home_color: params?.homeColor,
         away_color: params?.awayColor,
-        hammer_first_end: params?.hammerFirstEndTeam === 'away' ? params.away?.id : params?.home?.id,
+        hammer_first_end:
+            params?.hammerFirstEndTeam === "away"
+                ? params.away?.id
+                : params?.home?.id,
         end_count: endCount.value,
         completed: false,
         conceded,
@@ -602,7 +676,8 @@ const save = async () => {
     if (!!params?.away?.id) {
         gameToCreate.away = params.away.id;
     } else {
-        gameToCreate.placeholder_away = params?.away?.name ?? 'Unnamed Opposition'
+        gameToCreate.placeholder_away =
+            params?.away?.name ?? "Unnamed Opposition";
     }
 
     if (editedIdCopy) {
@@ -611,7 +686,6 @@ const save = async () => {
 
     const gameId = await createGame(gameToCreate);
     if (!gameId) return;
-    
 
     const ends = generateEnds(
         scoreCopy,
@@ -620,75 +694,83 @@ const save = async () => {
         shouldSendInvitation ? null : gameToCreate?.away,
         gameId
     );
-    await createEnds(ends, !!editedIdCopy)
+    await createEnds(ends, !!editedIdCopy);
 
-    await createTeamGameJunction({...gameToCreate, id: gameId}, shouldSendInvitation)
+    await createTeamGameJunction(
+        { ...gameToCreate, id: gameId },
+        shouldSendInvitation
+    );
 
-    createGameStats(gameToCreate?.home, gameId)
-    createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId)
-    
-    
+    createGameStats(gameToCreate?.home, gameId);
+    createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId);
 
     // await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
-  
 
-    return navigateTo(`/games/${gameId}`)
+    return navigateTo(`/games/${gameId}`);
 };
 
 const createGameStats = async (team_id_param, game_id_param) => {
-    const client = useSupabaseClient()
-    const {data} = await client.rpc('get_team_game_statistics', {team_id_param, game_id_param})
+    const client = useSupabaseClient();
+    const { data } = await client.rpc("get_team_game_statistics", {
+        team_id_param,
+        game_id_param,
+    });
     const [stats] = data;
     if (!stats) return;
-    const {errors} = await client.from('team_stats').insert({
+    const { errors } = await client.from("team_stats").insert({
         ...stats,
         team_id: team_id_param,
-        game_id: game_id_param
-    })
-    if(errors) console.error(errors)
-}
+        game_id: game_id_param,
+    });
+    if (errors) console.error(errors);
+};
 
 const createTeamGameJunction = async (game, isPending) => {
-    const {id: game_id, home_color, away_color, home, away, placeholder_away} = game;
-    const {errors} = await useSupabaseClient().from('game_team_junction').insert([
-        {
-            game_id,
-            team_id: home,
-            color: home_color,
-            pending: false,
-        },
-                 {
-            game_id,
-            team_id: away,
-            color: away_color,
-            pending: isPending,
-            placeholder: placeholder_away
-        },
-       
-        
-    ])
-}
+    const {
+        id: game_id,
+        home_color,
+        away_color,
+        home,
+        away,
+        placeholder_away,
+    } = game;
+    const { errors } = await useSupabaseClient()
+        .from("game_team_junction")
+        .insert([
+            {
+                game_id,
+                team_id: home,
+                color: home_color,
+                pending: false,
+            },
+            {
+                game_id,
+                team_id: away,
+                color: away_color,
+                pending: isPending,
+                placeholder: placeholder_away,
+            },
+        ]);
+};
 
 const createGame = async (game) => {
     const gameId = await gameStore.insertGame(game);
     return gameId;
-
 };
 
 const createEnds = async (ends, isEdited) => {
-
-     if (isEdited) {
+    if (isEdited) {
         await gameStore.bulkUpdateGameEnds(ends);
     } else {
         await gameStore.createGameEnds(ends);
     }
-}
+};
 
 /**
  * INIT
  */
 
-    const gameStore = useGameStore();
+const gameStore = useGameStore();
 
 const fetchGame = async (game) => {
     const { id } = game;
@@ -696,8 +778,6 @@ const fetchGame = async (game) => {
         console.error("no game to initialize");
         return;
     }
-
-
 
     const gameFromStore = await gameStore.getGame(id, true);
     const {
@@ -755,13 +835,13 @@ onMounted(async () => {
     } else {
         if (options?.homeTeam) {
             gameParams.value.home = options.homeTeam;
-            view.value = views.HOME_SELECT
+            view.value = views.HOME_SELECT;
         } else if (!userTeams.value.length) {
-            view.value = views.NO_TEAM
+            view.value = views.NO_TEAM;
         } else {
-       view.value = views.HOME_SELECT;
+            view.value = views.HOME_SELECT;
         }
- 
+
         // view.value = views.CONFIRM
     }
     loading.value = false;
@@ -824,31 +904,31 @@ const showExtraEnd = () => {
  */
 
 const userTeamStore = useUserTeamStore();
-const userTeams = computed(() => userTeamStore.userTeams)
+const userTeams = computed(() => userTeamStore.userTeams);
 
 const userStore = useUserStore();
 
 const createTeam = () => {
-    toggleLineScore({open:false});
+    toggleLineScore({ open: false });
     nextTick(() => {
-        toggleTeamViewer({open: true})
-    })
-}
+        toggleTeamViewer({ open: true });
+    });
+};
 const searchForTeam = () => {
-    toggleLineScore({open:false});
+    toggleLineScore({ open: false });
     nextTick(() => {
         toggleGlobalSearch({
             open: true,
             options: {
-                resourceTypes: ['team'],
-                inputLabel: 'Search for a team to join',
+                resourceTypes: ["team"],
+                inputLabel: "Search for a team to join",
                 callback: (team) => {
-                    toggleTeamViewer({open: true, team})
-                }
-            }
-        })
-    })
-}
+                    toggleTeamViewer({ open: true, team });
+                },
+            },
+        });
+    });
+};
 
 /**
  * Desktop linescore input sizing
@@ -857,5 +937,128 @@ const searchForTeam = () => {
 const colWidth = () => {
     const numEnds = Object.keys(score.value)?.length;
     return 100 / numEnds;
-}
+};
+
+const colorOptions = ref([
+    {
+        value: "red",
+        label: "Red",
+    },
+    {
+        value: "yellow",
+        label: "Yellow",
+    },
+    {
+        value: "blue",
+        label: "Blue",
+    },
+]);
+
+const getNextColorIndex = (index, prevent) => {
+    console.log("PREVENT: ", prevent);
+    let nextIndex = index + 1 > colorOptions.value.length - 1 ? 0 : index + 1;
+    if (prevent.includes(colorOptions.value[nextIndex]?.value)) {
+        return getNextColorIndex(nextIndex, prevent);
+    }
+    return nextIndex;
+};
+
+const changeColor = (team) => {
+    const currentColorIndex =
+        colorOptions.value.findIndex(
+            ({ value }) => value === gameParams.value[`${team}Color`]
+        ) || 0;
+
+    const next = getNextColorIndex(currentColorIndex, [
+        gameParams.value[`${team === "home" ? "away" : "home"}Color`],
+    ]);
+    gameParams.value[`${team}Color`] = colorOptions.value[next]?.value || "red";
+};
+
+const onAvatarClick = (event) => {
+    if (view.value === views.HOME_SELECT) {
+        toggleGlobalSearch({
+            open: true,
+            options: {
+                inputLabel: "Search for your team",
+                resourceTypes: ["team"],
+                restrictIds: userTeams.value.map(({ id }) => id),
+                callback: (selection) =>
+                    (gameParams.value.home = {
+                        ...selection,
+                        team_avatar: selection.avatar,
+                    }),
+            },
+        });
+    } else if (view.value === views.AWAY_SELECT) {
+        toggleGlobalSearch({
+            open: true,
+            options: {
+                inputLabel: "Search for your team",
+                resourceTypes: ["team"],
+                filterIds: [gameParams.value.home?.id],
+                callback: (selection) =>
+                    (gameParams.value.away = {
+                        ...selection,
+                        team_avatar: selection.avatar,
+                    }),
+            },
+        });
+    } else if (view.value === views.COLOR_SELECT) {
+        changeColor(event);
+    } else if (view.value === views.HAMMER_SELECT) {
+        gameParams.value.hammerFirstEndTeam = gameParams.value[`${event}`]?.id;
+    }
+};
+
+const hideValues = ref({
+    [views.HOME_SELECT]: [
+        "away",
+        "score",
+        "colors",
+        "linescore",
+        "linescoreHeader",
+        'details'
+    ],
+    [views.AWAY_SELECT]: ["score", "colors", "linescore", "linescoreHeader",
+        'details'],
+    [views.COLOR_SELECT]: ["score", "linescore", "linescoreHeader",
+        'details'],
+    [views.HAMMER_SELECT]: ["score", "linescore", "linescoreHeader",
+        'details'],
+    [views.END_COUNT_SELECT]: ["score", "linescore",
+        'details'],
+});
+
+const selectionMode = ref({
+    [views.HOME_SELECT]: 'home',
+      [views.AWAY_SELECT]: 'away',
+    [views.COLOR_SELECT]: "colors",
+    [views.HAMMER_SELECT]: "hammer",
+    [views.END_COUNT_SELECT]: "endcount",
+});
+
+const updateEndCount = (inc) => {
+    if (endCount.value + inc < 6 || endCount.value + inc > 10) return;
+    endCount.value += inc;
+};
+
+const viewTitle = computed(() => {
+    return {
+        [views.HOME_SELECT]: 'Select your team',
+        [views.AWAY_SELECT]: 'Select opposition',
+        [views.COLOR_SELECT]: 'Select rock colors',
+        [views.HAMMER_SELECT]: 'Hammer in first end',
+        [views.END_COUNT_SELECT]: 'Configure number of ends'
+    }[view.value] ?? 'Title'
+})
+const viewSubtitle = computed(() => {
+    return {
+        [views.HOME_SELECT]: 'Click the avatar to search',
+         [views.AWAY_SELECT]: "Click the avatar to search, or type the opposition's name so you can invite them later.",
+          [views.COLOR_SELECT]: 'Click an avatar to change colors',
+        [views.HAMMER_SELECT]: 'Click an avatar to change',
+        [views.END_COUNT_SELECT]: 'Use the plus and minus buttons to specify how many ends the game should be.'
+    }[view.value] ?? 'Title'
+})
 </script>

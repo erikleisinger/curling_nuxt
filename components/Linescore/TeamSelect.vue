@@ -16,6 +16,7 @@
                                 :teamId="
                                     selections?.id
                                 "
+                                :viewable="false"
                               
                             />
                         </div>

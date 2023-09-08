@@ -56,6 +56,8 @@ export default defineNuxtConfig({
                 "slideOutRight",
                 "slideOutUp",
                 "slideOutDown",
+                "zoomIn",
+                "zoomOut"
             ],
             fontIcons: ["material-icons-outlined", "material-icons"],
             

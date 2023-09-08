@@ -299,8 +299,7 @@ const currentGame = computed(() => {
 })
 
 const home = computed(() => {
-    if (!currentGame?.value?.teams?.length) return {};
-    const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[0]?.team_id).first()
+    const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[0]?.team_id).where('game_id', Number(gameId)).first()
     return {
         ...team,
         ...(team?.team ?? {})
@@ -308,7 +307,7 @@ const home = computed(() => {
 })
 const away = computed(() => {
     if (!currentGame?.value?.teams?.length) return {};
- const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[1]?.team_id).first()
+ const team = useRepo(GameTeam).with('team').where('team_id', currentGame?.value?.teams[1]?.team_id).where('game_id', Number(gameId)).first()
     return {
         ...team,
         ...(team?.team ?? {})
@@ -397,14 +396,14 @@ const generateScore = async (game) => {
                         details[index]?.points_scored === null
                             ? "X"
                             : details[index]?.scoring_team_id ===
-                              home.value?.id
+                              home.value?.id || (home.value?.pending && !details[index]?.scoring_team_id)
                             ? details[index]?.points_scored
                             : 0,
                     away:
                         details[index]?.points_scored === null
                             ? "X"
-                            : (details[index]?.scoring_team_id ===
-                              away.value?.id || !details[index]?.scoring_team_id)
+                            : details[index]?.scoring_team_id ===
+                              away.value?.id || (away.value?.pending && !details[index]?.scoring_team_id)
                             ? details[index]?.points_scored
                             : 0,
                     ...details[index],

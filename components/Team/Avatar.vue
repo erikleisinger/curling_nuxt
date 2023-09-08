@@ -1,39 +1,53 @@
 <template>
-    <div class="avatar-outer__container " :class="{clickable: 'viewable'}" >
+    <div class="avatar-outer__container" :class="{ clickable: 'viewable' }">
         <div
-            class="avatar-inner"
+            class="avatar-inner "
             :class="{
                 upload: avatarType === 'upload',
 
                 viewable,
+                'help--animation': highlight
             }"
-            :style="{height: teamId === null ? '100%' : 'unset'}"
+            :style="{ height: teamId === null ? '100%' : 'unset' }"
             @click="clickAvatar"
             ref="innerContainer"
         >
             <div
-                class="overlay row justify-center items-center"
+                class="overlay row justify-center items-center "
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible: (viewable || invitable || editable) && ($q.platform.is.desktop || visible),
+                    visible:
+                        (viewable || invitable || editable) &&
+                        ($q.platform.is.desktop || visible),
                 }"
             >
                 <div class="text-white text-bold" v-if="!editable">
-                    {{invitable ? 'Invite' : 'View'}}
+                    {{ invitable ? "Invite" : "View" }}
                 </div>
-                
-                <q-icon v-else name="edit" color="white" size="md"/>
+
+                <q-icon v-else name="edit" color="white" size="md" />
             </div>
             <div
-                class="ring"
-                :class="className"
+                class="ring "
+                :class="{'help--highlight': highlight}"
                 v-if="loaded"
-                :style="{ left: avatarType === 'upload' ? '0' : '0', ...styleObj }"
+                :style="{
+                    left: avatarType === 'upload' ? '0' : '0',
+                    ...styleObj,
+                }"
+              
             />
-           
-            <div class="inner-wrap">
+            <!-- <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut"> -->
+            <div class="ring animated" v-if="animateRing && color" />
+            <!-- </transition> -->
 
-                <UploaderDraft v-if="editable && visible" style="z-index: 10" @upload="emit('update', $event)" :emitOnly="create"/>
+            <div class="inner-wrap ">
+                <UploaderDraft
+                    v-if="editable && visible"
+                    style="z-index: 10"
+                    @upload="emit('update', $event)"
+                    :emitOnly="create"
+                />
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
                         v-if="avatarType === 'upload' && avatarUrl"
@@ -50,14 +64,14 @@
                 </div>
                 <Avataaar
                     v-else-if="avatarType === 'avataaar'"
-                    v-bind="team.team_avatar
-                    "
+                    v-bind="team.team_avatar"
                 />
             </div>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
+
 .avatar-outer__container {
     position: relative;
     margin-top: -16%;
@@ -70,7 +84,6 @@
 
         &.upload {
             padding-top: 16%;
-          
         }
 
         @include sm {
@@ -90,21 +103,32 @@
             width: 100%;
             box-sizing: border-box;
             position: absolute;
-            border:3px solid rgba(0,0,0,0.1);
-            box-shadow: $pretty-shadow-2;
-
+            border: 3px solid rgba(0, 0, 0, 0.1);
+      
             bottom: 0;
-            transform: scale(1.02);
             border-radius: 50%;
             opacity: 1;
-
             bottom: 0;
             left: 0;
             right: 0;
             margin: auto;
+            &.animated {
+        -webkit-animation: 20s rotation infinite linear;
+        border-width: 9px !important;
+        border-color: rgba(0,0,0,0.2)!important;
+        animation: 20s rotation infinite linear;
+        border-style: dashed !important;
+    }
+    &:not(.animated) {
+        transform: scale(1.02);
+    }
+    &:not(.help--highlight) {
+              box-shadow: $pretty-shadow-2;
+    }
         }
     }
 }
+
 .uploaded-avatar__container {
     aspect-ratio: 1/1;
     width: 100%;
@@ -139,24 +163,38 @@
         }
     }
 }
+
+@keyframes rotation {
+    0% {
+        transform: rotateZ(0deg) scale(1.2);
+        // opacity: 0;
+    }
+    100% {
+        transform: rotateZ(360deg) scale(1.2);
+        // opacity: 1;
+    }
+}
 </style>
 <script setup>
 import { useStorageStore } from "@/store/storage";
 import { onClickOutside, useElementHover } from "@vueuse/core";
-import Team from '@/store/models/team'
+import Team from "@/store/models/team";
 const props = defineProps({
+    animateRing: Boolean,
     color: String,
     create: Boolean,
     editable: Boolean,
+    highlight: Boolean,
     invitable: Boolean,
     teamId: Number,
     viewable: Boolean,
 });
 
-const emit = defineEmits(['edit', 'invite', 'update'])
+const emit = defineEmits(["edit", "invite", "update"]);
 
-
-const team = computed(() => useRepo(Team).where('id', props.teamId).first() ?? {})
+const team = computed(
+    () => useRepo(Team).where("id", props.teamId).first() ?? {}
+);
 
 const storage = useStorageStore();
 
@@ -164,33 +202,30 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-
 const avatarUrl = computed(() => storage.teamAvatars[team.value.id]);
 
 const avatarType = computed(() => {
-    if (team.value.avatar_type === 'upload') {
-        return team.value.avatar_url ? 'upload' : 'avataaar'
+    if (team.value.avatar_type === "upload") {
+        return team.value.avatar_url ? "upload" : "avataaar";
     }
-    return team.value.avatar_type ?? 'avataaar'
-})
+    return team.value.avatar_type ?? "avataaar";
+});
 
 const fetchAvatar = async (path) => {
     storage.getTeamAvatar(team.value.id, path);
 };
 
 const avatar = ref(null);
-const loaded = ref(true)
-
+const loaded = ref(true);
 
 const getAvatar = async () => {
-    if (team.value.avatar_type === "upload" ) {
+    if (team.value.avatar_type === "upload") {
         if (team.value.avatar_url) {
-fetchAvatar(team.value.avatar_url);
+            fetchAvatar(team.value.avatar_url);
         } else {
-            team.value.avatar_type = 'avataaar';
-            avatar.value = {}
+            team.value.avatar_type = "avataaar";
+            avatar.value = {};
         }
-        
     } else {
         avatar.value = team.value.team_avatar;
     }
@@ -198,46 +233,45 @@ fetchAvatar(team.value.avatar_url);
 
 onMounted(() => {
     getAvatar();
-})
-
-const className = ref('dummy')
+});
 
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));
 
-const hovered = useElementHover(innerContainer)
+const hovered = useElementHover(innerContainer);
 
 watch(hovered, (val) => {
-    if($q.platform.is.mobile) return;
+    if ($q.platform.is.mobile) return;
     visible.value = val;
-})
+});
 
 const clickAvatar = () => {
     if (!props.viewable && !props.invitable && !props.editable) return;
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
-} else if (props.viewable) {
+    } else if (props.viewable) {
         return navigateTo(`/teams/${team.value.id}`);
     } else if (props.invitable) {
-        emit('invite')
-    } 
+        emit("invite");
+    }
     // else if (props.editable) {
     //     emit('edit')
     // }
 };
-const {getColor} = useColor()
+const { getColor } = useColor();
+
+const avatarColor = computed(() => getColor(props.color));
 const styleObj = computed(() => {
     if (!props.color) return {};
     return {
-        border: `6px solid ${getColor(props.color)}`,
-        transform: 'scale(1.08)',
-        'box-shadow': 'unset'
-    }
-})
+        border: `${props.animateRing ? '10' : '6'}px solid ${getColor(props.color)}`,
+        transform: `scale(${props.animateRing ? '1.2' : '1.08'})`,
+        "box-shadow": "unset",
+    };
+});
 </script>
 <script>
 export default {
-    name: 'TeamAvatar'
-}
+    name: "TeamAvatar",
+};
 </script>
-

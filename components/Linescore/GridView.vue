@@ -6,9 +6,13 @@
                 backgroundColor: transparent ? '' : 'rgba(255,255,255, 0.8)',
             }"
         >
-            <div class="grid__column">
-                <div><div style="visibility: hidden">H</div></div>
-                <div class="row items-center justify-center color-column">
+            <div class="grid__column" :style="hideScoreStyle">
+                <div>
+                    <slot name="prependHeader">
+                    <div style="visibility: hidden">H</div>
+                    </slot>
+                    </div>
+                <div class="row items-center justify-center color-column" v-if="!headerOnly">
                     <div class="team-avatar__container">
                     <TeamAvatar
                         style="height: 100%; width: 100%"
@@ -31,9 +35,9 @@
                 <slot name="header" />
                 <div
                     class="row items-center justify-center color-column"
-    
+    v-if="!headerOnly"
                 >
-                <div class="team-avatar__container">
+                <div class="team-avatar__container" >
                     <TeamAvatar
                         style="height: 100%; width: 100%"
                         :teamId="game?.away?.id"
@@ -60,27 +64,31 @@
             :class="{ selected: selected === end }"
             @click="emit('select', end)"
         >
-            <div class="grid__column">
+            <div class="grid__column" :style="hideScoreStyle">
                 <div class="end-column">{{ end }}</div>
-                <div class="score-column color-column">{{ score[end]?.home ?? 0 }}</div>
+                <div class="score-column color-column" v-if="!headerOnly">{{ score[end]?.home ?? 0 }}</div>
                 <slot v-bind:end="end" name="row" />
-                <div class="score-column color-column">{{ score[end]?.away ?? 0 }}</div>
+                <div class="score-column color-column" v-if="!headerOnly">{{ score[end]?.away ?? 0 }}</div>
             </div>
         </div>
         <div
             class="row justify-center items-center text-xl linescore-grid__container--item"
         >
-            <div class="grid__column final">
-                <div class="end-column">T</div>
+            <div class="grid__column final" :style="hideScoreStyle">
+                <div class="end-column">
+                    <slot name="appendHeader">
+                        T
+                    </slot>
+                </div>
                 <!-- :class="{ selected: awayTotal < homeTotal }" -->
-                <div class="score-column color-column">
+                <div class="score-column color-column" v-if="!headerOnly">
                     {{ homeTotal }}
                 </div>
 
                 <slot name="footer" />
 
                 <!-- :class="{ selected: homeTotal < awayTotal }" -->
-                <div class="score-column color-column">
+                <div class="score-column color-column" v-if="!headerOnly">
                     {{ awayTotal }}
                 </div>
             </div>
@@ -175,6 +183,10 @@ const props = defineProps<{
     colorCode: boolean;
     game: GameScoreInfo;
     endCount: number;
+    headerOnly: {
+        type: Boolean,
+        default: false
+    },
     score: GameScore;
     selected: number;
     transparent?: Boolean;
@@ -217,4 +229,6 @@ const awayBackground = computed(() => {
     if (!props.colorCode) return;
     return colors[props.game.away_color]
 })
+
+const hideScoreStyle = computed(() => props.headerOnly ? {'grid-template-rows': '1fr'} : {})
 </script>
