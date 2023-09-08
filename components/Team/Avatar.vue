@@ -202,21 +202,6 @@ onMounted(() => {
 
 const className = ref('dummy')
 
-// watch(
-//     () => props.team,
-//     (val) => {
-//         if (!val?.avatar_type) {
-//             avatar.value = null;
-//             team.value.avatar_type = "avataaar";
-//         } else {
-//             team.value.avatar_type = val.avatar_type;
-//             getAvatar();
-//         }
-//         className.value = !val?.id ? "dummy" : "user-team";
-//     },
-//     { immediate: true }
-// );
-
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));
 

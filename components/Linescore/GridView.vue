@@ -12,7 +12,7 @@
                     <div class="team-avatar__container">
                     <TeamAvatar
                         style="height: 100%; width: 100%"
-                        :team="game?.home"
+                        :teamId="game?.home?.id"
                         :viewable="false"
                         :color="game?.home_color"
                     />
@@ -36,7 +36,7 @@
                 <div class="team-avatar__container">
                     <TeamAvatar
                         style="height: 100%; width: 100%"
-                        :team="game?.away"
+                        :teamId="game?.away?.id"
                           :viewable="false"
                           :color="game?.away_color"
                     />
@@ -211,10 +211,10 @@ const colors = {
 
 const homeBackground = computed(() => {
     if (!props.colorCode) return;
-    return colors[props.game.homeColor]
+    return colors[props.game.home_color]
 })
 const awayBackground = computed(() => {
     if (!props.colorCode) return;
-    return colors[props.game.awayColor]
+    return colors[props.game.away_color]
 })
 </script>

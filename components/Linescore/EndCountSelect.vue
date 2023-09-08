@@ -2,9 +2,9 @@
 <div class="end-count__container ">
    <h2 class="text-md text-bold title">Select # of ends</h2>
     <div class="full-height full-width column end-count__select">
-        <q-btn color="deep-purple" rounded @click="onSelect(6)">6 Ends</q-btn>
-        <q-btn color="deep-purple" rounded @click="onSelect(8)">8 Ends</q-btn>
-        <q-btn color="deep-purple" rounded @click="onSelect(10)"
+        <q-btn color="deep-purple" rounded @click="onSelect(6)" >6 Ends</q-btn>
+        <q-btn color="deep-purple" rounded @click="onSelect(8)" >8 Ends</q-btn>
+        <q-btn color="deep-purple" rounded @click="onSelect(10)" 
             >10 Ends</q-btn
         >
     </div>
@@ -43,8 +43,11 @@ const selection = computed({
     },
 });
 
+
+
 const onSelect = (num) => {
-    emit('select')
-    selection.value = num
+      emit('select')
+        selection.value = num
+  
 }
 </script>

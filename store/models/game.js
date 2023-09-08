@@ -13,4 +13,8 @@ export default class Game extends Model {
             end_count: this.number()
         };
     }
+
+    get isVerified() {
+        return this.teams.every(({pending}) => !pending)
+    }
 }

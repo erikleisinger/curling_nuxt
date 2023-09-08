@@ -12,6 +12,7 @@
         </div>
     </template>
         </AreaSearch>
+        <div class="close--hidden" @click="close"/>
 </div>
         </div>
     </q-dialog>
@@ -29,7 +30,12 @@
         margin-top: 25vh;
     }
     }
-   
+   .close--hidden {
+    position: absolute;
+    bottom: 0;
+    height: 50%;
+    width: 100%;
+   }
 }
 :deep(.q-dialog) {
     background-color: red!important;

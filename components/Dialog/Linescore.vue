@@ -90,8 +90,8 @@
                 :game="{
                     home: gameParams.home,
                     away: gameParams.away,
-                    homeColor: gameParams.homeColor,
-                    awayColor: gameParams.awayColor,
+                    home_color: gameParams.homeColor,
+                    away_color: gameParams.awayColor,
                     hammerFirstEnd: gameParams.hammerFirstEndTeam
                 }"
                 :endCount="endNumbers.length"
@@ -143,7 +143,7 @@
                 >
                     <div
                         class="next-options__container column"
-                        v-if="visible === endCount"
+                        v-if="visible === Object.keys(score).length && visible < endCount + 3"
                         style="min-width: 10vw"
                     >
                         <q-btn
@@ -155,15 +155,16 @@
                             v-if="showExtraEnd()"
                             ><span class="q-pl-xs">Extra</span></q-btn
                         >
-                        <q-btn
+                        <!-- <q-btn
                             stretch
-                            color="primary"
+                            color="white"
+                            text-color="primary"
                             icon="check"
                             no-wrap
                             class="col-grow q-pa-none"
                             @click="changeView(+1)"
                             ><span class="q-pl-xs">Done</span></q-btn
-                        >
+                        > -->
                     </div>
                 </transition>
             </div>
@@ -199,37 +200,6 @@
                                        />
                     </div>
        
-
-                <transition
-                    appear
-                    enter-active-class=" animated fadeIn"
-                    leave-active-class="animated fadeOut"
-                >
-                    <div
-                        class="next-options__container column"
-                        v-if="visible === endCount"
-                        style="min-width: 10vw"
-                    >
-                        <q-btn
-                            icon="add"
-                            stretch
-                            class="col-grow q-pa-none"
-                            @click="goExtra"
-                            no-wrap
-                            v-if="showExtraEnd()"
-                            ><span class="q-pl-xs">Extra</span></q-btn
-                        >
-                        <q-btn
-                            stretch
-                            color="primary"
-                            icon="check"
-                            no-wrap
-                            class="col-grow q-pa-none"
-                            @click="changeView(+1)"
-                            ><span class="q-pl-xs">Done</span></q-btn
-                        >
-                    </div>
-                </transition>
             </div>
         </div>
 
@@ -400,7 +370,7 @@ const start_time = ref(dayjs().format("YYYY MM DD hh mm a"));
 const rink = ref(null);
 const sheet = ref(null);
 
-const score = ref({
+const defaultScore = {
     1: {
         home: 0,
         away: 0,
@@ -441,7 +411,9 @@ const score = ref({
         home: 0,
         away: 0,
     },
-});
+}
+
+const score = ref(defaultScore);
 
 const homeTotal = computed(() =>
     [...endNumbers.value].reduce((acc, current) => {
@@ -822,7 +794,7 @@ const concede = (endNo: number) => {
 };
 
 const goExtra = () => {
-    const lastEnd = endCount.value;
+    const lastEnd = Object.keys(score.value)?.length;
     if (lastEnd + 1 > 12) return;
     score.value[lastEnd + 1] = {
         home: 0,

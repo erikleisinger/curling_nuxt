@@ -14,7 +14,7 @@
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                   <TeamAvatar :team="selections.home"/>
+                   <TeamAvatar :teamId="selections.home?.id" :color="selections?.homeColor"/>
                 </div>
                 <div class="text-center text-bold text-md q-pt-sm">
                     {{ selections.home?.name || "Opposition team" }}
@@ -35,7 +35,7 @@
             </div>
             <div class="team__container">
                 <div class="avatar-container">
-                    <TeamAvatar :team="selections.away"/>
+                    <TeamAvatar :teamId="selections.away?.id" :color="selections?.awayColor"/>
                 </div>
                 <div class="text-bold text-md text-center q-pt-sm">
                     {{ selections.away?.name || "Opposition team" }}
@@ -115,8 +115,11 @@ const selections = computed({
     },
 });
 
+onMounted(() => {
+    if (!selections.value.hammerFirstEndTeam) selections.value.hammerFirstEndTeam = homeId.value
+})
+
 const setHammer = (id) => {
-    console.log('set hammer: ', id)
     selections.value.hammerFirstEndTeam = id;
 }
 

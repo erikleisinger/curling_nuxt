@@ -4,6 +4,7 @@
             <div class="row no-wrap">
                 <div class="result__header">
                     <slot name="before" />
+
                     <div class="result__container" @click="emit('expand')">
                         <div class="team__profile--container column no-wrap">
                             <div class="team-avatar__container">
@@ -23,12 +24,14 @@
                             </h2>
                         </div>
 
-                        <div class="row items-center full-width">
+                        <div
+                            class="row items-center full-width score-container"
+                        >
                             <div
                                 class="row justify-around items-center text-xxxl full-width"
                             >
                                 <div
-                                    class="column justify-center items-center no-wrap"
+                                    class="column justify-center items-center no-wrap relative-position"
                                 >
                                     <div
                                         class="score"
@@ -38,21 +41,52 @@
                                                 away.points_scored,
                                         }"
                                     >
-                                        {{ home.points_scored}}
+                                        {{ home.points_scored }}
+                                    </div>
+                                     <div class="verified__container" v-if="home.points_scored >
+                                                away.points_scored">
+                                        <q-icon
+                                            :name="
+                                                !away?.isPlaceholder
+                                                    ? 'verified'
+                                                    : 'o_smart_toy'
+                                            "
+                                            :color="
+                                                !away.pending
+                                                    ? 'primary'
+                                                    : 'grey-7'
+                                            "
+                                        />
                                     </div>
                                 </div>
+
                                 <div
-                                    class="column justify-center items-center no-wrap"
+                                    class="column justify-center items-center no-wrap relative-position"
                                 >
                                     <div
                                         class="score"
                                         :class="{
                                             winning:
                                                 away.points_scored >
-                                                away.points_scored,
+                                                home.points_scored,
                                         }"
                                     >
                                         {{ away.points_scored }}
+                                    </div>
+                                    <div class="verified__container" v-if="away.points_scored >
+                                                home.points_scored">
+                                        <q-icon
+                                            :name="
+                                                !away?.isPlaceholder
+                                                    ? 'verified'
+                                                    : 'o_smart_toy'
+                                            "
+                                            :color="
+                                                !away.pending
+                                                    ? 'primary'
+                                                    : 'grey-7'
+                                            "
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -91,20 +125,6 @@
                                         position: relative;
                                     "
                                 >
-                                    <div class="verified__container">
-                                        <q-icon
-                                            :name="
-                                                !away?.isPlaceholder
-                                                    ? 'verified'
-                                                    : 'o_smart_toy'
-                                            "
-                                            :color="
-                                                !away.pending
-                                                    ? 'primary'
-                                                    : 'grey-7'
-                                            "
-                                        />
-                                    </div>
                                     <h2
                                         class="text-sm truncate-text text-center"
                                         style="
@@ -112,18 +132,17 @@
                                             position: relative;
                                         "
                                     >
-                                        {{ away.name}}
+                                        {{ away.name }}
                                     </h2>
                                 </div>
                                 <q-tooltip v-if="$q.platform.is.desktop">
                                     <div v-if="!away.pending">
-                                        {{ away.name }} has verified that
-                                        this score is accurate.
+                                        {{ away.name }} has verified that this
+                                        score is accurate.
                                     </div>
                                     <div v-else>
                                         Game is unverified by
-                                        {{ away.name }} and may not be
-                                        accurate.
+                                        {{ away.name }} and may not be accurate.
                                     </div>
                                 </q-tooltip>
                             </div>
@@ -133,9 +152,7 @@
                     <!-- League / Location -->
                     <div
                         class="column items-center q-pt-sm game-details"
-                        v-if="
-                           false
-                        "
+                        v-if="false"
                     >
                         <div class="text-xs">
                             {{ format(toTimezone(result.start_time)) }}
@@ -196,13 +213,7 @@
                         />
                         <slot name="actions" />
                     </q-fab>
-                    <q-badge
-                        color="deep-purple"
-                        rounded
-                        floating
-                        
-                        v-if="notify"
-                    >
+                    <q-badge color="deep-purple" rounded floating v-if="notify">
                     </q-badge>
                 </div>
             </div>
@@ -211,7 +222,7 @@
 </template>
 <style lang="scss" scoped>
 $result-height: 50px;
-$columns: 35% 30% 35%;
+$columns: 30% 40% 30%;
 $max-container-width: 500px;
 .result__container--wrap {
     max-height: fit-content;
@@ -245,31 +256,38 @@ $max-container-width: 500px;
                     position: relative;
                     max-width: $result-height;
                     margin: auto;
-                   
                 }
             }
-        }
-        .verified__container {
-            position: absolute;
-            z-index: 1;
-            font-size: 1em;
-            bottom: 0;
-            left: -1em;
-            height: 1.1em;
         }
     }
     .game-details {
         position: relative;
     }
 
-    .score {
-        margin: auto !important;
-        font-size: 35px;
-        transition: all 0.2s;
-        &.winning {
-            font-weight: bold;
+    .score-container {
+        .score {
+            margin: auto !important;
+            font-size: 35px;
+            transition: all 0.2s;
+            position: relative;
+            &.winning {
+                font-weight: bold;
+            }
+        }
+        .verified__container {
+            position: absolute;
+            z-index: 1;
+            font-size: 0.4em;
+            width: min-content;
+
+            right: -0.6em;
+
+            bottom: 0.2em;
+            margin: auto;
+            height: 1.1em;
         }
     }
+
     .notify-badge {
         position: absolute;
     }
@@ -281,6 +299,7 @@ import { useGameRequestStore } from "@/store/game-requests";
 import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
+import Game from "@/store/models/game";
 
 const $q = useQuasar();
 
@@ -298,27 +317,36 @@ const props = defineProps({
     gameId: Number,
 });
 
-
 const away = computed(() => {
-    const t = useRepo(GameTeam).with('team').where("team_id", (val) => val !== props.home).where('game_id', props.gameId).first() ?? {name: 'Unnamed team'};
+    const t = useRepo(GameTeam)
+        .with("team")
+        .where("team_id", (val) => val !== props.home)
+        .where("game_id", props.gameId)
+        .first() ?? { name: "Unnamed team" };
     return {
         ...t,
         ...(t.team ?? {}),
-        isPlaceholder: t.isPlaceholder
-    }
+        isPlaceholder: t.isPlaceholder,
+    };
 });
 const home = computed(() => {
-    const t = useRepo(GameTeam).with('team').where("team_id", (val) => val === props.home).where('game_id', props.gameId).first() ?? {name: 'Unnamed team'};
+    const t = useRepo(GameTeam)
+        .withAll()
+        .where("team_id", (val) => val === props.home)
+        .where("game_id", props.gameId)
+        .first() ?? { name: "Unnamed team" };
     return {
         ...t,
         ...(t.team ?? {}),
-        isPlaceholder: t.isPlaceholder
-    }
+        isPlaceholder: t.isPlaceholder,
+    };
 });
+
+const isVerified = computed(
+    () => useRepo(Game).withAll().where("id", props.gameId).first()?.isVerified
+);
 
 const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
-
-
 </script>

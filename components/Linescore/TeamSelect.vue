@@ -13,8 +13,8 @@
                         <div style="width: 50%" class="q-mb-md" @click="toggleSelect">
                             <!-- v-bind="parseAvatar(teamSelection?.home?.team_avatar)" -->
                             <TeamAvatar
-                                :team="
-                                    !selections ? {} : selections
+                                :teamId="
+                                    selections?.id
                                 "
                               
                             />
@@ -202,6 +202,10 @@ const toggleSelect = () => {
         },
     });
 };
+
+onMounted(() => {
+    toggleSelect();
+})
 
 const customOppositionName = ref(null);
 

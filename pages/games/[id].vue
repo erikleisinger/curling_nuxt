@@ -34,7 +34,7 @@
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
                             <TeamAvatar
-                                :team="home"
+                                :teamId="home?.id"
                                 :color="home.color"
                                 :viewable="!!home.id"
                             />
@@ -53,7 +53,7 @@
                     <div class="column team__header items-center col-6">
                         <div class="avatar__container q-mb-md">
                             <TeamAvatar
-                                :team="away"
+                                :teamId="away?.id"
                                 :color="away.color"
                                 :viewable="!!away.id"
                                 :invitable="

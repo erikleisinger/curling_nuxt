@@ -232,7 +232,7 @@
 }
 </style>
 <script setup>
-import { useElementBounding, useThrottleFn } from "@vueuse/core";
+import { useElementBounding, useThrottleFn, onClickOutside } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
 
 const props = defineProps({
@@ -316,6 +316,8 @@ const clearResults = () => {
 const searchBar = ref(null);
 const { height: searchBarHeight, y: searchBarY } =
     useElementBounding(searchBar);
+
+
 </script>
 <script>
 export default {

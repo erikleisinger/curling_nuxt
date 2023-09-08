@@ -32,6 +32,7 @@
                 :showPending="canEdit"
                 :create="create"
                 @update="emit('update', { players: $event })"
+                @loaded="emit('loaded')"
             >
                 <template v-slot:title="{ editing, setEditing, loading }">
                     <div class="row justify-between items-end q-my-sm">
@@ -97,5 +98,5 @@ const props = defineProps({
     teamId: Number,
 });
 
-const emit = defineEmits(["update"]);
+const emit = defineEmits(['loaded', "update"]);
 </script>

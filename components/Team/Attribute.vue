@@ -25,6 +25,7 @@
     margin-bottom: var(--space-sm);
     height: fit-content;
     transition: width 0.2s;
+    min-width: 150px;
     
     .q-icon {
         margin-right: var(--space-xxs);
@@ -34,12 +35,6 @@
     }
     &.highlight {
         border: v-bind(highlightBorder)
-    }
-    &:nth-child(even) {
-        margin-left: var(--space-xs);
-    }
-    &:nth-child(odd) {
-        margin-right: var(--space-xs);
     }
 }
 </style>

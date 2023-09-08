@@ -1,27 +1,41 @@
 <template>
     <div class="rink-sheet__container">
         <!-- RINK SELECTION -->
-        <h2 class="text-md text-bold">Select a rink</h2>
-        <div>
+     
+        
+              <!-- <div
+                    class="row full-height  justify-center items-center icon--floating"
+                >
+                    <q-icon name="location_on" color="deep-purple" size="2em" />
+                </div> -->
+           
+        <h2 class="text-md text-bold ">Rink</h2>
+    
+   
+        <div class="row q-mb-lg">
             <div
                 class="rink__selection"
                 v-if="!showSearch"
-                @click="showSearch = true"
+                @click="toggleGlobalSearch({
+                    open: true,
+                    options: {
+                        callback: selectRink,
+                        inputLabel: 'Search for a rink',
+                        resourceTypes: ['rink'],
+
+                    }
+                })"
             >
-                <div
-                    class="row full-height full-width justify-center items-center"
-                >
-                    <q-icon name="location_on" color="deep-purple" size="2em" />
-                </div>
+              
                 <div class="column justify-center rink-selection__name">
                     <div>
                         {{
                             selectedRink
                                 ? selectedRink.name
-                                : "No rink selected"
+                                : "Click to search"
                         }}
                     </div>
-                    <div class="text-xs">
+                    <div class="text-xs" v-if="selectedRink">
                         {{
                             selectedRink
                                 ? selectedRink.city
@@ -30,21 +44,6 @@
                     </div>
                 </div>
             </div>
-            <AreaSearch
-                v-if="showSearch"
-                :resourceTypes="['rink']"
-                inputLabel="Search for a rink"
-                @select="selectRink"
-            >
-                <template v-slot:before>
-                    <q-btn
-                        flat
-                        round
-                        icon="close"
-                        @click="showSearch = false"
-                    />
-                </template>
-            </AreaSearch>
         </div>
 
         <!-- END RINK SELECTION -->
@@ -52,7 +51,7 @@
         <!-- BEGIN SHEET SELECTION -->
 
         <div class="row no-wrap justify-between " v-if="rink">
-            <h2 class="text-md text-bold">Select a sheet</h2>
+            <h2 class="text-md text-bold">Sheet</h2>
        
             <q-toggle v-model="letters" label="Letters" dense />
          
@@ -77,12 +76,15 @@
 .rink-sheet__container {
     padding: 0px var(--space-md);
     .rink__selection {
-        height: 96px;
         display: grid;
         grid-template-columns: auto 1fr;
-        .rink-selection__name {
-            margin-left: var(--space-sm);
-        }
+        // .rink-selection__name {
+        //     margin-left: var(--space-sm);
+        // }
+    }
+    .icon--floating {
+        position: absolute;
+        left: -2em;
     }
     .rink-search__results {
         position: absolute;
@@ -116,6 +118,7 @@
 }
 </style>
 <script setup>
+import {useDialogStore} from '@/store/dialog'
 import {numberToLetter} from '@/utils/sheets'
 const props = defineProps({
     rink: Object,
@@ -150,4 +153,6 @@ const selectRink = (rink) => {
 };
 
 const letters = ref(false);
+
+const {toggleGlobalSearch} = useDialogStore()
 </script>
