@@ -484,7 +484,7 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
 import { gsap } from "gsap";
-import { Flip } from "gsap/Flip";
+import Flip  from "gsap/Flip";
 gsap.registerPlugin(Flip);
 
 const dayjs = useDayjs();

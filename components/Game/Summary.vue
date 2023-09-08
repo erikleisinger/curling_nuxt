@@ -457,7 +457,7 @@
 </style>
 <script setup>
 import gsap from "gsap";
-import { Flip } from "gsap/flip";
+import Flip  from "gsap/flip";
 gsap.registerPlugin(Flip);
 const props = defineProps({
     awayPoints: Number,
