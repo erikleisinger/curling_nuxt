@@ -107,11 +107,27 @@
             :homePoints="homeTotal"
         >
             <template v-slot:prepend v-if="viewSubtitle || viewTitle">
-                <div class="q-pa-sm q-mb-lg" style="transition: all 1s">
-                    <h2 class="text-md text-bold text-center">
+                <div class="q-pa-sm q-mb-lg">
+                    <!-- <transition
+                        appear
+                        enter-active-class="animated slideInLeft"
+                        leave-active-class="animated slideOutRight"
+                        mode="out-in"
+                    > -->
+                    <!-- :key="viewTitle" -->
+                    <h2
+                        class="text-md text-bold text-center"
+                        id="linescore-title"
+                    >
                         {{ viewTitle }}
                     </h2>
-                    <h3 class="text-sm text-center">{{ viewSubtitle }}</h3>
+                    <!-- </transition> -->
+                    <!-- <transition appear enter-active-class="animated slideInRight" leave-active-class="animated slideOutLeft" mode="out-in">  -->
+                    <!-- :key="viewSubtitle" -->
+                    <h3 class="text-sm text-center" id="linescore-subtitle">
+                        {{ viewSubtitle }}
+                    </h3>
+                    <!-- </transition> -->
                 </div>
             </template>
             <template
@@ -125,6 +141,13 @@
                     label="Enter custom name"
                     v-model="gameParams.away.name"
                 />
+            </template>
+            <template v-slot:appendHomeName v-if="view === views.HOME_SELECT  && gameParams.home?.id">
+                <q-btn flat round icon="refresh" @click="gameParams.home = {}"/>
+            </template>
+              <template v-slot:appendAwayName v-if="view === views.AWAY_SELECT && gameParams.away?.id">
+               
+                <q-btn flat round icon="refresh" @click="gameParams.away = {}"/>
             </template>
         </GameSummary>
         <!-- <LinescoreTeamSelect
@@ -445,6 +468,9 @@ import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
+import { gsap } from "gsap";
+import { TextPlugin } from "gsap/TextPlugin";
+gsap.registerPlugin(TextPlugin);
 
 const dayjs = useDayjs();
 const $q = useQuasar();
@@ -466,7 +492,6 @@ const gameParams = ref({
 const start_time = ref(dayjs().format("YYYY MM DD hh mm a"));
 const rink = ref(null);
 const sheet = ref(null);
-
 
 const score = ref({});
 
@@ -969,38 +994,41 @@ const changeColor = (team) => {
     gameParams.value[`${team}Color`] = colorOptions.value[next]?.value || "red";
 };
 
-const onAvatarClick = (event) => {
-
-    if (view.value === views.HOME_SELECT && event === 'home') {
+const onAvatarClick = ({value: event, element}) => {
+    if (view.value === views.HOME_SELECT && event === "home") {
         toggleGlobalSearch({
             open: true,
             options: {
                 inputLabel: "Search for your team",
                 resourceTypes: ["team"],
                 restrictIds: userTeams.value.map(({ id }) => id),
-                callback: (selection) => {
+                callback: (selection, event) => {
                     gameParams.value.home = {
                         ...selection,
                         team_avatar: selection.avatar,
                     };
-                    console.log('CHANGE VIEW')
                     changeView(+1);
+                    gsap.from(element, {scale: 3, duration: 0.6, ease: 'bounce'})
                 },
             },
         });
-    } else if (view.value === views.AWAY_SELECT && event === 'away') {
+    } else if (view.value === views.AWAY_SELECT && event === "away") {
         toggleGlobalSearch({
             open: true,
             options: {
                 inputLabel: "Search for your team",
                 resourceTypes: ["team"],
                 filterIds: [gameParams.value.home?.id],
-                callback: (selection) => {
+                callback: (selection, event) => {
                     gameParams.value.away = {
                         ...selection,
                         team_avatar: selection.avatar,
                     };
-                    changeView(+1);
+                   
+                     gsap.from(element, {scale: 3, duration: 0.6, ease: 'bounce'})
+                     setTimeout(() => {
+                         changeView(+1);
+                     },1000)
                 },
             },
         });
@@ -1082,5 +1110,22 @@ const viewSubtitle = computed(() => {
         [views.END_COUNT_SELECT]:
             "Use the plus and minus buttons to specify how many ends the game should be.",
     }[view.value];
+});
+
+watch(view, () => {
+    const tl = gsap.timeline();
+    tl.from("#linescore-title", {
+        scaleY: 0,
+        transformOrigin: "top",
+        duration: 0.3,
+        ease: "expo",
+    });
+
+    tl.from("#linescore-subtitle", {
+        scaleY: 0,
+        transformOrigin: "top",
+        duration: 0.3,
+        ease: "expo",
+    });
 });
 </script>

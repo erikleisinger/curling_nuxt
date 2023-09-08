@@ -1,28 +1,28 @@
 <template>
-
     <header class="game__header">
         <slot name="prepend" />
         <nav
-            class="row no-wrap justify-center full-width items-center "
+            class="row no-wrap justify-center full-width items-center"
             v-if="!hideValues.includes('details')"
         >
-            <div :class="{'help--highlight help--animation': selectionMode === 'details'}" >
+            <div
+                :class="{
+                    'help--highlight help--animation':
+                        selectionMode === 'details',
+                }"
+            >
                 <h2 class="text-sm text-center">Game</h2>
-                <h1 class="text-md text-bold text-center "  @click="clickTime">
-                    {{
-                        format(selections.start_time,
-                            "MMMM DD, YYYY "
-                        )
-                    }}
+                <h1 class="text-md text-bold text-center" @click="clickTime">
+                    {{ format(selections.start_time, "MMMM DD, YYYY ") }}
                 </h1>
                 <h2 class="text-sm text-center">
                     {{ format(selections.start_time, "HH:mm a") }}
                 </h2>
-                <InputDate v-if="canEdit" v-model="selections.start_time"/>
+                <InputDate v-if="canEdit" v-model="selections.start_time" />
             </div>
         </nav>
         <div
-            class="row no-wrap justify-between col-12"
+            class="row no-wrap justify-between col-12 teams-container"
             style="position: relative"
         >
             <div
@@ -32,12 +32,17 @@
                 {{ `After ${endCount}` }}
             </div>
             <div
-                class="column team__header items-center"
+                class="column team__header items-center no-wrap"
                 :class="hideValues.includes('away') ? 'col-12' : 'col-6'"
             >
                 <div
                     class="avatar__container q-mb-md"
-                    @click="emit('avatarClick', 'home')"
+                    ref="avatarHome"
+                    @click="
+                        emit('avatarClick', {
+                            value: 'home',
+                        })
+                    "
                 >
                     <TeamAvatar
                         :teamId="selections.home?.id"
@@ -86,13 +91,14 @@
                     </div>
                 </div>
 
-                <div class="column items-center full-width">
+                <div class="column items-center full-width ">
                     <div class="text-sm">Team</div>
                     <h2
                         class="text-sm text-bold text-center truncate-text full-width"
                     >
                         {{ selections.home.name }}
                     </h2>
+                    <slot name="appendHomeName" />
                 </div>
                 <div
                     class="score__container"
@@ -102,12 +108,17 @@
                 </div>
             </div>
             <div
-                class="column team__header items-center col-6"
+                class="column team__header items-center col-6 no-wrap"
                 v-if="!hideValues.includes('away')"
             >
                 <div
                     class="avatar__container q-mb-md"
-                    @click="emit('avatarClick', 'away')"
+                    ref="avatarAway"
+                    @click="
+                        emit('avatarClick', {
+                            value: 'away',
+                        })
+                    "
                 >
                     <TeamAvatar
                         :teamId="selections.away?.id"
@@ -157,7 +168,6 @@
                 </div>
 
                 <div class="column items-center full-width">
-                    <div class="text-sm">Team</div>
                     <div style="position: relative" class="full-width">
                         <div
                             class="verified__container"
@@ -170,14 +180,17 @@
                                 "
                             />
                         </div>
-                        <slot name="awayName">
-                            <h2
-                                class="text-sm text-bold text-center truncate-text"
-                                style="white-space: nowrap"
-                            >
-                                {{ selections.away.name }}
-                            </h2>
-                        </slot>
+                        <div class="column items-center full-width">
+                            <slot name="awayName">
+                                <div class="text-sm">Team</div>
+                                <h2
+                                    class="text-sm text-bold text-center truncate-text full-width"
+                                >
+                                    {{ selections.away.name }}
+                                </h2>
+                            </slot>
+                            <slot name="appendAwayName" />
+                        </div>
                     </div>
                 </div>
                 <div
@@ -192,30 +205,43 @@
             class="column justify-around items-center no-wrap"
             v-if="!hideValues.includes('location')"
         >
-            <div class="info__section" style="width: fit-content" @click="emit('update:rink')" :class="{'help--highlight help--animation': selectionMode === 'details'}">
+            <div
+                class="info__section"
+                style="width: fit-content"
+                @click="emit('update:rink')"
+                :class="{
+                    'help--highlight help--animation':
+                        selectionMode === 'details',
+                }"
+            >
                 <q-icon name="location_on" color="grey-6" />
                 <h2
                     class="text-sm"
                     v-if="!canEdit"
                     :class="{ 'text-bold': rink?.name }"
-                   
                 >
                     {{ rink?.name ?? "Unspecified rink" }}
                 </h2>
                 <h2
                     class="text-sm text-bold"
                     v-else
-                    :class="{ 'text-underline text-primary ': canEdit,  }"
+                    :class="{ 'text-underline text-primary ': canEdit }"
                 >
                     {{ rink?.name ?? "Click to select rink" }}
                 </h2>
             </div>
-            <div class="info__section column items-center" v-if="rink" :class="{'q-mt-md': selectionMode === 'details'}" >
+            <div
+                class="info__section column items-center"
+                v-if="rink"
+                :class="{ 'q-mt-md': selectionMode === 'details' }"
+            >
                 <h2 class="text-sm" v-if="!canEdit">
-                     {{
-                        sheet?.number ? `Sheet ${sheet?.number}${numberToLetter(
-                            sheet?.number
-                        )}` : "Unspecified sheet"
+                    {{
+                        sheet?.number
+                            ? `Sheet ${sheet?.number}${numberToLetter(
+                                  sheet?.number
+                              )}`
+                            : "Unspecified sheet"
                     }}
                 </h2>
                 <h2
@@ -223,15 +249,17 @@
                     v-else
                     :class="{
                         'text-underline text-primary text-bold': canEdit,
-                        'help--highlight help--animation ': selectionMode === 'details'
+                        'help--highlight help--animation ':
+                            selectionMode === 'details',
                     }"
-              
                     @click="showSheetSelect = true"
                 >
                     {{
-                        sheet?.number ? `Sheet ${sheet?.number}${numberToLetter(
-                            sheet?.number
-                        )}` : "Click to select a sheet"
+                        sheet?.number
+                            ? `Sheet ${sheet?.number}${numberToLetter(
+                                  sheet?.number
+                              )}`
+                            : "Click to select a sheet"
                     }}
                 </h2>
                 <transition
@@ -330,14 +358,14 @@
                     hideValues.includes('linescoreHeader')
                 )
             "
-        >
-          
-        </div>
+        ></div>
     </header>
 </template>
 <style lang="scss" scoped>
 .game__header {
     padding: 0px var(--space-md);
+    padding-bottom: var(--space-sm);
+    overflow-x: hidden;
     nav {
         padding: var(--space-sm) 0px;
         margin-bottom: var(--space-md);
@@ -353,7 +381,7 @@
         }
     }
     .team__header {
-        transition: all 0.2s;
+        // transition: all 0.2s;
         .avatar__container {
             height: 7em;
             max-width: 100%;
@@ -428,6 +456,9 @@
 }
 </style>
 <script setup>
+import gsap from "gsap";
+import { Flip } from "gsap/flip";
+gsap.registerPlugin(Flip);
 const props = defineProps({
     awayPoints: Number,
     canEdit: Boolean,
@@ -474,6 +505,61 @@ const selectSheet = (number) => {
 
 const clickTime = () => {
     if (!props.canEdit) return;
+};
 
-}
+const avatarHome = ref(null);
+const avatarAway = ref(null);
+
+watch(
+    () => props.hideValues,
+    (val, oldVal) => {
+       
+            const state = Flip.getState(".team__header");
+            nextTick(() => {
+                Flip.from(state, {
+                    duration: 0.5,
+                    stagger: 0.1,
+                    ease: "back",
+                });
+            });
+        
+    },
+    { deep: true }
+);
+
+watch(() => [selections.value.home, selections.value.away], ([home, away], oldData) => {
+    const [oldHome, oldAway] = oldData ?? [];
+    console.log('home: ', home, 'away: ', away)
+     if (home.id !== oldHome?.id) {
+            if (home.id) {
+                gsap.from(avatarHome.value, {
+                    scale: 3,
+                    duration: 0.6,
+                    ease: "bounce",
+                });
+            } else {
+                gsap.from(avatarHome.value, {
+                    scale: 0,
+                    duration: 0.6,
+                    ease: "bounce",
+                });
+            }
+        } 
+
+         if (away.id !== oldAway?.id) {
+            if (away.id) {
+                gsap.from(avatarAway.value, {
+                    scale: 3,
+                    duration: 0.6,
+                    ease: "bounce",
+                });
+            } else {
+                gsap.from(avatarAway.value, {
+                    scale: 0,
+                    duration: 0.6,
+                    ease: "bounce",
+                });
+            }
+        } 
+}, {deep: true})
 </script>

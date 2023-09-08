@@ -50,7 +50,7 @@
                 <div
                     v-for="result in results"
                     :key="result.id"
-                    @click="emit('select', result)"
+                    @click="emit('select', {result, event: $event})"
                 >
                     <div class="result__container">
                         <!-- RINK result -->
