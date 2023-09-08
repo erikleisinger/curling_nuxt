@@ -16,12 +16,19 @@
                                     />
                                 </div>
                             </div>
-
-                            <h2
-                                class="text-sm truncate-text text-center col-grow"
-                            >
-                                {{ home.name }}
-                            </h2>
+                            <div style="width: fit-content; position: relative">
+                                <h2
+                                    class="text-sm truncate-text text-center col-grow"
+                                >
+                                    {{ home.name }}
+                                </h2>
+                                <div
+                                    class="placeholder--floating right"
+                                  v-if="home.isPlaceholder"
+                                >
+                                    <q-icon color="grey-6" name="o_smart_toy" />
+                                </div>
+                            </div>
                         </div>
 
                         <div
@@ -43,19 +50,18 @@
                                     >
                                         {{ home.points_scored }}
                                     </div>
-                                     <div class="verified__container" v-if="home.points_scored >
-                                                away.points_scored">
+                                    <div
+                                        class="verified__container"
+                                        v-if="
+                                            !away.pending &&
+                                            !home.pending &&
+                                            home.points_scored >
+                                                away.points_scored
+                                        "
+                                    >
                                         <q-icon
-                                            :name="
-                                                !away?.isPlaceholder
-                                                    ? 'verified'
-                                                    : 'o_smart_toy'
-                                            "
-                                            :color="
-                                                !away.pending
-                                                    ? 'primary'
-                                                    : 'grey-7'
-                                            "
+                                            name="verified"
+                                            color="primary"
                                         />
                                     </div>
                                 </div>
@@ -73,19 +79,18 @@
                                     >
                                         {{ away.points_scored }}
                                     </div>
-                                    <div class="verified__container" v-if="away.points_scored >
-                                                home.points_scored">
+                                    <div
+                                        class="verified__container"
+                                        v-if="
+                                            !away.pending &&
+                                            !home.pending &&
+                                            away.points_scored >
+                                                home.points_scored
+                                        "
+                                    >
                                         <q-icon
-                                            :name="
-                                                !away?.isPlaceholder
-                                                    ? 'verified'
-                                                    : 'o_smart_toy'
-                                            "
-                                            :color="
-                                                !away.pending
-                                                    ? 'primary'
-                                                    : 'grey-7'
-                                            "
+                                            name="verified"
+                                            color="primary"
                                         />
                                     </div>
                                 </div>
@@ -134,17 +139,16 @@
                                     >
                                         {{ away.name }}
                                     </h2>
+                                    <div
+                                        class="placeholder--floating"
+                                        v-if="away.isPlaceholder"
+                                    >
+                                        <q-icon
+                                            color="grey-6"
+                                            name="o_smart_toy"
+                                        />
+                                    </div>
                                 </div>
-                                <q-tooltip v-if="$q.platform.is.desktop">
-                                    <div v-if="!away.pending">
-                                        {{ away.name }} has verified that this
-                                        score is accurate.
-                                    </div>
-                                    <div v-else>
-                                        Game is unverified by
-                                        {{ away.name }} and may not be accurate.
-                                    </div>
-                                </q-tooltip>
                             </div>
                         </div>
                     </div>
@@ -290,6 +294,18 @@ $max-container-width: 500px;
 
     .notify-badge {
         position: absolute;
+    }
+    .placeholder--floating {
+        position: absolute;
+        top: 0;
+        &:not(.right) {
+            left: -1em;
+               margin-right: var(--space-xs)
+        }
+        &.right {
+            right: -1em;
+            margin-left: var(--space-xs)
+        }
     }
 }
 </style>
