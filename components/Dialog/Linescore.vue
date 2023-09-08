@@ -81,26 +81,30 @@
             :selectionMode="selectionMode[view]"
             :score="score"
             @update:endCount="updateEndCount"
-             @update:rink="toggleGlobalSearch({
-                open: true,
-                options: {
-                    resourceTypes: ['rink'],
-                    inputLabel: 'Search for a rink',
-                    callback: (selection) => {
-                        console.log(rink)
-                        rink = selection;
-                        if (sheet?.number > rink.sheets) sheet = null
-                    }
-                }
-            })"
+            @update:rink="
+                toggleGlobalSearch({
+                    open: true,
+                    options: {
+                        resourceTypes: ['rink'],
+                        inputLabel: 'Search for a rink',
+                        callback: (selection) => {
+                            console.log(rink);
+                            rink = selection;
+                            if (sheet?.number > rink.sheets) sheet = null;
+                        },
+                    },
+                })
+            "
             :rink="rink"
             :sheet="sheet"
-            @update:sheet="sheet = {
-                number: $event
-            }"
-               :canEdit="view === views.DETAILS"
-               :awayPoints="awayTotal"
-               :homePoints="homeTotal"
+            @update:sheet="
+                sheet = {
+                    number: $event,
+                }
+            "
+            :canEdit="view === views.DETAILS"
+            :awayPoints="awayTotal"
+            :homePoints="homeTotal"
         >
             <template v-slot:prepend v-if="viewSubtitle || viewTitle">
                 <div class="q-pa-sm q-mb-lg" style="transition: all 1s">
@@ -174,7 +178,7 @@
                 :selected="visible"
                 @select="scrollTo"
                 :colorCode="false"
-             
+                :headerOnly="false"
             />
 
             <div
@@ -318,7 +322,6 @@
             :awayPoints="awayTotal"
             :rink="rink"
             :sheet="sheet"
-           
         />
     </DialogFloating>
     <DialogConfirmation
@@ -464,50 +467,8 @@ const start_time = ref(dayjs().format("YYYY MM DD hh mm a"));
 const rink = ref(null);
 const sheet = ref(null);
 
-const defaultScore = {
-    1: {
-        home: 0,
-        away: 0,
-    },
-    2: {
-        home: 0,
-        away: 0,
-    },
-    3: {
-        home: 0,
-        away: 0,
-    },
-    4: {
-        home: 0,
-        away: 0,
-    },
-    5: {
-        home: 0,
-        away: 0,
-    },
-    6: {
-        home: 0,
-        away: 0,
-    },
-    7: {
-        home: 0,
-        away: 0,
-    },
-    8: {
-        home: 0,
-        away: 0,
-    },
-    9: {
-        home: 0,
-        away: 0,
-    },
-    10: {
-        home: 0,
-        away: 0,
-    },
-};
 
-const score = ref(defaultScore);
+const score = ref({});
 
 const homeTotal = computed(() =>
     [...endNumbers.value].reduce((acc, current) => {
@@ -522,7 +483,7 @@ const awayTotal = computed(() =>
     }, 0)
 );
 
-const endCount = ref(10);
+const endCount = ref(8);
 
 const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))
@@ -1009,32 +970,38 @@ const changeColor = (team) => {
 };
 
 const onAvatarClick = (event) => {
-    if (view.value === views.HOME_SELECT) {
+
+    if (view.value === views.HOME_SELECT && event === 'home') {
         toggleGlobalSearch({
             open: true,
             options: {
                 inputLabel: "Search for your team",
                 resourceTypes: ["team"],
                 restrictIds: userTeams.value.map(({ id }) => id),
-                callback: (selection) =>
-                    (gameParams.value.home = {
+                callback: (selection) => {
+                    gameParams.value.home = {
                         ...selection,
                         team_avatar: selection.avatar,
-                    }),
+                    };
+                    console.log('CHANGE VIEW')
+                    changeView(+1);
+                },
             },
         });
-    } else if (view.value === views.AWAY_SELECT) {
+    } else if (view.value === views.AWAY_SELECT && event === 'away') {
         toggleGlobalSearch({
             open: true,
             options: {
                 inputLabel: "Search for your team",
                 resourceTypes: ["team"],
                 filterIds: [gameParams.value.home?.id],
-                callback: (selection) =>
-                    (gameParams.value.away = {
+                callback: (selection) => {
+                    gameParams.value.away = {
                         ...selection,
                         team_avatar: selection.avatar,
-                    }),
+                    };
+                    changeView(+1);
+                },
             },
         });
     } else if (view.value === views.COLOR_SELECT) {
@@ -1053,7 +1020,7 @@ const hideValues = ref({
         "linescore",
         "linescoreHeader",
         "details",
-        "location"
+        "location",
     ],
     [views.AWAY_SELECT]: [
         "score",
@@ -1062,7 +1029,7 @@ const hideValues = ref({
         "linescore",
         "linescoreHeader",
         "details",
-        "location"
+        "location",
     ],
     [views.COLOR_SELECT]: [
         "score",
@@ -1070,10 +1037,16 @@ const hideValues = ref({
         "hammer",
         "linescoreHeader",
         "details",
-         "location"
+        "location",
     ],
-    [views.HAMMER_SELECT]: ["score", "linescore", "linescoreHeader", "details",  "location"],
-    [views.END_COUNT_SELECT]: ["score", "linescore", "details",  "location"],
+    [views.HAMMER_SELECT]: [
+        "score",
+        "linescore",
+        "linescoreHeader",
+        "details",
+        "location",
+    ],
+    [views.END_COUNT_SELECT]: ["score", "linescore", "details", "location"],
 });
 
 const selectionMode = ref({
@@ -1091,27 +1064,23 @@ const updateEndCount = (inc) => {
 };
 
 const viewTitle = computed(() => {
-    return (
-        {
-            [views.HOME_SELECT]: "Select your team",
-            [views.AWAY_SELECT]: "Select opposition",
-            [views.COLOR_SELECT]: "Select rock colors",
-            [views.HAMMER_SELECT]: "Hammer in first end",
-            [views.END_COUNT_SELECT]: "Configure number of ends",
-        }[view.value]
-    );
+    return {
+        [views.HOME_SELECT]: "Select your team",
+        [views.AWAY_SELECT]: "Select opposition",
+        [views.COLOR_SELECT]: "Select rock colors",
+        [views.HAMMER_SELECT]: "Hammer in first end",
+        [views.END_COUNT_SELECT]: "Configure number of ends",
+    }[view.value];
 });
 const viewSubtitle = computed(() => {
-    return (
-        {
-            [views.HOME_SELECT]: "Click the avatar to search",
-            [views.AWAY_SELECT]:
-                "Click the avatar to search, or type the opposition's name so you can invite them later.",
-            [views.COLOR_SELECT]: "Click an avatar to change colors",
-            [views.HAMMER_SELECT]: "Click an avatar to change",
-            [views.END_COUNT_SELECT]:
-                "Use the plus and minus buttons to specify how many ends the game should be.",
-        }[view.value]
-    );
+    return {
+        [views.HOME_SELECT]: "Click the avatar to search",
+        [views.AWAY_SELECT]:
+            "Click the avatar to search, or type the opposition's name so you can invite them later.",
+        [views.COLOR_SELECT]: "Click an avatar to change colors",
+        [views.HAMMER_SELECT]: "Click an avatar to change",
+        [views.END_COUNT_SELECT]:
+            "Use the plus and minus buttons to specify how many ends the game should be.",
+    }[view.value];
 });
 </script>

@@ -132,6 +132,7 @@
                     :score="score"
                     :selected="0"
                     :colorCode="false"
+                    :headerOnly="false"
                 />
                 <div class="row justify-around">
                     <div class="info__section">

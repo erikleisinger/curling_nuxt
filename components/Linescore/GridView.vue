@@ -183,12 +183,9 @@ const props = defineProps<{
     colorCode: boolean;
     game: GameScoreInfo;
     endCount: number;
-    headerOnly: {
-        type: Boolean,
-        default: false
-    },
+    headerOnly?: boolean,
     score: GameScore;
-    selected: number;
+    selected?: number;
     transparent?: Boolean;
 }>();
 
