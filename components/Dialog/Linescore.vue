@@ -142,12 +142,27 @@
                     v-model="gameParams.away.name"
                 />
             </template>
-            <template v-slot:appendHomeName v-if="view === views.HOME_SELECT  && gameParams.home?.id">
-                <q-btn flat round icon="refresh" @click="gameParams.home = {}"/>
+            <template
+                v-slot:appendHomeName
+                v-if="view === views.HOME_SELECT && gameParams.home?.id"
+            >
+                <q-btn
+                    flat
+                    round
+                    icon="refresh"
+                    @click="gameParams.home = {}"
+                />
             </template>
-              <template v-slot:appendAwayName v-if="view === views.AWAY_SELECT && gameParams.away?.id">
-               
-                <q-btn flat round icon="refresh" @click="gameParams.away = {}"/>
+            <template
+                v-slot:appendAwayName
+                v-if="view === views.AWAY_SELECT && gameParams.away?.id"
+            >
+                <q-btn
+                    flat
+                    round
+                    icon="refresh"
+                    @click="gameParams.away = {}"
+                />
             </template>
         </GameSummary>
         <!-- <LinescoreTeamSelect
@@ -469,8 +484,8 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
 import { gsap } from "gsap";
-import { TextPlugin } from "gsap/TextPlugin";
-gsap.registerPlugin(TextPlugin);
+import { Flip } from "gsap/Flip";
+gsap.registerPlugin(Flip);
 
 const dayjs = useDayjs();
 const $q = useQuasar();
@@ -994,7 +1009,7 @@ const changeColor = (team) => {
     gameParams.value[`${team}Color`] = colorOptions.value[next]?.value || "red";
 };
 
-const onAvatarClick = ({value: event, element}) => {
+const onAvatarClick = ({ value: event, element }) => {
     if (view.value === views.HOME_SELECT && event === "home") {
         toggleGlobalSearch({
             open: true,
@@ -1008,7 +1023,11 @@ const onAvatarClick = ({value: event, element}) => {
                         team_avatar: selection.avatar,
                     };
                     changeView(+1);
-                    gsap.from(element, {scale: 3, duration: 0.6, ease: 'bounce'})
+                    gsap.from(element, {
+                        scale: 3,
+                        duration: 0.6,
+                        ease: "bounce",
+                    });
                 },
             },
         });
@@ -1024,11 +1043,15 @@ const onAvatarClick = ({value: event, element}) => {
                         ...selection,
                         team_avatar: selection.avatar,
                     };
-                   
-                     gsap.from(element, {scale: 3, duration: 0.6, ease: 'bounce'})
-                     setTimeout(() => {
-                         changeView(+1);
-                     },1000)
+
+                    gsap.from(element, {
+                        scale: 3,
+                        duration: 0.6,
+                        ease: "bounce",
+                    });
+                    setTimeout(() => {
+                        changeView(+1);
+                    }, 1000);
                 },
             },
         });

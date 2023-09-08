@@ -3,6 +3,7 @@
         class="scoreboard__end-row justify-center items-center"
         @click.prevent.stop="setTop"
         v-memo="[score.home]"
+        ref="top"
     >
         <div class="inner row items-center justify-center q-pt-sm">
             <div class="inner-scorecard text-center">
@@ -15,6 +16,7 @@
         class="scoreboard__end-row justify-center items-center"
         @click.prevent.stop="setBottom"
         v-memo="[score.away]"
+        ref="bottom"
     >
         <div class="inner row items-center justify-center q-pt-sm">
             <div class="inner-scorecard text-center">
@@ -143,6 +145,9 @@ const reset = () => {
     score.value.home = 0;
     score.value.away = 0;
 };
+
+const top = ref(null);
+const bottom = ref(null)
 
 const setTop = () => {
     if (!props.visible) return;

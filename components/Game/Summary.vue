@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="column items-center full-width ">
-                    <div class="text-sm">Team</div>
+                    <div class="text-sm" v-if="selections.home.id || selections.home.name">Team</div>
                     <h2
                         class="text-sm text-bold text-center truncate-text full-width"
                     >
