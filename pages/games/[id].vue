@@ -121,7 +121,10 @@
                     :game="{
                         ...currentGame,
                         home,
-                        away
+                        away,
+                        away_color: away.color,
+                        home_color: home.color
+
                     }"
                     :endCount="
                         Math.max(
@@ -323,18 +326,39 @@ const getGames = async () => {
         game_id_param: gameId
     })
     const [team1, team2] = data;
+
     useRepo(Game).save({
         id: team1.game_id,
-        end_count: team1.end_count
+        end_count: team1.end_count,
+        rink: team1.rink,
+        sheet: team1.sheet
     })
-    useRepo(Team).save(team1.team)
-       useRepo(Team).save(team2.team)
-    
-    
-    
-    useRepo(GameTeam).save(team1)
+    useRepo(Team).save({
+        ...team1.team,
+        id: team1.team.team_id ?? team1.game_id + 100000000
+       })
+       useRepo(Team).save({
+        ...team2.team,
+        id: team2.team.team_id ?? team2.game_id + 100000000
+       })
+    useRepo(GameTeam).save({
+        id: team1.id,
+        game_id: team1.game_id,
+        team_id: team1.team?.id ?? team1.game_id + 100000000,
+        pending: team1.pending,
+        points_scored: team1.points_scored,
+         color: team1.color
+      })
 
-    useRepo(GameTeam).save(team2)
+      useRepo(GameTeam).save({
+        id: team2.id,
+        game_id: team2.game_id,
+        team_id: team2.team?.id ?? team2.game_id + 100000000,
+        pending: team2.pending,
+        points_scored: team2.points_scored,
+        color: team2.color
+      })
+   
 };
 
 const getScoreDetails = async () => {
