@@ -71,7 +71,8 @@
                 view === views.AWAY_SELECT ||
                 view === views.COLOR_SELECT ||
                 view === views.HAMMER_SELECT ||
-                view === views.END_COUNT_SELECT
+                view === views.END_COUNT_SELECT ||
+                view === views.DETAILS
             "
             :endCount="endCount"
             :hideValues="hideValues[view]"
@@ -80,18 +81,48 @@
             :selectionMode="selectionMode[view]"
             :score="score"
             @update:endCount="updateEndCount"
-         
+             @update:rink="toggleGlobalSearch({
+                open: true,
+                options: {
+                    resourceTypes: ['rink'],
+                    inputLabel: 'Search for a rink',
+                    callback: (selection) => {
+                        console.log(rink)
+                        rink = selection;
+                        if (sheet?.number > rink.sheets) sheet = null
+                    }
+                }
+            })"
+            :rink="rink"
+            :sheet="sheet"
+            @update:sheet="sheet = {
+                number: $event
+            }"
+               :canEdit="view === views.DETAILS"
+               :awayPoints="awayTotal"
+               :homePoints="homeTotal"
         >
-    <template v-slot:prepend>
-       <div class="q-pa-sm q-mb-lg">
-        <h2 class="text-md text-bold text-center">{{viewTitle}}</h2>
-         <h3 class="text-sm  text-center">{{viewSubtitle}}</h3>
-       </div>
-    </template>
-    <template v-slot:awayName v-if="!gameParams?.away?.id && view === views.AWAY_SELECT">
-        <q-input dense rounded outlined label="Enter custom name" v-model="gameParams.away.name"/>
-    </template>
-        </GameSummary>  
+            <template v-slot:prepend v-if="viewSubtitle || viewTitle">
+                <div class="q-pa-sm q-mb-lg" style="transition: all 1s">
+                    <h2 class="text-md text-bold text-center">
+                        {{ viewTitle }}
+                    </h2>
+                    <h3 class="text-sm text-center">{{ viewSubtitle }}</h3>
+                </div>
+            </template>
+            <template
+                v-slot:awayName
+                v-if="!gameParams?.away?.id && view === views.AWAY_SELECT"
+            >
+                <q-input
+                    dense
+                    rounded
+                    outlined
+                    label="Enter custom name"
+                    v-model="gameParams.away.name"
+                />
+            </template>
+        </GameSummary>
         <!-- <LinescoreTeamSelect
             v-if="view === views.HOME_SELECT"
             v-model="gameParams.home"
@@ -143,6 +174,7 @@
                 :selected="visible"
                 @select="scrollTo"
                 :colorCode="false"
+             
             />
 
             <div
@@ -276,16 +308,17 @@
             @save="save"
             @nav="goToView"
         /> -->
-         <GameSummary
+        <GameSummary
             v-model="gameParams"
-            v-if="
-                view === views.CONFIRM 
-            "
+            v-if="view === views.CONFIRM"
             :endCount="endCount"
             static
             :score="score"
-               :homePoints="homeTotal"
+            :homePoints="homeTotal"
             :awayPoints="awayTotal"
+            :rink="rink"
+            :sheet="sheet"
+           
         />
     </DialogFloating>
     <DialogConfirmation
@@ -539,7 +572,7 @@ const viewOrder = [
     views.HAMMER_SELECT,
     views.END_COUNT_SELECT,
     views.LINESCORE,
-    // views.DETAILS,
+    views.DETAILS,
     views.CONFIRM,
 ];
 
@@ -1016,26 +1049,40 @@ const hideValues = ref({
         "away",
         "score",
         "colors",
+        "hammer",
         "linescore",
         "linescoreHeader",
-        'details'
+        "details",
+        "location"
     ],
-    [views.AWAY_SELECT]: ["score", "colors", "linescore", "linescoreHeader",
-        'details'],
-    [views.COLOR_SELECT]: ["score", "linescore", "linescoreHeader",
-        'details'],
-    [views.HAMMER_SELECT]: ["score", "linescore", "linescoreHeader",
-        'details'],
-    [views.END_COUNT_SELECT]: ["score", "linescore",
-        'details'],
+    [views.AWAY_SELECT]: [
+        "score",
+        "colors",
+        "hammer",
+        "linescore",
+        "linescoreHeader",
+        "details",
+        "location"
+    ],
+    [views.COLOR_SELECT]: [
+        "score",
+        "linescore",
+        "hammer",
+        "linescoreHeader",
+        "details",
+         "location"
+    ],
+    [views.HAMMER_SELECT]: ["score", "linescore", "linescoreHeader", "details",  "location"],
+    [views.END_COUNT_SELECT]: ["score", "linescore", "details",  "location"],
 });
 
 const selectionMode = ref({
-    [views.HOME_SELECT]: 'home',
-      [views.AWAY_SELECT]: 'away',
+    [views.HOME_SELECT]: "home",
+    [views.AWAY_SELECT]: "away",
     [views.COLOR_SELECT]: "colors",
     [views.HAMMER_SELECT]: "hammer",
     [views.END_COUNT_SELECT]: "endcount",
+    [views.DETAILS]: "details",
 });
 
 const updateEndCount = (inc) => {
@@ -1044,21 +1091,27 @@ const updateEndCount = (inc) => {
 };
 
 const viewTitle = computed(() => {
-    return {
-        [views.HOME_SELECT]: 'Select your team',
-        [views.AWAY_SELECT]: 'Select opposition',
-        [views.COLOR_SELECT]: 'Select rock colors',
-        [views.HAMMER_SELECT]: 'Hammer in first end',
-        [views.END_COUNT_SELECT]: 'Configure number of ends'
-    }[view.value] ?? 'Title'
-})
+    return (
+        {
+            [views.HOME_SELECT]: "Select your team",
+            [views.AWAY_SELECT]: "Select opposition",
+            [views.COLOR_SELECT]: "Select rock colors",
+            [views.HAMMER_SELECT]: "Hammer in first end",
+            [views.END_COUNT_SELECT]: "Configure number of ends",
+        }[view.value]
+    );
+});
 const viewSubtitle = computed(() => {
-    return {
-        [views.HOME_SELECT]: 'Click the avatar to search',
-         [views.AWAY_SELECT]: "Click the avatar to search, or type the opposition's name so you can invite them later.",
-          [views.COLOR_SELECT]: 'Click an avatar to change colors',
-        [views.HAMMER_SELECT]: 'Click an avatar to change',
-        [views.END_COUNT_SELECT]: 'Use the plus and minus buttons to specify how many ends the game should be.'
-    }[view.value] ?? 'Title'
-})
+    return (
+        {
+            [views.HOME_SELECT]: "Click the avatar to search",
+            [views.AWAY_SELECT]:
+                "Click the avatar to search, or type the opposition's name so you can invite them later.",
+            [views.COLOR_SELECT]: "Click an avatar to change colors",
+            [views.HAMMER_SELECT]: "Click an avatar to change",
+            [views.END_COUNT_SELECT]:
+                "Use the plus and minus buttons to specify how many ends the game should be.",
+        }[view.value]
+    );
+});
 </script>

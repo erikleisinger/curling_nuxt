@@ -38,7 +38,9 @@
               
             />
             <!-- <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut"> -->
+               
             <div class="ring animated" v-if="animateRing && color" />
+            
             <!-- </transition> -->
 
             <div class="inner-wrap ">
@@ -78,7 +80,7 @@
     height: 100%;
 
     .avatar-inner {
-        transition: transform 0.3s;
+        transition: transform 0.2s;
         position: relative;
         // height: 100%;
 
@@ -112,6 +114,8 @@
             left: 0;
             right: 0;
             margin: auto;
+            transition: transform 0.3s ease, border 0.1s ease;
+            
             &.animated {
         -webkit-animation: 20s rotation infinite linear;
         border-width: 9px !important;
