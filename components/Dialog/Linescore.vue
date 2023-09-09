@@ -66,13 +66,14 @@
         <!-- STEP 1: Game params -->
         <GameSummary
             v-model="gameParams"
-            v-if="
+            v-show="
                 view === views.HOME_SELECT ||
                 view === views.AWAY_SELECT ||
                 view === views.COLOR_SELECT ||
                 view === views.HAMMER_SELECT ||
                 view === views.END_COUNT_SELECT ||
-                view === views.DETAILS
+                view === views.DETAILS ||
+                view === views.LINESCORE
             "
             :endCount="endCount"
             :hideValues="hideValues[view]"
@@ -105,7 +106,11 @@
             :canEdit="view === views.DETAILS"
             :awayPoints="awayTotal"
             :homePoints="homeTotal"
-            :scoreboardView="view === views.END_COUNT_SELECT"
+            :scoreboardView="
+                view === views.END_COUNT_SELECT || view === views.LINESCORE
+            "
+            :style="{ minHeight: view === views.LINESCORE ? '150px' : '100%' }"
+            :noAnimation="view === views.LINESCORE"
         >
             <template v-slot:prepend v-if="viewSubtitle || viewTitle">
                 <div class="q-pa-sm q-mb-lg">
@@ -165,66 +170,37 @@
                     @click="gameParams.away = {}"
                 />
             </template>
+
+            <template v-slot:scoreboard>
+                <LinescoreGridView
+                    ref="nav"
+                    :game="{
+                        home: gameParams.home,
+                        away: gameParams.away,
+                        home_color: gameParams.homeColor,
+                        away_color: gameParams.awayColor,
+                        hammerFirstEnd: gameParams.hammerFirstEndTeam,
+                    }"
+                    :endCount="endNumbers.length"
+                    :score="score"
+                    :selected="visible"
+                    @select="scrollTo"
+                    :colorCode="false"
+                    :headerOnly="false"
+                    v-if="view === views.LINESCORE"
+                />
+            </template>
         </GameSummary>
-        <!-- <LinescoreTeamSelect
-            v-if="view === views.HOME_SELECT"
-            v-model="gameParams.home"
-            :restrictIds="userTeams.map(({id}) => id)"
-        > -->
-        <!-- Select your team
-        <template v-slot:subtitle>
-            You may only select teams on which you are a member.
-        </template>
-        </LinescoreTeamSelect> -->
-        <!-- <LinescoreTeamSelect
-            v-if="view === views.AWAY_SELECT"
-            v-model="gameParams.away"
-            allowCustom
-            :filterIds="[gameParams.home?.id]"
-          
-        >
-    Select an opposition
-
-         </LinescoreTeamSelect> -->
-
-        <!-- <LinescoreColorSelect v-if="view === views.COLOR_SELECT" v-model="gameParams"/> -->
-        <!-- <LinescoreHammerSelect v-if="view === views.HAMMER_SELECT" v-model="gameParams"/> -->
-        <!-- STEP 2: End count select -->
-
-        <!-- <LinescoreEndCountSelect
-            v-if="view === views.END_COUNT_SELECT"
-            @select="view = views.LINESCORE"
-            v-model="endCount"
-        /> -->
 
         <!-- STEP 4: Line score input -->
 
-        <div
-            v-else-if="view === views.LINESCORE"
-            class="full-height scoreboard__container"
-        >
-            <LinescoreGridView
-                ref="nav"
-                :game="{
-                    home: gameParams.home,
-                    away: gameParams.away,
-                    home_color: gameParams.homeColor,
-                    away_color: gameParams.awayColor,
-                    hammerFirstEnd: gameParams.hammerFirstEndTeam,
-                }"
-                :endCount="endNumbers.length"
-                :score="score"
-                :selected="visible"
-                @select="scrollTo"
-                :colorCode="false"
-                :headerOnly="false"
-            />
-
+        <div v-if="view === views.LINESCORE" class="scoreboard__container">
             <div
                 class="scoreboard__score-container row no-wrap"
                 id="scoreboard-linescore"
                 ref="scroller"
                 :style="{ height: contentHeight }"
+                :class="{ 'hide-scroll': $q.platform.is.mobile }"
                 v-if="!$q.platform.is.desktop"
             >
                 <div class="start__padding col-grow" />
@@ -485,7 +461,7 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
 import { gsap } from "gsap";
-import Flip  from "gsap/Flip";
+import Flip from "gsap/Flip";
 gsap.registerPlugin(Flip);
 
 const dayjs = useDayjs();
@@ -583,6 +559,7 @@ const goToView = useThrottleFn((v) => {
 });
 
 const changeView = useThrottleFn((inc) => {
+    transitioning.value = false;
     const index = viewOrder.indexOf(view.value);
     if (index + inc < 0 || index + inc > viewOrder.length) return;
     view.value = viewOrder[index + inc];
@@ -599,19 +576,48 @@ const nextDisabled = computed(() => {
 });
 
 const handleNext = () => {
-    if (view.value !== views.CONFIRM) {
-        changeView(+1);
-        if (
-            view.value === views.HAMMER_SELECT &&
-            !gameParams.value.hammerFirstEndTeam
-        ) {
-            gameParams.value.hammerFirstEndTeam =
-                gameParams.value.home?.id || gameParams.value.away?.id;
-        }
-        return;
-    } else if (view.value === views.CONFIRM) {
+    if (view.value === views.CONFIRM) {
         save();
+        return;
     }
+
+    if (view.value === views.END_COUNT_SELECT) {
+        beginLinescore();
+        return;
+    }
+
+    changeView(+1);
+    if (
+        view.value === views.HAMMER_SELECT &&
+        !gameParams.value.hammerFirstEndTeam
+    ) {
+        gameParams.value.hammerFirstEndTeam =
+            gameParams.value.home?.id || gameParams.value.away?.id;
+    }
+};
+
+const transitioning = ref(false);
+
+const beginLinescore = () => {
+    const state = Flip.getState(
+        ".team__header, .avatar__container, .linescore-container"
+    );
+    transitioning.value = true;
+    selectionMode.value[views.END_COUNT_SELECT] = "";
+    nextTick(() => {
+        Flip.from(state, {
+            duration: 0.5,
+            stagger: 0.05,
+            ease: "back",
+        });
+    });
+    setLinescoreHeader();
+};
+
+const setLinescoreHeader = () => {
+    setTimeout(() => {
+        view.value = views.LINESCORE;
+    }, 750);
 };
 
 const confirmUnsaved = ref(false);
@@ -1099,6 +1105,14 @@ const hideValues = ref({
         "location",
     ],
     [views.END_COUNT_SELECT]: ["score", "linescore", "details", "location"],
+    [views.LINESCORE]: [
+        "details",
+        "location",
+        "score",
+        "linescore",
+        "home",
+        "away",
+    ],
 });
 
 const selectionMode = ref({
@@ -1116,6 +1130,7 @@ const updateEndCount = (inc) => {
 };
 
 const viewTitle = computed(() => {
+    if (transitioning.value) return null;
     return {
         [views.HOME_SELECT]: "Select your team",
         [views.AWAY_SELECT]: "Select opposition",
@@ -1125,6 +1140,7 @@ const viewTitle = computed(() => {
     }[view.value];
 });
 const viewSubtitle = computed(() => {
+    if (transitioning.value) return null;
     return {
         [views.HOME_SELECT]: "Click the avatar to search",
         [views.AWAY_SELECT]:
@@ -1136,20 +1152,38 @@ const viewSubtitle = computed(() => {
     }[view.value];
 });
 
-watch(view, (newView, oldView) => {
-    const tl = gsap.timeline();
-    tl.from("#linescore-title", {
-        scaleY: 0,
-        transformOrigin: "top",
-        duration: 0.3,
-        ease: "expo",
-    });
+watch(
+    view,
+    (newView, oldView) => {
+        const tl = gsap.timeline();
+        tl.from("#linescore-title", {
+            scaleY: 0,
+            transformOrigin: "top",
+            duration: 0.3,
+            ease: "expo",
+        });
 
-    tl.from("#linescore-subtitle", {
-        scaleY: 0,
-        transformOrigin: "top",
-        duration: 0.3,
-        ease: "expo",
-    });
-});
+        tl.from("#linescore-subtitle", {
+            scaleY: 0,
+            transformOrigin: "top",
+            duration: 0.3,
+            ease: "expo",
+        });
+
+        if (oldView === views.END_COUNT_SELECT && newView === views.LINESCORE) {
+            setTimeout(() => {
+                hideValues.value[views.LINESCORE] = [
+                    "score",
+                    "location",
+                    "details",
+                    "linescore",
+                    "home",
+                    "away",
+                ];
+            }, 500);
+        }
+        // if (oldView === views.LINESCORE)
+    },
+    { immediate: true }
+);
 </script>

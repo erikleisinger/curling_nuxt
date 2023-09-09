@@ -30,15 +30,16 @@
                 column: scoreboardView,
             }"
         >
-            <div
+            <!-- <div
                 class="end-count__container"
                 v-if="!hideValues.includes('score')"
             >
                 {{ `After ${endCount}` }}
-            </div>
+            </div> -->
             <div
                 class="column team__header items-center no-wrap"
                 :class="hideValues.includes('away') ? 'col-12' : 'col-6'"
+                v-if="!hideValues.includes('home')"
             >
                 <div
                     class="avatar__container q-mb-md"
@@ -313,11 +314,11 @@
                     )
                 "
             >
-                <div
+                <!-- <div
                     class="row justify-between items-end q-my-sm"
                     v-if="!hideValues.includes('linescore')"
                 >
-                    <div class="row items-center">
+                    <div class="row items-center" v-if="!scoreboardView">
                         <q-icon
                             name="o_scoreboard"
                             color="deep-purple"
@@ -325,16 +326,23 @@
                         />
                         <h2 class="text-md text-bold">Linescore</h2>
                     </div>
-                </div>
-                <q-separator />
+                </div> -->
+                <q-separator v-if="!scoreboardView"/>
+                <slot name="scoreboard">
                 <LinescoreGridView
                     ref="nav"
-                    :game="selections"
+                    :game="{
+                        ...selections,
+                        home_color: selections.homeColor,
+                        away_color: selections.awayColor,
+                        hammerFirstEnd: selections.hammerFirstEndTeam
+                    }"
                     :endCount="endCount"
                     :score="score"
                     :colorCode="false"
                     :headerOnly="hideValues.includes('linescore')"
                     :style="{ order: 0 }"
+                    style="margin-left: -2px;"
                 >
                     <template
                         v-slot:prependHeader
@@ -363,17 +371,8 @@
                         />
                     </template>
                 </LinescoreGridView>
+                </slot>
             </div>
-      
-        <div
-            class="linescore-container"
-            v-if="
-                !(
-                    hideValues.includes('linescore') &&
-                    hideValues.includes('linescoreHeader')
-                )
-            "
-        ></div>
     </header>
 </template>
 <style lang="scss" scoped>
@@ -383,7 +382,7 @@
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    // height: 100%;
     box-sizing: border-box;
     nav {
         padding: var(--space-sm) 0px;
@@ -407,6 +406,7 @@
             max-width: 100%;
             width: v-bind(avatarSize);
             position: relative;
+            margin-left: v-bind(avatarMargin);
             .hammer-container {
                 position: absolute;
                 bottom: -1;
@@ -501,6 +501,7 @@ const props = defineProps({
         default: [],
     },
     modelValue: Object,
+    noAnimation: Boolean,
     rink: Object,
     selectionMode: String,
     score: Object,
@@ -547,6 +548,7 @@ const avatarAway = ref(null);
 watch(
     () => [selections.value.home, selections.value.away],
     ([home, away], oldData) => {
+        setTimeout(() => {
         const [oldHome, oldAway] = oldData ?? [];
         if (home.id !== oldHome?.id) {
             if (home.id) {
@@ -579,6 +581,8 @@ watch(
                 });
             }
         }
+        }, 10)
+       
     },
     { deep: true }
 );
@@ -586,11 +590,12 @@ watch(
 watch(
     () => props.hideValues,
     (val, oldVal) => {
+        if (props.noAnimation) return;
         const state = Flip.getState(".team__header, .avatar__container, .linescore-container");
         nextTick(() => {
             Flip.from(state, {
                 duration: 0.5,
-                stagger: 0.1,
+                stagger: 0.05,
                 ease: "back",
             });
         });
@@ -603,5 +608,11 @@ const avatarSize = computed(() => {
         return "2em";
     }
     return "7em";
+});
+
+const avatarMargin = computed(() => {
+    if (!props.scoreboardView) return "";
+    
+    return "8px";
 });
 </script>
