@@ -36,6 +36,7 @@
             >
                 {{ `After ${endCount}` }}
             </div> -->
+            <Teleport to=".avatar-home__wrap">
             <div
                 class="column team__header items-center no-wrap"
                 :class="hideValues.includes('away') ? 'col-12' : 'col-6'"
@@ -122,6 +123,8 @@
                     {{ homePoints ?? 0 }}
                 </div>
             </div>
+            </Teleport>
+            <Teleport to=".avatar-away__wrap">
             <div
                 class="column team__header items-center col-6 no-wrap"
                 v-if="!hideValues.includes('away')"
@@ -219,6 +222,7 @@
                     {{ awayPoints ?? 0 }}
                 </div>
             </div>
+            </Teleport>
         </div>
         <div
             class="column justify-around items-center no-wrap"
@@ -314,19 +318,6 @@
                     )
                 "
             >
-                <!-- <div
-                    class="row justify-between items-end q-my-sm"
-                    v-if="!hideValues.includes('linescore')"
-                >
-                    <div class="row items-center" v-if="!scoreboardView">
-                        <q-icon
-                            name="o_scoreboard"
-                            color="deep-purple"
-                            class="text-md q-mr-sm"
-                        />
-                        <h2 class="text-md text-bold">Linescore</h2>
-                    </div>
-                </div> -->
                 <q-separator v-if="!scoreboardView"/>
                 <slot name="scoreboard">
                 <LinescoreGridView
@@ -369,6 +360,12 @@
                             class="help--animation help--highlight"
                             @click="emit('update:endCount', 2)"
                         />
+                    </template>
+                    <template v-slot:avatarHome>
+                        <div class="avatar-home__wrap"/>
+                    </template>
+                      <template v-slot:avatarAway>
+                         <div class="avatar-away__wrap"/>
                     </template>
                 </LinescoreGridView>
                 </slot>

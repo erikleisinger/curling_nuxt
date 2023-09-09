@@ -3,9 +3,10 @@
         class="scoreboard__end-row justify-center items-center"
         @click.prevent.stop="setTop"
         v-memo="[score.home]"
+      
         ref="top"
     >
-        <div class="inner row items-center justify-center q-pt-sm">
+        <div class="inner row items-center justify-center q-pt-sm"   :class="{highlight: !!score.home}">
             <div class="inner-scorecard text-center">
                 {{ score.home }}
             </div>
@@ -16,9 +17,10 @@
         class="scoreboard__end-row justify-center items-center"
         @click.prevent.stop="setBottom"
         v-memo="[score.away]"
+       
         ref="bottom"
     >
-        <div class="inner row items-center justify-center q-pt-sm">
+        <div class="inner row items-center justify-center q-pt-sm"    :class="{highlight: !!score.away}">
             <div class="inner-scorecard text-center">
                 {{ score.away }}
             </div>
@@ -75,6 +77,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
+ 
 
     transform-origin: bottom;
     &:nth-child(2) {
@@ -92,6 +95,11 @@
         width: 100%;
         font-size: 12vh;
         padding-top: 0.1em;
+        transition: border 0.2s;
+           &.highlight {
+        border-color: #00cd93;
+        border-width: 4px;
+    }
     }
 }
 .extra__container {
@@ -121,6 +129,7 @@
 </style>
 <script setup>
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
+import {triggerClickAnimation} from '@/utils/gsap'
 const props = defineProps({
     canExtra: Boolean,
     endno: Number,
@@ -151,6 +160,7 @@ const bottom = ref(null)
 
 const setTop = () => {
     if (!props.visible) return;
+    triggerClickAnimation(top.value)
 
     if (score.value.away) {
         reset();
@@ -160,6 +170,7 @@ const setTop = () => {
 };
 const setBottom = () => {
     if (!props.visible) return;
+    triggerClickAnimation(bottom.value)
     if (score.value.home) {
         reset();
     } else if (score.value.away + 1 < 9) {

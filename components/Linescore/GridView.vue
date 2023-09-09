@@ -9,52 +9,54 @@
             <div class="grid__column" :style="hideScoreStyle">
                 <div>
                     <slot name="prependHeader">
-                    <div style="visibility: hidden">H</div>
+                        <div style="visibility: hidden">H</div>
                     </slot>
-                    </div>
-                <div class="row items-center justify-center color-column" v-if="!headerOnly">
+                </div>
+                <div class="row items-center justify-center" v-if="!headerOnly">
+                        <slot name="avatarHome">
                     <div class="team-avatar__container">
-                    <TeamAvatar
-                        style="height: 100%; width: 100%"
-                        :teamId="game?.home?.id"
-                        :viewable="false"
-                        :color="game?.home_color"
-                    />
+                    
+                        <TeamAvatar
+                            style="height: 100%; width: 100%"
+                            :teamId="game?.home?.id"
+                            :viewable="false"
+                            :color="game?.home_color"
+                        />
 
-                    <q-badge
-                        class="hammer__badge"
-                        color="deep-purple"
-                        rounded
-                        v-if="game.home?.id === game.hammerFirstEnd"
-                    >
-                        <q-icon name="hardware" color="white"></q-icon
-                    ></q-badge>
-                  
+                        <q-badge
+                            class="hammer__badge"
+                            color="deep-purple"
+                            rounded
+                            v-if="game.home?.id === game.hammerFirstEnd"
+                        >
+                            <q-icon name="hardware" color="white"></q-icon
+                        ></q-badge>
                     </div>
+                        </slot>
                 </div>
                 <slot name="header" />
-                <div
-                    class="row items-center justify-center color-column"
-    v-if="!headerOnly"
-                >
-                <div class="team-avatar__container" >
-                    <TeamAvatar
-                        style="height: 100%; width: 100%"
-                        :teamId="game?.away?.id"
-                          :viewable="false"
-                          :color="game?.away_color"
-                    />
-                    <q-badge
-                        class="hammer__badge"
-                        color="deep-purple"
-                        rounded
-                        v-if="game.away?.id === game.hammerFirstEnd"
-                    >
-                        <q-icon name="hardware" color="white"></q-icon
-                    ></q-badge>
-                   
+          
+                <div class="row items-center justify-center" v-if="!headerOnly">
+                          <slot name="avatarAway">
+                    <div class="team-avatar__container">
+                        <TeamAvatar
+                            style="height: 100%; width: 100%"
+                            :teamId="game?.away?.id"
+                            :viewable="false"
+                            :color="game?.away_color"
+                        />
+                        <q-badge
+                            class="hammer__badge"
+                            color="deep-purple"
+                            rounded
+                            v-if="game.away?.id === game.hammerFirstEnd"
+                        >
+                            <q-icon name="hardware" color="white"></q-icon
+                        ></q-badge>
+                    </div>
+                        </slot>
                 </div>
-                </div>
+            
             </div>
         </div>
         <div
@@ -66,9 +68,13 @@
         >
             <div class="grid__column" :style="hideScoreStyle">
                 <div class="end-column">{{ end }}</div>
-                <div class="score-column color-column" v-if="!headerOnly">{{ score[end]?.home ?? 0 }}</div>
+                <div class="score-column" v-if="!headerOnly">
+                    {{ score[end]?.home ?? 0 }}
+                </div>
                 <slot v-bind:end="end" name="row" />
-                <div class="score-column color-column" v-if="!headerOnly">{{ score[end]?.away ?? 0 }}</div>
+                <div class="score-column" v-if="!headerOnly">
+                    {{ score[end]?.away ?? 0 }}
+                </div>
             </div>
         </div>
         <div
@@ -76,19 +82,14 @@
         >
             <div class="grid__column final" :style="hideScoreStyle">
                 <div class="end-column">
-                    <slot name="appendHeader">
-                        T
-                    </slot>
+                    <slot name="appendHeader"> T </slot>
                 </div>
-                <!-- :class="{ selected: awayTotal < homeTotal }" -->
-                <div class="score-column color-column" v-if="!headerOnly">
+                <div class="score-column" v-if="!headerOnly">
                     {{ homeTotal }}
                 </div>
 
                 <slot name="footer" />
-
-                <!-- :class="{ selected: homeTotal < awayTotal }" -->
-                <div class="score-column color-column" v-if="!headerOnly">
+                <div class="score-column" v-if="!headerOnly">
                     {{ awayTotal }}
                 </div>
             </div>
@@ -132,22 +133,6 @@
             }
             .score-column {
                 font-size: 0.8em;
-                // background-color: red;
-              
-            }
-            .color-column {
-                  &:nth-child(2) {
-                    background-color: v-bind(homeBackground);
-                }
-                &:nth-child(3):not(:last-child) {
-                    background-color: v-bind(homeBackground);
-                }
-                &:nth-last-child(2):not(:nth-child(2)) {
-                    background-color: v-bind(awayBackground);
-                }
-                &:last-child {
-                     background-color: v-bind(awayBackground);
-                }
             }
             > div {
                 text-align: center;
@@ -183,7 +168,7 @@ const props = defineProps<{
     colorCode: boolean;
     game: GameScoreInfo;
     endCount: number;
-    headerOnly?: boolean,
+    headerOnly?: boolean;
     score: GameScore;
     selected?: number;
     transparent?: Boolean;
@@ -211,21 +196,7 @@ const awayTotal = computed(() =>
 const columns = computed(
     () => `grid-template-columns: 2fr repeat(${ends.value.length}, 1fr) 2fr`
 );
-
-const colors = {
-    'red': 'rgba(253, 79, 79, 0.2)',
-    'blue': 'rgba(79, 91, 253, 0.2)',
-    'yellow': 'rgba(253, 212, 79, 0.2)'
-}
-
-const homeBackground = computed(() => {
-    if (!props.colorCode) return;
-    return colors[props.game.home_color]
-})
-const awayBackground = computed(() => {
-    if (!props.colorCode) return;
-    return colors[props.game.away_color]
-})
-
-const hideScoreStyle = computed(() => props.headerOnly ? {'grid-template-rows': '1fr'} : {})
+const hideScoreStyle = computed(() =>
+    props.headerOnly ? { "grid-template-rows": "1fr" } : {}
+);
 </script>
