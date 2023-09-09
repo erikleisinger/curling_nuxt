@@ -105,6 +105,7 @@
             :canEdit="view === views.DETAILS"
             :awayPoints="awayTotal"
             :homePoints="homeTotal"
+            :scoreboardView="view === views.END_COUNT_SELECT"
         >
             <template v-slot:prepend v-if="viewSubtitle || viewTitle">
                 <div class="q-pa-sm q-mb-lg">
@@ -1135,7 +1136,7 @@ const viewSubtitle = computed(() => {
     }[view.value];
 });
 
-watch(view, () => {
+watch(view, (newView, oldView) => {
     const tl = gsap.timeline();
     tl.from("#linescore-title", {
         scaleY: 0,

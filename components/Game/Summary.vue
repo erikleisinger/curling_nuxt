@@ -22,8 +22,13 @@
             </div>
         </nav>
         <div
-            class="row no-wrap justify-between col-12 teams-container"
+            class="no-wrap justify-between col-12 teams-container"
             style="position: relative"
+            :style="{ order: scoreboardView ? 1 : 0, width: scoreboardView ? 'fit-content' : '' }"
+            :class="{
+                row: !scoreboardView,
+                column: scoreboardView,
+            }"
         >
             <div
                 class="end-count__container"
@@ -70,6 +75,7 @@
                             'bg-grey-4':
                                 selections.hammerFirstEndTeam !==
                                 selections.home?.id,
+                            small: scoreboardView,
                         }"
                         v-if="
                             selectionMode === 'hammer' ||
@@ -91,8 +97,16 @@
                     </div>
                 </div>
 
-                <div class="column items-center full-width ">
-                    <div class="text-sm" v-if="selections.home.id || selections.home.name">Team</div>
+                <div
+                    class="column items-center full-width"
+                    v-if="!scoreboardView"
+                >
+                    <div
+                        class="text-sm"
+                        v-if="selections.home.id || selections.home.name"
+                    >
+                        Team
+                    </div>
                     <h2
                         class="text-sm text-bold text-center truncate-text full-width"
                     >
@@ -146,6 +160,7 @@
                             'bg-grey-4':
                                 selections.hammerFirstEndTeam !==
                                 selections.away?.id,
+                            small: scoreboardView,
                         }"
                         v-if="
                             selectionMode === 'hammer' ||
@@ -167,7 +182,10 @@
                     </div>
                 </div>
 
-                <div class="column items-center full-width">
+                <div
+                    class="column items-center full-width"
+                    v-if="!scoreboardView"
+                >
                     <div style="position: relative" class="full-width">
                         <div
                             class="verified__container"
@@ -285,11 +303,7 @@
                 </transition>
             </div>
         </div>
-        <transition
-            appear
-            enter-active-class="animated slideInLeft"
-            leave-active-class="animated slideOutRight"
-        >
+    
             <div
                 class="linescore-container"
                 v-if="
@@ -320,6 +334,7 @@
                     :score="score"
                     :colorCode="false"
                     :headerOnly="hideValues.includes('linescore')"
+                    :style="{ order: 0 }"
                 >
                     <template
                         v-slot:prependHeader
@@ -349,7 +364,7 @@
                     </template>
                 </LinescoreGridView>
             </div>
-        </transition>
+      
         <div
             class="linescore-container"
             v-if="
@@ -366,6 +381,10 @@
     padding: 0px var(--space-md);
     padding-bottom: var(--space-sm);
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
     nav {
         padding: var(--space-sm) 0px;
         margin-bottom: var(--space-md);
@@ -380,29 +399,41 @@
             margin-right: var(--space-xxxs);
         }
     }
+    
     .team__header {
         // transition: all 0.2s;
         .avatar__container {
-            height: 7em;
+            height: v-bind(avatarSize);
             max-width: 100%;
-            width: 7em;
+            width: v-bind(avatarSize);
             position: relative;
             .hammer-container {
                 position: absolute;
                 bottom: -1;
-                right: 0;
+
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                padding: 6px;
+
                 border-radius: 50%;
-                font-size: 1.2em;
+
                 border: 1px solid rgba(0, 0, 0, 0.3);
                 &:not(.animated) {
                     box-shadow: $pretty-shadow-2;
                 }
                 &.flash {
                     animation: flash 0.4s linear forwards;
+                }
+                &:not(.small) {
+                    padding: 6px;
+                    font-size: 1.2em;
+                    right: 0;
+                }
+                &.small {
+                    padding: 2px;
+                    font-size: 0.7em;
+                    right: -0.3em;
+                    // bottom: 0;
                 }
             }
         }
@@ -457,7 +488,7 @@
 </style>
 <script setup>
 import gsap from "gsap";
-import Flip  from "gsap/Flip";
+import Flip from "gsap/Flip";
 gsap.registerPlugin(Flip);
 const props = defineProps({
     awayPoints: Number,
@@ -473,6 +504,7 @@ const props = defineProps({
     rink: Object,
     selectionMode: String,
     score: Object,
+    scoreboardView: Boolean,
     sheet: Object,
     static: Boolean,
 });
@@ -510,27 +542,13 @@ const clickTime = () => {
 const avatarHome = ref(null);
 const avatarAway = ref(null);
 
-watch(
-    () => props.hideValues,
-    (val, oldVal) => {
-       
-            const state = Flip.getState(".team__header");
-            nextTick(() => {
-                Flip.from(state, {
-                    duration: 0.5,
-                    stagger: 0.1,
-                    ease: "back",
-                });
-            });
-        
-    },
-    { deep: true }
-);
 
-watch(() => [selections.value.home, selections.value.away], ([home, away], oldData) => {
-    const [oldHome, oldAway] = oldData ?? [];
-    console.log('home: ', home, 'away: ', away)
-     if (home.id !== oldHome?.id) {
+
+watch(
+    () => [selections.value.home, selections.value.away],
+    ([home, away], oldData) => {
+        const [oldHome, oldAway] = oldData ?? [];
+        if (home.id !== oldHome?.id) {
             if (home.id) {
                 gsap.from(avatarHome.value, {
                     scale: 3,
@@ -544,9 +562,9 @@ watch(() => [selections.value.home, selections.value.away], ([home, away], oldDa
                     ease: "bounce",
                 });
             }
-        } 
+        }
 
-         if (away.id !== oldAway?.id) {
+        if (away.id !== oldAway?.id) {
             if (away.id) {
                 gsap.from(avatarAway.value, {
                     scale: 3,
@@ -560,6 +578,30 @@ watch(() => [selections.value.home, selections.value.away], ([home, away], oldDa
                     ease: "bounce",
                 });
             }
-        } 
-}, {deep: true})
+        }
+    },
+    { deep: true }
+);
+
+watch(
+    () => props.hideValues,
+    (val, oldVal) => {
+        const state = Flip.getState(".team__header, .avatar__container, .linescore-container");
+        nextTick(() => {
+            Flip.from(state, {
+                duration: 0.5,
+                stagger: 0.1,
+                ease: "back",
+            });
+        });
+    },
+    { deep: true }
+);
+
+const avatarSize = computed(() => {
+    if (props.scoreboardView) {
+        return "2em";
+    }
+    return "7em";
+});
 </script>
