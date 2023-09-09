@@ -1,8 +1,8 @@
 <template>
     <div
-        class="linescore-editor__container"
+        class="linescore-editor__container hide-scroll"
         :style="{
-            minHeight: summary ? 'calc(100% - 25px)' : '',
+            minHeight: compact ? '' : 'calc(100% - 25px)',
         }"
     >
         <nav
@@ -30,14 +30,20 @@
                     />
                 </div>
             </div>
-               <InputDate v-if="canEditDetails && dateSelectOpen" v-model="selections.start_time" />
+            <InputDate
+                v-if="canEditDetails && dateSelectOpen"
+                v-model="selections.start_time"
+            />
         </nav>
         <LinescoreGrid
             :score="score"
             v-if="isMounted"
             :selected="selected"
-            @select="setSelected"
-            :style="{ order: summary ? 1 : 0, marginTop: summary ? '18px' : '' }"
+            @select="onGridClick"
+            :style="{
+                order: summary ? 1 : 0,
+                marginTop: summary ? '18px' : '',
+            }"
         >
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
@@ -88,13 +94,20 @@
                                     selections.home?.id
                             "
                             :canConfirm="
+                                !summary &&
                                 canEdit &&
                                 !!selections.home?.id &&
                                 !!selections.away?.name &&
-                                !!selections.hammerFirstEndTeam &&
+                                !!(
+                                    selections.hammerFirstEndTeam ===
+                                        selections.away?.id ||
+                                    selections.hammerFirstEndTeam ===
+                                        selections.home?.id
+                                ) &&
                                 mode.includes('home')
                             "
                             :showNames="summary"
+                            :restrictIds="userTeamStore.userTeams.map(({id}) => id)"
                         >
                         </LinescoreAvatar>
                     </Teleport>
@@ -119,7 +132,7 @@
                             avatarSize="100%"
                             id="avatar-away"
                             @click="onAvatarClick('away')"
-                            :editing="canEdit && mode.includes('away')"
+                            :editing="mode.includes('away')"
                             v-model="selections.away"
                             @confirm="onAvatarConfirm('away')"
                             @update:modelValue="onTeamChange('away', $event)"
@@ -150,13 +163,20 @@
                             "
                             allowCustom
                             :canConfirm="
+                                !summary &&
                                 canEdit &&
                                 !!selections.home?.id &&
                                 !!selections.away?.name &&
-                                !!selections.hammerFirstEndTeam &&
+                                !!(
+                                    selections.hammerFirstEndTeam ===
+                                        selections.away?.id ||
+                                    selections.hammerFirstEndTeam ===
+                                        selections.home?.id
+                                ) &&
                                 mode.includes('away')
                             "
                             :showNames="summary"
+                            :filterIds="[selections.home?.id]"
                         >
                         </LinescoreAvatar>
                     </Teleport>
@@ -205,34 +225,38 @@
                 {{ tweenedAwayScore.total.toFixed() }}
             </div>
             <div class="end-count__container text-sm">
-                After {{ Object.values(score).filter((e) => e?.home !== 'X')?.length }}
+                After
+                {{
+                    Object.values(score).filter((e) => e?.home !== "X")?.length
+                }}
             </div>
         </div>
         <div class="full-width row justify-center" v-if="summary">
-         <div
+            <div
                 class="info__section relative-position"
                 style="width: fit-content"
-              @click="toggleGlobalSearch({
-                open: true,
-                options: {
-                    inputLabel: 'Search for a rink',
-                    resourceTypes: ['rink'],
-                    callback: (selection) => {
-                        selections.rink = selection
-                    }
-                }
-              })"
+                @click="
+                    toggleGlobalSearch({
+                        open: true,
+                        options: {
+                            inputLabel: 'Search for a rink',
+                            resourceTypes: ['rink'],
+                            callback: (selection) => {
+                                selections.rink = selection;
+                            },
+                        },
+                    })
+                "
             >
                 <q-icon name="location_on" color="red" />
                 <h2
                     class="text-sm"
-                   
                     :class="{ 'text-bold': selections.rink?.name }"
                 >
                     {{ selections?.rink?.name ?? "Unspecified rink" }}
                 </h2>
                 <div class="edit--floating text-sm" v-if="canEditDetails">
-                     <q-btn
+                    <q-btn
                         icon="edit"
                         flat
                         round
@@ -242,28 +266,25 @@
                         size="sm"
                     />
                 </div>
-                
             </div>
-            
         </div>
-         <div
-                class="info__section column items-center q-mt-xs"
-                v-if="selections.rink?.id && canEditDetails"
-              
-            >
-            <div class="row relative-position"   @click="showSheetSelect = true">
-                   <q-icon name="crop_portrait" color="grey-6" />
-                <h2 class="text-sm" >
+        <div
+            class="info__section column items-center q-mt-xs"
+            v-if="selections.rink?.id && canEditDetails"
+        >
+            <div class="row relative-position" @click="showSheetSelect = true">
+                <q-icon name="crop_portrait" color="grey-6" />
+                <h2 class="text-sm">
                     {{
                         selections.sheet?.number
-                            ? `Sheet ${selections.sheet?.number}${numberToLetter(
+                            ? `Sheet ${
                                   selections.sheet?.number
-                              )}`
+                              }${numberToLetter(selections.sheet?.number)}`
                             : "Unspecified sheet"
                     }}
                 </h2>
-                  <div class="edit--floating text-sm" v-if="canEditDetails">
-                     <q-btn
+                <div class="edit--floating text-sm" v-if="canEditDetails">
+                    <q-btn
                         icon="edit"
                         flat
                         round
@@ -274,31 +295,31 @@
                     />
                 </div>
             </div>
-               
-                <transition
-                    appear
-                    enter-active-class="animated slideInLeft"
-                    leave-active-class="animated slideOutRight"
-                >
-                    <div class="row justify-center" v-if="showSheetSelect">
-                        <div
-                            v-for="number in [
-                                ...Array(selections.rink?.sheets).keys(),
-                            ].map((i) => i + 1)"
-                            :key="`sheet-${number}`"
-                            class="sheet__number"
-                            :class="{ selected: selections.sheet?.number === number }"
-                           @click="selectSheet(number)" 
-                        >
-                         <!-- -->
-                            <span
-                                >{{ number }}{{ numberToLetter(number) }}</span
-                            >
-                        </div>
+
+            <transition
+                appear
+                enter-active-class="animated slideInLeft"
+                leave-active-class="animated slideOutRight"
+            >
+                <div class="row justify-center" v-if="showSheetSelect">
+                    <div
+                        v-for="number in [
+                            ...Array(selections.rink?.sheets).keys(),
+                        ].map((i) => i + 1)"
+                        :key="`sheet-${number}`"
+                        class="sheet__number"
+                        :class="{
+                            selected: selections.sheet?.number === number,
+                        }"
+                        @click="selectSheet(number)"
+                    >
+                        <!-- -->
+                        <span>{{ number }}{{ numberToLetter(number) }}</span>
                     </div>
-                </transition>
-            </div>
-        <q-space/>
+                </div>
+            </transition>
+        </div>
+        <q-space v-if="summary" />
     </div>
 </template>
 <style lang="scss" scoped>
@@ -307,6 +328,7 @@
     padding-bottom: var(--space-sm);
     display: flex;
     flex-direction: column;
+    overflow-y: visible;
     .avatars-unnested__container {
         width: 100%;
         box-sizing: border-box;
@@ -351,14 +373,14 @@
         margin: auto;
         height: fit-content;
     }
-       .info__section {
+    .info__section {
         display: flex;
         justify-content: center;
         .q-icon {
             margin-right: var(--space-xxxs);
         }
     }
-     .sheet__number {
+    .sheet__number {
         padding: var(--space-xs);
         border: 1px solid rgba(0, 0, 0, 0.2);
         margin: var(--space-xs);
@@ -378,42 +400,58 @@
 </style>
 
 <script setup>
-import { useMounted, useVModel } from "@vueuse/core";
-import {useDialogStore} from '@/store/dialog'
+import { useMounted, useRefHistory, useVModel } from "@vueuse/core";
+import { useDialogStore } from "@/store/dialog";
+import {useUserTeamStore} from '@/store/user-teams'
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
+gsap.registerPlugin(Flip);
 const props = defineProps({
     canEdit: Boolean,
     canEditDetails: Boolean,
+    compact: Boolean,
     modelValue: Object,
     score: Object,
     selected: Number,
     summary: Boolean,
 });
 
-const emit = defineEmits(["scroll", "ready", "update:modelValue"]);
+const emit = defineEmits([
+    "edit",
+    "linescore",
+    "scroll",
+    "ready",
+    "update:modelValue",
+]);
 
 const selections = useVModel(props, "modelValue", emit);
 
-const {toggleGlobalSearch} = useDialogStore();
+const { toggleGlobalSearch } = useDialogStore();
+
+const userTeamStore = useUserTeamStore()
 
 const isMounted = useMounted();
 
 const endCount = computed(() => Object.keys(props.score)?.length ?? 0);
 
-const setSelected = (num) => {
-    const s = Flip.getState(
-        ".linescore-column--item, .linescore-column--item.selected",
-        { props: "backgroundColor" }
-    );
-    emit("scroll", num);
-    nextTick(() => {
-        Flip.from(s, {
-            duration: 0.2,
-            ease: "linear",
-            // fade: true,
+const onGridClick = (num) => {
+    if (props.summary) {
+        nestAll();
+        emit("linescore");
+    } else {
+        const s = Flip.getState(
+            ".linescore-column--item, .linescore-column--item.selected",
+            { props: "backgroundColor" }
+        );
+        emit("scroll", num);
+        nextTick(() => {
+            Flip.from(s, {
+                duration: 0.2,
+                ease: "linear",
+                // fade: true,
+            });
         });
-    });
+    }
 };
 
 const mode = ref([]);
@@ -421,20 +459,34 @@ const mode = ref([]);
 const onAvatarClick = (team) => {
     if (mode.value.includes(team)) return;
     toggleAvatarNesting(team, !mode.value.includes(team));
+
+    emit("edit");
 };
 
 const onAvatarConfirm = (team) => {
+    if (props.summary) return;
     toggleAvatarNesting(team, false);
 };
 
+const hammerFE = computed(() => selections.value.hammerFirstEndTeam);
+const { history: hammerHistory } = useRefHistory(hammerFE);
+
 const onTeamChange = (team, newValue) => {
-    if (selections.value[team]?.id === selections.value.hammerFirstEndTeam)
-        selections.value.hammerFirstEndTeam = null;
-    selections.value[team] = newValue;
-    if (team === "home" && !selections.value.away?.name) {
-        toggleAvatarNesting("away", true, 1000);
-    }
+    nextTick(() => {
+        selections.value[team] = newValue;
+        if (team === "home" && !selections.value.away?.name) {
+            toggleAvatarNesting("away", true, 1000);
+        }
+    });
 };
+
+watch(() => selections.value.away, (val, oldVal) => {
+    if (hammerHistory.value[0]?.snapshot === oldVal?.id) selections.value.hammerFirstEndTeam = val?.id
+}, {deep: true})
+
+watch(() => selections.value.home, (val, oldVal) => {
+    if (hammerHistory.value[0]?.snapshot === oldVal?.id) selections.value.hammerFirstEndTeam = val?.id
+}, {deep: true})
 
 /**
  * ANIMATIONS
@@ -469,7 +521,7 @@ const unnested = ref(false);
 
 const toggleAvatarNesting = (team, isNested, delay = 0) => {
     const state = Flip.getState(
-        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container,.linescore-row,.linescore-container`
+        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container,.linescore-row,.linescore-container,.linescore-row--inner`
     );
     setTimeout(() => {
         if (isNested) {
@@ -483,22 +535,15 @@ const toggleAvatarNesting = (team, isNested, delay = 0) => {
                 stagger: 0.01,
                 ease: "back",
                 nested: true,
-                // absolute: '.linescore-container',
+                absolute: ".linescore-row--inner,.linescore-row",
                 onComplete: () => checkCompletionState(),
             });
         });
     }, delay);
 };
 
-const completed = ref(false);
-
 const checkCompletionState = () => {
-    if (
-        completed.value ||
-        mode.value.includes("home") ||
-        mode.value.includes("away")
-    )
-        return;
+    if (mode.value.includes("home") || mode.value.includes("away")) return;
     if (
         !selections.value.home?.id ||
         !selections.value.away?.name ||
@@ -507,7 +552,6 @@ const checkCompletionState = () => {
         !selections.value.hammerFirstEndTeam
     )
         return;
-    completed.value = true;
     emit("ready");
 };
 
@@ -542,66 +586,81 @@ const tweenedAwayScore = reactive({
 
 const dateContainer = ref(null);
 
+const unnestAll = () => {
+    const state = Flip.getState(
+        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container`
+    );
+    mode.value.push("away");
+    mode.value.push("home");
+
+    nextTick(() => {
+        Flip.from(state, {
+            stagger: 0.01,
+            duration: 0.3,
+            nested: true,
+        });
+    });
+};
+
+const nestAll = () => {
+    const state = Flip.getState(
+        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container`
+    );
+    const iHome = mode.value.indexOf("home");
+    if (iHome !== -1) mode.value.splice(iHome, 1);
+    const iAway = mode.value.indexOf("away");
+    if (iAway !== -1) mode.value.splice(iAway, 1);
+    nextTick(() => {
+        Flip.from(state, {
+            stagger: 0.01,
+            duration: 0.3,
+            nested: true,
+        });
+    });
+};
+
 watch(
     () => props.summary,
     (val) => {
         if (!val) return;
-        const state = Flip.getState(
-            `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container`
-        );
-        mode.value.push("away");
-        mode.value.push("home");
-
-        nextTick(() => {
-            Flip.from(state, {
-                stagger: 0.01,
-                duration: 0.3,
-                nested: true,
-                onEnter: (elements) => {
-                    console.log("ENTER: ", elements);
-                },
-                // absolute: '.linescore-container',
-                // onComplete: () => checkCompletionState(),
-            });
-
-            gsap.from(".totalscore--summary", {
-                scaleY: 0,
-                duration: 0.2,
-                delay: 0.2,
-                transformOrigin: "top",
-            });
-            gsap.to(tweenedHomeScore, {
-                delay: 0.3,
-                duration: (Number(totalScore.value.home) || 0) / 8,
-                total: Number(totalScore.value.home) || 0,
-            });
-            gsap.to(tweenedAwayScore, {
-                delay: 0.3,
-                duration: (Number(totalScore.value.away) || 0) / 8,
-                total: Number(totalScore.value.away) || 0,
-            });
-            gsap.from(dateContainer.value, {
-                scaleY: 0,
-                delay: 0.3,
-                duration: 0.3,
-                transformOrigin: "top",
-                ease: "elastic",
-            });
+        unnestAll();
+        gsap.from(".totalscore--summary", {
+            scaleY: 0,
+            duration: 0.2,
+            delay: 0.2,
+            transformOrigin: "top",
+        });
+        gsap.to(tweenedHomeScore, {
+            delay: 0.3,
+            duration: (Number(totalScore.value.home) || 0) / 8,
+            total: Number(totalScore.value.home) || 0,
+        });
+        gsap.to(tweenedAwayScore, {
+            delay: 0.3,
+            duration: (Number(totalScore.value.away) || 0) / 8,
+            total: Number(totalScore.value.away) || 0,
+        });
+        gsap.from(dateContainer.value, {
+            scaleY: 0,
+            delay: 0.3,
+            duration: 0.3,
+            transformOrigin: "top",
+            ease: "elastic",
         });
     }
 );
 const { format, toTimezone } = useTime();
 
-const showSheetSelect = ref(null)
+const showSheetSelect = ref(null);
 
 const selectSheet = (number) => {
     selections.value.sheet = {
-        number
-    }
-    showSheetSelect.value = false
-}
+        number,
+    };
+    showSheetSelect.value = false;
+};
 
-const dateSelectOpen = ref(false)
+const dateSelectOpen = ref(false);
 </script>
 
 <script>

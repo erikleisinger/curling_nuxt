@@ -67,12 +67,15 @@
         v-model="gameParams"
             :score="score"
             @ready="onLinescoreReady"
-            :canEdit="!showLinescore && view !== views.DETAILS"
+            @linescore="goBackToLinescore"
+            @edit="showLinescore = false"
+            :canEdit="true"
             :selected="showLinescore ? visible : null"
             ref="editorContainer"
             @scroll="scrollTo"
             :summary="view === views.DETAILS"
             :canEditDetails="!showLinescore && view === views.DETAILS"
+            :compact="showLinescore"
 
         />
 
@@ -317,8 +320,6 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import team from "tests/__mock__/team";
 import { gsap } from "gsap";
-import { Flip } from "gsap/Flip";
-gsap.registerPlugin(Flip);
 
 const dayjs = useDayjs();
 const $q = useQuasar();
@@ -436,11 +437,6 @@ const handleNext = () => {
         return;
     }
 
-    if (view.value === views.END_COUNT_SELECT) {
-        beginLinescore();
-        return;
-    }
-
     changeView(+1);
     if (
         view.value === views.HAMMER_SELECT &&
@@ -452,24 +448,6 @@ const handleNext = () => {
 };
 
 const transitioning = ref(false);
-
-const beginLinescore = () => {
-    // const state = Flip.getState(
-    //     ".team__header, .avatar__container, .linescore-container"
-    // );
-    // transitioning.value = true;
-    // selectionMode.value[views.END_COUNT_SELECT] = "";
-    // nextTick(() => {
-    //     Flip.from(state, {
-    //         duration: 0.5,
-    //         stagger: 0.05,
-    //         ease: "back",
-    //     });
-    // });
-    // setTimeout(() => {
-    //     view.value = views.LINESCORE;
-    // }, 750);
-};
 
 const confirmUnsaved = ref(false);
 
@@ -593,8 +571,6 @@ const save = async () => {
 
     createGameStats(gameToCreate?.home, gameId);
     createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId);
-
-    // await useSupabaseClient().from('games').update({completed: true}).eq('id', gameId)
 
     return navigateTo(`/games/${gameId}`);
 };
@@ -829,183 +805,14 @@ const colWidth = () => {
     return 100 / numEnds;
 };
 
-const colorOptions = ref([
-    {
-        value: "red",
-        label: "Red",
-    },
-    {
-        value: "yellow",
-        label: "Yellow",
-    },
-    {
-        value: "blue",
-        label: "Blue",
-    },
-]);
-
-const getNextColorIndex = (index, prevent) => {
-    console.log("PREVENT: ", prevent);
-    let nextIndex = index + 1 > colorOptions.value.length - 1 ? 0 : index + 1;
-    if (prevent.includes(colorOptions.value[nextIndex]?.value)) {
-        return getNextColorIndex(nextIndex, prevent);
-    }
-    return nextIndex;
-};
-
-const changeColor = (team) => {
-    const currentColorIndex =
-        colorOptions.value.findIndex(
-            ({ value }) => value === gameParams.value[`${team}Color`]
-        ) || 0;
-
-    const next = getNextColorIndex(currentColorIndex, [
-        gameParams.value[`${team === "home" ? "away" : "home"}Color`],
-    ]);
-    gameParams.value[`${team}Color`] = colorOptions.value[next]?.value || "red";
-};
-
-const onAvatarClick = ({ value: event, element }) => {
-    if (view.value === views.HOME_SELECT && event === "home") {
-        toggleGlobalSearch({
-            open: true,
-            options: {
-                inputLabel: "Search for your team",
-                resourceTypes: ["team"],
-                restrictIds: userTeams.value.map(({ id }) => id),
-                callback: (selection, event) => {
-                    gameParams.value.home = {
-                        ...selection,
-                        team_avatar: selection.avatar,
-                    };
-                    changeView(+1);
-                    gsap.from(element, {
-                        scale: 3,
-                        duration: 0.6,
-                        ease: "bounce",
-                    });
-                },
-            },
-        });
-    } else if (view.value === views.AWAY_SELECT && event === "away") {
-        toggleGlobalSearch({
-            open: true,
-            options: {
-                inputLabel: "Search for your team",
-                resourceTypes: ["team"],
-                filterIds: [gameParams.value.home?.id],
-                callback: (selection, event) => {
-                    gameParams.value.away = {
-                        ...selection,
-                        team_avatar: selection.avatar,
-                    };
-
-                    gsap.from(element, {
-                        scale: 3,
-                        duration: 0.6,
-                        ease: "bounce",
-                    });
-                    setTimeout(() => {
-                        changeView(+1);
-                    }, 1000);
-                },
-            },
-        });
-    } else if (view.value === views.COLOR_SELECT) {
-        changeColor(event);
-    } else if (view.value === views.HAMMER_SELECT) {
-        gameParams.value.hammerFirstEndTeam = gameParams.value[`${event}`]?.id;
-    }
-};
-
-const hideValues = ref({
-    [views.HOME_SELECT]: [
-        "away",
-        "score",
-        "colors",
-        "hammer",
-        "linescore",
-        "linescoreHeader",
-        "details",
-        "location",
-    ],
-    [views.AWAY_SELECT]: [
-        "score",
-        "colors",
-        "hammer",
-        "linescore",
-        "linescoreHeader",
-        "details",
-        "location",
-    ],
-    [views.COLOR_SELECT]: [
-        "score",
-        "linescore",
-        "hammer",
-        "linescoreHeader",
-        "details",
-        "location",
-    ],
-    [views.HAMMER_SELECT]: [
-        "score",
-        "linescore",
-        "linescoreHeader",
-        "details",
-        "location",
-    ],
-    [views.END_COUNT_SELECT]: ["score", "linescore", "details", "location"],
-    [views.LINESCORE]: [
-        "details",
-        "location",
-        "score",
-        "linescore",
-        "home",
-        "away",
-    ],
-});
-
-const selectionMode = ref({
-    [views.HOME_SELECT]: "home",
-    [views.AWAY_SELECT]: "away",
-    [views.COLOR_SELECT]: "colors",
-    [views.HAMMER_SELECT]: "hammer",
-    [views.END_COUNT_SELECT]: "endcount",
-    [views.DETAILS]: "details",
-});
-
 const updateEndCount = (inc) => {
     if (endCount.value + inc < 6 || endCount.value + inc > 10) return;
     endCount.value += inc;
 };
-
-const viewTitle = computed(() => {
-    if (transitioning.value) return null;
-    return {
-        [views.HOME_SELECT]: "Select your team",
-        [views.AWAY_SELECT]: "Select opposition",
-        [views.COLOR_SELECT]: "Select rock colors",
-        [views.HAMMER_SELECT]: "Hammer in first end",
-        [views.END_COUNT_SELECT]: "Configure number of ends",
-    }[view.value];
-});
-const viewSubtitle = computed(() => {
-    if (transitioning.value) return null;
-    return {
-        [views.HOME_SELECT]: "Click the avatar to search",
-        [views.AWAY_SELECT]:
-            "Click the avatar to search, or type the opposition's name so you can invite them later.",
-        [views.COLOR_SELECT]: "Click an avatar to change colors",
-        [views.HAMMER_SELECT]: "Click an avatar to change",
-        [views.END_COUNT_SELECT]:
-            "Use the plus and minus buttons to specify how many ends the game should be.",
-    }[view.value];
-});
-
 const showLinescore = ref(false);
 const linescoreContainer = ref(null);
 
-const onLinescoreReady = () => {
-    console.log('DO READY')
+const onLinescoreReady = () => {l
     showLinescore.value = true;
     gsap.from('.scoreboard__end-container,.scoreboard__container', {
             x: window.innerWidth / 2,
@@ -1024,5 +831,10 @@ const goSummary = () => {
      showLinescore.value = false;
     view.value = views.DETAILS;
    
+}
+
+const goBackToLinescore = () => {
+    showLinescore.value = true
+    view.value = null;
 }
 </script>

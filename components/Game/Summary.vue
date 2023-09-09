@@ -485,8 +485,6 @@
 </style>
 <script setup>
 import gsap from "gsap";
-import Flip from "gsap/Flip";
-gsap.registerPlugin(Flip);
 const props = defineProps({
     awayPoints: Number,
     canEdit: Boolean,
@@ -580,22 +578,6 @@ watch(
         }
         }, 10)
        
-    },
-    { deep: true }
-);
-
-watch(
-    () => props.hideValues,
-    (val, oldVal) => {
-        if (props.noAnimation) return;
-        const state = Flip.getState(".team__header, .avatar__container, .linescore-container");
-        nextTick(() => {
-            Flip.from(state, {
-                duration: 0.5,
-                stagger: 0.05,
-                ease: "back",
-            });
-        });
     },
     { deep: true }
 );

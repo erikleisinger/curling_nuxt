@@ -172,8 +172,10 @@ const props = defineProps({
         default: "red",
     },
     editing: Boolean,
+    filterIds: Array,
     hasHammer: Boolean,
     modelValue: Object,
+    restrictIds: Array,
     selectColor: Boolean,
     selectHammer: Boolean,
     showNames: Boolean,
@@ -206,6 +208,8 @@ const onAvatarClick = () => {
         options: {
             resourceTypes: ["team"],
             callback: onAvatarSelect,
+            filterIds: props.filterIds,
+            restrictIds: props.restrictIds
         },
     });
 };
@@ -228,18 +232,17 @@ const onAvatarSelect = (selection) => {
                     ease: "bounce",
                 });
             }
-            setConfirmButton();
         }
     }, 10);
 };
 
 const confirmContainer = ref(null);
 
-const setConfirmButton = () => {
-    gsap.from(confirmContainer.value, {
+const makeButtonAppear = (ref) => {
+    gsap.from(ref, {
         scale: 0,
-        duration: 0.1,
-        delay: 0.6,
+        duration: 0.3,
+        delay: 0.2,
     });
 };
 
@@ -247,7 +250,7 @@ const teamName = ref(null);
 
 watch(
     () => props.editing,
-    () => {
+    (val) => {
         nextTick(() => {
             gsap.from(teamName.value, {
                 ...(props.allowCustom ? { scaleY: 0 } : { scale: 0 }),
@@ -255,7 +258,13 @@ watch(
                 duration: 0.2,
                 transformOrigin: "top",
             });
+            if (!val) return;
+            if (!props.hasHammer) makeButtonAppear(hammerContainer.value)
+                makeButtonAppear(confirmContainer.value);
+                
+                // makeButtonAppear(colorContainer.value)
         });
+    
     }
 );
 
