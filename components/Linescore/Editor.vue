@@ -415,7 +415,7 @@
 </style>
 
 <script setup>
-import { useMounted, useRefHistory, useVModel, useElementSize } from "@vueuse/core";
+import { useMounted, useRefHistory, useVModel, useElementSize, useEventListener } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
 import gsap from "gsap";
@@ -531,6 +531,14 @@ watch(
 const initing = ref(true);
 
 onMounted(() => {
+    useEventListener(window, 'popstate', (e) => {
+            console.log('BACK: ', e)
+            e.preventDefault();
+        if (props.summary) {
+            emit('linescore')
+            nestAll();
+        }
+    })
     if (!props.canEdit) return;
     const tl = gsap.timeline({});
     setTimeout(() => {

@@ -714,7 +714,10 @@ onMounted(async () => {
         // view.value = views.CONFIRM
     }
     loading.value = false;
+
 });
+
+
 
 /**
  * Calc height of main content
