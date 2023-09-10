@@ -812,7 +812,7 @@ const updateEndCount = (inc) => {
 const showLinescore = ref(false);
 const linescoreContainer = ref(null);
 
-const onLinescoreReady = () => {l
+const onLinescoreReady = () => {
     showLinescore.value = true;
     gsap.from('.scoreboard__end-container,.scoreboard__container', {
             x: window.innerWidth / 2,
