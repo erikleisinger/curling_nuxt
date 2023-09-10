@@ -114,7 +114,7 @@
                             "
                         >
                             <template v-slot:teamSelectPrompt>
-                                Click avatar to select your team
+                                Select your team
                             </template>
                         </LinescoreAvatar>
                     </Teleport>
@@ -186,7 +186,7 @@
                             :filterIds="[selections.home?.id]"
                         >
                             <template v-slot:teamSelectPrompt>
-                                Click avatar to select opposition
+                                Select opposition
                             </template>
                         </LinescoreAvatar>
                     </Teleport>
@@ -195,19 +195,9 @@
 
             <template v-slot:homeScore>
                 {{ totalScore.home }}
-                <!-- <Teleport to="#totalscore-home" :disabled="!summary" v-if="isMounted">
-                    <div>
-                        {{ totalScore.home }}
-                    </div>
-                </Teleport> -->
             </template>
             <template v-slot:awayScore>
                 {{ totalScore.away }}
-                <!-- <Teleport to="#totalscore-away" :disabled="!summary" v-if="isMounted">
-                    <div>
-                        {{ totalScore.away }}
-                    </div>
-                </Teleport> -->
             </template>
         </LinescoreGrid>
         <div

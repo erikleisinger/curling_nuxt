@@ -81,7 +81,8 @@ export default defineNuxtConfig({
         "dayjs-nuxt",
         // "@vite-pwa/nuxt",
         '@nuxt/image',
-        '@pinia-orm/nuxt'
+        '@pinia-orm/nuxt',
+        'nuxt-svgo'
         // '@vueuse/components'
     ],
     pwa: {

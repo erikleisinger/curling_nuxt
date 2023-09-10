@@ -16,6 +16,7 @@
                 :animateRing="!!(editing && selectColor && selections?.color)"
                 :highlight="false"
                 @click="onAvatarClick"
+                v-touchable="{height: '50', delay: 2000}"
             />
 
             <div
@@ -55,10 +56,15 @@
                 Team
             </div>
             <h2
-                class="text-sm text-bold text-center truncate-text full-width"
+                class="text-sm text-bold text-center truncate-text full-width "
                 v-if="selections?.name"
             >
-                <span>{{ selections?.name }}</span>
+                <span class="relative-position">{{ selections?.name }}
+                      <div class="clear-name-container--floating" v-if="customName === selections?.name">
+                    <q-btn flat round icon="edit" dense padding="0px" class="text-sm" size="0.8em" color="grey-8" @click="showCustomNameInput = true"/>
+                </div>
+                </span>
+              
             </h2>
             <h2 v-else class="text-sm text-bold text-center full-width">
                 <slot name="teamSelectPrompt">
@@ -66,9 +72,14 @@
                 </slot>
             </h2>
             <div v-if="allowCustom && !showNames" class="">
-                <h2 class="text-sm text-bold text-center full-width q-mt-md">
+                <div v-if="showCustomInstructions">
+                <h2 class="text-sm text-center full-width q-mt-md" >
                     Or
                 </h2>
+                 <h2 class="text-sm text-bold text-center full-width q-mt-md">
+                    Type a custom name and can invite them later
+                </h2>
+                </div>
                 <q-input
                     dense
                     rounded
@@ -77,22 +88,22 @@
                     v-model="customName"
                     @keydown.enter="setCustomName"
                     label="Team name"
+                    v-if="showCustomNameInput"
                 >
                     <template v-slot:append>
                         <q-btn
+                            v-if="customName && customName !== selections?.name"
                             flat
                             round
                             icon="check"
-                            color="green"
+                            color="grey-7"
                             dense
                             padding="2px"
                             @click="setCustomName"
                         />
                     </template>
                 </q-input>
-                <h2 class="text-sm text-bold text-center full-width q-mt-md">
-                    Type the team name so you can invite them later
-                </h2>
+               
             </div>
         </div>
         <slot name="append"/>
@@ -147,13 +158,18 @@
         font-size: 4em;
         position: relative;
     }
-    .confirm-container--floating {
+    .confirm-container--floating,
+    .clear-name-container--floating {
         z-index: 100;
         position: absolute;
         top: 0;
-        right: 0;
-
         width: fit-content;
+    }
+    .confirm-container--floating {
+        right: 0;
+    }
+    .clear-name-container--floating {
+        left: -1.5em;
     }
 }
 </style>
@@ -191,11 +207,16 @@ const selections = useVModel(props, "modelValue", emit);
 
 const customName = ref(null);
 
+const showCustomNameInput = ref(true)
+const showCustomInstructions = ref(true)
+
 const setCustomName = () => {
     emit("update:modelValue", {
         name: customName.value,
         color: selections.value.color,
     });
+    showCustomNameInput.value =false;
+    showCustomInstructions.value = false;
 };
 
 const avatarContainer = ref(null);
@@ -235,6 +256,9 @@ const onAvatarSelect = (selection) => {
                 });
             }
         }
+           showCustomNameInput.value =true;
+    showCustomInstructions.value = true;
+    customName.value = null;
     }, 10);
 };
 
