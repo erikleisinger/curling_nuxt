@@ -1,5 +1,5 @@
 <template>
-    <div ref="el" class="el">
+    <div ref="el" class="el" :id="`scroller-section-${endno}`">
         <slot />
     </div>
 </template>
@@ -12,11 +12,11 @@
 <script setup>
 import {
     useElementBounding,
-    useWindowSize,
-    useIntersectionObserver,
-    useSwipe,
-    useThrottleFn
 } from "@vueuse/core";
+
+const props = defineProps({
+    endno: Number
+})
 
 const emit = defineEmits(["visible"]);
 const el = ref(null);
@@ -66,5 +66,8 @@ watch(normalizedDistanceFromCenter, (val) => {
     if (val > 0.3) return;
     emitVisible();
 })
+
+
+
 
 </script>

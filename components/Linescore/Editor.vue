@@ -4,7 +4,9 @@
         :style="{
             minHeight: compact ? '' : 'calc(100% - 25px)',
         }"
+     ref="linescoreContainer" 
     >
+       <!-- -->
         <nav
             class="row no-wrap justify-center full-width items-center q-mt-md"
             v-if="summary"
@@ -38,7 +40,7 @@
         <LinescoreGrid
             :score="score"
             v-if="isMounted"
-            :selected="selected"
+            :selected="showLinescore ? selected : null"
             @select="onGridClick"
             :style="{
                 order: summary ? 1 : 0,
@@ -68,7 +70,7 @@
                             v-model="selections.home"
                             @update:modelValue="onTeamChange('home', $event)"
                             @update:color="onColorUpdate"
-                            @confirm="onAvatarConfirm('home')"
+                            @confirm="nestAll"
                             :selectColor="
                                 !!(
                                     selections.home?.name &&
@@ -107,8 +109,13 @@
                                 mode.includes('home')
                             "
                             :showNames="summary"
-                            :restrictIds="userTeamStore.userTeams.map(({id}) => id)"
+                            :restrictIds="
+                                userTeamStore.userTeams.map(({ id }) => id)
+                            "
                         >
+                            <template v-slot:teamSelectPrompt>
+                                Click avatar to select your team
+                            </template>
                         </LinescoreAvatar>
                     </Teleport>
                 </div>
@@ -134,7 +141,7 @@
                             @click="onAvatarClick('away')"
                             :editing="mode.includes('away')"
                             v-model="selections.away"
-                            @confirm="onAvatarConfirm('away')"
+                            @confirm="nestAll"
                             @update:modelValue="onTeamChange('away', $event)"
                             @update:color="onColorUpdate"
                             :selectColor="
@@ -178,6 +185,9 @@
                             :showNames="summary"
                             :filterIds="[selections.home?.id]"
                         >
+                            <template v-slot:teamSelectPrompt>
+                                Click avatar to select opposition
+                            </template>
                         </LinescoreAvatar>
                     </Teleport>
                 </div>
@@ -320,6 +330,9 @@
             </transition>
         </div>
         <q-space v-if="summary" />
+        <div class="slot-content" :style="{height: slotHeight}" v-show="showLinescore">
+            <slot />
+        </div>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -351,6 +364,7 @@
     }
     .nested-avatar__container {
         padding: 10%;
+        // height: 75%;
     }
     .totalscore--summary {
         font-size: 5em;
@@ -396,16 +410,18 @@
             font-weight: bold;
         }
     }
+
 }
 </style>
 
 <script setup>
-import { useMounted, useRefHistory, useVModel } from "@vueuse/core";
+import { useMounted, useRefHistory, useVModel, useElementSize } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import {useUserTeamStore} from '@/store/user-teams'
+import { useUserTeamStore } from "@/store/user-teams";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 gsap.registerPlugin(Flip);
+
 const props = defineProps({
     canEdit: Boolean,
     canEditDetails: Boolean,
@@ -428,11 +444,27 @@ const selections = useVModel(props, "modelValue", emit);
 
 const { toggleGlobalSearch } = useDialogStore();
 
-const userTeamStore = useUserTeamStore()
+const userTeamStore = useUserTeamStore();
 
 const isMounted = useMounted();
 
 const endCount = computed(() => Object.keys(props.score)?.length ?? 0);
+
+const showLinescore = computed(() => {
+    return (
+        !initing.value &&
+        !props.summary &&
+        props.canEdit &&
+        !!selections.value.home?.id &&
+        !!selections.value.away?.name &&
+        !!(
+            selections.value.hammerFirstEndTeam === selections.value.away?.id ||
+            selections.value.hammerFirstEndTeam === selections.value.home?.id
+        ) &&
+        !mode.value.includes("home") &&
+        !mode.value.includes("away")
+    );
+});
 
 const onGridClick = (num) => {
     if (props.summary) {
@@ -458,14 +490,9 @@ const mode = ref([]);
 
 const onAvatarClick = (team) => {
     if (mode.value.includes(team)) return;
-    toggleAvatarNesting(team, !mode.value.includes(team));
+    unnestAll();
 
     emit("edit");
-};
-
-const onAvatarConfirm = (team) => {
-    if (props.summary) return;
-    toggleAvatarNesting(team, false);
 };
 
 const hammerFE = computed(() => selections.value.hammerFirstEndTeam);
@@ -474,19 +501,26 @@ const { history: hammerHistory } = useRefHistory(hammerFE);
 const onTeamChange = (team, newValue) => {
     nextTick(() => {
         selections.value[team] = newValue;
-        if (team === "home" && !selections.value.away?.name) {
-            toggleAvatarNesting("away", true, 1000);
-        }
     });
 };
 
-watch(() => selections.value.away, (val, oldVal) => {
-    if (hammerHistory.value[0]?.snapshot === oldVal?.id) selections.value.hammerFirstEndTeam = val?.id
-}, {deep: true})
+watch(
+    () => selections.value.away,
+    (val, oldVal) => {
+        if (hammerHistory.value[0]?.snapshot === oldVal?.id)
+            selections.value.hammerFirstEndTeam = val?.id;
+    },
+    { deep: true }
+);
 
-watch(() => selections.value.home, (val, oldVal) => {
-    if (hammerHistory.value[0]?.snapshot === oldVal?.id) selections.value.hammerFirstEndTeam = val?.id
-}, {deep: true})
+watch(
+    () => selections.value.home,
+    (val, oldVal) => {
+        if (hammerHistory.value[0]?.snapshot === oldVal?.id)
+            selections.value.hammerFirstEndTeam = val?.id;
+    },
+    { deep: true }
+);
 
 /**
  * ANIMATIONS
@@ -494,13 +528,19 @@ watch(() => selections.value.home, (val, oldVal) => {
 
 //loading
 
+const initing = ref(true);
+
 onMounted(() => {
     if (!props.canEdit) return;
     const tl = gsap.timeline({});
     setTimeout(() => {
         tl.from(".linescore-column--item", {
-            x: 400,
-            stagger: 0.02,
+            x: -400,
+            stagger: {
+                grid: "auto",
+                amount: 0.4,
+                from: "random",
+            },
             ease: "power1",
         });
         tl.from("#avatar-home", {
@@ -508,39 +548,21 @@ onMounted(() => {
             scale: 0,
             ease: "bounce",
         });
-        tl.from("#avatar-away", {
-            duration: 0.4,
-            scale: 0,
-            ease: "bounce",
-            onComplete: () => toggleAvatarNesting("home", true, 300),
-        });
+        tl.from(
+            "#avatar-away",
+            {
+                duration: 0.4,
+                scale: 0,
+                ease: "bounce",
+                onComplete: () => {
+                    unnestAll();
+                    initing.value = false;
+                },
+            },
+            "<"
+        );
     }, 0);
 });
-
-const unnested = ref(false);
-
-const toggleAvatarNesting = (team, isNested, delay = 0) => {
-    const state = Flip.getState(
-        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container,.linescore-row,.linescore-container,.linescore-row--inner`
-    );
-    setTimeout(() => {
-        if (isNested) {
-            mode.value.push(team);
-        } else {
-            mode.value = mode.value.filter((t) => t !== team);
-        }
-
-        nextTick(() => {
-            Flip.from(state, {
-                stagger: 0.01,
-                ease: "back",
-                nested: true,
-                absolute: ".linescore-row--inner,.linescore-row",
-                onComplete: () => checkCompletionState(),
-            });
-        });
-    }, delay);
-};
 
 const checkCompletionState = () => {
     if (mode.value.includes("home") || mode.value.includes("away")) return;
@@ -588,7 +610,7 @@ const dateContainer = ref(null);
 
 const unnestAll = () => {
     const state = Flip.getState(
-        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container`
+        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container,.slot-content`
     );
     mode.value.push("away");
     mode.value.push("home");
@@ -598,14 +620,20 @@ const unnestAll = () => {
             stagger: 0.01,
             duration: 0.3,
             nested: true,
+            absolute: true,
+          
+            onLeave: (elements) => {
+                gsap.to(elements, { y: window.innerHeight, duration: 0.3 });
+            },
         });
     });
 };
 
 const nestAll = () => {
     const state = Flip.getState(
-        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container`
+        `#avatar-home,#avatar-away,.avatar-unnested__away,.avatar-unnested__home,.avatars-unnested__container,.slot-content`
     );
+
     const iHome = mode.value.indexOf("home");
     if (iHome !== -1) mode.value.splice(iHome, 1);
     const iAway = mode.value.indexOf("away");
@@ -615,6 +643,15 @@ const nestAll = () => {
             stagger: 0.01,
             duration: 0.3,
             nested: true,
+            absolute: "#avatar-home,#avatar-away",
+              zIndex: 1,
+            onEnter: (elements) => {
+                gsap.fromTo(
+                    elements,
+                    { y: window.innerHeight },
+                    { y: 0, duration: 0.3 }
+                );
+            },
         });
     });
 };
@@ -649,6 +686,12 @@ watch(
         });
     }
 );
+
+const linescoreContainer = ref(null);
+const {height: linescoreContainerHeight} = useElementSize(linescoreContainer)
+
+const slotHeight = computed(() => `calc(100% - ${linescoreContainerHeight.value}px)`)
+
 const { format, toTimezone } = useTime();
 
 const showSheetSelect = ref(null);

@@ -61,7 +61,9 @@
                 <span>{{ selections?.name }}</span>
             </h2>
             <h2 v-else class="text-sm text-bold text-center full-width">
+                <slot name="teamSelectPrompt">
                 Click the avatar to select a team
+                </slot>
             </h2>
             <div v-if="allowCustom && !showNames" class="">
                 <h2 class="text-sm text-bold text-center full-width q-mt-md">
@@ -239,6 +241,7 @@ const onAvatarSelect = (selection) => {
 const confirmContainer = ref(null);
 
 const makeButtonAppear = (ref) => {
+    if (!ref) return;
     gsap.from(ref, {
         scale: 0,
         duration: 0.3,
@@ -251,6 +254,7 @@ const teamName = ref(null);
 watch(
     () => props.editing,
     (val) => {
+        if (!val) return;
         nextTick(() => {
             gsap.from(teamName.value, {
                 ...(props.allowCustom ? { scaleY: 0 } : { scale: 0 }),
@@ -260,13 +264,21 @@ watch(
             });
             if (!val) return;
             if (!props.hasHammer) makeButtonAppear(hammerContainer.value)
-                makeButtonAppear(confirmContainer.value);
+               
                 
                 // makeButtonAppear(colorContainer.value)
         });
     
     }
 );
+
+watch(() => props.canConfirm, (val) => {
+    if (!val) return;
+    nextTick(() => {
+ makeButtonAppear(confirmContainer.value);
+    })
+
+})
 
 const colorOptions = ref([
     {

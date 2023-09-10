@@ -1,12 +1,13 @@
 <template>
+<div >
     <div
         class="scoreboard__end-row justify-center items-center"
         @click.prevent.stop="setTop"
         v-memo="[score.home]"
       
-        ref="top"
+      
     >
-        <div class="inner row items-center justify-center q-pt-sm"   :class="{highlight: !!score.home}">
+        <div class="inner row items-center justify-center q-pt-sm"   :class="{highlight: !!score.home}"   ref="top">
             <div class="inner-scorecard text-center">
                 {{ score.home }}
             </div>
@@ -18,9 +19,9 @@
         @click.prevent.stop="setBottom"
         v-memo="[score.away]"
        
-        ref="bottom"
+      
     >
-        <div class="inner row items-center justify-center q-pt-sm"    :class="{highlight: !!score.away}">
+        <div class="inner row items-center justify-center q-pt-sm"   ref="bottom"   :class="{highlight: !!score.away}">
             <div class="inner-scorecard text-center">
                 {{ score.away }}
             </div>
@@ -61,6 +62,7 @@
             </q-btn
         >
     </div>
+</div>
 </template>
 <style lang="scss" scoped>
 .shake-hands__text {
@@ -130,6 +132,7 @@
 <script setup>
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
 import {triggerClickAnimation} from '@/utils/gsap'
+
 const props = defineProps({
     canExtra: Boolean,
     endno: Number,
@@ -191,6 +194,8 @@ const handleShake = () => {
 onConfirm(() => {
     emit('shake')
 })
+
+
 
 const shaker = ref(null);
 onClickOutside(shaker, cancel)

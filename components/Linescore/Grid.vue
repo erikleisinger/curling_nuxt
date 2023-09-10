@@ -88,10 +88,12 @@
     .linescore-row {
         display: grid;
         grid-template-columns: 10% 1fr;
+   
         .linescore-row--inner {
             display: grid;
             grid-template-columns: v-bind(columns);
             text-align: center;
+              
             .linescore-column--item {
                 width: 100%;
                 height: 100%;
@@ -101,6 +103,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                   padding: 4%;
                 &.selected {
                     background-color: #00cd93;
                     color: white;
