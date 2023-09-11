@@ -1,5 +1,5 @@
 <template>
-    <div ref="el" class="el" :id="`scroller-section-${endno}`">
+    <div ref="el" class="el row items-center" :id="`scroller-section-${endno}`">
         <slot />
     </div>
 </template>

@@ -80,11 +80,9 @@
 .linescore-container {
     width: 100%;
     box-sizing: border-box;
-    // max-height: 108px;
     padding: 0px var(--space-sm);
     border-bottom: 1px solid rgba(0,0,0,0.2);
      border-top: 1px solid rgba(0,0,0,0.2);
-    // overflow-y: hidden;
     .linescore-row {
         display: grid;
         grid-template-columns: 10% 1fr;

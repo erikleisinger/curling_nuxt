@@ -16,7 +16,8 @@
                 :animateRing="!!(editing && selectColor && selections?.color)"
                 :highlight="false"
                 @click="onAvatarClick"
-                v-touchable="{height: '50', delay: 2000}"
+                v-touchable="editing && !selections?.name"
+                v-memo="[selections?.id, selections?.color, !!selections.name, editing]"
             />
 
             <div
@@ -28,6 +29,7 @@
                     'bg-grey-4': !hasHammer,
                 }"
                 @click="onHammerClick"
+            
             >
                 <IconHammer :color="hasHammer ? 'white' : '#36454F'" />
             </div>

@@ -1,73 +1,99 @@
 import svg from "../assets/badges/fingerpoint.svg?raw";
 import gsap from "gsap";
 export default defineNuxtPlugin((app) => {
+    let val = 0;
     app.vueApp.directive("touchable", {
+        
+        updated: (el, binding) => {
+        if (binding.value) {
+            console.log(gsap.getTweensOf(el))
+            const animation = gsap.fromTo(el, {
+                scale: 1
+            },
+            {
+                scale: 1.1,
+                duration: 1,
+                yoyo: true,
+                repeat: -1,
+                yoyoEase: 'linear',
+                id: 'touchable',
+                overwrite: 'auto'
+            })
+            el.addEventListener("click", function eventHandler(e) {
+                e.stopPropagation();
+                animation.kill();
+                el.removeEventListener("click", eventHandler);
+            });
+        }
+        },
         mounted: (el, mods) => {
-            const { value } = mods ?? {};
-            console.log(value);
-            if (!value) return;
+            // const { value } = mods ?? {};
+            // console.log(value);
+            // if (!value) return;
 
-            const { height, delay = 0 } = value ?? {};
-            setTimeout(() => {
-                el.style.position = "relative";
-                const parent = document.createElement("div");
-                Object.assign(parent.style, {
-                    display: "flex",
-                    "justify-content": "center",
-                    "align-items": "center",
-                    height: "100%",
-                    width: "100%",
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    margin: "auto",
-                });
-                const num = Math.floor(Math.random() * 10000000000);
-                const id = `A${num}`;
-                const svgEl = document.createElement("div");
-                const wrap = document.createElement("div");
-                wrap.id = id;
-                Object.assign(wrap.style, {
-                    height: `${height}px` ?? `100%`,
-                    width: `${height}px` ?? "100%",
-                });
-                wrap.appendChild(svgEl);
-                svgEl.outerHTML = svg;
+            // const { height, delay = 0 } = value ?? {};
 
-                parent.appendChild(wrap);
+            // const {enabled} = value;
+            // setTimeout(() => {
+            //     el.style.position = "relative";
+            //     const parent = document.createElement("div");
+            //     Object.assign(parent.style, {
+            //         display: "flex",
+            //         "justify-content": "center",
+            //         "align-items": "center",
+            //         height: "100%",
+            //         width: "100%",
+            //         position: "absolute",
+            //         top: 0,
+            //         bottom: 0,
+            //         left: 0,
+            //         right: 0,
+            //         margin: "auto",
+            //     });
+            //     const num = Math.floor(Math.random() * 10000000000);
+            //     const id = `A${num}`;
+            //     const svgEl = document.createElement("div");
+            //     const wrap = document.createElement("div");
+            //     wrap.id = id;
+            //     Object.assign(wrap.style, {
+            //         height: `${height}px` ?? `100%`,
+            //         width: `${height}px` ?? "100%",
+            //     });
+            //     wrap.appendChild(svgEl);
+            //     svgEl.outerHTML = svg;
 
-                el.appendChild(parent);
+            //     parent.appendChild(wrap);
 
-                if (delay) {
-                    gsap.from(`#${id}`, {
-                        opacity: 0,
-                        duration: 0.5,
-                    })
-                }
+            //     el.appendChild(parent);
 
-                const timeline = gsap.timeline({ repeat: -1, yoyo: true, delay: delay ? 0.5 : 0 });
+            //     if (delay) {
+            //         gsap.from(`#${id}`, {
+            //             opacity: 0,
+            //             duration: 0.5,
+            //         })
+            //     }
+
+            //     const timeline = gsap.timeline({ repeat: -1, yoyo: true, delay: delay ? 0.5 : 0 });
 
                
 
-                // Define the tapping animation
-                timeline.to(`#${id}`, {
-                    rotationX: 20,
-                    y: -5,
-                    duration: 0.5,
-                    ease: "power2.inOut",
-                    yoyo: true,
-                });
-                timeline.to({}, { duration: 0.5 });
-                timeline.play();
-                el.addEventListener("click", function eventHandler(e) {
-                    e.stopPropagation();
-                    const svg = document.querySelector(`#${id}`);
-                    svg.remove();
-                    el.removeEventListener("click", eventHandler);
-                });
-            }, delay);
+            //     // Define the tapping animation
+            //     timeline.to(`#${id}`, {
+            //         rotationX: 20,
+            //         y: -5,
+            //         duration: 0.5,
+            //         ease: "power2.inOut",
+            //         yoyo: true,
+            //     });
+            //     timeline.to({}, { duration: 0.5 });
+            //     timeline.play();
+                // el.addEventListener("click", function eventHandler(e) {
+                //     e.stopPropagation();
+                //     const svg = document.querySelector(`#${id}`);
+                //     svg.remove();
+                //     el.removeEventListener("click", eventHandler);
+                // });
+            // }, delay);
         },
     });
 });

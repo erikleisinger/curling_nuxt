@@ -1,7 +1,7 @@
 <template>
-<div >
+
     <div
-        class="scoreboard__end-row justify-center items-center"
+        class="scoreboard__end-row justify-end items-end q-mb-md"
         @click.prevent.stop="setTop"
         v-memo="[score.home]"
       
@@ -15,7 +15,7 @@
     </div>
 
     <div
-        class="scoreboard__end-row justify-center items-center"
+        class="scoreboard__end-row justify-start items-center q-mt-md"
         @click.prevent.stop="setBottom"
         v-memo="[score.away]"
        
@@ -62,7 +62,7 @@
             </q-btn
         >
     </div>
-</div>
+
 </template>
 <style lang="scss" scoped>
 .shake-hands__text {
@@ -76,7 +76,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    // justify-content: center;
     align-items: center;
     overflow: hidden;
  

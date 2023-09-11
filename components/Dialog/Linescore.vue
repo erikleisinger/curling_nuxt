@@ -16,7 +16,7 @@
                     size="lg"
                     square
                     :disable="view === views.HOME_SELECT"
-                    @click="changeView(-1)"
+                    @click="goBackToLinescore"
                     >Back</q-btn
                 >
                 <q-btn
@@ -61,6 +61,11 @@
                 </div>
             </div>
         </div>
+        <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
+            <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(6)">6 ends</q-btn>
+               <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(8)">8 Ends</q-btn>
+                  <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(10)">10 Ends</q-btn>
+        </div>
         <LinescoreEditor
             v-model="gameParams"
             :score="score"
@@ -72,10 +77,13 @@
             @scroll="scrollTo"
             :summary="view === views.DETAILS"
             :canEditDetails="!showLinescore && view === views.DETAILS"
-            :compact="showLinescore"
+            @ready="showLinescore = true"
+            :compact="showLinescore && view !== views.DETAILS"
+            v-if="view !== views.END_COUNT_SELECT"
+            @endcount="view = views.END_COUNT_SELECT"
         >
-            <div class="scoreboard--wrap" >
-                <div class="scoreboard__container" ref="linescoreContainer">
+            <div class="scoreboard--wrap full-height" >
+                <div class="scoreboard__container full-height" ref="linescoreContainer">
                     <div
                         class="scoreboard__score-container row no-wrap"
                         id="scoreboard-linescore"
@@ -94,7 +102,7 @@
                         >
                             <div
                                 :id="`scoreboard-end-${end}`"
-                                class="scoreboard__end-container"
+                                class="scoreboard__end-container full-height"
                                 :style="{
                                     maxWidth: $q.platform.is.desktop
                                         ? `${colWidth()}vw`
@@ -193,7 +201,7 @@
                     </div>
                 </div>
                 <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                <div class="full-width row justify-center q-mb-sm" v-if="visible !== endCount">
+                <div class="full-width row justify-center q-mb-sm" v-if="visible !== endCount" style="position: absolute; bottom: 0">
                     <q-btn flat round icon="east" color="primary" @click="scrollTo(endCount)"/>
                 </div>
                 </transition>
@@ -291,7 +299,8 @@ $team-nav-margin: 6vh;
                 grid-template-columns: 100%;
                 grid-template-rows: repeat(2, 50%);
                 row-gap: 1px;
-                height: 100%;
+                // height: 100%;
+
                 width: 100%;
                 position: relative;
             }
@@ -355,6 +364,11 @@ const awayTotal = computed(() =>
 );
 
 const endCount = ref(8);
+
+const setEndCount = (num) => {
+    endCount.value = num;
+    view.value = null;
+}
 
 const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))
@@ -708,12 +722,23 @@ onMounted(async () => {
         } else if (!userTeams.value.length) {
             view.value = views.NO_TEAM;
         } else {
-            view.value = views.HOME_SELECT;
+            view.value = views.END_COUNT_SELECT;
         }
 
         // view.value = views.CONFIRM
     }
     loading.value = false;
+    useEventListener(window, "popstate", useThrottleFn(() => {
+        history.go(1)
+        if (view.value === views.DETAILS) {
+            console.log('DETAILS')
+            goBackToLinescore();
+        } else if (showLinescore.value) {
+            showLinescore.value = false;
+        } else {
+            view.value = views.END_COUNT_SELECT
+        }
+    }, 500));
 
 });
 

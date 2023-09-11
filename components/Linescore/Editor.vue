@@ -2,11 +2,10 @@
     <div
         class="linescore-editor__container hide-scroll"
         :style="{
-            minHeight: compact ? '' : 'calc(100% - 25px)',
+            height: '100%',
         }"
-     ref="linescoreContainer" 
+       
     >
-       <!-- -->
         <nav
             class="row no-wrap justify-center full-width items-center q-mt-md"
             v-if="summary"
@@ -41,12 +40,17 @@
             :score="score"
             v-if="isMounted"
             :selected="showLinescore ? selected : null"
-            @select="onGridClick"
             :style="{
                 order: summary ? 1 : 0,
-                marginTop: summary ? '18px' : '',
+                marginTop: summary ? '32px' : '',
             }"
+             ref="linescoreContainer"
         >
+        <template v-slot:headerPrepend>
+            <div class="row items-center full-height full-width justify-center" v-if="!summary">
+            <q-btn flat round dense icon="edit" padding="0px" color="grey-7" class="text-sm" @click="emit('endcount')"/>
+            </div>
+        </template>
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
@@ -66,11 +70,11 @@
                             avatarSize="100%"
                             id="avatar-home"
                             @click="onAvatarClick('home')"
-                            :editing="canEdit && mode.includes('home')"
+                            :editing="canEdit && mode.includes('home') && !summary"
                             v-model="selections.home"
                             @update:modelValue="onTeamChange('home', $event)"
                             @update:color="onColorUpdate"
-                            @confirm="nestAll"
+                            @confirm="emit('ready')"
                             :selectColor="
                                 !!(
                                     selections.home?.name &&
@@ -139,9 +143,9 @@
                             avatarSize="100%"
                             id="avatar-away"
                             @click="onAvatarClick('away')"
-                            :editing="mode.includes('away')"
+                            :editing="canEdit && mode.includes('home') && !summary"
                             v-model="selections.away"
-                            @confirm="nestAll"
+                            @confirm="emit('ready')"
                             @update:modelValue="onTeamChange('away', $event)"
                             @update:color="onColorUpdate"
                             :selectColor="
@@ -319,8 +323,12 @@
                 </div>
             </transition>
         </div>
-        <q-space v-if="summary" />
-        <div class="slot-content" :style="{height: slotHeight}" v-show="showLinescore">
+        <!-- <q-space v-if="summary" /> -->
+        <div
+            class="slot-content"
+            :style="{ height: slotHeight }"
+            v-show="showLinescore"
+        >
             <slot />
         </div>
     </div>
@@ -328,10 +336,11 @@
 <style lang="scss" scoped>
 .linescore-editor__container {
     overflow-x: hidden;
-    padding-bottom: var(--space-sm);
+    // padding-bottom: var(--space-sm);
     display: flex;
     flex-direction: column;
     overflow-y: visible;
+    box-sizing: border-box;
     .avatars-unnested__container {
         width: 100%;
         box-sizing: border-box;
@@ -400,12 +409,17 @@
             font-weight: bold;
         }
     }
-
 }
 </style>
 
 <script setup>
-import { useMounted, useRefHistory, useVModel, useElementSize, useEventListener } from "@vueuse/core";
+import {
+    useMounted,
+    useRefHistory,
+    useVModel,
+    useElementSize,
+    useEventListener,
+} from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
 import gsap from "gsap";
@@ -424,6 +438,7 @@ const props = defineProps({
 
 const emit = defineEmits([
     "edit",
+    "endcount",
     "linescore",
     "scroll",
     "ready",
@@ -456,31 +471,11 @@ const showLinescore = computed(() => {
     );
 });
 
-const onGridClick = (num) => {
-    if (props.summary) {
-        nestAll();
-        emit("linescore");
-    } else {
-        const s = Flip.getState(
-            ".linescore-column--item, .linescore-column--item.selected",
-            { props: "backgroundColor" }
-        );
-        emit("scroll", num);
-        nextTick(() => {
-            Flip.from(s, {
-                duration: 0.2,
-                ease: "linear",
-                // fade: true,
-            });
-        });
-    }
-};
-
 const mode = ref([]);
 
 const onAvatarClick = (team) => {
     if (mode.value.includes(team)) return;
-    unnestAll();
+    // unnestAll();
 
     emit("edit");
 };
@@ -520,18 +515,12 @@ watch(
 
 const initing = ref(true);
 
-onMounted(() => {
-    useEventListener(window, 'popstate', (e) => {
-            console.log('BACK: ', e)
-            e.preventDefault();
-        if (props.summary) {
-            emit('linescore')
-            nestAll();
-        }
-    })
+onMounted(async () => {
+    
     if (!props.canEdit) return;
+    await nextTick();
     const tl = gsap.timeline({});
-    setTimeout(() => {
+    // setTimeout(() => {
         tl.from(".linescore-column--item", {
             x: -400,
             stagger: {
@@ -559,7 +548,7 @@ onMounted(() => {
             },
             "<"
         );
-    }, 0);
+    // }, 0);
 });
 
 const checkCompletionState = () => {
@@ -618,11 +607,7 @@ const unnestAll = () => {
             stagger: 0.01,
             duration: 0.3,
             nested: true,
-            absolute: true,
-          
-            onLeave: (elements) => {
-                gsap.to(elements, { y: window.innerHeight, duration: 0.3 });
-            },
+            absolute: "#avatar-home,#avatar-away",
         });
     });
 };
@@ -642,27 +627,32 @@ const nestAll = () => {
             duration: 0.3,
             nested: true,
             absolute: "#avatar-home,#avatar-away",
-              zIndex: 1,
-            onEnter: (elements) => {
-                gsap.fromTo(
-                    elements,
-                    { y: window.innerHeight },
-                    { y: 0, duration: 0.3 }
-                );
-            },
+            zIndex: 1,
         });
     });
 };
 
 watch(
-    () => props.summary,
+    () => props.compact,
     (val) => {
+        if (val) {
+            nestAll();
+        } else {
+            unnestAll();
+        }
+    }
+);
+
+watch(
+    () => props.summary,
+    async (val) => {
         if (!val) return;
-        unnestAll();
+        // unnestAll();
+        await nextTick()
         gsap.from(".totalscore--summary", {
             scaleY: 0,
             duration: 0.2,
-            delay: 0.2,
+            delay: 0.4,
             transformOrigin: "top",
         });
         gsap.to(tweenedHomeScore, {
@@ -686,9 +676,11 @@ watch(
 );
 
 const linescoreContainer = ref(null);
-const {height: linescoreContainerHeight} = useElementSize(linescoreContainer)
+const { height: linescoreContainerHeight } = useElementSize(linescoreContainer);
 
-const slotHeight = computed(() => `calc(100% - ${linescoreContainerHeight.value}px)`)
+const slotHeight = computed(
+    () => `calc(100% - ${linescoreContainerHeight.value}px)`
+);
 
 const { format, toTimezone } = useTime();
 
