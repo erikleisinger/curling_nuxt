@@ -24,8 +24,7 @@
                     size="lg"
                     color="positive"
                     square
-                    :disable="nextDisabled"
-                    @click="handleNext"
+                    @click="save"
                 >
                     {{ "Confirm & save" }}
                 </q-btn>
@@ -85,10 +84,10 @@
             <div class="scoreboard--wrap full-height" >
                 <div class="scoreboard__container full-height" ref="linescoreContainer">
                     <div
-                        class="scoreboard__score-container row no-wrap"
+                        class="scoreboard__score-container row no-wrap full-height"
                         id="scoreboard-linescore"
                         ref="scroller"
-                        :style="{ height: contentHeight }"
+                   
                         :class="{ 'hide-scroll': $q.platform.is.mobile }"
                         v-if="!$q.platform.is.desktop"
                     >
@@ -163,10 +162,10 @@
                         </transition>
                     </div>
                     <div
-                        class="scoreboard__score-container row no-wrap"
+                        class="scoreboard__score-container row no-wrap full-height"
                         id="scoreboard-linescore"
                         ref="scroller"
-                        :style="{ height: contentHeight }"
+                    
                         v-else
                     >
                         <div
@@ -253,43 +252,8 @@ $team-nav-margin: 6vh;
                 width: calc(100vw / 2 - $column-width / 2);
                 height: 100%;
             }
-            :deep(.scroller__team--container) {
-                position: sticky;
-                height: 100%;
-                left: 0;
-                top: 0;
-                padding-left: var(--space-xxxs);
 
-                z-index: 2;
-                display: grid;
-                grid-template-rows: 1fr 3em 1fr;
-                height: 100%;
-
-                .scroller__team {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    .scroller-team__avatar {
-                        width: 3em;
-                        position: relative;
-                        .q-badge {
-                            position: absolute;
-                            right: 0;
-
-                            &.hammer {
-                                top: 0;
-                                padding: 2px;
-                            }
-
-                            &:not(.hammer) {
-                                bottom: 0;
-                            }
-                        }
-                    }
-                }
-            }
-
-            :deep(.scoreboard__end-container) {
+            .scoreboard__end-container {
                 scroll-snap-align: center;
                scroll-snap-stop: always;
                 overflow: visible;
@@ -299,8 +263,6 @@ $team-nav-margin: 6vh;
                 grid-template-columns: 100%;
                 grid-template-rows: repeat(2, 50%);
                 row-gap: 1px;
-                // height: 100%;
-
                 width: 100%;
                 position: relative;
             }
@@ -374,17 +336,6 @@ const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))
 );
 
-const getFinalEndCount = () => {
-    return Object.keys(score.value).reduce((all, current) => {
-        if (
-            score.value[current]?.home === "X" &&
-            score.value[current]?.away === "X"
-        )
-            return all;
-        return all + 1;
-    }, 0);
-};
-
 /**
  * Update default score when end count changes;
  */
@@ -410,56 +361,6 @@ watch(
  */
 
 const view = ref(null);
-
-const viewOrder = [
-    views.HOME_SELECT,
-    views.AWAY_SELECT,
-    views.COLOR_SELECT,
-    views.HAMMER_SELECT,
-    views.END_COUNT_SELECT,
-    views.LINESCORE,
-    views.DETAILS,
-    views.CONFIRM,
-];
-
-const goToView = useThrottleFn((v) => {
-    view.value = v;
-});
-
-const changeView = useThrottleFn((inc) => {
-    transitioning.value = false;
-    const index = viewOrder.indexOf(view.value);
-    if (index + inc < 0 || index + inc > viewOrder.length) return;
-    view.value = viewOrder[index + inc];
-});
-
-const nextDisabled = computed(() => {
-    if (view.value === views.NO_TEAM) return true;
-    if (view.value === views.HOME_SELECT) {
-        return !gameParams.value.home?.id;
-    } else if (view.value === views.AWAY_SELECT) {
-        return !gameParams.value.away?.id && !gameParams.value.away?.name;
-    }
-    return false;
-});
-
-const handleNext = () => {
-    if (view.value === views.CONFIRM) {
-        save();
-        return;
-    }
-
-    changeView(+1);
-    if (
-        view.value === views.HAMMER_SELECT &&
-        !gameParams.value.hammerFirstEndTeam
-    ) {
-        gameParams.value.hammerFirstEndTeam =
-            gameParams.value.home?.id || gameParams.value.away?.id;
-    }
-};
-
-const transitioning = ref(false);
 
 const confirmUnsaved = ref(false);
 
@@ -750,8 +651,6 @@ onMounted(async () => {
 
 const nav = ref(null);
 const { height: navHeight } = useElementSize(nav);
-const teamContainer = ref(null);
-const { width: teamContainerWidth } = useElementSize(teamContainer);
 const contentHeight = computed(() => `calc(100% - ${navHeight.value}px)`);
 
 /**
@@ -834,11 +733,6 @@ const searchForTeam = () => {
 const colWidth = () => {
     const numEnds = Object.keys(score.value)?.length;
     return 100 / numEnds;
-};
-
-const updateEndCount = (inc) => {
-    if (endCount.value + inc < 6 || endCount.value + inc > 10) return;
-    endCount.value += inc;
 };
 const showLinescore = ref(false);
 const linescoreContainer = ref(null);

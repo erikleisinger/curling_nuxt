@@ -4,7 +4,6 @@
         :style="{
             height: '100%',
         }"
-       
     >
         <nav
             class="row no-wrap justify-center full-width items-center q-mt-md"
@@ -44,13 +43,25 @@
                 order: summary ? 1 : 0,
                 marginTop: summary ? '32px' : '',
             }"
-             ref="linescoreContainer"
+            ref="linescoreContainer"
         >
-        <template v-slot:headerPrepend>
-            <div class="row items-center full-height full-width justify-center" v-if="!summary">
-            <q-btn flat round dense icon="edit" padding="0px" color="grey-7" class="text-sm" @click="emit('endcount')"/>
-            </div>
-        </template>
+            <template v-slot:headerPrepend>
+                <div
+                    class="row items-center full-height full-width justify-center"
+                    v-if="!summary"
+                >
+                    <q-btn
+                        flat
+                        round
+                        dense
+                        icon="edit"
+                        padding="0px"
+                        color="grey-7"
+                        class="text-sm"
+                        @click="emit('endcount')"
+                    />
+                </div>
+            </template>
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
@@ -70,7 +81,9 @@
                             avatarSize="100%"
                             id="avatar-home"
                             @click="onAvatarClick('home')"
-                            :editing="canEdit && mode.includes('home') && !summary"
+                            :editing="
+                                canEdit && mode.includes('home') && !summary
+                            "
                             v-model="selections.home"
                             @update:modelValue="onTeamChange('home', $event)"
                             @update:color="onColorUpdate"
@@ -116,6 +129,7 @@
                             :restrictIds="
                                 userTeamStore.userTeams.map(({ id }) => id)
                             "
+                            :filterIds="[selections.away?.id]"
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select your team
@@ -143,7 +157,9 @@
                             avatarSize="100%"
                             id="avatar-away"
                             @click="onAvatarClick('away')"
-                            :editing="canEdit && mode.includes('home') && !summary"
+                            :editing="
+                                canEdit && mode.includes('home') && !summary
+                            "
                             v-model="selections.away"
                             @confirm="emit('ready')"
                             @update:modelValue="onTeamChange('away', $event)"
@@ -516,38 +532,37 @@ watch(
 const initing = ref(true);
 
 onMounted(async () => {
-    
     if (!props.canEdit) return;
     await nextTick();
     const tl = gsap.timeline({});
     // setTimeout(() => {
-        tl.from(".linescore-column--item", {
-            x: -400,
-            stagger: {
-                grid: "auto",
-                amount: 0.4,
-                from: "random",
-            },
-            ease: "power1",
-        });
-        tl.from("#avatar-home", {
+    tl.from(".linescore-column--item", {
+        x: -400,
+        stagger: {
+            grid: "auto",
+            amount: 0.4,
+            from: "random",
+        },
+        ease: "power1",
+    });
+    tl.from("#avatar-home", {
+        duration: 0.4,
+        scale: 0,
+        ease: "bounce",
+    });
+    tl.from(
+        "#avatar-away",
+        {
             duration: 0.4,
             scale: 0,
             ease: "bounce",
-        });
-        tl.from(
-            "#avatar-away",
-            {
-                duration: 0.4,
-                scale: 0,
-                ease: "bounce",
-                onComplete: () => {
-                    unnestAll();
-                    initing.value = false;
-                },
+            onComplete: () => {
+                unnestAll();
+                initing.value = false;
             },
-            "<"
-        );
+        },
+        "<"
+    );
     // }, 0);
 });
 
@@ -648,7 +663,7 @@ watch(
     async (val) => {
         if (!val) return;
         // unnestAll();
-        await nextTick()
+        await nextTick();
         gsap.from(".totalscore--summary", {
             scaleY: 0,
             duration: 0.2,
