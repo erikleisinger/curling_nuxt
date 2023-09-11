@@ -18,7 +18,7 @@
                 <h2 class="text-sm text-center">
                     {{ format(selections.start_time, "HH:mm a") }}
                 </h2>
-                <div class="edit--floating">
+                <div class="edit--floating" v-if="canEdit">
                     <q-btn
                         icon="edit"
                         flat
@@ -255,18 +255,7 @@
             <div
                 class="info__section relative-position"
                 style="width: fit-content"
-                @click="
-                    toggleGlobalSearch({
-                        open: true,
-                        options: {
-                            inputLabel: 'Search for a rink',
-                            resourceTypes: ['rink'],
-                            callback: (selection) => {
-                                selections.rink = selection;
-                            },
-                        },
-                    })
-                "
+                @click="searchRink"
             >
                 <q-icon name="location_on" color="red" />
                 <h2
@@ -496,7 +485,9 @@ const onAvatarClick = (team) => {
     emit("edit");
 };
 
-const hammerFE = computed(() => selections.value.hammerFirstEndTeam);
+const hammerFE = computed(
+    () => selections.value.hammerFirstEndTeam ?? selections.value?.home?.id
+);
 const { history: hammerHistory } = useRefHistory(hammerFE);
 
 const onTeamChange = (team, newValue) => {
@@ -532,7 +523,18 @@ watch(
 const initing = ref(true);
 
 onMounted(async () => {
-    if (!props.canEdit) return;
+    if (!props.canEdit) {
+        if (props.summary) {
+                mode.value.push("away");
+                mode.value.push("home");
+            setTimeout(() => {
+            
+                tweenScore();
+            }, 1000);
+
+            return;
+        }
+    }
     await nextTick();
     const tl = gsap.timeline({});
     // setTimeout(() => {
@@ -658,6 +660,20 @@ watch(
     }
 );
 
+const tweenScore = () => {
+    console.log("tween score: ", totalScore.value);
+    gsap.to(tweenedHomeScore, {
+        delay: 0.3,
+        duration: (Number(totalScore.value.home) || 0) / 8,
+        total: Number(totalScore.value.home) || 0,
+    });
+    gsap.to(tweenedAwayScore, {
+        delay: 0.3,
+        duration: (Number(totalScore.value.away) || 0) / 8,
+        total: Number(totalScore.value.away) || 0,
+    });
+};
+
 watch(
     () => props.summary,
     async (val) => {
@@ -670,16 +686,7 @@ watch(
             delay: 0.4,
             transformOrigin: "top",
         });
-        gsap.to(tweenedHomeScore, {
-            delay: 0.3,
-            duration: (Number(totalScore.value.home) || 0) / 8,
-            total: Number(totalScore.value.home) || 0,
-        });
-        gsap.to(tweenedAwayScore, {
-            delay: 0.3,
-            duration: (Number(totalScore.value.away) || 0) / 8,
-            total: Number(totalScore.value.away) || 0,
-        });
+        tweenScore();
         gsap.from(dateContainer.value, {
             scaleY: 0,
             delay: 0.3,
@@ -709,6 +716,20 @@ const selectSheet = (number) => {
 };
 
 const dateSelectOpen = ref(false);
+
+const searchRink = () => {
+    if (!props.canEdit) return;
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: "Search for a rink",
+            resourceTypes: ["rink"],
+            callback: (selection) => {
+                selections.value.rink = selection;
+            },
+        },
+    });
+};
 </script>
 
 <script>

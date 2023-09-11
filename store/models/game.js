@@ -10,7 +10,8 @@ export default class Game extends Model {
             id: this.number(),
             name: this.string("Unnamed game"),
             teams: this.hasMany(GameTeam, 'game_id', 'id'),
-            end_count: this.number()
+            end_count: this.number(),
+            hammer_first_end: this.number(),
         };
     }
 

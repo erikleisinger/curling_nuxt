@@ -1,7 +1,8 @@
 <template>
     <NuxtLayout>
         <q-inner-loading :showing="loading" color="primary" />
-        <div v-if="!!currentGame && !loading" class="game__container">
+        <LinescoreEditor v-if="!!currentGame && !loading" :canEdit="false" v-model="currentGame" summary :score="score" :compact="false"/>
+        <!-- <div v-if="!!currentGame && !loading" class="game__container">
             <header class="game__header">
                 <nav class="row no-wrap justify-center full-width items-center">
                     <div>
@@ -194,7 +195,7 @@
                     </TeamStatsView>
                 </div>
             </main>
-        </div>
+        </div> -->
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
@@ -299,7 +300,15 @@ const init = async () => {
 
 const games = ref([]);
 const currentGame = computed(() => {
-    return useRepo(Game).with('teams').where('id', Number(gameId)).first() || {};
+    const g = useRepo(Game).with('teams').where('id', Number(gameId)).first() || {};
+    const {teams} = g;
+    if (!teams) return {};
+    return {
+        ...g,
+        home: home.value,
+        away: away.value,
+        hammerFirstEndTeam: g.hammer_first_end
+    }
 })
 
 const home = computed(() => {
@@ -331,7 +340,8 @@ const getGames = async () => {
         id: team1.game_id,
         end_count: team1.end_count,
         rink: team1.rink,
-        sheet: team1.sheet
+        sheet: team1.sheet,
+        hammer_first_end: team1.hammer_first_end
     })
     useRepo(Team).save({
         ...team1.team,
