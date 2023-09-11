@@ -138,7 +138,7 @@
             border: 1px solid rgba(0, 0, 0, 0.3);
         }
         .hammer-container {
-            z-index: 100;
+            z-index: $z-tools;
             position: absolute;
             bottom: -1;
 
@@ -162,7 +162,7 @@
     }
     .confirm-container--floating,
     .clear-name-container--floating {
-        z-index: 100;
+        z-index: $z-tools;
         position: absolute;
         top: 0;
         width: fit-content;

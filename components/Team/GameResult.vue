@@ -213,7 +213,7 @@
                             icon="visibility"
                             color="primary"
                             label="View game"
-                            :to="`/games/${gameId}`"
+                            :to="`/games/view/${gameId}`"
                         />
                         <slot name="actions" />
                     </q-fab>

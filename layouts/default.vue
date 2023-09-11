@@ -69,7 +69,7 @@
                     </q-item-section>
                     <q-item-section class=" justify-center">Search</q-item-section>
                 </q-item>
-                 <q-item clickable v-ripple color="primary" @click="toggleLineScore({open: true})">
+                 <q-item clickable v-ripple color="primary" to="/games/create">
                    <q-item-section
                         avatar
                         class="row justify-center items-center"

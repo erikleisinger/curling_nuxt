@@ -490,7 +490,7 @@ const save = async () => {
     createGameStats(gameToCreate?.home, gameId);
     createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId);
 
-    return navigateTo(`/games/${gameId}`);
+    return navigateTo(`/games/view/${gameId}`);
 };
 
 const createGameStats = async (team_id_param, game_id_param) => {

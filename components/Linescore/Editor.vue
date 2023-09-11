@@ -439,6 +439,7 @@ const props = defineProps({
     score: Object,
     selected: Number,
     summary: Boolean,
+    static: Boolean,
 });
 
 const emit = defineEmits([
@@ -523,8 +524,7 @@ watch(
 const initing = ref(true);
 
 onMounted(async () => {
-    if (!props.canEdit) {
-        if (props.summary) {
+    if (props.static) {
                 mode.value.push("away");
                 mode.value.push("home");
             setTimeout(() => {
@@ -534,7 +534,7 @@ onMounted(async () => {
 
             return;
         }
-    }
+    if (!props.canEdit) return;
     await nextTick();
     const tl = gsap.timeline({});
     // setTimeout(() => {
