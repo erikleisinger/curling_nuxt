@@ -33,6 +33,7 @@
                 <div v-else class="row justify-end" style="width: 50%">
                     <q-btn flat round icon="search" />
                     <q-btn flat round icon="notifications" />
+                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
                 </div>
             </q-toolbar>
         </q-header>

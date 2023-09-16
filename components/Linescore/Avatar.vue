@@ -79,7 +79,7 @@
                     Or
                 </h2>
                  <h2 class="text-sm text-bold text-center full-width q-mt-md">
-                    Type a custom name and can invite them later
+                    Type a team name to invite later
                 </h2>
                 </div>
                 <q-input

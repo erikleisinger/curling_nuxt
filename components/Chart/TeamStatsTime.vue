@@ -5,104 +5,133 @@
             v-if="!loading"
             v-bind="chartProps"
             v-slot="{ chart }"
-            height="calc(100% - 66px)"
+            height="calc(100% - 80px)"
             @chart="setChart"
         >
-            <div
-                class="row justify-between  chart-options__container no-wrap"
-            >
-            <div class="row ">
-                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md"  :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="visibility"  :color="$q.screen.xs ? 'primary' : 'white'" text-color="primary"  :label="$q.screen.xs ? '' : 'Show/hide stats'">
-                  
-                    <q-menu
-                        transition-show="jump-down"
-                        transition-hide="jump-up"
-                      
+            <div class="row justify-between chart-options__container no-wrap">
+                <div class="row">
+                    <q-btn
+                        class="q-mr-none q-mr-sm-md"
+                        :round="$q.screen.xs"
+                        :rounded="!$q.screen.xs"
+                        :flat="$q.screen.xs"
+                        icon="visibility"
+                        :color="$q.screen.xs ? 'primary' : 'white'"
+                        text-color="primary"
+                        :label="$q.screen.xs ? '' : 'Show/hide stats'"
                     >
-                        <q-list dense style="min-width: 100px">
-                             <q-item
-                                v-if="$q.screen.xs"
-                            >
-                                <q-item-section class="text-bold">Show/hide stats</q-item-section>
-                            </q-item>
-                            <q-separator  v-if="$q.screen.xs"/>
-                            <q-item
-                                clickable
-                                v-ripple
-                                v-for="(option, index) in options"
-                                :key="`option-${index}`"
-                                @click="toggleVisibility(chart, index)"
-                                :active="visibleItems.includes(option.title)"
-                                manual-focus
-                                :focused="true"
-                                :disable="updating"
-                            >
-                                <q-item-section avatar>
-                                    <q-icon
-                                        :color="option.color"
-                                        name="circle"
-                                    ></q-icon>
-                                </q-item-section>
+                        <q-menu
+                            transition-show="jump-down"
+                            transition-hide="jump-up"
+                        >
+                            <q-list dense style="min-width: 100px">
+                                <q-item v-if="$q.screen.xs">
+                                    <q-item-section class="text-bold"
+                                        >Show/hide stats</q-item-section
+                                    >
+                                </q-item>
+                                <q-separator v-if="$q.screen.xs" />
+                                <q-item
+                                    clickable
+                                    v-ripple
+                                    v-for="(option, index) in options"
+                                    :key="`option-${index}`"
+                                    @click="toggleVisibility(chart, index)"
+                                    :active="
+                                        visibleItems.includes(option.title)
+                                    "
+                                    manual-focus
+                                    :focused="true"
+                                    :disable="updating"
+                                >
+                                    <q-item-section avatar>
+                                        <q-icon
+                                            :color="option.color"
+                                            name="circle"
+                                        ></q-icon>
+                                    </q-item-section>
 
-                                <q-item-section>{{
-                                    option.title
-                                }}</q-item-section>
-                            </q-item>
-                        </q-list>
-                    </q-menu>
-                </q-btn>
-                <q-btn class="q-mb-sm q-mr-none q-mr-sm-md" :round="$q.screen.xs" :rounded="!$q.screen.xs" :flat="$q.screen.xs" icon="date_range"  :color="$q.screen.xs ? 'primary' : 'white'" text-color="primary"  :label="$q.screen.xs ? '' : 'Time range'">
-                
-                    <q-menu
-                        transition-show="jump-down"
-                        transition-hide="jump-up"
-                      
+                                    <q-item-section>{{
+                                        option.title
+                                    }}</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-btn>
+                    <q-btn
+                        class="q-mr-none q-mr-sm-md"
+                        :round="$q.screen.xs"
+                        :rounded="!$q.screen.xs"
+                        :flat="$q.screen.xs"
+                        icon="date_range"
+                        :color="$q.screen.xs ? 'primary' : 'white'"
+                        text-color="primary"
+                        :label="$q.screen.xs ? '' : 'Time range'"
                     >
-                        <q-list dense style="min-width: 100px">
-                           <q-item
-                                v-if="$q.screen.xs"
-                            >
-                                <q-item-section class="text-bold">Time range</q-item-section>
-                            </q-item>
-                              <q-separator  v-if="$q.screen.xs"/>
-                            <q-item
-                                clickable
-                                @click="setFilter('range', 'week', chart)"
-                                :active="rangeFilter === 'week'"
-                                :focused="rangeFilter === 'week'"
-                                manual-focus
-                                 :disable="updating"
-                            >
-                                <q-item-section>Past week</q-item-section>
-                            </q-item>
-                            <q-item
-                                clickable
-                                @click="setFilter('range', 'month', chart)"
-                                :active="rangeFilter === 'month'"
-                                :focused="rangeFilter === 'month'"
-                                manual-focus
-                                 :disable="updating"
-                            >
-                                <q-item-section>Past Month</q-item-section>
-                            </q-item>
-                            <q-item
-                                clickable
-                                @click="setFilter('range', null, chart)"
-                                :active="rangeFilter === null"
-                                :focused="rangeFilter === null"
-                                manual-focus
-                                 :disable="updating"
-                            >
-                                <q-item-section>All time</q-item-section>
-                            </q-item>
-                        </q-list>
-                    </q-menu>
-                </q-btn>
-                <q-checkbox label="Season avg" class="q-mb-sm q-ml-sm q-ml-sm-none" v-model="showAverages" dense @update:model-value="toggleAverageVisibility($event, chart)"/>
+                        <q-menu
+                            transition-show="jump-down"
+                            transition-hide="jump-up"
+                        >
+                            <q-list dense style="min-width: 100px">
+                                <q-item v-if="$q.screen.xs">
+                                    <q-item-section class="text-bold"
+                                        >Time range</q-item-section
+                                    >
+                                </q-item>
+                                <q-separator v-if="$q.screen.xs" />
+                                <q-item
+                                    clickable
+                                    @click="setFilter('range', 'week', chart)"
+                                    :active="rangeFilter === 'week'"
+                                    :focused="rangeFilter === 'week'"
+                                    manual-focus
+                                    :disable="updating"
+                                >
+                                    <q-item-section>Past week</q-item-section>
+                                </q-item>
+                                <q-item
+                                    clickable
+                                    @click="setFilter('range', 'month', chart)"
+                                    :active="rangeFilter === 'month'"
+                                    :focused="rangeFilter === 'month'"
+                                    manual-focus
+                                    :disable="updating"
+                                >
+                                    <q-item-section>Past Month</q-item-section>
+                                </q-item>
+                                <q-item
+                                    clickable
+                                    @click="setFilter('range', null, chart)"
+                                    :active="rangeFilter === null"
+                                    :focused="rangeFilter === null"
+                                    manual-focus
+                                    :disable="updating"
+                                >
+                                    <q-item-section>All time</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-btn>
+                    <q-checkbox
+                        label="Season avg"
+                        class="q-ml-sm q-ml-sm-none"
+                        v-model="showAverages"
+                        dense
+                        @update:model-value="
+                            toggleAverageVisibility($event, chart)
+                        "
+                    />
+                </div>
+                <div>
+                    <q-btn flat round icon="close" @click="emit('close')" />
+                </div>
             </div>
-            <div>
-                <q-btn flat round icon="close" @click="emit('close')" />
-            </div>
+            <div class="legend__container row">
+                <div v-for="item in visibleItems" :key="item" class="row items-center q-mr-sm">
+                   
+                    <q-icon name="circle" class="text-sm" :color="BADGE_COLORS[BADGE_TITLE_CONVERT[item]]"/>
+                    <div class="q-ml-xs text-sm">{{item}}</div>
+                </div>
             </div>
         </ChartLineOverTime>
     </div>
@@ -117,10 +146,13 @@
         padding: var(--space-sm);
         padding-bottom: 0px;
     }
+    .legend__container {
+        padding: 0px var(--space-sm);
+    }
 }
 </style>
 <script setup>
-import { BADGE_COLORS, BADGE_TITLES_PLAIN } from "@/constants/badges";
+import { BADGE_COLORS, BADGE_TITLES_PLAIN, BADGE_TITLE_CONVERT } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 
 const props = defineProps({
@@ -132,8 +164,10 @@ const emit = defineEmits(["close"]);
 
 const $q = useQuasar();
 
+const showAverages = ref(true);
 
-const showAverages = ref(true)
+const TENSION = 0.4;
+
 
 const options = [
     {
@@ -190,18 +224,22 @@ const toggleVisibility = (chart, index = 0) => {
 };
 
 const toggleAverageVisibility = (evt, chart) => {
-    const {annotations} = getHammerConversionOverTime();
+    const { annotations } = getHammerConversionOverTime();
     chart.options.plugins.annotation.annotations = annotations;
     chart.update();
-}
+};
 
-watch(() => props.visibleStats, (val) => {
-    if (!chart || $q.screen.xs) return;
-    visibleItems.value = val;
-    const {data} = getHammerConversionOverTime();
-    chart.data = data;
-    chart.update();
-}, {deep: true})
+watch(
+    () => props.visibleStats,
+    (val) => {
+        if (!chart || $q.screen.xs) return;
+        visibleItems.value = val;
+        const { data } = getHammerConversionOverTime();
+        chart.data = data;
+        chart.update();
+    },
+    { deep: true }
+);
 
 const allData = ref([]);
 
@@ -249,7 +287,7 @@ let chart;
 
 const setChart = (c) => {
     chart = c;
-}
+};
 
 const chartProps = ref({});
 const loading = ref(true);
@@ -265,7 +303,7 @@ onMounted(async () => {
     loading.value = false;
 });
 
-const updating = ref(false)
+const updating = ref(false);
 
 const setFilter = async (filterType, value, chart) => {
     if (updating.value) return;
@@ -309,7 +347,8 @@ const getHammerConversionOverTime = () => {
         (team.non_hammer_force_count / team.non_hammer_end_count) * 100;
     const nonHammerStealAvg =
         (team.non_hammer_steal_count / team.hammer_end_count) * 100;
-    const hammerStealDefenseAvg = (team.hammer_steal_count / team.hammer_end_count) * 100;
+    const hammerStealDefenseAvg =
+        (team.hammer_steal_count / team.hammer_end_count) * 100;
     const hammerBlankAvg =
         (team.hammer_blank_count / team.hammer_end_count) * 100;
     const hammerFirstEndAvg =
@@ -332,6 +371,7 @@ const getHammerConversionOverTime = () => {
         backgroundColor: "rgba(156, 39, 176, 1)",
         borderColor: "rgba(156, 39, 176, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.efficiency),
+        tension: TENSION,
     };
 
     const steals = {
@@ -349,6 +389,7 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(244, 67, 54, 1)",
         backgroundColor: "rgba(244, 67, 54, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bandit),
+        tension: TENSION,
     };
 
     const forces = {
@@ -366,6 +407,7 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(33, 150, 243, 1)",
         backgroundColor: "rgba(33, 150, 243, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bulwark),
+       tension: TENSION,
     };
 
     const blanks = {
@@ -383,6 +425,7 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(0, 131, 143, 1)",
         backgroundColor: "rgba(0, 131, 143, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.minimalist),
+         tension: TENSION,
     };
 
     const hammerFirstEnd = {
@@ -410,6 +453,7 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(255, 235, 59, 1)",
         backgroundColor: "rgba(255, 235, 59, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.firstend),
+         tension: TENSION,
     };
 
     const hammerLastEnd = {
@@ -437,6 +481,7 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(233, 30, 99, 1)",
         backgroundColor: "rgba(233, 30, 99, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.strategist),
+         tension: TENSION,
     };
 
     const stealDefense = {
@@ -454,39 +499,38 @@ const getHammerConversionOverTime = () => {
         borderColor: "rgba(96, 125, 139, 1)",
         backgroundColor: "rgba(96, 125, 139, 1)",
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.stealdefense),
+         tension: TENSION,
     };
 
     const datasets = {
         efficiency: {
             datasets: conversions,
-            average:
-                hammerConversionAvg
+            average: hammerConversionAvg,
         },
         bandit: {
             datasets: steals,
-            average: nonHammerStealAvg
+            average: nonHammerStealAvg,
         },
         bulwark: {
             datasets: forces,
-            average:
-                nonHammerForceAvg
+            average: nonHammerForceAvg,
         },
-                stealdefense: {
+        stealdefense: {
             datasets: stealDefense,
-            average: hammerStealDefenseAvg
+            average: hammerStealDefenseAvg,
         },
         minimalist: {
             datasets: blanks,
-            average: hammerBlankAvg
+            average: hammerBlankAvg,
         },
         firstend: {
             datasets: hammerFirstEnd,
-            average: hammerFirstEndAvg
+            average: hammerFirstEndAvg,
         },
 
         strategist: {
             datasets: hammerLastEnd,
-            average: hammerLastEndAvg
+            average: hammerLastEndAvg,
         },
     };
 
@@ -529,7 +573,7 @@ const getHammerConversionOverTime = () => {
                 if (index !== 0 && index !== all.length - 1) return "";
                 const { start_time } = allData.value[index];
 
-                return format(toTimezone(start_time), 'MMM DD');
+                return format(toTimezone(start_time), "MMM DD");
             },
         },
         tooltip: {
@@ -573,7 +617,7 @@ const getHammerConversionOverTime = () => {
                                     data.non_hammer_end_count) *
                                 100
                             ).toFixed(1)}%)`,
-                              3: `${data.hammer_steal_count}/${
+                            3: `${data.hammer_steal_count}/${
                                 data.hammer_end_count
                             } ends (${(
                                 (data.hammer_steal_count /

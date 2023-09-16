@@ -1,5 +1,7 @@
 <template>
-    <DialogFloating
+<NuxtLayout>
+    <div class="full-height">
+    <!-- <DialogFloating
         @close="toggleLineScore({ open: false })"
         :backable="false"
         :loading="loading"
@@ -33,7 +35,7 @@
         <template v-slot:title> Linescore wizard </template>
         <template v-slot:buttonRight>
             <q-btn flat round icon="close" @click="confirmUnsaved = true" />
-        </template>
+        </template> -->
 
         <div
             v-if="view === views.NO_TEAM"
@@ -206,7 +208,7 @@
                 </transition>
             </div>
         </LinescoreEditor>
-    </DialogFloating>
+    <!-- </DialogFloating> -->
     <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
@@ -218,6 +220,8 @@
     >
         Are you sure you want to close? All unsaved changes will be lost.
     </DialogConfirmation>
+    </div>
+</NuxtLayout>
 </template>
 <style lang="scss" scoped>
 $column-width: 26vh;

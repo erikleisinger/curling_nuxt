@@ -453,7 +453,7 @@
                         <TeamStatsView
                             :teamId="team.id"
                             key="stats"
-                            viewerHeight="400px"
+                            viewerHeight="600px"
                             :oppositionId="Number(comparisonTeam?.id)"
                             :h2h="headToHead"
                             v-memo="[

@@ -126,10 +126,16 @@
 }
 .view-more__container {
     overflow: auto;
-    position: relative;
+    position: fixed;
+    top: 65px;
+    width: 100vw;
+    height: calc(100 * var(--vh, 1vh) - 60px);
+    background-color: white;
     height: v-bind(viewerHeight);
+    z-index: $z-tooltip;
     @include sm {
         border-top: 1px solid $grey-5;
+        position: relative;
     }
 }
 </style>

@@ -2,6 +2,7 @@
     <NuxtLayout>
         <q-inner-loading :showing="loading" color="primary" />
         <LinescoreEditor v-if="!!currentGame && !loading" :canEdit="false" v-model="currentGame" summary :score="score" :compact="false" static/>
+        <TeamStatsView v-if="!!currentGame && !loading" :teamId="home.id" :oppositionId="away.id" h2h/>
     </NuxtLayout>
 </template>
 
@@ -10,6 +11,7 @@ import { useUserTeamStore } from "@/store/user-teams";
 import Game from '@/store/models/game'
 import Team from '@/store/models/team';
 import GameTeam from '@/store/models/game-team';
+import TeamStats from '@/store/models/team-stats'
 const route = useRoute();
 const { getGameResult } = useGame();
 
@@ -36,7 +38,7 @@ const init = async () => {
     setTimeout(async () => {
         score.value = await generateScore(currentGame.value);
 
-    stats.value = await getStatsForGame(currentGame.value);
+    await getStatsForGame(currentGame.value);
 
     isAuthorized.value = useUserTeamStore().userTeams.some(
         ({ id }) => id === currentGame.value.teams?.find(({pending}) => !pending)?.id
@@ -214,10 +216,13 @@ const getStatsForGame = async (game) => {
         )
         .eq("game_id", game?.id);
     if (!data?.length) return null;
-    return {
-        home: data.find(({ team_id }) => team_id === home.value.id),
-        away: data.find(({ team_id }) => !team_id || team_id === away.value.id),
-    };
+    data.forEach((stat) => {
+        if (!stat.team_id) return;
+        useRepo(TeamStats).save({
+            ...stat,
+            games_played: 1,
+        })
+    })
 };
 
 const { format, toTimezone } = useTime();

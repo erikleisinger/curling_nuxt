@@ -3,7 +3,6 @@
     <NuxtPage />
     <NotificationHandler/>
         <DialogTeamViewer v-if="isTeamViewerOpen" />
-        <DialogLinescore v-if="isLinescoreOpen"/>
           <DialogGlobalSearch v-if="isGlobalSearchOpen" />
 </template>
 <style lang="scss">
@@ -55,7 +54,6 @@ client.auth.onAuthStateChange((_, _session) => {
     }
 });
 const dialogStore = useDialogStore()
-const isLinescoreOpen = computed(() => dialogStore.linescore.open);
 const isTeamViewerOpen = computed(() => dialogStore.teamViewer.open);
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 </script>

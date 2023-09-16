@@ -33,6 +33,8 @@ export const BADGE_TITLES = {
     stealdefense: 'Steal defense'
 }
 
+
+
 export const BADGE_TITLES_PLAIN = {
     efficiency: 'Hammer efficiency',
     firstend: 'Hammer in first end',
@@ -43,6 +45,17 @@ export const BADGE_TITLES_PLAIN = {
     survivalist: 'Survivalism',
     strategist: 'Hammer in last end',
     stealdefense: 'Steal defense'
+}
+
+export const BADGE_TITLE_CONVERT = {
+    [BADGE_TITLES_PLAIN.efficiency]: 'efficiency',
+    [BADGE_TITLES_PLAIN.firstend]: 'firstend',
+    [BADGE_TITLES_PLAIN.showoff]: 'showoff',
+    [BADGE_TITLES_PLAIN.bandit]: 'bandit',
+    [BADGE_TITLES_PLAIN.bulwark]: 'bulwark',
+    [BADGE_TITLES_PLAIN.minimalist]: 'minimalist',
+    [BADGE_TITLES_PLAIN.strategist]: 'strategist',
+    [BADGE_TITLES_PLAIN.stealdefense]: 'stealdefense'
 }
 
 export const BADGE_DESCRIPTIONS_PLAIN = {

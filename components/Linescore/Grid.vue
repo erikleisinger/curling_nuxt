@@ -96,7 +96,7 @@
                 width: 100%;
                 height: 100%;
                 margin: auto;
-                font-size: 1.3em;
+                font-size: max(1.3em, 2vw);
                 position: relative;
                 display: flex;
                 justify-content: center;
@@ -118,7 +118,7 @@
         &:nth-child(1) {
             .linescore-column--item {
                 font-weight: bold;
-                font-size: 1.5em;
+                font-size: max(1.5em, 2vw);
             }
         }
     }
