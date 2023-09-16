@@ -1,42 +1,6 @@
 <template>
 <NuxtLayout>
     <div class="full-height">
-    <!-- <DialogFloating
-        @close="toggleLineScore({ open: false })"
-        :backable="false"
-        :loading="loading"
-        :maxWidth="
-            view === views.LINESCORE && $q.platform.is.desktop
-                ? 'unset'
-                : '700px'
-        "
-    >
-        <template v-slot:footer v-if="view == views.DETAILS">
-            <div class="row">
-                <q-btn
-                    class="col-6"
-                    size="lg"
-                    square
-                    :disable="view === views.HOME_SELECT"
-                    @click="goBackToLinescore"
-                    >Back</q-btn
-                >
-                <q-btn
-                    class="col-6"
-                    size="lg"
-                    color="positive"
-                    square
-                    @click="save"
-                >
-                    {{ "Confirm & save" }}
-                </q-btn>
-            </div>
-        </template>
-        <template v-slot:title> Linescore wizard </template>
-        <template v-slot:buttonRight>
-            <q-btn flat round icon="close" @click="confirmUnsaved = true" />
-        </template> -->
-
         <div
             v-if="view === views.NO_TEAM"
             class="full-height full-width row justify-center q-pa-md"
@@ -208,7 +172,6 @@
                 </transition>
             </div>
         </LinescoreEditor>
-    <!-- </DialogFloating> -->
     <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
