@@ -9,7 +9,6 @@
 <style lang="scss" scoped></style>
 <script setup>
 import Chart from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 import annotationPlugin from "chartjs-plugin-annotation";
 
 Chart.register(annotationPlugin);
@@ -25,7 +24,7 @@ const props = defineProps({
     tooltip: Object,
 });
 
-const emit = defineEmits(['chart'])
+const emit = defineEmits(["chart"]);
 
 const chart = ref(null);
 let myChart;
@@ -36,7 +35,7 @@ onMounted(async () => {
     const annotations = { ...props.annotations };
     const data = { ...props.data };
     const tooltip = { ...props.tooltip };
-    const ticks = {...props.ticks}
+    const ticks = { ...props.ticks };
     myChart = new Chart(chart.value, {
         type: "line",
         data,
@@ -76,7 +75,7 @@ onMounted(async () => {
             },
             scales: {
                 x: {
-                    ticks
+                    ticks,
                 },
                 y: {
                     grid: {
@@ -96,6 +95,6 @@ onMounted(async () => {
 
     Object.seal(myChart.value);
     loading.value = false;
-    emit('chart', myChart)
+    emit("chart", myChart);
 });
 </script>

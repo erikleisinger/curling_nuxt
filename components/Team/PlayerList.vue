@@ -1,10 +1,4 @@
 <template>
-    <slot
-        name="title"
-        :editing="editing"
-        :setEditing="setEditing"
-        :loading="loading"
-    />
 
     <div class="row">
         <TeamPlayer
@@ -57,43 +51,6 @@
         {{ playerToRemove.last_name }} from the team?
     </LazyDialogConfirmation>
 </template>
-<style lang="scss" scoped>
-.player__container {
-    width: min(calc(50% - var(--space-xs) * 2), 250px);
-    padding: var(--space-xxs);
-    border: 1px solid $grey-4;
-    border-radius: 8px;
-    margin: var(--space-xs);
-    transition: all 0.2s;
-    position: relative;
-    &.editing {
-        border: 2px solid $blue-5;
-        transform: scale(1.05);
-    }
-    .edit-overlay {
-        $overlay-color: rgba(0, 0, 0, 0.7);
-        height: 100%;
-        width: 100%;
-        top: 0;
-        left: 0;
-        border-radius: inherit;
-        border: 2px solid $overlay-color;
-        position: absolute;
-        background-color: $overlay-color;
-        box-sizing: border-box;
-    }
-}
-.member-avatar__wrap {
-    position: relative;
-    aspect-ratio: 1/1;
-    overflow: visible;
-    .member-avatar__container {
-        overflow: visible;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-}
-</style>
 <script setup>
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useDialogStore } from "@/store/dialog";
@@ -109,6 +66,7 @@ const { toggleGlobalSearch } = useDialogStore();
 
 const props = defineProps({
     create: Boolean,
+    editing: Boolean,
     showPending: Boolean,
     teamId: Number,
 });
@@ -123,7 +81,9 @@ const players = computed(() => {
             ...player,
             status,
             position,
-        }));
+        })).sort((a, b) => {
+            return TEAM_POSITIONS[b.position]?.sortOrder ?? -1 - TEAM_POSITIONS[a.position]?.sortOrder ?? -1
+        })
     
 });
 const getPlayers = async () => {
@@ -143,15 +103,10 @@ onMounted(() => {
     });
 });
 
-const editing = ref(props.create);
-const setEditing = (bool) => {
-    editing.value = bool;
-};
-
 const showOverlay = ref(false);
 
 const onClick = () => {
-    if (!editing.value) return;
+    if (!props.editing) return;
     showOverlay.value = true;
 };
 

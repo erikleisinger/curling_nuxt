@@ -5,7 +5,7 @@
             <q-inner-loading :showing="true" color="primary" />
         </div>
         <div
-            v-for="(game, index) in games"
+            v-for="(game, index) in gamesPaginated"
             :key="game.id"
             class="result__container"
         >
@@ -71,12 +71,18 @@
             </TeamGameResult>
             <q-separator />
         </div>
+        <div class="show-more__container row justify-center items-center" v-if="gamesPaginated.length < totalGames">
+            <q-btn text outline flat color="blue" @click="showMore" :loading="loadingMore" v-ripple>Show more</q-btn>
+        </div>
     </div>
 </template>
 <style lang="scss">
 .loading-container {
     min-height: 100px;
     position: relative;
+}
+.show-more__container {
+    padding: var(--space-sm)
 }
 .result__container {
     padding-top: var(--space-xxxs);
@@ -101,6 +107,30 @@ const props = defineProps({
 
 const initialized = ref(false);
 
+const totalGames = computed(() => games.value.length);
+
+const cursor = ref(3)
+
+const loadingMore = ref(false)
+
+const showMore = async () => {
+    loadingMore.value = true;
+  setTimeout(() => {
+if (cursor.value + 3 > totalGames.length) {
+        cursor.value = totalGames.length
+    } else {
+        cursor.value += 3;
+    }
+       loadingMore.value = false;
+  }, 20)
+  
+ 
+ 
+  
+}
+
+const gamesPaginated = computed(() => [...games.value].splice(0, cursor.value))
+
 const games = computed(() => {
     if (loading.value) return [];
 
@@ -119,15 +149,8 @@ const games = computed(() => {
                 ]);
             })
             .get() ?? [];
-    return t;
+    return t
 });
-
-// const onElementVis = (val) => {
-//     if (!val) return;
-//     if (initialized.value) return;
-//     initialized.value = true;
-//     getGames();
-// }
 
 const loading = ref(true);
 
@@ -173,12 +196,6 @@ const getGames = async () => {
 onMounted(() => {
     getGames();
 });
-
-// watch(() => {
-//     return [props.teamId, ...props.filterOpposition]
-// }, () => {
-//     getGames();
-// }, {immediate: true})
 
 const confirmUnsaved = ref(false);
 

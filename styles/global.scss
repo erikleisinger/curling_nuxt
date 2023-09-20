@@ -10,6 +10,7 @@ html, body, div, span, object, iframe, figure, h1, h2, h3, h4, h5, h6, p, blockq
   -webkit-font-smoothing: antialiased;
   text-size-adjust: none;
 
+
 }
 
 html {
@@ -18,6 +19,7 @@ html {
     }
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+    color: #36454F;
 }
 
 // Responsive classes
@@ -64,6 +66,14 @@ html {
 
   $font-family-main: "Montserrat", sans-serif;
   $font-family-secondary: "Hind", sans-serif;
+
+  .font-main {
+    font-family: $font-family-main
+  }
+
+  .font-secondary {
+    font-family: $font-family-secondary
+  }
 
 
 html {

@@ -16,9 +16,7 @@
                 class="overlay row justify-center items-center "
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible:
-                        (viewable || invitable || editable) &&
-                        ($q.platform.is.desktop || visible),
+                    visible: editable
                 }"
             >
                 <div class="text-white text-bold" v-if="!editable">
@@ -49,6 +47,8 @@
                     style="z-index: 10"
                     @upload="emit('update', $event)"
                     :emitOnly="create"
+                    resourceType="team"
+                    :resourceId="teamId"
                 />
                 <div v-if="avatarType === 'upload' && avatarUrl">
                     <div
@@ -105,7 +105,7 @@
             width: 100%;
             box-sizing: border-box;
             position: absolute;
-            border: 3px solid rgba(0, 0, 0, 0.1);
+            border: 0px solid rgba(0, 0, 0, 0.1);
       
             bottom: 0;
             border-radius: 50%;
@@ -126,9 +126,7 @@
     &:not(.animated) {
         transform: scale(1.02);
     }
-    &:not(.help--highlight) {
-              box-shadow: $pretty-shadow-2;
-    }
+   
         }
     }
 }
@@ -137,7 +135,7 @@
     aspect-ratio: 1/1;
     width: 100%;
     margin-top: -0.1em;
-    background-color: rgba(0, 0, 0, 0.1);
+    // background-color: rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     overflow: hidden;
     margin: auto;

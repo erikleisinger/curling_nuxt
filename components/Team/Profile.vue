@@ -1,79 +1,82 @@
 <template>
-    <div>
-        <div class="column team__header items-center">
-            <div class="avatar__container q-mb-sm">
-                <TeamAvatar
-                    :teamId="teamId"
-                    :viewable="false"
-                    :editable="canEdit"
-                    @update="emit('update', { avatar: $event })"
-                    :create="create"
-                />
-            </div>
+    <div class="row">
+        <div class="edit--floating" v-if="canEdit">
+            <q-btn flat round :icon="editing ? 'close' : 'edit'" @click="editing = !editing"/>
+        </div>
+        <div class="row col-12 col-sm-6 profile__container">
+            <div class="column team__header items-center col-12">
+                <div class="avatar__container q-mb-sm">
+                    <TeamAvatar
+                        :teamId="teamId"
+                        :viewable="false"
+                        :editable="editing"
+                        @update="emit('update', { avatar: $event })"
+                        :create="create"
+                    />
+                </div>
 
-            <div class="column items-center">
-                <div class="text-sm">Team</div>
-                <TeamName
-                    :canEdit="canEdit"
+                <div class="column items-center">
+                    <div class="text-sm">Team</div>
+                    <TeamName
+                        :canEdit="editing"
+                        :teamId="teamId"
+                        :create="create"
+                        @update="emit('update', { name: $event })"
+                    />
+                </div>
+                <div class="row q-mt-sm">
+                    <Badge badge="showoff" height="3em" class="q-mr-sm" />
+                    <Badge badge="bulwark" height="3em" class="q-mr-sm" />
+                    <Badge badge="firstend" height="3em" />
+                </div>
+            </div>
+            <div
+                v-if="showPlayers"
+                class="col-12"
+                :style="{ order: $q.screen.xs ? 0 : 3 }"
+            >
+                <div class="row items-center q-my-sm">
+                    <h2 class="text-md text-italic">Roster</h2>
+                </div>
+
+                <q-separator class="q-mb-md"/>
+                <TeamPlayerList
                     :teamId="teamId"
+                    :showPending="canEdit"
                     :create="create"
-                    @update="emit('update', { name: $event })"
+                    :editing="editing"
+                    @update="emit('update', { players: $event })"
+                    @loaded="emit('loaded')"
                 />
-                <!-- <div class="row items-center">
-                                <q-icon class="text-sm" name="home" color="grey-8"/>
-                            <h2 class="text-sm">St. Vital Curling Club</h2>
-                            </div> -->
             </div>
         </div>
-        <slot v-if="!create" />
-        <div v-if="showPlayers">
-            <TeamPlayerList
-                :teamId="teamId"
-                :showPending="canEdit"
-                :create="create"
-                @update="emit('update', { players: $event })"
-                @loaded="emit('loaded')"
-            >
-                <template v-slot:title="{ editing, setEditing, loading }">
-                    <div class="row justify-between items-end q-my-sm">
-                        <div class="row items-center">
-                            <q-icon
-                                name="groups_2"
-                                color="primary"
-                                class="text-md q-mr-sm"
-                            />
-                            <h2 class="text-md text-bold">Team members</h2>
+        <div class="col-12 col-sm-6 attributes__container">
+            <div class="row items-center q-my-sm">
+                <h2 class="text-md text-italic">Stats</h2>
+            </div>
 
-                            <q-circular-progress
-                                v-if="loading"
-                                indeterminate
-                                color="primary"
-                                class="q-ml-sm"
-                            />
-                        </div>
-                        <div v-if="canEdit && !create">
-                            <q-btn
-                                :icon="editing ? 'close' : 'edit'"
-                                flat
-                                round
-                                dense
-                                :color="editing ? 'blue' : 'grey-7'"
-                                padding="4px"
-                                @click="setEditing(!editing)"
-                            />
-                        </div>
-                    </div>
-                    <q-separator />
-                </template>
-            </TeamPlayerList>
+            <q-separator class="q-mb-md"/>
+
+            <TeamAttributes :teamId="teamId" />
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
+.edit--floating {
+    position: absolute;
+    top: 0;
+    margin-top: var(--space-sm)
+}
+.attributes__container,
+.profile__container {
+    @include sm {
+        padding: var(--space-sm);
+    }
+}
+
 .team__header {
     padding: var(--space-lg);
-    padding-bottom: var(--space-sm);
-
+    padding-bottom: var(--space-lg);
     .avatar__container {
         height: v-bind(avatarWidth);
         max-width: 100%;
@@ -90,7 +93,7 @@
 const props = defineProps({
     avatarWidth: {
         type: String,
-        default: "7em",
+        default: "8em",
     },
     canEdit: Boolean,
     create: Boolean,
@@ -98,5 +101,9 @@ const props = defineProps({
     teamId: Number,
 });
 
-const emit = defineEmits(['loaded', "update"]);
+const $q = useQuasar();
+
+const emit = defineEmits(["loaded", "update"]);
+
+const editing = ref(false)
 </script>

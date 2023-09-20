@@ -653,6 +653,8 @@ const getHammerConversionOverTime = () => {
                     return `${toTimezone(data.start_time, "MMM DD YYYY")}`;
                 },
             },
+            mode: 'nearest',
+            intersect: false,
         },
     };
 };

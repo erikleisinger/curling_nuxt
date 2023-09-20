@@ -48,13 +48,12 @@ const compressFile = async (file) => {
 
 const handleUpload = async (e) => {
     uploading.value = true;
-    console.log('UPLOAD: ', props.emitOnly)
     if (props.emitOnly) {
         const file = await createFile(e)
         emit('upload', file)
         files.value = null
     } else {
-
+        uploadAvatar(e)
     }
     uploading.value = false;
 }
