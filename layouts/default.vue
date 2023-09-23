@@ -3,7 +3,24 @@
     <q-layout view="hhh lpr fff" v-else class="app-layout">
         <q-header bordered class="bg-white text-black" >
             <q-toolbar class="global-header row justify-between">
-                <div style="width: 50%">
+                 <div
+                    v-if="$q.screen.xs"
+                    style="width: 50%"
+                    class="row "
+                >
+                    <q-btn
+                        flat
+                        round
+                        icon="menu"
+                        color="grey-8"
+                        @click="leftDrawerOpen = !leftDrawerOpen"
+                    />
+                </div>
+
+                <div v-else class="row justify-end" style="width: 50%">
+                    <q-btn flat round icon="search" />
+                    <q-btn flat round icon="notifications" />
+                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
                 </div>
                 <div
                     class="row full-height items-center col-grow clickable"
@@ -15,8 +32,7 @@
                         <Logo :color="getColor('deepPurple')" />
                     </div>
                 </div>
-
-                <div
+                 <div
                     v-if="$q.screen.xs"
                     style="width: 50%"
                     class="row justify-end"
@@ -24,20 +40,16 @@
                     <q-btn
                         flat
                         round
-                        icon="menu"
+                        icon="add"
                         color="grey-8"
-                        @click="rightDrawerOpen = !rightDrawerOpen"
+                            to="/games/create"
                     />
                 </div>
 
-                <div v-else class="row justify-end" style="width: 50%">
-                    <q-btn flat round icon="search" />
-                    <q-btn flat round icon="notifications" />
-                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
-                </div>
+             
             </q-toolbar>
         </q-header>
-        <q-drawer v-model="rightDrawerOpen" side="right" behavior="mobile">
+        <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile">
             <q-list>
                   <q-item
                     clickable
@@ -70,16 +82,7 @@
                     </q-item-section>
                     <q-item-section class=" justify-center">Search</q-item-section>
                 </q-item>
-                 <q-item clickable v-ripple color="primary" to="/games/create">
-                   <q-item-section
-                        avatar
-                        class="row justify-center items-center"
-                    >
-                            <q-icon name="add" size="1.5em" class="q-mb-xs" />
-                     
-                    </q-item-section>
-                    <q-item-section>Enter linescore</q-item-section>
-                </q-item>
+              
                 <q-item clickable v-ripple color="primary" to="/profile">
                     <q-item-section avatar>
                         <!-- <div style="height: 2.5em; width: 2.5em">
@@ -170,7 +173,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false);
+
 
 const { getColor } = useColor();
 
@@ -203,7 +206,7 @@ const toggleSearch = () => {
             callback: onSelect,
         },
     });
-    rightDrawerOpen.value = false;
+    leftDrawerOpen.value = false;
 };
 
 const onSelect = (selection) => {

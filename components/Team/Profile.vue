@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row relative-position">
         <div class="edit--floating" v-if="canEdit">
             <q-btn flat round :icon="editing ? 'close' : 'edit'" @click="editing = !editing"/>
         </div>
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="column items-center">
-                    <div class="text-sm">Team</div>
+                    <div class="text-sm" style="margin-bottom: -0.5em">Team</div>
                     <TeamName
                         :canEdit="editing"
                         :teamId="teamId"
@@ -33,7 +33,7 @@
             <div
                 v-if="showPlayers"
                 class="col-12"
-                :style="{ order: $q.screen.xs ? 0 : 3 }"
+               
             >
                 <div class="row items-center q-my-sm">
                     <h2 class="text-md text-italic">Roster</h2>

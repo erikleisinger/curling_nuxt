@@ -26,7 +26,7 @@
         </div>
     </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .profile__container {
     display: grid;
     grid-template-columns: 3em auto auto;

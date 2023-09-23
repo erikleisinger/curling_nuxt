@@ -4,6 +4,41 @@ import Team from '@/store/models/team'
 import Game from '@/store/models/game'
 
 export const useGame = () => {
+    const getGames = async ({team_id_param, game_id_param} : {team_id_param: number, game_id_param: number}) => {
+        const { data } = await useSupabaseClient().rpc("get_team_record_new", {
+            team_id_param,
+            game_id_param
+        });
+
+        if (!data) return;
+    
+        data.forEach((g) => {
+            let team;
+    
+            if (!g.team?.id) {
+                team = {
+                    id: g.game_id + 100000000,
+                    name: g.team?.name,
+                };
+            } else {
+                team = g.team;
+            }
+    
+            useRepo(Team).save(team);
+            useRepo(Game).save({
+                id: g.game_id,
+            });
+            useRepo(GameTeam).save({
+                team_id: g.team_id ?? g.game_id + 100000000,
+                game_id: g.game_id,
+                id: g.id,
+                color: g.color,
+                points_scored: g.points_scored,
+                pending: g.pending,
+            });
+        });
+    
+    };
     const getTeamGames = async (team_ids_param: number[], start: number = 0, end: number = 5) => {
         const client = useSupabaseClient();
         const { data } = await client.rpc("get_team_record", { team_ids_param }).range(start, end).order('start_time', {ascending: false});
@@ -146,5 +181,5 @@ export const useGame = () => {
         return {}
     };
 
-    return { getGameResult, getHeadToHead, getTeamGames };
+    return { getGameResult, getHeadToHead, getTeamGames, getGames };
 };

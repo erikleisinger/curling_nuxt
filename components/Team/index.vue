@@ -29,6 +29,16 @@
             <div class="back-button__container" v-if="comparisonTeam">
                 <q-btn flat round icon="arrow_back" @click="endComparison" />
             </div>
+
+
+            <aside v-if="viewDetails?.length" class="stats-time__container">
+                   <LazyChartTeamStatsTime
+                            :teamId="teamId"
+                            v-if="!!viewDetails.length"
+                            :visibleStats="viewDetails"
+                            @close="viewDetails = []"
+                        />
+            </aside>
             <header class="row justify-center col-12">
                 <!-- <div class="compare__container">
                     <q-btn
@@ -289,6 +299,7 @@
                                 />
                             </div>
                         </div>
+                     
                     </div>
                 </div>
             </main>
@@ -304,7 +315,23 @@ $avatar-dimension: 7em;
     width: 100%;
     height: fit-content;
     position: relative;
-    // background-color: #292929;
+  .stats-time__container {
+    position: fixed;
+    top: 65px;
+    z-index: $z-tooltip;
+    height: calc((100 * var(--vh, 1vh)) - 65px);
+    width: 100vw;
+    background-color: white;
+    left:0;
+    overflow: auto;
+    @include sm {
+        height: 40vh;
+        width: 100%;
+        position: relative!important;
+        top:0;
+    }
+
+  }
     .compare__container {
         position: absolute;
         left: 0;
@@ -350,7 +377,11 @@ $avatar-dimension: 7em;
 import { useDialogStore } from "@/store/dialog";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
-import { watchDebounced, useElementVisibility } from "@vueuse/core";
+import {
+    useEventListener,
+    watchDebounced,
+    useElementVisibility,
+} from "@vueuse/core";
 import { BADGE_FIELDS } from "@/constants/badges";
 import Game from "@/store/models/game";
 import GameTeam from "@/store/models/game-team";
@@ -589,6 +620,14 @@ const respondToRequest = async (response) => {
     useUserTeamStore().fetchUserTeams(true);
     if (!!response) getPlayers();
 };
+
+    const viewDetails = ref([])
+
+useEventListener(window, "teamAttributeClick", (e) => {
+    const { detail } = e;
+    const { name } = detail ?? {};
+    viewDetails.value.push(name)
+});
 </script>
 <script>
 export default {

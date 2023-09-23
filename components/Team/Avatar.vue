@@ -16,7 +16,7 @@
                 class="overlay row justify-center items-center "
                 :class="{
                     desktop: $q.platform.is.desktop,
-                    visible: editable
+                    visible: editable || visible
                 }"
             >
                 <div class="text-white text-bold" v-if="!editable">

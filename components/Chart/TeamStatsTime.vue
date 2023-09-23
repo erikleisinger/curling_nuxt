@@ -113,7 +113,7 @@
                         </q-menu>
                     </q-btn>
                     <q-checkbox
-                        label="Season avg"
+                        label="Averages"
                         class="q-ml-sm q-ml-sm-none"
                         v-model="showAverages"
                         dense

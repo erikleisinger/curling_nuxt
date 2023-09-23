@@ -1,5 +1,14 @@
 <template>
     <div class="season__wrap">
+        <header class="season__header">
+            <div v-if="latestResult">
+            Latest result:
+            {{latestResult.result}} vs {{latestResult.opposition?.name ?? 'Unnamed team'}}
+
+            </div>
+
+            <div v-if="isError">ERROR</div>
+        </header>
         <main class="season-content__container">
             <div style="height: 100%">
 
@@ -103,12 +112,14 @@ $col-width: 80px;
         }
     }
 }
-</style>
+</style>        
 <script setup>
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useElementBounding } from "@vueuse/core";
 import Team from '@/store/models/team'
+import { useQuery} from '@tanstack/vue-query'
+import GET_LATEST_RESULT from '@/queries/get_latest_result'
 
 const $q = useQuasar();
 
@@ -134,6 +145,14 @@ const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`);
  */
 
 const { toggleGlobalSearch, toggleTeamViewer } = useDialogStore();
+
+const latestResult = computed(() => null)
+
+const {isLoading, isError} = useQuery({
+    queryKey: ['latestResult'],
+    queryFn: GET_LATEST_RESULT,
+    refetchOnWindowFocus: false,
+})
 
 
 </script>

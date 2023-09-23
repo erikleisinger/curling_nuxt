@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-between">
+    <div class="row justify-between ">
         <TeamAttribute
             title="Games played"
             color="primary"
@@ -73,35 +73,24 @@
             </span>
             <span v-else>-</span>
 
-            <template v-slot:tooltip>
-                <q-tooltip v-if="$q.platform.is.desktop">
-                    <div>
-                        <span class="text-bold">Avg ends won: </span>
-                        {{ (team.ends_for / team.games_played).toFixed(1) }}
-                    </div>
-                    <div>
-                        <span class="text-bold">Avgs ends lost: </span>
-                        {{ (team.ends_against / team.games_played).toFixed(1) }}
-                    </div>
-                </q-tooltip>
-            </template>
+      
         </TeamAttribute>
-          <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))">
+          <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
             {{getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))}}%
         </TeamAttribute>
-           <TeamAttribute title="Steal efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_steal_count, team.non_hammer_end_count)">
+           <TeamAttribute title="Steal efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_steal_count, team.non_hammer_end_count)" clickable>
             {{getStatPercent(team.non_hammer_steal_count, team.non_hammer_end_count)}}%
         </TeamAttribute>
-            <TeamAttribute title="Force efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_force_count, (team.non_hammer_end_count - team.non_hammer_blank_count))">
+            <TeamAttribute title="Force efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_force_count, (team.non_hammer_end_count - team.non_hammer_blank_count))" clickable>
             {{getStatPercent(team.non_hammer_force_count, (team.non_hammer_end_count - team.non_hammer_blank_count))}}%
         </TeamAttribute>
-                <TeamAttribute title="Steal defense"   class="col-5" showPercent :percent="getStatPercent(team.hammer_steal_count, (team.hammer_end_count - team.hammer_blank_count))">
+                <TeamAttribute title="Steal defense"   class="col-5" showPercent :percent="getStatPercent(team.hammer_steal_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
             {{getStatPercent(team.hammer_steal_count, (team.hammer_end_count - team.hammer_blank_count))}}%
         </TeamAttribute>
-                     <TeamAttribute title="Hammer in first end"   class="col-5" showPercent :percent="getStatPercent(team.hammer_first_end_count, team.games_played)">
+                     <TeamAttribute title="Hammer in first"   class="col-5" showPercent :percent="getStatPercent(team.hammer_first_end_count, team.games_played)" clickable>
             {{getStatPercent(team.hammer_first_end_count, team.games_played)}}%
         </TeamAttribute>
-                            <TeamAttribute title="Hammer in last end"   class="col-5" showPercent :percent="getStatPercent(team.hammer_last_end_count, team.games_played)">
+                            <TeamAttribute title="Hammer in last"   class="col-5" showPercent :percent="getStatPercent(team.hammer_last_end_count, team.games_played)" clickable>
             {{getStatPercent(team.hammer_last_end_count, team.games_played)}}%
         </TeamAttribute>
     </div>

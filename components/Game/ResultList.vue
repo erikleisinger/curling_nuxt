@@ -94,6 +94,7 @@ import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
 import { vElementVisibility } from "@vueuse/components";
 import { isPlaceholder } from "@/utils/team";
+import { useQuery} from '@tanstack/vue-query'
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
@@ -154,47 +155,23 @@ const games = computed(() => {
 
 const loading = ref(true);
 
-const getGames = async () => {
+const fetchGames = async () => {
     loading.value = true;
 
     await nextTick();
 
-    const { data } = await useSupabaseClient().rpc("get_team_record_new", {
+    const {getGames} = useGame();
+
+    getGames({
         team_id_param: props.teamId,
         game_id_param: null,
-    });
-
-    data.forEach((g) => {
-        let team;
-
-        if (!g.team?.id) {
-            team = {
-                id: g.game_id + 100000000,
-                name: g.team?.name,
-            };
-        } else {
-            team = g.team;
-        }
-
-        useRepo(Team).save(team);
-        useRepo(Game).save({
-            id: g.game_id,
-        });
-        useRepo(GameTeam).save({
-            team_id: g.team_id ?? g.game_id + 100000000,
-            game_id: g.game_id,
-            id: g.id,
-            color: g.color,
-            points_scored: g.points_scored,
-            pending: g.pending,
-        });
-    });
-
+    })
+    
     loading.value = false;
 };
 
 onMounted(() => {
-    getGames();
+   fetchGames();
 });
 
 const confirmUnsaved = ref(false);
