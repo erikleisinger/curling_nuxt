@@ -69,7 +69,7 @@ onMounted(async () => {
                         padding: 16,
                     },
                 },
-                tooltip,
+                // tooltip,
             },
 
             animation: {
@@ -99,15 +99,18 @@ onMounted(async () => {
                         display: false,
                     },
                     min: 0,
-                    max: 100,
+                    //max: 100,
                     position: 'right',
                     ticks: {
-                        callback: (e) => {
-                            if (e !== 0 && e !== 50 && e!== 100) return ''
+                        callback: (e, e2, e3) => {
+                            const {value: startValue} = e3[0];
+                            const {value: endValue} = e3[e3.length- 1]
+                            console.log(startValue,endValue, e)
+                            // if (e !== startValue && e !== endValue) return ''
                             return `${e}%`;
                         },
                         padding: 0,
-                        // display: false,
+                        display: false,
                     },
                 },
             },

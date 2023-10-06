@@ -174,7 +174,7 @@ const {isSwiping, direction, lengthX} = useSwipe(linechart, {
     onSwipeEnd: useDebounceFn((e) => {
       console.log('swipe end: ', lengthX.value)
       const swipeDuration = dayjs().unix() - swipeStart.value;
-      if (swipeDuration > 0 || Math.abs(lengthX.value) < 75) return;
+    //   if (swipeDuration > 0 || Math.abs(lengthX.value) < 75) return;
  if (direction.value === 'right') {
             if (currentIndex.value === 0) return;
             setActiveStat(currentIndex.value, currentIndex.value -1)
@@ -419,7 +419,7 @@ const getHammerConversionOverTime = () => {
     const nonHammerForceAvg =
         (team.non_hammer_force_count / team.non_hammer_end_count) * 100;
     const nonHammerStealAvg =
-        (team.non_hammer_steal_count / team.hammer_end_count) * 100;
+        (team.non_hammer_steal_count / team.non_hammer_end_count) * 100;
     const hammerStealDefenseAvg =
         (team.hammer_steal_count / team.hammer_end_count) * 100;
     const hammerBlankAvg =
@@ -431,16 +431,7 @@ const getHammerConversionOverTime = () => {
 
     const conversions = {
         label: BADGE_TITLES_PLAIN.efficiency,
-        data: allData.value.map((d, index) => ({
-            x: index,
-            y: (d.hammer_conversion_count / d.hammer_end_count) * 100,
-            data: {
-                start_time: d.start_time,
-                hammer_conversion_count: d.hammer_conversion_count,
-                hammer_end_count: d.hammer_end_count,
-                average: hammerConversionAvg,
-            },
-        })),
+
          data: allData.value.map((d, index) => {
             const previous = [...allData.value].splice(0, index);
             previous.push({
@@ -467,6 +458,9 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.hammer_conversion_count / sums.hammer_end_count) * 100;
 
+                const all = previous.map(({hammer_conversion_count, hammer_end_count, hammer_blank_count}) => (hammer_conversion_count / (hammer_end_count - hammer_blank_count)) * 100)
+                const max = Math.max(...all)
+
             return {
                x: index,
             y,
@@ -475,6 +469,7 @@ const getHammerConversionOverTime = () => {
                 hammer_conversion_count: d.hammer_conversion_count,
                 hammer_end_count: d.hammer_end_count,
                 average: hammerConversionAvg,
+                max,
             },
             };
         }),
@@ -514,6 +509,9 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.non_hammer_steal_count / sums.non_hammer_end_count) * 100;
 
+                const all = previous.map(({non_hammer_steal_count, non_hammer_end_count}) => (non_hammer_steal_count / non_hammer_end_count) * 100)
+                const max = Math.max(...all)
+
             return {
                x: index,
             y,
@@ -522,6 +520,7 @@ const getHammerConversionOverTime = () => {
                 hammer_steal_count: d.hammer_steal_count,
                 hammer_end_count: d.hammer_end_count,
                 average: nonHammerStealAvg,
+                max,
             },
             };
         }),
@@ -561,6 +560,9 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.non_hammer_force_count / sums.non_hammer_end_count) * 100;
 
+                     const all = previous.map(({non_hammer_force_count, non_hammer_end_count}) => (non_hammer_force_count / non_hammer_end_count) * 100)
+                const max = Math.max(...all)
+
             return {
                 x: index,
                 y,
@@ -569,6 +571,7 @@ const getHammerConversionOverTime = () => {
                     non_hammer_force_count: d.non_hammer_force_count,
                     non_hammer_end_count: d.non_hammer_end_count,
                     average: nonHammerForceAvg,
+                    max,
                 },
             };
         }),
@@ -609,6 +612,8 @@ const getHammerConversionOverTime = () => {
 
             const y =
                 (sums.hammer_blank_count / sums.hammer_end_count) * 100;
+                    const all = previous.map(({hammer_blank_count, hammer_end_count}) => (hammer_blank_count / hammer_end_count) * 100)
+                const max = Math.max(...all)
 
             return {
                  x: index,
@@ -618,6 +623,7 @@ const getHammerConversionOverTime = () => {
                 hammer_blank_count: d.hammer_blank_count,
                 hammer_end_count: d.hammer_end_count,
                 average: hammerBlankAvg,
+                max,
             },
             };
         }),
@@ -689,6 +695,7 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.strategist),
         tension: TENSION,
         fill: true,
+         pointStyle: false
     };
 
     const stealDefense = {
@@ -718,6 +725,9 @@ const getHammerConversionOverTime = () => {
 
             const y =
                 (sums.hammer_steal_count / sums.hammer_end_count) * 100;
+                  (sums.hammer_blank_count / sums.hammer_end_count) * 100;
+                    const all = previous.map(({hammer_steal_count, hammer_end_count}) => (hammer_steal_count / hammer_end_count) * 100)
+                const max = Math.max(...all)
 
             return {
                  x: index,
@@ -727,6 +737,7 @@ const getHammerConversionOverTime = () => {
                 hammer_steal_count: d.hammer_steal_count,
                 hammer_end_count: d.hammer_end_count,
                 average: hammerBlankAvg,
+                max,
             },
             };
         }),
@@ -736,6 +747,7 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.stealdefense),
         tension: TENSION,
         fill: true,
+        pointStyle: false
     };
 
     const datasets = {
@@ -774,23 +786,61 @@ const getHammerConversionOverTime = () => {
         const { getColor } = useColor();
         const annotations = {};
         Object.keys(datasets).forEach((key, index) => {
-            annotations[key] = {
+            annotations[key] = 
+                {
+                
                 yMin: datasets[key].average,
                 yMax: datasets[key].average,
                 borderColor: getColor(BADGE_COLORS[key]),
                 opacity: 0.1,
                 borderWidth: 2,
-                borderDash: [6, 6],
-                type: "line",
+                
+                type: "label",
+                callout: {
+                    display: true,
+                },
+                content: `${datasets[key].average.toFixed(1)}%`,
+                position: {
+                    x: 'end',
+                    y:'end',
+
+                },
+                xValue: datasets[key].datasets.data.length - 1,
+                yValue: datasets[key].average,
+                yAdjust: (e, e1, e2) => {
+                    console.log(datasets[key].datasets.label, datasets[key].datasets.data[0].data.max, datasets[key].average)
+                    return datasets[key].average < 30 ? -70 : 70
+                },
+                xAdjust: -20,
+              
                 display: (e) => {
-                    if (!showAverages.value) return false;
+                    console.log(datasets[key])
                     if (e.chart) {
                         return e.chart.getDatasetMeta(index)?.visible;
                     }
-                    return true;
-                },
-                display: false,
-            };
+                }
+                };
+                // annotations[`${key}-max`] = 
+               
+           
+        //    {
+        //         yMin: datasets[key].datasets.data[0].data.max,
+        //         yMax: datasets[key].datasets.data[0].data.max,
+        //         borderColor: 'red',
+        //         opacity: 0.1,
+        //         borderWidth: 2,
+        //         borderDash: [6, 6],
+        //         type: "line",
+        //         display: (e) => {
+        //             console.log(datasets[key].datasets.data[0].data.max)
+        //             if (e.chart) {
+        //                 return e.chart.getDatasetMeta(index)?.visible;
+        //             }
+        //         },
+               
+        //     }
+            
+           
         });
         return annotations;
     };
@@ -891,6 +941,7 @@ const getHammerConversionOverTime = () => {
                 },
             },
             mode: "x",
+            display: false,
             intersect: false,
         },
     };
