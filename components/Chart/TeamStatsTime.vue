@@ -1,16 +1,16 @@
 <template>
-    <div class="line-chart__container">
+    <div class="line-chart__container" ref="linechart">
         <q-inner-loading :showing="loading || updating" color="primary" />
         <ChartLineOverTime
             v-if="!loading"
             v-bind="chartProps"
-            v-slot="{ chart }"
             height="calc(100% - 80px)"
             @chart="setChart"
         >
             <div class="row justify-between chart-options__container no-wrap">
                 <div class="row">
-                    <q-btn
+                    <h1>{{options[currentIndex].title}}</h1> 
+                    <!-- <q-btn
                         class="q-mr-none q-mr-sm-md"
                         :round="$q.screen.xs"
                         :rounded="!$q.screen.xs"
@@ -57,8 +57,8 @@
                                 </q-item>
                             </q-list>
                         </q-menu>
-                    </q-btn>
-                    <q-btn
+                    </q-btn> -->
+                    <!-- <q-btn
                         class="q-mr-none q-mr-sm-md"
                         :round="$q.screen.xs"
                         :rounded="!$q.screen.xs"
@@ -111,8 +111,8 @@
                                 </q-item>
                             </q-list>
                         </q-menu>
-                    </q-btn>
-                    <q-checkbox
+                    </q-btn> -->
+                    <!-- <q-checkbox
                         label="Averages"
                         class="q-ml-sm q-ml-sm-none"
                         v-model="showAverages"
@@ -120,19 +120,11 @@
                         @update:model-value="
                             toggleAverageVisibility($event, chart)
                         "
-                    />
+                    /> -->
                 </div>
-                <div>
-                    <q-btn flat round icon="close" @click="emit('close')" />
-                </div>
+             
             </div>
-            <div class="legend__container row">
-                <div v-for="item in visibleItems" :key="item" class="row items-center q-mr-sm">
-                   
-                    <q-icon name="circle" class="text-sm" :color="BADGE_COLORS[BADGE_TITLE_CONVERT[item]]"/>
-                    <div class="q-ml-xs text-sm">{{item}}</div>
-                </div>
-            </div>
+      
         </ChartLineOverTime>
     </div>
 </template>
@@ -152,13 +144,72 @@
 }
 </style>
 <script setup>
-import { BADGE_COLORS, BADGE_TITLES_PLAIN, BADGE_TITLE_CONVERT } from "@/constants/badges";
+import {
+    BADGE_COLORS,
+    BADGE_TITLES_PLAIN,
+    BADGE_TITLE_CONVERT,
+} from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
+import {useDebounceFn, useSwipe} from '@vueuse/core'
+// import { hammer_blank_count } from "tests/__mock__/team";
 
 const props = defineProps({
     teamId: Number,
     visibleStats: Array,
 });
+
+const linechart = ref(null)
+
+const currentIndex = ref(0)
+const swipeStart = ref(null)
+
+
+
+const {isSwiping, direction, lengthX} = useSwipe(linechart, {
+    onSwipeStart: (e) => {
+        console.log('swipe starts: ', e)
+        swipeStart.value = dayjs().unix();
+        console.log(swipeStart.value)
+    },
+    onSwipeEnd: useDebounceFn((e) => {
+      console.log('swipe end: ', lengthX.value)
+      const swipeDuration = dayjs().unix() - swipeStart.value;
+      if (swipeDuration > 0 || Math.abs(lengthX.value) < 75) return;
+ if (direction.value === 'right') {
+            if (currentIndex.value === 0) return;
+            setActiveStat(currentIndex.value, currentIndex.value -1)
+            currentIndex.value -=1;
+            visibleItems.value = [options[currentIndex.value - 1].title]
+            
+        }
+        if (direction.value === 'left') {
+            if (currentIndex.value === options.length - 1) return;
+             setActiveStat(currentIndex.value, currentIndex.value +1)
+            currentIndex.value +=1;
+               visibleItems.value = [options[currentIndex.value + 1].title]
+        }
+    })
+});
+
+const setActiveStat = (currentIndex, newIndex) => {
+    console.log('old: ', currentIndex);
+    console.log('new: ', newIndex)
+  
+     chart.setDatasetVisibility(newIndex, true);
+    chart.setDatasetVisibility(currentIndex, false);
+    
+    chart.update("active");
+
+  
+
+}
+
+
+watch(isSwiping, () => {
+   
+
+  
+})
 
 const emit = defineEmits(["close"]);
 
@@ -167,7 +218,6 @@ const $q = useQuasar();
 const showAverages = ref(true);
 
 const TENSION = 0.4;
-
 
 const options = [
     {
@@ -195,19 +245,20 @@ const options = [
         title: BADGE_TITLES_PLAIN.minimalist,
         visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.minimalist),
     },
-    {
-        color: BADGE_COLORS.firstend,
-        title: BADGE_TITLES_PLAIN.firstend,
-        visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.firstend),
-    },
-    {
-        color: BADGE_COLORS.strategist,
-        title: BADGE_TITLES_PLAIN.strategist,
-        visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.strategist),
-    },
+    // {
+    //     color: BADGE_COLORS.firstend,
+    //     title: BADGE_TITLES_PLAIN.firstend,
+    //     visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.firstend),
+    // },
+    // {
+    //     color: BADGE_COLORS.strategist,
+    //     title: BADGE_TITLES_PLAIN.strategist,
+    //     visible: props.visibleStats.includes(BADGE_TITLES_PLAIN.strategist),
+    // },
 ];
 
-const visibleItems = ref([...(props.visibleStats ?? [])]);
+const visibleItems = ref([options[0].title]);
+// const visibleItems = computed(() => [options[currentIndex.value].title])
 
 const toggleVisibility = (chart, index = 0) => {
     const { visible } = chart.getDatasetMeta(index);
@@ -327,6 +378,28 @@ const setFilter = async (filterType, value, chart) => {
     updating.value = false;
 };
 
+function getGradient(ctx, chartArea, color) {
+    let gradient = ctx.createLinearGradient(
+        0,
+        chartArea.bottom,
+        0,
+        chartArea.top
+    );
+    gradient.addColorStop(1, color);
+    gradient.addColorStop(0.7, `${color}b3`);
+    gradient.addColorStop(0.5, `${color}80`);
+    gradient.addColorStop(0, `${color}00`);
+    return gradient;
+}
+const setBgGradient = (context, color) => {
+    const chart = context.chart;
+    const { ctx, chartArea } = chart;
+
+    // This case happens on initial chart load
+    if (!chartArea) return;
+    return getGradient(ctx, chartArea, color);
+};
+
 const getHammerConversionOverTime = () => {
     const { format, toTimezone } = useTime();
 
@@ -368,64 +441,193 @@ const getHammerConversionOverTime = () => {
                 average: hammerConversionAvg,
             },
         })),
+         data: allData.value.map((d, index) => {
+            const previous = [...allData.value].splice(0, index);
+            previous.push({
+                hammer_end_count: d.hammer_end_count,
+                hammer_conversion_count: d.hammer_conversion_count,
+                hammer_blank_count: d.hammer_blank_count
+            });
+
+            const sums = previous.reduce(
+                (all, { hammer_end_count, hammer_conversion_count, hammer_blank_count }) => {
+                    return {
+                        hammer_end_count:
+                            all.hammer_end_count + hammer_end_count,
+                        hammer_conversion_count:
+                            all.hammer_conversion_count + (hammer_conversion_count - hammer_blank_count),
+                    };
+                },
+                {
+                    hammer_end_count: 0,
+                    hammer_conversion_count: 0,
+                }
+            );
+
+            const y =
+                (sums.hammer_conversion_count / sums.hammer_end_count) * 100;
+
+            return {
+               x: index,
+            y,
+            data: {
+                start_time: d.start_time,
+                hammer_conversion_count: d.hammer_conversion_count,
+                hammer_end_count: d.hammer_end_count,
+                average: hammerConversionAvg,
+            },
+            };
+        }),
         backgroundColor: "rgba(156, 39, 176, 1)",
         borderColor: "rgba(156, 39, 176, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#9c27b0"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.efficiency),
         tension: TENSION,
+        fill: true,
+           pointStyle: false,
     };
 
     const steals = {
         label: BADGE_TITLES_PLAIN.bandit,
-        data: allData.value.map((d, index) => ({
-            x: index,
-            y: (d.hammer_steal_count / d.hammer_end_count) * 100,
+        data: allData.value.map((d, index) => {
+            const previous = [...allData.value].splice(0, index);
+            previous.push({
+                non_hammer_end_count: d.non_hammer_end_count,
+                non_hammer_steal_count: d.non_hammer_steal_count,
+            });
+
+            const sums = previous.reduce(
+                (all, { non_hammer_end_count, non_hammer_steal_count }) => {
+                    return {
+                        non_hammer_end_count:
+                            all.non_hammer_end_count + non_hammer_end_count,
+                        non_hammer_steal_count:
+                            all.non_hammer_steal_count + non_hammer_steal_count,
+                    };
+                },
+                {
+                    non_hammer_end_count: 0,
+                    non_hammer_steal_count: 0,
+                }
+            );
+
+            const y =
+                (sums.non_hammer_steal_count / sums.non_hammer_end_count) * 100;
+
+            return {
+               x: index,
+            y,
             data: {
                 start_time: d.start_time,
                 hammer_steal_count: d.hammer_steal_count,
                 hammer_end_count: d.hammer_end_count,
                 average: nonHammerStealAvg,
             },
-        })),
+            };
+        }),
         borderColor: "rgba(244, 67, 54, 1)",
         backgroundColor: "rgba(244, 67, 54, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#f44336"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bandit),
         tension: TENSION,
+           pointStyle: false,
+        fill: true,
     };
 
     const forces = {
         label: BADGE_TITLES_PLAIN.bulwark,
-        data: allData.value.map((d, index) => ({
-            x: index,
-            y: (d.non_hammer_force_count / d.non_hammer_end_count) * 100,
-            data: {
-                start_time: d.start_time,
-                non_hammer_force_count: d.non_hammer_force_count,
+        data: allData.value.map((d, index) => {
+            const previous = [...allData.value].splice(0, index);
+            previous.push({
                 non_hammer_end_count: d.non_hammer_end_count,
-                average: nonHammerForceAvg,
-            },
-        })),
+                non_hammer_force_count: d.non_hammer_force_count,
+            });
+
+            const sums = previous.reduce(
+                (all, { non_hammer_end_count, non_hammer_force_count }) => {
+                    return {
+                        non_hammer_end_count:
+                            all.non_hammer_end_count + non_hammer_end_count,
+                        non_hammer_force_count:
+                            all.non_hammer_force_count + non_hammer_force_count,
+                    };
+                },
+                {
+                    non_hammer_end_count: 0,
+                    non_hammer_force_count: 0,
+                }
+            );
+
+            const y =
+                (sums.non_hammer_force_count / sums.non_hammer_end_count) * 100;
+
+            return {
+                x: index,
+                y,
+                data: {
+                    start_time: d.start_time,
+                    non_hammer_force_count: d.non_hammer_force_count,
+                    non_hammer_end_count: d.non_hammer_end_count,
+                    average: nonHammerForceAvg,
+                },
+            };
+        }),
         borderColor: "rgba(33, 150, 243, 1)",
-        backgroundColor: "rgba(33, 150, 243, 1)",
+        // backgroundColor: "rgba(33, 150, 243, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#2196f3"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bulwark),
-       tension: TENSION,
+        pointStyle: false,
+
+        tension: TENSION,
+        fill: true,
     };
 
     const blanks = {
         label: BADGE_TITLES_PLAIN.minimalist,
-        data: allData.value.map((d, index) => ({
-            x: index,
-            y: (d.hammer_blank_count / d.hammer_end_count) * 100,
+
+        data: allData.value.map((d, index) => {
+            const previous = [...allData.value].splice(0, index);
+            previous.push({
+                hammer_end_count: d.hammer_end_count,
+                hammer_blank_count: d.hammer_blank_count,
+            });
+
+            const sums = previous.reduce(
+                (all, { hammer_end_count, hammer_blank_count }) => {
+                    return {
+                        hammer_end_count:
+                            all.hammer_end_count + hammer_end_count,
+                        hammer_blank_count:
+                            all.hammer_blank_count + hammer_blank_count,
+                    };
+                },
+                {
+                    hammer_end_count: 0,
+                    hammer_blank_count: 0,
+                }
+            );
+
+            const y =
+                (sums.hammer_blank_count / sums.hammer_end_count) * 100;
+
+            return {
+                 x: index,
+            y,
             data: {
                 start_time: d.start_time,
                 hammer_blank_count: d.hammer_blank_count,
                 hammer_end_count: d.hammer_end_count,
                 average: hammerBlankAvg,
             },
-        })),
+            };
+        }),
         borderColor: "rgba(0, 131, 143, 1)",
         backgroundColor: "rgba(0, 131, 143, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#00838f"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.minimalist),
-         tension: TENSION,
+        tension: TENSION,
+        fill: true,
+        pointStyle: false
     };
 
     const hammerFirstEnd = {
@@ -450,10 +652,13 @@ const getHammerConversionOverTime = () => {
                 },
             ];
         }, []),
+       
         borderColor: "rgba(255, 235, 59, 1)",
         backgroundColor: "rgba(255, 235, 59, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#ffeb3b"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.firstend),
-         tension: TENSION,
+        tension: TENSION,
+        fill: true,
     };
 
     const hammerLastEnd = {
@@ -480,26 +685,57 @@ const getHammerConversionOverTime = () => {
         }, []),
         borderColor: "rgba(233, 30, 99, 1)",
         backgroundColor: "rgba(233, 30, 99, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#e91e63"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.strategist),
-         tension: TENSION,
+        tension: TENSION,
+        fill: true,
     };
 
     const stealDefense = {
         label: BADGE_TITLES_PLAIN.stealdefense,
-        data: allData.value.map((d, index) => ({
-            x: index,
-            y: (d.hammer_steal_count / d.hammer_end_count) * 100,
+       
+        data: allData.value.map((d, index) => {
+            const previous = [...allData.value].splice(0, index);
+            previous.push({
+                hammer_end_count: d.hammer_end_count,
+                hammer_steal_count: d.hammer_steal_count,
+            });
+
+            const sums = previous.reduce(
+                (all, { hammer_end_count, hammer_steal_count }) => {
+                    return {
+                        hammer_end_count:
+                            all.hammer_end_count + hammer_end_count,
+                        hammer_steal_count:
+                            all.hammer_steal_count + hammer_steal_count,
+                    };
+                },
+                {
+                    hammer_end_count: 0,
+                    hammer_steal_count: 0,
+                }
+            );
+
+            const y =
+                (sums.hammer_steal_count / sums.hammer_end_count) * 100;
+
+            return {
+                 x: index,
+            y,
             data: {
                 start_time: d.start_time,
                 hammer_steal_count: d.hammer_steal_count,
                 hammer_end_count: d.hammer_end_count,
                 average: hammerBlankAvg,
             },
-        })),
+            };
+        }),
         borderColor: "rgba(96, 125, 139, 1)",
         backgroundColor: "rgba(96, 125, 139, 1)",
+        backgroundColor: (context) => setBgGradient(context, "#607d8b"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.stealdefense),
-         tension: TENSION,
+        tension: TENSION,
+        fill: true,
     };
 
     const datasets = {
@@ -523,15 +759,15 @@ const getHammerConversionOverTime = () => {
             datasets: blanks,
             average: hammerBlankAvg,
         },
-        firstend: {
-            datasets: hammerFirstEnd,
-            average: hammerFirstEndAvg,
-        },
+        // firstend: {
+        //     datasets: hammerFirstEnd,
+        //     average: hammerFirstEndAvg,
+        // },
 
-        strategist: {
-            datasets: hammerLastEnd,
-            average: hammerLastEndAvg,
-        },
+        // strategist: {
+        //     datasets: hammerLastEnd,
+        //     average: hammerLastEndAvg,
+        // },
     };
 
     const generateAnnotations = () => {
@@ -553,6 +789,7 @@ const getHammerConversionOverTime = () => {
                     }
                     return true;
                 },
+                display: false,
             };
         });
         return annotations;
@@ -653,7 +890,7 @@ const getHammerConversionOverTime = () => {
                     return `${toTimezone(data.start_time, "MMM DD YYYY")}`;
                 },
             },
-            mode: 'nearest',
+            mode: "x",
             intersect: false,
         },
     };

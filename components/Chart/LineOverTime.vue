@@ -47,9 +47,10 @@ onMounted(async () => {
                     tension: 0,
                     borderWidth: 5,
                 },
-                point: {
-                    pointRadius: 7,
-                },
+                // point: {
+                //     display: false,
+                //     pointRadius: 0,
+                // },
             },
 
             responsive: true,
@@ -62,6 +63,7 @@ onMounted(async () => {
                     display: false,
                     position: "top",
                     labels: {
+                        display: false,
                         usePointStyle: true,
                         pointStyle: "circle",
                         padding: 16,
@@ -73,20 +75,39 @@ onMounted(async () => {
             animation: {
                 animateScale: true,
             },
+           
             scales: {
                 x: {
-                    ticks,
+                    border: {
+                        display: false,
+                    },
+                    grid: {
+                        display: false,
+                        
+                        
+                    },
+                    ticks: {
+                        display: false
+                    }
+                   
                 },
                 y: {
+                    border: {
+                        display: false,
+                    },
                     grid: {
                         display: false,
                     },
                     min: 0,
                     max: 100,
+                    position: 'right',
                     ticks: {
                         callback: (e) => {
+                            if (e !== 0 && e !== 50 && e!== 100) return ''
                             return `${e}%`;
                         },
+                        padding: 0,
+                        // display: false,
                     },
                 },
             },

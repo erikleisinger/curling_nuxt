@@ -75,7 +75,7 @@
 
       
         </TeamAttribute>
-          <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
+          <!-- <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
             {{getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))}}%
         </TeamAttribute>
            <TeamAttribute title="Steal efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_steal_count, team.non_hammer_end_count)" clickable>
@@ -92,7 +92,7 @@
         </TeamAttribute>
                             <TeamAttribute title="Hammer in last"   class="col-5" showPercent :percent="getStatPercent(team.hammer_last_end_count, team.games_played)" clickable>
             {{getStatPercent(team.hammer_last_end_count, team.games_played)}}%
-        </TeamAttribute>
+        </TeamAttribute> -->
     </div>
 </template>
 <script setup>

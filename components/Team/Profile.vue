@@ -58,7 +58,11 @@
             <q-separator class="q-mb-md"/>
 
             <TeamAttributes :teamId="teamId" />
+             <div style="height: 250px; width: calc(100% + 32px); box-sizing: border-box; margin: 0px -16px">
+            <ChartTeamStatsTime :teamId="teamId" :visibleStats="['Hammer efficiency']"/>
+        </div> 
         </div>
+       
     </div>
 </template>
 <style lang="scss" scoped>
