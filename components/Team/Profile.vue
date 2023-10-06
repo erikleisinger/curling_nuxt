@@ -58,7 +58,7 @@
             <q-separator class="q-mb-md"/>
 
             <TeamAttributes :teamId="teamId" />
-             <div style="height: 250px; width: calc(100% + 32px); box-sizing: border-box; margin: 0px -16px">
+             <div style="height: 250px; width: calc(100%  + 16px); box-sizing: border-box; margin: 0px -8px">
             <ChartTeamStatsTime :teamId="teamId" :visibleStats="['Hammer efficiency']"/>
         </div> 
         </div>

@@ -4,128 +4,47 @@
         <ChartLineOverTime
             v-if="!loading"
             v-bind="chartProps"
-            height="calc(100% - 80px)"
+            height="calc(100% - 50px)"
             @chart="setChart"
         >
             <div class="row justify-between chart-options__container no-wrap">
-                <div class="row">
-                    <h1>{{options[currentIndex].title}}</h1> 
-                    <!-- <q-btn
-                        class="q-mr-none q-mr-sm-md"
-                        :round="$q.screen.xs"
-                        :rounded="!$q.screen.xs"
-                        :flat="$q.screen.xs"
-                        icon="visibility"
-                        :color="$q.screen.xs ? 'primary' : 'white'"
-                        text-color="primary"
-                        :label="$q.screen.xs ? '' : 'Show/hide stats'"
-                    >
-                        <q-menu
-                            transition-show="jump-down"
-                            transition-hide="jump-up"
-                        >
-                            <q-list dense style="min-width: 100px">
-                                <q-item v-if="$q.screen.xs">
-                                    <q-item-section class="text-bold"
-                                        >Show/hide stats</q-item-section
-                                    >
-                                </q-item>
-                                <q-separator v-if="$q.screen.xs" />
-                                <q-item
-                                    clickable
-                                    v-ripple
-                                    v-for="(option, index) in options"
-                                    :key="`option-${index}`"
-                                    @click="toggleVisibility(chart, index)"
-                                    :active="
-                                        visibleItems.includes(option.title)
-                                    "
-                                    manual-focus
-                                    :focused="true"
-                                    :disable="updating"
-                                >
-                                    <q-item-section avatar>
-                                        <q-icon
-                                            :color="option.color"
-                                            name="circle"
-                                        ></q-icon>
-                                    </q-item-section>
-
-                                    <q-item-section>{{
-                                        option.title
-                                    }}</q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
-                    </q-btn> -->
-                    <!-- <q-btn
-                        class="q-mr-none q-mr-sm-md"
-                        :round="$q.screen.xs"
-                        :rounded="!$q.screen.xs"
-                        :flat="$q.screen.xs"
-                        icon="date_range"
-                        :color="$q.screen.xs ? 'primary' : 'white'"
-                        text-color="primary"
-                        :label="$q.screen.xs ? '' : 'Time range'"
-                    >
-                        <q-menu
-                            transition-show="jump-down"
-                            transition-hide="jump-up"
-                        >
-                            <q-list dense style="min-width: 100px">
-                                <q-item v-if="$q.screen.xs">
-                                    <q-item-section class="text-bold"
-                                        >Time range</q-item-section
-                                    >
-                                </q-item>
-                                <q-separator v-if="$q.screen.xs" />
-                                <q-item
-                                    clickable
-                                    @click="setFilter('range', 'week', chart)"
-                                    :active="rangeFilter === 'week'"
-                                    :focused="rangeFilter === 'week'"
-                                    manual-focus
-                                    :disable="updating"
-                                >
-                                    <q-item-section>Past week</q-item-section>
-                                </q-item>
-                                <q-item
-                                    clickable
-                                    @click="setFilter('range', 'month', chart)"
-                                    :active="rangeFilter === 'month'"
-                                    :focused="rangeFilter === 'month'"
-                                    manual-focus
-                                    :disable="updating"
-                                >
-                                    <q-item-section>Past Month</q-item-section>
-                                </q-item>
-                                <q-item
-                                    clickable
-                                    @click="setFilter('range', null, chart)"
-                                    :active="rangeFilter === null"
-                                    :focused="rangeFilter === null"
-                                    manual-focus
-                                    :disable="updating"
-                                >
-                                    <q-item-section>All time</q-item-section>
-                                </q-item>
-                            </q-list>
-                        </q-menu>
-                    </q-btn> -->
-                    <!-- <q-checkbox
-                        label="Averages"
-                        class="q-ml-sm q-ml-sm-none"
-                        v-model="showAverages"
-                        dense
-                        @update:model-value="
-                            toggleAverageVisibility($event, chart)
-                        "
-                    /> -->
+                <div class="row full-width">
+                    <div class="row justify-between full-width">
+                        <q-btn
+                            icon="chevron_left"
+                            flat
+                            round
+                            size="sm"
+                            @click="changeStat(-1)"
+                            :style="{
+                                visibility:
+                                    currentIndex === 0 ? 'hidden' : 'visible',
+                            }"
+                        />
+                        <div class="column">
+                            <h1 class="text-md text-bold">
+                                {{ options[currentIndex].title }}
+                            </h1>
+                        </div>
+                        <q-btn
+                            icon="chevron_right"
+                            flat
+                            round
+                            size="sm"
+                            @click="changeStat(+1)"
+                            :style="{
+                                visibility:
+                                    currentIndex >= options.length - 1
+                                        ? 'hidden'
+                                        : 'visible',
+                            }"
+                        />
+                    </div>
                 </div>
-             
             </div>
-      
         </ChartLineOverTime>
+   <!-- <ChartTeamStatsTimeEfficiency :teamId="teamId"/> -->
+   
     </div>
 </template>
 <style lang="scss" scoped>
@@ -150,66 +69,39 @@ import {
     BADGE_TITLE_CONVERT,
 } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
-import {useDebounceFn, useSwipe} from '@vueuse/core'
-// import { hammer_blank_count } from "tests/__mock__/team";
+import TeamStats from '@/store/models/team-stats'
+
+const {setBgGradient} = useColor();
 
 const props = defineProps({
     teamId: Number,
     visibleStats: Array,
 });
 
-const linechart = ref(null)
+const linechart = ref(null);
 
-const currentIndex = ref(0)
-const swipeStart = ref(null)
+const currentIndex = ref(0);
+const swipeStart = ref(null);
 
-
-
-const {isSwiping, direction, lengthX} = useSwipe(linechart, {
-    onSwipeStart: (e) => {
-        console.log('swipe starts: ', e)
-        swipeStart.value = dayjs().unix();
-        console.log(swipeStart.value)
-    },
-    onSwipeEnd: useDebounceFn((e) => {
-      console.log('swipe end: ', lengthX.value)
-      const swipeDuration = dayjs().unix() - swipeStart.value;
-    //   if (swipeDuration > 0 || Math.abs(lengthX.value) < 75) return;
- if (direction.value === 'right') {
-            if (currentIndex.value === 0) return;
-            setActiveStat(currentIndex.value, currentIndex.value -1)
-            currentIndex.value -=1;
-            visibleItems.value = [options[currentIndex.value - 1].title]
-            
-        }
-        if (direction.value === 'left') {
-            if (currentIndex.value === options.length - 1) return;
-             setActiveStat(currentIndex.value, currentIndex.value +1)
-            currentIndex.value +=1;
-               visibleItems.value = [options[currentIndex.value + 1].title]
-        }
-    })
-});
+const changeStat = (inc) => {
+    if (
+        currentIndex.value + inc < 0 ||
+        currentIndex.value + inc > options.length - 1
+    )
+        return;
+    setActiveStat(currentIndex.value, currentIndex.value + inc);
+    currentIndex.value += inc;
+    visibleItems.value = [options[currentIndex.value + inc].title];
+};
 
 const setActiveStat = (currentIndex, newIndex) => {
-    console.log('old: ', currentIndex);
-    console.log('new: ', newIndex)
-  
-     chart.setDatasetVisibility(newIndex, true);
+    chart.setDatasetVisibility(newIndex, true);
     chart.setDatasetVisibility(currentIndex, false);
-    
+
     chart.update("active");
-
-  
-
-}
+};
 
 
-watch(isSwiping, () => {
-   
-
-  
-})
 
 const emit = defineEmits(["close"]);
 
@@ -331,6 +223,15 @@ const getTeamStats = async () => {
             : getRange(rangeFilter.value)?.range_end_param,
         limit_param: limitFilter.value,
     });
+
+    console.log(data)
+    data.forEach((stat) => {
+useRepo(TeamStats).save({
+    ...stat,
+    team_id: props.teamId
+})
+    })
+    
     allData.value = data.reverse();
 };
 
@@ -378,27 +279,7 @@ const setFilter = async (filterType, value, chart) => {
     updating.value = false;
 };
 
-function getGradient(ctx, chartArea, color) {
-    let gradient = ctx.createLinearGradient(
-        0,
-        chartArea.bottom,
-        0,
-        chartArea.top
-    );
-    gradient.addColorStop(1, color);
-    gradient.addColorStop(0.7, `${color}b3`);
-    gradient.addColorStop(0.5, `${color}80`);
-    gradient.addColorStop(0, `${color}00`);
-    return gradient;
-}
-const setBgGradient = (context, color) => {
-    const chart = context.chart;
-    const { ctx, chartArea } = chart;
 
-    // This case happens on initial chart load
-    if (!chartArea) return;
-    return getGradient(ctx, chartArea, color);
-};
 
 const getHammerConversionOverTime = () => {
     const { format, toTimezone } = useTime();
@@ -432,21 +313,29 @@ const getHammerConversionOverTime = () => {
     const conversions = {
         label: BADGE_TITLES_PLAIN.efficiency,
 
-         data: allData.value.map((d, index) => {
+        data: allData.value.map((d, index) => {
             const previous = [...allData.value].splice(0, index);
             previous.push({
                 hammer_end_count: d.hammer_end_count,
                 hammer_conversion_count: d.hammer_conversion_count,
-                hammer_blank_count: d.hammer_blank_count
+                hammer_blank_count: d.hammer_blank_count,
             });
 
             const sums = previous.reduce(
-                (all, { hammer_end_count, hammer_conversion_count, hammer_blank_count }) => {
+                (
+                    all,
+                    {
+                        hammer_end_count,
+                        hammer_conversion_count,
+                        hammer_blank_count,
+                    }
+                ) => {
                     return {
                         hammer_end_count:
                             all.hammer_end_count + hammer_end_count,
                         hammer_conversion_count:
-                            all.hammer_conversion_count + (hammer_conversion_count - hammer_blank_count),
+                            all.hammer_conversion_count +
+                            (hammer_conversion_count - hammer_blank_count),
                     };
                 },
                 {
@@ -458,19 +347,28 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.hammer_conversion_count / sums.hammer_end_count) * 100;
 
-                const all = previous.map(({hammer_conversion_count, hammer_end_count, hammer_blank_count}) => (hammer_conversion_count / (hammer_end_count - hammer_blank_count)) * 100)
-                const max = Math.max(...all)
+            const all = previous.map(
+                ({
+                    hammer_conversion_count,
+                    hammer_end_count,
+                    hammer_blank_count,
+                }) =>
+                    (hammer_conversion_count /
+                        (hammer_end_count - hammer_blank_count)) *
+                    100
+            );
+            const max = Math.max(...all);
 
             return {
-               x: index,
-            y,
-            data: {
-                start_time: d.start_time,
-                hammer_conversion_count: d.hammer_conversion_count,
-                hammer_end_count: d.hammer_end_count,
-                average: hammerConversionAvg,
-                max,
-            },
+                x: index,
+                y,
+                data: {
+                    start_time: d.start_time,
+                    hammer_conversion_count: d.hammer_conversion_count,
+                    hammer_end_count: d.hammer_end_count,
+                    average: hammerConversionAvg,
+                    max,
+                },
             };
         }),
         backgroundColor: "rgba(156, 39, 176, 1)",
@@ -479,7 +377,7 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.efficiency),
         tension: TENSION,
         fill: true,
-           pointStyle: false,
+        pointStyle: false,
     };
 
     const steals = {
@@ -509,19 +407,22 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.non_hammer_steal_count / sums.non_hammer_end_count) * 100;
 
-                const all = previous.map(({non_hammer_steal_count, non_hammer_end_count}) => (non_hammer_steal_count / non_hammer_end_count) * 100)
-                const max = Math.max(...all)
+            const all = previous.map(
+                ({ non_hammer_steal_count, non_hammer_end_count }) =>
+                    (non_hammer_steal_count / non_hammer_end_count) * 100
+            );
+            const max = Math.max(...all);
 
             return {
-               x: index,
-            y,
-            data: {
-                start_time: d.start_time,
-                hammer_steal_count: d.hammer_steal_count,
-                hammer_end_count: d.hammer_end_count,
-                average: nonHammerStealAvg,
-                max,
-            },
+                x: index,
+                y,
+                data: {
+                    start_time: d.start_time,
+                    hammer_steal_count: d.hammer_steal_count,
+                    hammer_end_count: d.hammer_end_count,
+                    average: nonHammerStealAvg,
+                    max,
+                },
             };
         }),
         borderColor: "rgba(244, 67, 54, 1)",
@@ -529,7 +430,7 @@ const getHammerConversionOverTime = () => {
         backgroundColor: (context) => setBgGradient(context, "#f44336"),
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.bandit),
         tension: TENSION,
-           pointStyle: false,
+        pointStyle: false,
         fill: true,
     };
 
@@ -560,8 +461,11 @@ const getHammerConversionOverTime = () => {
             const y =
                 (sums.non_hammer_force_count / sums.non_hammer_end_count) * 100;
 
-                     const all = previous.map(({non_hammer_force_count, non_hammer_end_count}) => (non_hammer_force_count / non_hammer_end_count) * 100)
-                const max = Math.max(...all)
+            const all = previous.map(
+                ({ non_hammer_force_count, non_hammer_end_count }) =>
+                    (non_hammer_force_count / non_hammer_end_count) * 100
+            );
+            const max = Math.max(...all);
 
             return {
                 x: index,
@@ -610,21 +514,23 @@ const getHammerConversionOverTime = () => {
                 }
             );
 
-            const y =
-                (sums.hammer_blank_count / sums.hammer_end_count) * 100;
-                    const all = previous.map(({hammer_blank_count, hammer_end_count}) => (hammer_blank_count / hammer_end_count) * 100)
-                const max = Math.max(...all)
+            const y = (sums.hammer_blank_count / sums.hammer_end_count) * 100;
+            const all = previous.map(
+                ({ hammer_blank_count, hammer_end_count }) =>
+                    (hammer_blank_count / hammer_end_count) * 100
+            );
+            const max = Math.max(...all);
 
             return {
-                 x: index,
-            y,
-            data: {
-                start_time: d.start_time,
-                hammer_blank_count: d.hammer_blank_count,
-                hammer_end_count: d.hammer_end_count,
-                average: hammerBlankAvg,
-                max,
-            },
+                x: index,
+                y,
+                data: {
+                    start_time: d.start_time,
+                    hammer_blank_count: d.hammer_blank_count,
+                    hammer_end_count: d.hammer_end_count,
+                    average: hammerBlankAvg,
+                    max,
+                },
             };
         }),
         borderColor: "rgba(0, 131, 143, 1)",
@@ -633,7 +539,7 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.minimalist),
         tension: TENSION,
         fill: true,
-        pointStyle: false
+        pointStyle: false,
     };
 
     const hammerFirstEnd = {
@@ -658,7 +564,7 @@ const getHammerConversionOverTime = () => {
                 },
             ];
         }, []),
-       
+
         borderColor: "rgba(255, 235, 59, 1)",
         backgroundColor: "rgba(255, 235, 59, 1)",
         backgroundColor: (context) => setBgGradient(context, "#ffeb3b"),
@@ -695,12 +601,12 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.strategist),
         tension: TENSION,
         fill: true,
-         pointStyle: false
+        pointStyle: false,
     };
 
     const stealDefense = {
         label: BADGE_TITLES_PLAIN.stealdefense,
-       
+
         data: allData.value.map((d, index) => {
             const previous = [...allData.value].splice(0, index);
             previous.push({
@@ -723,22 +629,24 @@ const getHammerConversionOverTime = () => {
                 }
             );
 
-            const y =
-                (sums.hammer_steal_count / sums.hammer_end_count) * 100;
-                  (sums.hammer_blank_count / sums.hammer_end_count) * 100;
-                    const all = previous.map(({hammer_steal_count, hammer_end_count}) => (hammer_steal_count / hammer_end_count) * 100)
-                const max = Math.max(...all)
+            const y = (sums.hammer_steal_count / sums.hammer_end_count) * 100;
+            (sums.hammer_blank_count / sums.hammer_end_count) * 100;
+            const all = previous.map(
+                ({ hammer_steal_count, hammer_end_count }) =>
+                    (hammer_steal_count / hammer_end_count) * 100
+            );
+            const max = Math.max(...all);
 
             return {
-                 x: index,
-            y,
-            data: {
-                start_time: d.start_time,
-                hammer_steal_count: d.hammer_steal_count,
-                hammer_end_count: d.hammer_end_count,
-                average: hammerBlankAvg,
-                max,
-            },
+                x: index,
+                y,
+                data: {
+                    start_time: d.start_time,
+                    hammer_steal_count: d.hammer_steal_count,
+                    hammer_end_count: d.hammer_end_count,
+                    average: hammerBlankAvg,
+                    max,
+                },
             };
         }),
         borderColor: "rgba(96, 125, 139, 1)",
@@ -747,7 +655,7 @@ const getHammerConversionOverTime = () => {
         hidden: !visibleItems.value.includes(BADGE_TITLES_PLAIN.stealdefense),
         tension: TENSION,
         fill: true,
-        pointStyle: false
+        pointStyle: false,
     };
 
     const datasets = {
@@ -786,61 +694,59 @@ const getHammerConversionOverTime = () => {
         const { getColor } = useColor();
         const annotations = {};
         Object.keys(datasets).forEach((key, index) => {
-            annotations[key] = 
-                {
-                
+            annotations[key] = {
                 yMin: datasets[key].average,
                 yMax: datasets[key].average,
                 borderColor: getColor(BADGE_COLORS[key]),
                 opacity: 0.1,
                 borderWidth: 2,
-                
+
                 type: "label",
                 callout: {
                     display: true,
                 },
                 content: `${datasets[key].average.toFixed(1)}%`,
                 position: {
-                    x: 'end',
-                    y:'end',
-
+                    x: "end",
+                    y: "end",
                 },
                 xValue: datasets[key].datasets.data.length - 1,
                 yValue: datasets[key].average,
                 yAdjust: (e, e1, e2) => {
-                    console.log(datasets[key].datasets.label, datasets[key].datasets.data[0].data.max, datasets[key].average)
-                    return datasets[key].average < 30 ? -70 : 70
+                    console.log(
+                        datasets[key].datasets.label,
+                        datasets[key].datasets.data[0].data.max,
+                        datasets[key].average
+                    );
+                    return datasets[key].average < 30 ? -70 : 70;
                 },
                 xAdjust: -20,
-              
+
                 display: (e) => {
-                    console.log(datasets[key])
+                    console.log(datasets[key]);
                     if (e.chart) {
                         return e.chart.getDatasetMeta(index)?.visible;
                     }
-                }
-                };
-                // annotations[`${key}-max`] = 
-               
-           
-        //    {
-        //         yMin: datasets[key].datasets.data[0].data.max,
-        //         yMax: datasets[key].datasets.data[0].data.max,
-        //         borderColor: 'red',
-        //         opacity: 0.1,
-        //         borderWidth: 2,
-        //         borderDash: [6, 6],
-        //         type: "line",
-        //         display: (e) => {
-        //             console.log(datasets[key].datasets.data[0].data.max)
-        //             if (e.chart) {
-        //                 return e.chart.getDatasetMeta(index)?.visible;
-        //             }
-        //         },
-               
-        //     }
-            
-           
+                },
+            };
+            // annotations[`${key}-max`] =
+
+            //    {
+            //         yMin: datasets[key].datasets.data[0].data.max,
+            //         yMax: datasets[key].datasets.data[0].data.max,
+            //         borderColor: 'red',
+            //         opacity: 0.1,
+            //         borderWidth: 2,
+            //         borderDash: [6, 6],
+            //         type: "line",
+            //         display: (e) => {
+            //             console.log(datasets[key].datasets.data[0].data.max)
+            //             if (e.chart) {
+            //                 return e.chart.getDatasetMeta(index)?.visible;
+            //             }
+            //         },
+
+            //     }
         });
         return annotations;
     };
