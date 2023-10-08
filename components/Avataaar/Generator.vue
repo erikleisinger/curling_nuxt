@@ -122,18 +122,29 @@
                 <q-btn
                 class="q-ma-sm col-grow q-mb-md"
                     @click="randomize"
-                    :disable="readOnly"
+                    :disable="readOnly || saving"
                     color="deep-purple"
                     >Random</q-btn
                 >
-                  <q-btn
+                
+       </div>
+         <div class="col-12 row justify-between">
+               <q-btn
+                class="col-grow q-ma-sm q-mb-md"
+                    @click="emit('close')"
+                    :disable="readOnly || saving"
+                    
+                    >Discard</q-btn
+                >
+         <q-btn
                 class="col-grow q-ma-sm q-mb-md"
                     @click="handleSave"
-                    :disable="readOnly"
+                    :disable="readOnly || saving"
                     color="positive"
+                    :loading="saving"
                     >Save</q-btn
                 >
-       </div>
+         </div>
 
 </div>
 </template>
@@ -143,6 +154,7 @@
     .avatar__container {
         padding: var(--space-xl);
         padding-bottom: var(--space-xs);
+        padding-top: 0px;
         height: max-content;
         @include sm {
             margin-top: 20vh;
@@ -150,11 +162,10 @@
         }
         margin: auto;
         position: sticky;
-        top: 48px;
+        top: 0;
         background-color:white;
 
         z-index: 1;
-        background-color: rgba(0,0,0,0.7);
 
 .avatar__wrap {
     width: min(275px, 50vw);
@@ -164,6 +175,7 @@
 
 </style>
 <script setup lang="ts">
+import { useUserStore } from "@/store/user";
 import { mouthTypes } from "@/assets/avataaars/mouth";
 import { eyeTypes } from "@/assets/avataaars/eyes";
 import { eyebrowTypes } from "@/assets/avataaars/eyebrows";
@@ -181,30 +193,25 @@ import Player from "@/types/player";
 import Json from "@/types/json";
 
 import { usePlayerStore } from "@/store/players";
-import { useUserStore } from "@/store/user";
 
 import { useElementSize, useDebounceFn } from "@vueuse/core";
 
 const props = defineProps<{
     modelValue: Object | String,
-    onSave: Function,
     readOnly?: boolean
 }>();
 
-const handleSave = () => {
-    if (props.onSave) props.onSave(avatar.value)
+const saving = ref(false)
+const handleSave = async () => {
+    saving.value = true;
+   await useUserStore().updateUserAvatar(avatar.value)
+   saving.value = false;
+   emit('close')
 }
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'close'])
 
-const avatar = computed({
-    get() {
-        return props.modelValue;
-    },
-    set(val) {
-        emit('update:modelValue',val)
-    }
-})
+const avatar = ref({...props.modelValue});
 
 function getRandomChoice(items: object) {
     const itemsLength = Object.entries(items).length;

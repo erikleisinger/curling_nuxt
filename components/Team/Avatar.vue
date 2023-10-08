@@ -222,6 +222,7 @@ const {isLoading, data: avatarUrl} = useQuery({
     enabled: enabled.value,
     refetchOnWindowFocus: false,
     cacheTime: Infinity,
+    staleTime: Infinity
 })
 
 

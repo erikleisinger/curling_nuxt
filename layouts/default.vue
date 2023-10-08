@@ -84,14 +84,16 @@
                 </q-item>
               
                 <q-item clickable v-ripple color="primary" to="/profile">
-                    <q-item-section avatar>
-                        <!-- <div style="height: 2.5em; width: 2.5em">
-                            <Avataaar
-                                v-bind="avatar ? parseAvatar(avatar) : {}"
-                            />
-                        </div> -->
+                    <q-item-section avatar   class="row justify-center items-center">
+                        <q-icon name="person" size="1.5em" class="q-mb-xs" />
                     </q-item-section>
                     <q-item-section>My profile</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple color="primary" @click="logout">
+                    <q-item-section avatar   class="row justify-center items-center">
+                        <q-icon name="logout" size="1.5em" class="q-mb-xs" />
+                    </q-item-section>
+                    <q-item-section>Logout</q-item-section>
                 </q-item>
             </q-list>
         </q-drawer>
@@ -174,7 +176,7 @@ import { useDialogStore } from "@/store/dialog";
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
-
+const {logout} = useSession();
 const { getColor } = useColor();
 
 const $q = useQuasar();

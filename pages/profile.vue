@@ -1,20 +1,21 @@
 <template>
 <NuxtLayout>
 <div class="profile__scroll">
-    <ProfileCard :avatar="JSON.stringify(user.avatar)" v-if="user?.id">
+    <!-- <ProfileCard :avatar="JSON.stringify(user.avatar)" v-if="user?.id">
            {{ user.first_name }} {{ user.last_name }}
         <template v-slot:subtitle> @{{ user.username }} </template>
-        <template v-slot:append>
-            <q-btn
-                flat
-                round
-                icon="logout"
-                @click="logout"
-                color="deep-purple"
-            />
-        </template>
-    </ProfileCard>
-    <nav class="bg-white profile__nav">
+   
+    </ProfileCard> -->
+    <header class="column items-center" ref="header" v-if="!editing">
+        <div class="avatar__container">
+        <Avataaar v-bind="user.avatar" v-if="user?.id"/>
+        </div>
+        <div class="name__container">
+            <h1 class="text-lg text-center">{{user.first_name}} {{user.last_name}}</h1>
+            <h2 class="text-sm text-center">@{{user.username}}</h2>
+        </div>
+    </header>
+    <!-- <nav class="bg-white profile__nav">
         <q-tabs
             v-model="tab"
             inline-label
@@ -43,27 +44,37 @@
                 :label="TAB_NAMES.SETTINGS.label"
             />
         </q-tabs>
-    </nav>
+    </nav> -->
     <main
-        class="main-content__wrap settings"
-        v-if="tab === TAB_NAMES.SETTINGS.value"
+        class="main-content__wrap settings" v-if="!editing"
+      
     >
         <section name="timezone" class="section">
-            <label for="timezone" class="label">Timezone</label>
-            <div id="timezone">{{ user.timezone }}</div>
+            <!-- <label for="timezone" class="label">Timezone</label>
+            <div id="timezone">{{ user.timezone }}</div> -->
+             <q-btn class="q-mt-lg" color="primary" @click="editing = true">Edit avatar</q-btn>
         </section>
     </main>
 
         
-        <AvataaarGenerator v-else-if="tab === TAB_NAMES.PLAYER.value && user.id" role="main" v-model="user.avatar" :onSave="updateAvatar"/>
+        <AvataaarGenerator role="main" v-model="user.avatar"  v-if="editing" @close="editing = false"/>
 
 </div>
 </NuxtLayout>
 </template>
 <style lang="scss" scoped>
+.avatar__container {
+    width: 10em;
+}
+.name__container {
+    margin-bottom: var(--space-md);
+    margin-top: var(--space-sm);
+}
 .profile__scroll {
     height: 100%;
     overflow: auto;
+    display: grid;
+    grid-template-rows: auto 1fr;
     .profile__nav {
         position: sticky;
         top: 0;
@@ -82,6 +93,11 @@
 }
 
 .main-content__wrap {
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: $pretty-shadow;
+
+    border: 1px solid rgba(0,0,0,0.1);
     &.settings {
         padding: var(--space-sm);
     }
@@ -118,8 +134,10 @@
 }
 </style>
 <script setup>
-import { useUserStore } from "@/store/user";
+
 import {parseAvatar} from '@/utils/avatar'
+import Player from '@/store/models/player'
+
 
 const { logout } = useSession();
 
@@ -135,38 +153,20 @@ const TAB_NAMES = ref({
 });
 
 const tab = ref("player");
+const editing = ref(false)
 
-const store = useUserStore();
 
-const user = ref({})
 
-const getUser = () => {
-const {
-        id,
-        timezone,
-        username,
-        player,
-        first_name,
-        last_name,
-        avatar,
-    } = store;
 
-    user.value = {
-        id,
-        timezone,
-        username,
-        player,
-        first_name,
-        last_name,
-        avatar: avatar ? parseAvatar(avatar) : {},
-    }
-}
 
-onBeforeMount(() => {
-    getUser();
-})
+const {user: userId} = useUser()
+
+const user = computed(() => useRepo(Player).where('id', userId.value).first())
+
 
 const { toTimezone } = useTime();
+
+
 
 </script>
 <script>

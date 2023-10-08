@@ -93,7 +93,6 @@ export const useUserStore = defineStore("user", {
                 state: 'pending',
                 text: `Updating avatar...`,
             })
-            console.log(newAvatar, this.id)
 
             const client = useSupabaseClient();
             const {errors} = await client.from('profiles').update({avatar}).eq('id', this.id)
@@ -108,7 +107,7 @@ export const useUserStore = defineStore("user", {
                     state: 'completed',
                     text: `Avatar updated!`
                 })
-                await this.getCurrentUser();
+                useRepo(Player).where('id', this.id).update({avatar})
             }
 
         }
