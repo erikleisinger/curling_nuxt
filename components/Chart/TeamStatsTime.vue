@@ -4,7 +4,8 @@
 
         <div class="row justify-between no-wrap q-mb-md">
             <div class="row full-width">
-                <div class="row justify-between full-width">
+                <div class="row justify-between full-width items-center">
+                    <div>
                     <q-btn
                         icon="chevron_left"
                         flat
@@ -16,12 +17,14 @@
                                 currentIndex === 0 ? 'hidden' : 'visible',
                         }"
                     />
+                    </div>
                     <div class="column">
                         <h1 class="text-md text-bold text-center">
                             {{ options[currentIndex].title }}
                         </h1>
                         <div class="text-sm text-center">{{options[currentIndex].description}}</div>
                     </div>
+                    <div>
                     <q-btn
                         icon="chevron_right"
                         flat
@@ -35,28 +38,29 @@
                                     : 'visible',
                         }"
                     />
+                    </div>
                 </div>
             </div>
         </div>
         <div v-if="!loading">
             <ChartTeamStatsTimeEfficiency
                 :teamId="teamId"
-                v-if="currentIndex === 0"
+                v-show="currentIndex === 0"
                 height="200px"
             />
             <ChartTeamStatsTimeSteal
                 :teamId="teamId"
-                v-if="currentIndex === 1"
+                v-show="currentIndex === 1"
                   height="200px"
             />
             <ChartTeamStatsTimeForce
                 :teamId="teamId"
-                v-else-if="currentIndex === 2"
+                v-show="currentIndex === 2"
                   height="200px"
             />
             <ChartTeamStatsTimeStealDefense
                 :teamId="teamId"
-                v-else-if="currentIndex === 3"
+                v-show="currentIndex === 3"
                   height="200px"
             />
         </div>
@@ -84,6 +88,7 @@ import {
     BADGE_TITLE_CONVERT,
     BADGE_DESCRIPTIONS_PLAIN
 } from "@/constants/badges";
+import {useDebounceFn} from '@vueuse/core'
 import TeamStats from "@/store/models/team-stats";
 
 const props = defineProps({
@@ -92,6 +97,8 @@ const props = defineProps({
 });
 
 const currentIndex = ref(0);
+
+
 
 const changeStat = (inc) => {
     if (

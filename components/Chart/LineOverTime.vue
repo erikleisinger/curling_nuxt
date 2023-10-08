@@ -85,6 +85,7 @@ onMounted(async () => {
 
             animation: {
                 animateScale: true,
+
             },
            
             scales: {

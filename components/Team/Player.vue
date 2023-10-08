@@ -32,11 +32,11 @@
 
             <!-- Player position -->
 
-            <div class="text-sm player-position col-auto">
-                <span v-if="!player.status" class="text-blue">
+            <div class="text-sm player-position col-auto text-grey-7" >
+                <span v-if="!player.status" >
                 {{ positions[player.position]?.name ?? "Member" }}
                 </span>
-                <span v-else-if="player.status === 'pending'" class="text-grey-7">
+                <span v-else-if="player.status === 'pending'">
                 {{create ? 'Invitation pending' : 'Invited'}}
                 </span>
             </div>

@@ -310,11 +310,12 @@
 $avatar-dimension: 7em;
 
 .overview__container {
-    padding: var(--space-md);
+    // padding: var(--space-md);
     padding-top: 0px;
     width: 100%;
     height: fit-content;
     position: relative;
+    background-color: rgba(0,0,0,0.03);
   .stats-time__container {
     position: fixed;
     top: 65px;
@@ -359,6 +360,9 @@ $avatar-dimension: 7em;
         display: flex;
         flex-direction: column;
         width: 100%;
+        background-color: white;
+        padding: var(--space-md);
+        padding-bottom: 0px;
     }
     .team-view-options__container {
         margin-top: var(--space-sm);
