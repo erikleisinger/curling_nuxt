@@ -179,7 +179,9 @@
 </style>
 <script setup>
 import { useStorageStore } from "@/store/storage";
-import { onClickOutside, useElementHover } from "@vueuse/core";
+import { onClickOutside, useElementHover, useImage } from "@vueuse/core";
+import { useQuery} from '@tanstack/vue-query'
+
 import Team from "@/store/models/team";
 const props = defineProps({
     animateRing: Boolean,
@@ -196,7 +198,24 @@ const emit = defineEmits(["edit", "invite", "update"]);
 
 const team = computed(
     () => useRepo(Team).where("id", props.teamId).first() ?? {}
+    
 );
+
+const teamAvatarKey = computed(() => team.value.avatar_url);
+
+const enabled = computed(() => team.value.avatar_type === 'upload' && !!team.value.avatar_url)
+const {isLoading, data: avatarUrl} = useQuery({
+    queryKey: ['avatar', 'team', teamAvatarKey],
+    queryFn:  async () => {
+        const {data, error} = await useSupabaseClient().storage.from("Avatars").download(team.value.avatar_url)
+        return URL.createObjectURL(data);
+    },
+    enabled: enabled.value,
+    refetchOnWindowFocus: false,
+    cacheTime: Infinity,
+})
+
+
 
 const storage = useStorageStore();
 
@@ -204,7 +223,7 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-const avatarUrl = computed(() => storage.teamAvatars[team.value.id]);
+// const avatarUrl = computed(() => data?.data);
 
 const avatarType = computed(() => {
     if (team.value.avatar_type === "upload") {
@@ -213,29 +232,35 @@ const avatarType = computed(() => {
     return team.value.avatar_type ?? "avataaar";
 });
 
-const fetchAvatar = async (path) => {
-    storage.getTeamAvatar(team.value.id, path);
-};
+// const fetchAvatar = async (path) => {
+//     console.log('fetching avatar: ', path)
+//     storage.getTeamAvatar(team.value.id, path);
+// };
 
 const avatar = ref(null);
 const loaded = ref(true);
 
-const getAvatar = async () => {
-    if (team.value.avatar_type === "upload") {
-        if (team.value.avatar_url) {
-            fetchAvatar(team.value.avatar_url);
-        } else {
-            team.value.avatar_type = "avataaar";
-            avatar.value = {};
-        }
-    } else {
-        avatar.value = team.value.team_avatar;
-    }
-};
+// const getAvatar = async () => {
+//     if (team.value.avatar_type === "upload") {
+//         if (team.value.avatar_url) {
+//             fetchAvatar(team.value.avatar_url);
+//         } else {
+//             team.value.avatar_type = "avataaar";
+//             avatar.value = {};
+//         }
+//     } else {
+//         avatar.value = team.value.team_avatar;
+//     }
+// };
 
-onMounted(() => {
-    getAvatar();
-});
+// onMounted(() => {
+//     getAvatar();
+// });
+
+// watch(() => team.value.avatar_url, () => {
+//     console.log('team avatar changed: ', team.value.avatar_url)
+//     getAvatar();
+// }, {deep: true})
 
 const innerContainer = ref(null);
 onClickOutside(innerContainer, () => (visible.value = false));

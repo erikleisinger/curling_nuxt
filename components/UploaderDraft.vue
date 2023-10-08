@@ -80,32 +80,32 @@ const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
     if (!files.value || files.value.length === 0) return;
 
-    const notStore = useNotificationStore();
-    const notId = notStore.addNotification({
-        state: "pending",
-        text: `Uploading avatar...`,
-        timeout: 10000,
+    // const notStore = useNotificationStore();
+    // const notId = notStore.addNotification({
+    //     state: "pending",
+    //     text: `Uploading avatar...`,
+    //     timeout: 10000,
 
-    });
+    // });
     try {
         const {path, file} = await createFile(evt)
         if (props.resourceType === "team") {
-            const {updates} = await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
-            useRepo(Team).where('id', props.resourceId).update(updates)
+            const updates = await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
+            useRepo(Team).where('id', props.resourceId).update({...updates, avatar_type: 'upload'})
         }
-        notStore.updateNotification(notId, {
-            state: "completed",
-            text: "Avatar updated!",
-            timeout: 3000,
-        });
-    } catch (e) {
-        notStore.updateNotification(notId, {
-            state: "failed",
-            text: `Error uploading avatar: ${e.message} (code ${
-                e?.code ?? "X"
-            })`,
-            timeout: 10000,
-        });
+        // notStore.updateNotification(notId, {
+        //     state: "completed",
+        //     text: "Avatar updated!",
+        //     timeout: 3000,
+        // });
+    } catch  {
+        // notStore.updateNotification(notId, {
+        //     state: "failed",
+        //     text: `Error uploading avatar: ${e.message} (code ${
+        //         e?.code ?? "X"
+        //     })`,
+        //     timeout: 10000,
+        // });
     }
 
     uploading.value = false;

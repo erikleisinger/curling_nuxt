@@ -430,7 +430,9 @@ export const useTeamStore = defineStore("team", {
                     state: "completed",
                     text: `Avatar uploaded!`,
                 });
+    
                 const [updates] = data;
+          
                 return updates;
             }
         },

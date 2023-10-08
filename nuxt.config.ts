@@ -85,6 +85,9 @@ export default defineNuxtConfig({
         'nuxt-svgo'
         // '@vueuse/components'
     ],
+    image: {
+        inject: true,
+    },
     pwa: {
         registerType: 'autoUpdate',
         manifest: {

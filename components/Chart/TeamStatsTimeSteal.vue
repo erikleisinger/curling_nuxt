@@ -20,7 +20,7 @@ const { setBgGradient } = useColor();
 const stats = computed(() =>
     useRepo(TeamStats)
         .where("team_id", props.teamId)
-        .where("game_id", (val) => val > 0)
+        .where("game_id", (val) => !!val)
         .orderBy('start_time', 'asc')
         .get()
 );
@@ -40,55 +40,52 @@ const chartData = () => {
         .where("game_id", 0)
         .first();
 
-
     const hammerConversionAvg =
-        (team.hammer_conversion_count / team.hammer_end_count) * 100;
+        (team.non_hammer_steal_count / team.non_hammer_end_count) * 100;
 
     const conversions = {
-        label: BADGE_TITLES_PLAIN.efficiency,
+        label: BADGE_TITLES_PLAIN.bulwark,
 
         data: stats.value.map((d, index) => {
             const previous = [...stats.value].splice(0, index);
             previous.push({
-                hammer_end_count: d.hammer_end_count,
-                hammer_conversion_count: d.hammer_conversion_count,
-                hammer_blank_count: d.hammer_blank_count,
+                non_hammer_end_count: d.non_hammer_end_count,
+                non_hammer_steal_count: d.non_hammer_steal_count,
             });
 
             const sums = previous.reduce(
                 (
                     all,
                     {
-                        hammer_end_count,
-                        hammer_conversion_count,
-                        hammer_blank_count,
+                        non_hammer_end_count,
+                        non_hammer_steal_count,
                     }
                 ) => {
                     return {
-                        hammer_end_count:
-                            all.hammer_end_count + hammer_end_count,
-                        hammer_conversion_count:
-                            all.hammer_conversion_count +
-                            (hammer_conversion_count - hammer_blank_count),
+                        non_hammer_end_count:
+                            all.non_hammer_end_count + non_hammer_end_count,
+                        non_hammer_steal_count:
+                            all.non_hammer_steal_count +
+                            non_hammer_steal_count
                     };
                 },
                 {
-                    hammer_end_count: 0,
-                    hammer_conversion_count: 0,
+                    non_hammer_end_count: 0,
+                    non_hammer_steal_count: 0,
                 }
             );
 
             const y =
-                (sums.hammer_conversion_count / sums.hammer_end_count) * 100;
+                (sums.non_hammer_steal_count / sums.non_hammer_end_count) * 100;
 
             const all = previous.map(
                 ({
-                    hammer_conversion_count,
-                    hammer_end_count,
-                    hammer_blank_count,
+                    non_hammer_steal_count,
+                    non_hammer_end_count,
+                 
                 }) =>
-                    (hammer_conversion_count /
-                        (hammer_end_count - hammer_blank_count)) *
+                    (non_hammer_steal_count /
+                        non_hammer_end_count) *
                     100
             );
             const max = Math.max(...all);
@@ -98,16 +95,17 @@ const chartData = () => {
                 y,
                 data: {
                     start_time: d.start_time,
-                    hammer_conversion_count: d.hammer_conversion_count,
-                    hammer_end_count: d.hammer_end_count,
+                    non_hammer_steal_count: d.non_hammer_steal_count,
+                    non_hammer_end_count: d.non_hammer_end_count,
                     average: hammerConversionAvg,
                     max,
                 },
             };
         }),
-        backgroundColor: "rgba(156, 39, 176, 1)",
-        borderColor: "rgba(156, 39, 176, 1)",
-        backgroundColor: (context) => setBgGradient(context, "#9c27b0"),
+
+        borderColor: "rgba(244, 67, 54, 1)",
+     
+        backgroundColor: (context) => setBgGradient(context, "#f44336"),
         tension: 0.4,
         fill: true,
         pointStyle: false,
@@ -124,7 +122,7 @@ const chartData = () => {
         const { getColor } = useColor();
         const annotations = {
 
-                borderColor: getColor(BADGE_COLORS.efficiency),
+                borderColor: getColor(BADGE_COLORS.bulwark),
                 opacity: 0.1,
                 borderWidth: 2,
 
@@ -132,15 +130,15 @@ const chartData = () => {
                 callout: {
                     display: true,
                 },
-                content: `${datasets.efficiency.average.toFixed(1)}%`,
+                content: `${datasets.bulwark.average.toFixed(1)}%`,
                 position: {
                     x: "end",
                     y: "end",
                 },
-                xValue: datasets.efficiency.datasets.data.length - 1,
-                yValue: datasets.efficiency.average,
+                xValue: datasets.bulwark.datasets.data.length - 1,
+                yValue: datasets.bulwark.average,
                 yAdjust: (e, e1, e2) => {
-                    return datasets.efficiency.average < 30 ? -70 : 70;
+                    return datasets.bulwark.average < 30 ? -70 : 70;
                 },
                 xAdjust: -20,
 
@@ -175,15 +173,15 @@ const chartData = () => {
                 },
                  afterLabel: (d) => {
                     const { y } = d.raw;
-               
+            
                     return `Cumulative average: ${y.toFixed(1)}%`;
                 },
                 label: (d) => {
                     const data = getPointData([d]);
-                    return `${data.hammer_conversion_count}/${
-                        data.hammer_end_count
+                    return `${data.non_hammer_steal_count}/${
+                        data.non_hammer_end_count
                     } ends (${(
-                        (data.hammer_conversion_count / data.hammer_end_count) *
+                        (data.non_hammer_steal_count / data.non_hammer_end_count) *
                         100
                     ).toFixed(1)}%)`;
                 },

@@ -42,6 +42,7 @@ export default class TeamStats extends Model {
             win: this.number(0),
             team_id: this.number(),
             game_id: this.number(),
+            start_time: this.string()
         }
        
     }

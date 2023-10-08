@@ -67,7 +67,7 @@ export const BADGE_DESCRIPTIONS_PLAIN = {
     minimalist: 'Score 0 points with hammer',
     survivalist: 'Score 1 point with hammer',
     strategist: 'Possess hammer in last end',
-    stealdefense: 'Do not allow opposition to steal'
+    stealdefense: 'Opposition steals'
 }
 
 export const BADGE_THRESHOLDS = {
