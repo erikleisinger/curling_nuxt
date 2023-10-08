@@ -67,27 +67,39 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 attributes__container" v-if="!create">
-            <div class="row items-center q-my-sm">
+            <div class="row items-center justify-between q-my-sm b-white">
                 <h2 class="text-md text-italic">Stats</h2>
+                <q-btn flat @click="onFilterClick">{{showFilters ? 'Clear' : 'Filter'}}</q-btn>
             </div>
+            <transition appear enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp">
+            <div class="filter-menu" v-if="showFilters">
+                <TeamGameFilterOpponent v-model="opponentFilter" :teamId="teamId"/>
+
+            </div>
+            </transition>
 
             <q-separator class="q-mb-md" />
 
-            <TeamAttributes :teamId="teamId" />
+            <TeamAttributes :teamId="teamId" :opponentId="opponentFilter?.value" />
+       
 
             <div class="chart__container">
                 <ChartTeamStatsTime
+                v-if="showChart"
+                :opponentId="opponentFilter?.value"
                     :teamId="teamId"
                     :visibleStats="['Hammer efficiency']"
                 />
             </div>
+                 <TeamColorStats :teamId="teamId" :opponentId="opponentFilter?.value"/>
+                 <TeamHammerStats :teamId="teamId" :opponentId="opponentFilter?.value"/>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
 .edit--floating {
     position: absolute;
-    top: 0;
+   
     margin-top: var(--space-sm);
     margin-left: var(--space-sm);
 }
@@ -151,6 +163,27 @@ const $q = useQuasar();
 const emit = defineEmits(["loaded", "update"]);
 
 const editing = ref(props.create);
+const showFilters = ref(true)
 
 const BADGE_HEIGHT = "2em";
+
+const opponentFilter = ref(null)
+
+const showChart = ref(true)
+
+watch(opponentFilter, () => {
+    showChart.value = false;
+    nextTick(() => {
+        showChart.value = true;
+    })
+})
+
+const onFilterClick = () => {
+    if (!showFilters.value) {
+        showFilters.value = true;
+    } else {
+        showFilters.value = false;
+        opponentFilter.value = null;
+    }
+}
 </script>

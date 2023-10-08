@@ -20,6 +20,7 @@ export default class TeamStats extends Model {
 
     static fields() {
         return {
+            color: this.string(),
             ends_against: this.number(0),
             ends_for: this.number(0),
             ends_played: this.number(0),

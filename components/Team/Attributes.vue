@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-between ">
+    <div class="row justify-between">
         <TeamAttribute
             title="Games played"
             color="primary"
@@ -18,18 +18,25 @@
                 </h2> -->
             </div>
         </TeamAttribute>
-        <TeamAttribute title="Win %" color="amber" class="col-5" showPercent :percent="getStatPercent(team.win, team.games_played)">
+        <TeamAttribute
+            title="Win %"
+            color="amber"
+            class="col-5"
+            showPercent
+            :percent="getStatPercent(team.win, team.games_played)"
+        >
             <span v-if="team.games_played">
                 {{ getStatPercent(team.win, team.games_played) }}%
             </span>
             <span v-else>-</span>
-    <template v-slot:extra>
-            <span class=" text-regular text-grey-8" v-if="team.tie"
-                >({{ getStatPercent(team.tie, team.games_played) }}% tie)</span
-            >
-    </template>
+            <template v-slot:extra>
+                <span class="text-regular text-grey-8" v-if="team.tie"
+                    >({{ getStatPercent(team.tie, team.games_played) }}%
+                    tie)</span
+                >
+            </template>
         </TeamAttribute>
-        <TeamAttribute title="Points per game" color="blue"   class="col-5">
+        <TeamAttribute title="Points per game" color="blue" class="col-5">
             <span v-if="team.games_played">
                 {{
                     `${
@@ -51,7 +58,7 @@
             </span>
             <span v-else>-</span>
         </TeamAttribute>
-        <TeamAttribute title="Ends per game" color="blue"   class="col-5">
+        <TeamAttribute title="Ends per game" color="blue" class="col-5">
             <span v-if="team.games_played">
                 {{
                     `${
@@ -72,10 +79,8 @@
                 }}</span> -->
             </span>
             <span v-else>-</span>
-
-      
         </TeamAttribute>
-          <!-- <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
+        <!-- <TeamAttribute title="Hammer efficiency"   class="col-5" showPercent :percent="getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))" clickable>
             {{getStatPercent(team.hammer_conversion_count, (team.hammer_end_count - team.hammer_blank_count))}}%
         </TeamAttribute>
            <TeamAttribute title="Steal efficiency"   class="col-5" showPercent :percent="getStatPercent(team.non_hammer_steal_count, team.non_hammer_end_count)" clickable>
@@ -97,19 +102,62 @@
 </template>
 <script setup>
 import TeamStats from "@/store/models/team-stats";
+import Game from "@/store/models/game";
 
 const { getStatPercent } = useConvert();
 
 const props = defineProps({
+    opponentId: Number,
     teamId: Number,
 });
 
 const $q = useQuasar();
 
-const team = computed(() =>
-    useRepo(TeamStats)
+const team = computed(() => {
+    if (!props.opponentId)
+        return useRepo(TeamStats)
+            .where("team_id", props.teamId)
+            .whereIn("game_id", 0)
+            .first();
+
+    const allStats = useRepo(TeamStats)
         .where("team_id", props.teamId)
-        .where("game_id", 0)
-        .first()
-);
+        .where("game_id", (val) => val !== 0)
+        .get();
+
+    const games = useRepo(Game)
+        .with("teams")
+        .whereIn(
+            "id",
+            allStats.map(({ game_id }) => game_id)
+        )
+        .whereHas("teams", (query) => {
+            query.whereIn("team_id", props.opponentId);
+        })
+        .get()
+        .map(({ id }) => id);
+
+    const filteredStats = useRepo(TeamStats)
+        .where("team_id", props.teamId)
+        .whereIn("game_id", games)
+        .get();
+
+    const stats = filteredStats.reduce((all, current) => {
+        const allClone = { ...all };
+        Object.keys(filteredStats[0])
+            .filter((key) => {
+                const exclude = ["start_time", "team_id", "color"];
+                return !exclude.includes(key);
+            })
+            .forEach((key) => {
+                if (!allClone[key]) allClone[key] = 0;
+                allClone[key] += current[key];
+            });
+        return allClone;
+    }, {});
+    return {
+        ...stats,
+        games_played: filteredStats.length,
+    };
+});
 </script>

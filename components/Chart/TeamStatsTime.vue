@@ -44,23 +44,27 @@
         </div>
         <div v-if="!loading">
             <ChartTeamStatsTimeEfficiency
+            :opponentId="opponentId"
                 :teamId="teamId"
-                v-show="currentIndex === 0"
+                v-if="currentIndex === 0"
                 height="200px"
             />
             <ChartTeamStatsTimeSteal
+             :opponentId="opponentId"
                 :teamId="teamId"
-                v-show="currentIndex === 1"
+                v-if="currentIndex === 1"
                   height="200px"
             />
             <ChartTeamStatsTimeForce
+             :opponentId="opponentId"
                 :teamId="teamId"
-                v-show="currentIndex === 2"
+                v-if="currentIndex === 2"
                   height="200px"
             />
             <ChartTeamStatsTimeStealDefense
+             :opponentId="opponentId"
                 :teamId="teamId"
-                v-show="currentIndex === 3"
+                v-if="currentIndex === 3"
                   height="200px"
             />
         </div>
@@ -92,6 +96,7 @@ import {useDebounceFn} from '@vueuse/core'
 import TeamStats from "@/store/models/team-stats";
 
 const props = defineProps({
+    opponentId: Number,
     teamId: Number,
     visibleStats: Array,
 });

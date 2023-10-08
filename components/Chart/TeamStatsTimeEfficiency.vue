@@ -10,19 +10,50 @@ import {
 } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 import TeamStats from "@/store/models/team-stats";
+import Game from '@/store/models/game'
 
 const props = defineProps({
+    opponentId: Number,
     teamId: Number,
 });
 
 const { setBgGradient } = useColor();
 
-const stats = computed(() =>
-    useRepo(TeamStats)
+const stats = computed(() => {
+     if (!props.opponentId)
+        return useRepo(TeamStats)
+            .where("team_id", props.teamId)
+            .whereIn("game_id", (val) => val !== 0)
+             .orderBy('start_time', 'asc')
+            .get()
+            
+
+    const allStats = useRepo(TeamStats)
         .where("team_id", props.teamId)
-        .where("game_id", (val) => val > 0)
-        .orderBy('start_time', 'asc')
+        .where("game_id", (val) => val !== 0)
+        .get();
+
+    const games = useRepo(Game)
+        .with("teams")
+        .whereIn(
+            "id",
+            allStats.map(({ game_id }) => game_id)
+        )
+        .whereHas("teams", (query) => {
+            query.whereIn("team_id", props.opponentId);
+        })
         .get()
+        .map(({ id }) => id);
+
+    return useRepo(TeamStats)
+        .where("team_id", props.teamId)
+        .whereIn("game_id", games)
+         .orderBy('start_time', 'asc')
+        .get();
+
+    
+}
+    
 );
 
 const chartData = () => {
