@@ -5,9 +5,9 @@
             v-for="player in players"
             :key="player.id"
             :player="player"
-            :editing="editing"
+            :editing="editing && !(create && player.id === userId)"
             @cancelInvitation="cancelRequest"
-            @removePlayer="playerToRemove = $event"
+            @removePlayer="onRemovePlayer"
             v-memo="[
                 player?.first_name,
                 player?.last_name,
@@ -16,6 +16,7 @@
                 player?.position,
             ]"
             :teamId="teamId"
+            :create="create"
         />
         <TeamPlayer v-if="create || editing" editing>
             <div
@@ -60,6 +61,8 @@ import Player from "@/store/models/player";
 import TP from "@/store/models/team-player";
 import Team from "@/store/models/team";
 
+const {user: userId} = useUser();
+
 const { deleteTeamRequest, sendTeamRequest, updateTeamRequestStatus } =
     useTeamRequestStore();
 const { toggleGlobalSearch } = useDialogStore();
@@ -94,6 +97,12 @@ const getPlayers = async () => {
     emit("loaded");
 };
 
+const onRemovePlayer = (player) => {
+    playerToRemove.value = player;
+    removePlayer(true)
+    playerToRemove.value = null;
+}
+
 const loading = ref(false);
 
 onMounted(() => {
@@ -112,39 +121,47 @@ const onClick = () => {
 
 const inviteUser = async (user) => {
     if (!user?.profile_id) return;
-    const rowId = await sendTeamRequest({
+    sendTeamRequest({
         requestee_profile_id: user?.profile_id,
         team_id: props.teamId,
     });
 
-    if (!rowId) return;
-    const newUser = {
-        ...user,
-        rowId,
-        status: "pending",
-        id: user.profile_id,
-        username: user.name,
-        avatar: user.avatar ? JSON.parse(user.avatar) : {},
-    };
-    players.value.push(newUser);
+   
+     
 };
 
 const onSearchSelect = (user) => {
-    if (props.create) {
-        const formattedUser = {
+    const formattedUser = {
             ...user,
             id: user.profile_id,
-            username: user.name
+            username: user.name,
+            status: 'pending'
         }
-        useRepo(Player).save(formattedUser)
-        emit("update", [...players.value, formattedUser]);
+    useRepo(Player).save(formattedUser)
+    if (props.create) {
+        
+         
+        useRepo(TP).save({
+            team_id: 0,
+            player_id: user.profile_id,
+            status: "pending",
+            position: null,
+        });
     } else {
         inviteUser(user);
     }
 };
 
 const cancelRequest = async (id) => {
-    const success = await deleteTeamRequest(id);
+    if (props.create) {
+        playerToRemove.value = {id};
+        removePlayer(true)
+        playerToRemove.value = null;
+       
+        return;
+    }
+    console.log('cancel request: ', id)
+    const success = await deleteTeamRequest({profileId: id, teamId: props.teamId});
     if (!success) return;
     const index = players.value.findIndex(({ rowId }) => rowId === id);
     if (index === -1) return;
@@ -153,20 +170,21 @@ const cancelRequest = async (id) => {
 
 const playerToRemove = ref(null);
 
-const removePlayer = async () => {
-    const { error } = await useSupabaseClient()
+const removePlayer = async (localOnly = false) => {
+    if (!localOnly){
+const { error } = await useSupabaseClient()
         .from("team_profile_junction")
         .delete()
         .eq("team_id", props.teamId)
         .eq("profile_id", playerToRemove.value?.id);
 
     if (error) return;
-    const index = players.value.findIndex(
-        ({ id }) => playerToRemove.value?.id === id
-    );
-    if (index === -1) return;
+    }
 
-    players.value.splice(index, 1);
+    const {id} = playerToRemove.value;
+
+    useRepo(TP).where('player_id', id).where('team_id', props.teamId).delete()
+
 };
 
 const closeRemovePlayerDialog = () => {
@@ -175,15 +193,7 @@ const closeRemovePlayerDialog = () => {
     }, 200);
 };
 
-// const players = ref([]);
 
-// watch(
-//     () => props.players,
-//     () => {
-//         players.value = [...props.players];
-//     },
-//     { immediate: true }
-// );
 </script>
 <script>
 export default {

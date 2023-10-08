@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { BasicTeamRequest, RequestStatus } from "@/types/request";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
+import TeamPlayer from '@/store/models/team-player'
 
 export const useTeamRequestStore = defineStore("team-requests", {
     state: () => {
@@ -14,7 +15,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
         };
     },
     actions: {
-        async deleteTeamRequest(id: number) {
+        async deleteTeamRequest({teamId, profileId} : {teamId: number, profileId: string}) {
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({
                 state: "pending",
@@ -25,7 +26,8 @@ export const useTeamRequestStore = defineStore("team-requests", {
             const { error } = await client
                 .from("team_requests")
                 .delete()
-                .eq("id", id);
+                .eq("team_id", teamId)
+                .eq('requestee_profile_id', profileId)
 
 
             if (error) {
@@ -43,6 +45,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
                     text: `Request cancelled`,
                     timeout: 10000,
                 });
+                useRepo(TeamPlayer).where('team_id', teamId).where('player_id', profileId).delete();
                 return true;
             }
         },
@@ -146,6 +149,12 @@ export const useTeamRequestStore = defineStore("team-requests", {
                     state: "completed",
                     text: `Invitation sent!`,
                     timeout: 4000,
+                });
+                useRepo(TeamPlayer).save({
+                    team_id,
+                    player_id: requestee_profile_id,
+                    status: "pending",
+                    position: null,
                 });
                 return id;
             }

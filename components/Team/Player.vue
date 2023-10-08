@@ -37,19 +37,19 @@
                 {{ positions[player.position]?.name ?? "Member" }}
                 </span>
                 <span v-else-if="player.status === 'pending'" class="text-grey-7">
-                Invited
+                {{create ? 'Invitation pending' : 'Invited'}}
                 </span>
             </div>
         </div>
         <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
         <div class="edit-overlay" v-if="editing && ((!$q.screen.xs && hovered) || ($q.screen.xs && showEdit))">
             <div class="inner full-height" :style="{'grid-template-columns': player.status ? '100%' : 'repeat(2, 50%)'}">
-                <div class="row justify-center items-center full-height full-width" v-if="!player.status">
+                <div class="row justify-center items-center full-height full-width" v-if="!player.status || create">
                     <q-btn flat color="red" stretch class="full-width" @click="emit('removePlayer', player)">Remove from team</q-btn>
                 </div>
-                <div class="row justify-center items-center full-height full-width">
+                <div class="row justify-center items-center full-height full-width" v-else-if="!create">
                     <q-btn flat color="white" stretch class="full-width" v-if="!player.status" @click="showSelect = true">Edit position</q-btn>
-                      <q-btn flat color="red" stretch class="full-width" v-if="!!player.status" @click="emit('cancelInvitation', player.rowId)">Cancel invitation</q-btn>
+                      <q-btn flat color="red" stretch class="full-width" v-if="!!player.status" @click="emit('cancelInvitation', player.id)">Cancel invitation</q-btn>
                 </div>
             </div>
         </div>
@@ -133,6 +133,7 @@
 <script setup>
 import {useElementHover, onClickOutside} from '@vueuse/core'
 const props = defineProps({
+    create: Boolean,
     editing: Boolean,
     player: Object,
     teamId: Number,

@@ -45,21 +45,21 @@
                 <UploaderDraft
                     v-if="editable && visible"
                     style="z-index: 10"
-                    @upload="emit('update', $event)"
+                    @upload="setPendingAvatar"
                     :emitOnly="create"
                     resourceType="team"
                     :resourceId="teamId"
                 />
-                <div v-if="avatarType === 'upload' && avatarUrl">
+                <div v-if="avatarType === 'upload' && (avatarUrl || pendingAvatarUrl)">
                     <div
-                        v-if="avatarType === 'upload' && avatarUrl"
+                     
                         class="uploaded-avatar__container"
                     >
                         <q-img
-                            :src="avatarUrl"
+                            :src="pendingAvatarUrl || avatarUrl"
                             spinner-color="white"
                             height="100%"
-                            v-if="avatarUrl"
+                            v-if="pendingAvatarUrl || avatarUrl"
                             @load="loaded = true"
                         ></q-img>
                     </div>
@@ -200,6 +200,15 @@ const team = computed(
     () => useRepo(Team).where("id", props.teamId).first() ?? {}
     
 );
+
+const pendingAvatarUrl = ref(null)
+
+const setPendingAvatar = (event) => {
+    emit('update', event)
+    const {file} = event;
+    console.log(file)
+    pendingAvatarUrl.value = URL.createObjectURL(file)
+}
 
 const teamAvatarKey = computed(() => team.value.avatar_url);
 

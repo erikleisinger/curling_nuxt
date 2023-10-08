@@ -3,7 +3,7 @@
         <div class="team-creation__container">
             <TeamProfile
                 showPlayers
-                canEdit
+                :canEdit="!saving"
                 create
                 @update="onUpdate"
                 :teamId="0"
@@ -17,6 +17,7 @@
                 icon="check"
                 @click="save"
                 :disable="saving"
+                :loading="saving"
                 >Save</q-btn
             >
         </div>
@@ -46,6 +47,7 @@ const editedItem = {
 
 const onUpdate = (update) => {
     if (update.players) {
+        console.log('new playeres: ', update.players)
         editedItem.players = update.players;
     } else if (update.avatar) {
         if (update.avatar.path) {
@@ -83,7 +85,10 @@ const save = async () => {
     const { players: oldPlayers, id: oldId, ...rest } = editedItem;
     const { data, errors } = await useSupabaseClient()
         .from("teams")
-        .insert(rest)
+        .insert({
+            ...rest,
+            avatar_type: rest.avatar_type ?? 'avataaar'
+        })
         .select("id")
         .single();
     const { id } = data || {};
@@ -93,7 +98,8 @@ const save = async () => {
             r.blob()
         );
         await useTeamStore().uploadAvatarToTeam(editedItem.avatar_url, url, id);
-    }
+    } 
+   
 
     if (editedItem.players.length) {
         const { user: userId } = useUser();

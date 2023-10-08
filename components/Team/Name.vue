@@ -1,6 +1,6 @@
 <template>
     <div style="position: relative">
-        <h2 class="text-xl text-bold text-center truncate-text text-uppercase" v-if="!editing && !create">
+        <h2 class="text-xl text-bold text-center  text-uppercase" v-if="(!editing && !create) || !canEdit">
             {{ name }}
         </h2>
         <q-input

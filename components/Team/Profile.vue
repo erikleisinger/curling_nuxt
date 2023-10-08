@@ -1,6 +1,6 @@
 <template>
     <div class="row relative-position">
-        <div class="edit--floating" v-if="canEdit">
+        <div class="edit--floating" v-if="canEdit && !create">
             <q-btn flat round :icon="editing ? 'close' : 'edit'" @click="editing = !editing"/>
         </div>
         <div class="row col-12 col-sm-6 profile__container">
@@ -9,7 +9,7 @@
                     <TeamAvatar
                         :teamId="teamId"
                         :viewable="false"
-                        :editable="editing"
+                        :editable="canEdit && editing"
                         @update="emit('update', { avatar: $event })"
                         :create="create"
                     />
@@ -18,13 +18,13 @@
                 <div class="column items-center">
                     <div class="text-sm" style="margin-bottom: -0.5em">Team</div>
                     <TeamName
-                        :canEdit="editing"
+                        :canEdit="canEdit && editing"
                         :teamId="teamId"
                         :create="create"
                         @update="emit('update', { name: $event })"
                     />
                 </div>
-                <div class="row q-mt-sm">
+                <div class="row q-mt-sm" v-if="!create">
                     <Badge badge="showoff" height="3em" class="q-mr-sm" />
                     <Badge badge="bulwark" height="3em" class="q-mr-sm" />
                     <Badge badge="firstend" height="3em" />
@@ -43,14 +43,14 @@
                 <TeamPlayerList
                     :teamId="teamId"
                     :showPending="canEdit"
-                    :create="create"
-                    :editing="editing"
-                    @update="emit('update', { players: $event })"
+                    :create="canEdit && create"
+                    :editing="canEdit && editing"
+                 
                     @loaded="emit('loaded')"
                 />
             </div>
         </div>
-        <div class="col-12 col-sm-6 attributes__container">
+        <div class="col-12 col-sm-6 attributes__container" v-if="!create">
             <div class="row items-center q-my-sm">
                 <h2 class="text-md text-italic">Stats</h2>
             </div>
@@ -109,5 +109,5 @@ const $q = useQuasar();
 
 const emit = defineEmits(["loaded", "update"]);
 
-const editing = ref(false)
+const editing = ref(props.create)
 </script>
