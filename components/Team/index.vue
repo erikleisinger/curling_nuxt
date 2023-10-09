@@ -39,6 +39,7 @@
                             @close="viewDetails = []"
                         />
             </aside>
+           
             <header class="row justify-center col-12">
                 <!-- <div class="compare__container">
                     <q-btn
@@ -281,7 +282,9 @@
                             />
                         </div>
                         <q-separator />
-                        <div class="stats-view__container">
+                       <!-- reuslts here-->
+
+                         <div class="stats-view__container">
                             <div class="game-history__container">
                                 <LazyGameResultList
                                     @vue:mounted="resultsMounted = true"
@@ -345,10 +348,12 @@ $avatar-dimension: 7em;
         }
     }
     .stats-view__container {
+        width: calc(100% * var(--space-md) * 2);
+        box-sizing: border-box;
         margin: 0px calc(-1 * var(--space-md));
-        .game-history__container {
-            padding: 0px var(--space-md);
-        }
+        // .game-history__container {
+        //     padding: 0px var(--space-md);
+        // }
     }
     .back-button__container {
         position: absolute;
