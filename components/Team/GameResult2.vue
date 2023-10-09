@@ -270,7 +270,7 @@ import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import { useQuery } from "@tanstack/vue-query";
-import backgroundImage from "@/rink.jpg";
+import backgroundImage from "@/assets/rink.jpg";
 
 const $q = useQuasar();
 
