@@ -9,7 +9,7 @@
             :key="game.id"
             class="result__container"
         >
-            <TeamGameResult
+            <TeamGameResult2
                 :gameId="game.id"
                 :notify="canVerify(game)"
                 :authorized="
@@ -68,7 +68,7 @@
                         class="game-request-response__container row items-center no-wrap"
                     ></div>
                 </template>
-            </TeamGameResult>
+            </TeamGameResult2>
             <q-separator />
         </div>
         <div class="show-more__container row justify-center items-center" v-if="gamesPaginated.length < totalGames">
@@ -85,7 +85,7 @@
     padding: var(--space-sm)
 }
 .result__container {
-    padding-top: var(--space-xxxs);
+    padding-top: var(--space-xs);
 }
 </style>
 <script setup>
