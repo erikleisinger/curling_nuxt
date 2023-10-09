@@ -1,6 +1,6 @@
 <template>
     <div class="line-chart__container">
-        <q-inner-loading :showing="loading" color="primary" />
+        <q-inner-loading :showing="loading" />
 
         <div class="row justify-between no-wrap q-mb-md">
             <div class="row full-width">
@@ -74,6 +74,8 @@
 .line-chart__container {
     width: 100%;
     height: 100%;
+    min-height: 300px;
+    position: relative;
     .chart-options__container {
         height: 100%;
         width: 100%;
@@ -93,9 +95,10 @@ import {
     BADGE_DESCRIPTIONS_PLAIN
 } from "@/constants/badges";
 import {useDebounceFn} from '@vueuse/core'
-import TeamStats from "@/store/models/team-stats";
+
 
 const props = defineProps({
+    loading: Boolean,
     opponentId: Number,
     teamId: Number,
     visibleStats: Array,
@@ -159,35 +162,5 @@ const options = [
 ];
 
 
-const limitFilter = ref(null);
-const rangeFilter = ref(null);
 
-const getTeamStats = async () => {
-    const { data } = await useSupabaseClient().rpc("get_team_stats", {
-        team_id_param: props.teamId,
-        range_start_param: !rangeFilter.value
-            ? null
-            : getRange(rangeFilter.value)?.range_start_param,
-        range_end_param: !rangeFilter.value
-            ? null
-            : getRange(rangeFilter.value)?.range_end_param,
-        limit_param: limitFilter.value,
-    });
-
-    data.forEach((stat) => {
-        useRepo(TeamStats).save({
-            ...stat,
-            team_id: props.teamId,
-        });
-    });
-
-};
-
-const loading = ref(true);
-
-onMounted(async () => {
-    loading.value = true;
-    await getTeamStats();
-    loading.value = false;
-});
 </script>

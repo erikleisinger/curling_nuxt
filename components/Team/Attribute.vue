@@ -5,9 +5,8 @@
         :class="{ highlight: expanded, clickable }"
         :style="styleObj"
         @click="onClick"
-       
     >
-        <div  >
+        <div v-if="!loading">
             <div class="row no-wrap items-center">
                 <!-- <q-icon size="1em" :name="icon" :color="color" /> -->
                 <h3 class="text-sm truncate-text">{{ title }}</h3>
@@ -24,7 +23,10 @@
                 </div>
             </div>
         </div>
-        <div class="bar" v-if="showPercent" />
+        <div v-else>
+            <q-inner-loading :showing="loading"/>
+        </div>
+        <div class="bar" v-if="showPercent && !loading" />
 
         <slot name="tooltip" />
     </div>
@@ -38,10 +40,12 @@
     border-radius: 16px;
     margin-bottom: var(--space-sm);
     height: fit-content;
+    min-height: 100px;
     transition: width 0.2s;
     min-width: 150px;
     color: #36454f;
     border: 2px solid;
+    position: relative;
     border-color: rgba(0, 0, 0, 0.015);
 
     transition: all 0.2s;
@@ -81,11 +85,12 @@
 </style>
 
 <script setup>
-import {onClickOutside} from '@vueuse/core'
+import { onClickOutside } from "@vueuse/core";
 const props = defineProps({
     color: String,
     expandable: Boolean,
     icon: String,
+    loading: Boolean,
     showPercent: Boolean,
     percent: Number,
     title: String,
@@ -129,7 +134,7 @@ const onClick = () => {
 const attribute = ref(null);
 onClickOutside(attribute, () => {
     clicked.value = false;
-})
+});
 </script>
 <script>
 export default {

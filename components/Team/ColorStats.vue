@@ -14,17 +14,18 @@
                     />
                 </div>
 
-                <div class="column q-ml-sm">
+                <div class="column q-ml-sm" >
                     <h3 class="text-sm" style="text-transform: capitalize">
                         {{ color }}
                     </h3>
-                    <h3 class="text-md q-mt-sm text-bold winrate">
+                    <h3 class="text-md q-mt-sm text-bold winrate" v-if="!loading">
                        {{ isNaN(colorPreferences[color]) ? '0' : colorPreferences[color] }}%
                     </h3>
-                    <div class="text-xs">
+                    <div class="text-xs" v-if="!loading">
                         {{ statsSorted[color].length }} /
                         {{ stats.length }} games
                     </div>
+                    <q-circular-progress indeterminate v-else/>
                 </div>
             </div>
         </div>
@@ -53,9 +54,10 @@
 
                 <div class="column q-ml-sm">
                     <h3 class="text-sm">Win rate</h3>
-                    <h3 class="text-md q-mt-sm text-bold winrate">
+                    <h3 class="text-md q-mt-sm text-bold winrate" v-if="!loading">
                         {{ isNaN(colorWinRate[color]) ? '0' : colorWinRate[color] }}%
                     </h3>
+                    <q-circular-progress indeterminate v-else/>
                 </div>
             </div>
         </div>
@@ -77,6 +79,7 @@
 import TeamStats from "@/store/models/team-stats";
 import Game from '@/store/models/game'
 const props = defineProps({
+    loading: Boolean,
     opponentId: Number,
     teamId: Number,
 });
@@ -85,7 +88,7 @@ const stats = computed(() => {
      if (!props.opponentId)
         return useRepo(TeamStats)
             .where("team_id", props.teamId)
-            .whereIn("game_id", (val) => val !== 0)
+            .where("game_id", (val) => val !== 0)
             .get()
             
 

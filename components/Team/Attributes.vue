@@ -4,7 +4,8 @@
             title="Games played"
             color="primary"
             class="col-5"
-            v-memo="[team?.games_played, team.games_played]"
+            v-memo="[team?.games_played, team.games_played, loading]"
+            :loading="loading"
         >
             <div class="row no-wrap items-center">
                 <div>
@@ -24,6 +25,7 @@
             class="col-5"
             showPercent
             :percent="getStatPercent(team.win, team.games_played)"
+            :loading="loading"
         >
             <span v-if="team.games_played">
                 {{ getStatPercent(team.win, team.games_played) }}%
@@ -36,7 +38,7 @@
                 >
             </template>
         </TeamAttribute>
-        <TeamAttribute title="Points per game" color="blue" class="col-5">
+        <TeamAttribute title="Points per game" color="blue" class="col-5" :loading="loading">
             <span v-if="team.games_played">
                 {{
                     `${
@@ -58,7 +60,7 @@
             </span>
             <span v-else>-</span>
         </TeamAttribute>
-        <TeamAttribute title="Ends per game" color="blue" class="col-5">
+        <TeamAttribute title="Ends per game" color="blue" class="col-5" :loading="loading">
             <span v-if="team.games_played">
                 {{
                     `${
@@ -107,6 +109,7 @@ import Game from "@/store/models/game";
 const { getStatPercent } = useConvert();
 
 const props = defineProps({
+    loading: Boolean,
     opponentId: Number,
     teamId: Number,
 });

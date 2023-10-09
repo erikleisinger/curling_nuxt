@@ -57,9 +57,10 @@
 
                 <div class="column q-ml-sm">
                     <h3 class="text-sm">Hammer last end</h3>
-                    <h3 class="text-md  text-bold ">
+                    <h3 class="text-md  text-bold " v-if="!loading">
                         {{ isNaN(hammerLastEndPercent) ? '0' : hammerLastEndPercent }}%
                     </h3>
+                    <q-circular-progress indeterminate v-else/>
                 </div>
             </div>
            
@@ -89,9 +90,10 @@
 
                 <div class="column q-ml-sm">
                     <h3 class="text-sm">Win rate</h3>
-                    <h3 class="text-md text-bold ">
+                    <h3 class="text-md text-bold " v-if="!loading">
                          {{ isNaN(lastEndWinRate) ? '0' : lastEndWinRate }}%
                     </h3>
+                    <q-circular-progress indeterminate v-else/>
                 </div>
             </div>
         </div>
@@ -116,6 +118,7 @@
 import TeamStats from "@/store/models/team-stats";
 import Game from '@/store/models/game'
 const props = defineProps({
+    loading: Boolean,
     opponentId: Number,
     teamId: Number,
 });
