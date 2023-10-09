@@ -169,7 +169,7 @@ const BADGE_HEIGHT = "2em";
 
 const opponentFilter = ref(null)
 
-const showChart = ref(true)
+const showChart = ref(false)
 
 watch(opponentFilter, () => {
     showChart.value = false;
