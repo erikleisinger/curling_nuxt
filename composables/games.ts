@@ -9,8 +9,11 @@ export const useGame = () => {
             team_id_param,
             game_id_param
         });
+        
 
         if (!data) return;
+
+        const dayjs = useDayjs();
     
         data.forEach((g) => {
             let team;
@@ -27,13 +30,15 @@ export const useGame = () => {
             useRepo(Team).save(team);
             useRepo(Game).save({
                 id: g.game_id,
+                rink: g.rink,
+                start_time: dayjs(g.start_time).unix()
             });
             useRepo(GameTeam).save({
                 team_id: g.team_id ?? g.game_id + 100000000,
                 game_id: g.game_id,
                 id: g.id,
                 color: g.color,
-                points_scored: g.points_scored,
+                points_scored: g.points_scored ?? 0,
                 pending: g.pending,
             });
         });

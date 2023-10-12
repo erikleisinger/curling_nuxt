@@ -17,7 +17,7 @@ export default class GameTeam extends Model {
             team: this.belongsTo(Team, 'team_id'),
             game: this.belongsTo(Game, 'game_id', 'id'),
             stats: this.hasOne(TeamStat, ['team_id', 'game_id']),
-            points_scored: this.number(),
+            points_scored: this.number(0),
             pending: this.boolean()
         };
     }

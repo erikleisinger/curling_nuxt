@@ -1,6 +1,6 @@
-import { CastAttribute, Model } from "pinia-orm";
-import Team from "@/store/models/team";
+import { Model } from "pinia-orm";
 import GameTeam from '@/store/models/game-team'
+import Rink from '@/store/models/rink'
 
 export default class Game extends Model {
     static entity = "games";
@@ -12,6 +12,8 @@ export default class Game extends Model {
             teams: this.hasMany(GameTeam, 'game_id', 'id'),
             end_count: this.number(),
             hammer_first_end: this.number(),
+            rink: this.hasOne(Rink, 'id'),
+            start_time: this.number()
         };
     }
 

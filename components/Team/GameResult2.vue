@@ -17,18 +17,19 @@
             :style="{ backgroundImage: `url(${awayAvatar})` }"
         />
         <div class="info-container">
-            <div class="team-name row items-center q-pl-sm">
+            <div class="team-name row items-center q-pl-sm" :class="{placeholder: home.id > 100000000}">
                 <div>{{ home.name }}</div>
-                <div class="show-more__team left" @click="showHomeTeam">
+                <div class="show-more__team left"  @click="showHomeTeam">
                     <div class="q-ml-lg">View team</div>
                 </div>
             </div>
             <div
                 class="team-name row items-center justify-end q-pr-sm"
                 style="text-align: right"
+                :class="{placeholder: away.id > 100000000}"
             >
                 <div>{{ away.name }}</div>
-                <div class="show-more__team right" @click="showAwayTeam">
+                <div class="show-more__team right" @click="showAwayTeam" >
                     <div class="q-mr-lg">View team</div>
                 </div>
             </div>
@@ -178,13 +179,16 @@ $border-radius: 8px;
                     clip-path: polygon(41% 0%, 100% 0%, 100% 100%, 22% 100%);
                 }
             }
-            &:hover {
-                font-size: 0px;
-                .show-more__team {
+            &:not(.placeholder) {
+                &:hover {
+                    font-size: 0px;
+                    .show-more__team {
                     font-size: 24px !important;
                     opacity: 1;
                 }
+                }
             }
+       
         }
 
         .score-inner {
@@ -378,6 +382,8 @@ const viewGame = () => {
 const showHomeConf = ref(false)
 
 const showHomeTeam = () => {
+        // Prevent showing teams that are placeholders/null
+    if (home.value.id > 100000000) return;
      if ($q.platform.is.mobile && !showHomeConf.value) {
         showHomeConf.value = true;
     } else {
@@ -389,6 +395,8 @@ const showHomeTeam = () => {
 const showAwayConf = ref(false)
 
 const showAwayTeam = () => {
+    // Prevent showing teams that are placeholders/null
+      if (away.value.id > 100000000) return;
      if ($q.platform.is.mobile && !showAwayConf.value) {
         showAwayConf.value = true;
     } else {

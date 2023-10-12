@@ -9,8 +9,7 @@
             :key="game.id"
             class="result__container"
         >
-            <TeamGameResult2
-                :gameId="game.id"
+            <TeamGameResult2              :gameId="game.id"
                 :notify="canVerify(game)"
                 :authorized="
                     !!isAuthorized(
@@ -149,6 +148,7 @@ const games = computed(() => {
                     ...props.filterOpposition,
                 ]);
             })
+            .orderBy('start_time', 'desc')
             .get() ?? [];
     return t
 });
