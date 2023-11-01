@@ -2,6 +2,7 @@ import Player from '@/store/models/player'
 import TeamPlayer from '@/store/models/team-player'
 export const useTeam = () => {
     const getTeamPlayers = async (teamId: number, andRequests: boolean) => {
+        console.log('teamid: ', teamId)
         if (!teamId) return [];
         const client = useSupabaseClient();
 

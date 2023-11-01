@@ -1,6 +1,6 @@
 <template>
     <NuxtLayout>
-        <Team v-if="!isLoading" > </Team>
+        <TeamPage v-if="!isLoading" > </TeamPage>
         <q-inner-loading :showing="isLoading" color="primary" />
     </NuxtLayout>
 </template>

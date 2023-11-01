@@ -213,19 +213,8 @@ const setPendingAvatar = (event) => {
 const teamAvatarKey = computed(() => team.value.avatar_url);
 
 const enabled = computed(() => team.value.avatar_type === 'upload' && !!team.value.avatar_url)
-const {isLoading, data: avatarUrl} = useQuery({
-    queryKey: ['avatar', 'team', teamAvatarKey],
-    queryFn:  async () => {
-        const {data, error} = await useSupabaseClient().storage.from("Avatars").download(team.value.avatar_url)
-        return URL.createObjectURL(data);
-    },
-    enabled: enabled.value,
-    refetchOnWindowFocus: false,
-    cacheTime: Infinity,
-    staleTime: Infinity
-})
-
-
+const {getTeamAvatar} = useAvatar();
+const {isLoading, data: avatarUrl} = getTeamAvatar(team.value.avatar_url, enabled.value)
 
 const storage = useStorageStore();
 
