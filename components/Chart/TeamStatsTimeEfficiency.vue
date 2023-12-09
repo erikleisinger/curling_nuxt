@@ -1,6 +1,8 @@
 <template>
-    <ChartLineOverTime v-bind="chartData()" height="200px">
+
+    <ChartLineOverTime v-bind="chartData()" height="200px" class="col-10">
     </ChartLineOverTime>
+
 </template>
 <script setup>
 import {
@@ -9,49 +11,30 @@ import {
     BADGE_TITLE_CONVERT,
 } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
+import Team from "@/store/models/team";
 import TeamStats from "@/store/models/team-stats";
 import Game from '@/store/models/game'
 
+
 const props = defineProps({
-    opponentId: Number,
+    minDate: String,
+       opponentId: Number,
     teamId: Number,
 });
 
 const { setBgGradient } = useColor();
 
+const {toUTC} = useTime();
+
 const stats = computed(() => {
-     if (!props.opponentId)
-        return useRepo(TeamStats)
-            .where("team_id", props.teamId)
-            .whereIn("game_id", (val) => val !== 0)
-             .orderBy('start_time', 'asc')
-            .get()
-            
-
-    const allStats = useRepo(TeamStats)
-        .where("team_id", props.teamId)
-        .where("game_id", (val) => val !== 0)
-        .get();
-
-    const games = useRepo(Game)
-        .with("teams")
-        .whereIn(
-            "id",
-            allStats.map(({ game_id }) => game_id)
-        )
-        .whereHas("teams", (query) => {
-            query.whereIn("team_id", props.opponentId);
-        })
-        .get()
-        .map(({ id }) => id);
-
     return useRepo(TeamStats)
         .where("team_id", props.teamId)
-        .whereIn("game_id", games)
+        .where('start_time', (val) => {
+            if (!props.minDate) return true;
+            return toUTC(val, null, false, true).unix() > toUTC(props.minDate, null, false, true).unix()
+        })
          .orderBy('start_time', 'asc')
         .get();
-
-    
 }
     
 );
@@ -66,10 +49,12 @@ const chartData = () => {
         return data;
     };
 
-    const team = useRepo(TeamStats)
-        .where("team_id", props.teamId)
-        .where("game_id", 0)
-        .first();
+    const team = useRepo(Team)
+        .where("id", props.teamId)
+        .with('totalStats')
+        .first()
+        
+
 
 
     const hammerConversionAvg =
@@ -122,6 +107,7 @@ const chartData = () => {
                         (hammer_end_count - hammer_blank_count)) *
                     100
             );
+          
             const max = Math.max(...all);
 
             return {
@@ -229,4 +215,6 @@ const chartData = () => {
         },
     };
 };
+
+
 </script>

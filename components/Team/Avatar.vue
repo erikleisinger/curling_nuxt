@@ -206,7 +206,6 @@ const pendingAvatarUrl = ref(null)
 const setPendingAvatar = (event) => {
     emit('update', event)
     const {file} = event;
-    console.log(file)
     pendingAvatarUrl.value = URL.createObjectURL(file)
 }
 

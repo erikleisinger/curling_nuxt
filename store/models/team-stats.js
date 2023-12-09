@@ -1,17 +1,4 @@
-import {CastAttribute, Model} from 'pinia-orm'
-import Team from '@/store/models/team'
-
-class FormatAvatar extends CastAttribute {
-    get(value) {
-      if (!value) return {};
-      if (typeof value === 'string') return JSON.parse(value);
-      if (typeof value === 'object') return value;
-      return {}
-    }
-    set(value) {
-      return this.get(value)
-    }
-  }
+import {Model} from 'pinia-orm'
 
 export default class TeamStats extends Model {
     static entity = 'team-stats'

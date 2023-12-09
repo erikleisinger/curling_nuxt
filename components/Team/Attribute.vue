@@ -18,7 +18,7 @@
                         <slot name="contentExpanded" />
                     </span>
                 </div>
-                <div class="text-sm row items-center q-ml-sm">
+                <div class="text-sm row items-center q-ml-sm extra-text">
                     <slot name="extra" />
                 </div>
             </div>
@@ -80,6 +80,9 @@
             left: 0;
             background-color: $amber;
         }
+    }
+    .extra-text {
+        margin-top: 8px;
     }
 }
 </style>

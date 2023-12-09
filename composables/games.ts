@@ -9,6 +9,7 @@ export const useGame = () => {
             team_id_param,
             game_id_param
         });
+        console.log('GOT GAMES: ', data)
         
 
         if (!data) return;
@@ -31,7 +32,8 @@ export const useGame = () => {
             useRepo(Game).save({
                 id: g.game_id,
                 rink: g.rink,
-                start_time: dayjs(g.start_time).unix()
+                start_time: dayjs(g.start_time).unix(),
+                sheet: g.sheet
             });
             useRepo(GameTeam).save({
                 team_id: g.team_id ?? g.game_id + 100000000,

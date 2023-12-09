@@ -1,17 +1,36 @@
 import {useUserStore} from '@/store/user'
 export const useTime = () => {
 
-    const toTimezone = (date: string, format:string = 'MMMM D, YYYY h:mm A') => {
+    const toTimezone = (date: string, format:string = 'MMMM D, YYYY h:mm A', toISO = false, raw = false) => {
         const dayjs = useDayjs()
         const store = useUserStore();
         const timezone = store.timezone;
-        return dayjs.utc(date).tz(timezone).format(format)
+        let parsed;
+        if (typeof date === 'number') {
+            parsed = dayjs.unix(date).utc(date ?? dayjs()).tz(timezone)
+        } else {
+            parsed = dayjs.utc(date ?? dayjs()).tz(timezone)
+        }
+     
+        if (raw) return parsed;
+        if (toISO) {
+            return parsed.toISOString();
+        } else {
+            return parsed.format(format)
+        }
     }
-    const toUTC = (date:string, format:string = 'MMMM D, YYYY h:mm A', toISO = false) => {
+    const toUTC = (date:string, format:string = 'MMMM D, YYYY h:mm A', toISO = false, raw = false) => {
         const dayjs = useDayjs()
         const store = useUserStore();
         const timezone = store.timezone;
-        const parsed = dayjs.tz(date, timezone).utc();
+     
+        let parsed;
+        if (typeof date === 'number') {
+            parsed = dayjs.unix(date).utc(date ?? dayjs()).tz(timezone)
+        } else {
+            parsed = dayjs.tz(date ?? dayjs(), timezone).utc();
+        }
+        if (raw) return parsed;
         if (toISO) {
             return parsed.toISOString();
         } else {

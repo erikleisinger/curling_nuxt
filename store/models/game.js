@@ -1,6 +1,7 @@
 import { Model } from "pinia-orm";
 import GameTeam from '@/store/models/game-team'
 import Rink from '@/store/models/rink'
+import Sheet from '@/store/models/sheet'
 
 export default class Game extends Model {
     static entity = "games";
@@ -13,6 +14,7 @@ export default class Game extends Model {
             end_count: this.number(),
             hammer_first_end: this.number(),
             rink: this.hasOne(Rink, 'id'),
+            sheet: this.hasOne(Sheet, 'id'),
             start_time: this.number()
         };
     }

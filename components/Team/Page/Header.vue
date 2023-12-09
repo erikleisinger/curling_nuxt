@@ -1,10 +1,12 @@
 <template>
     <header class="team-profile__header">
+       
         <div class="team-profile-picture--shadow" />
         <div class="team-profile-picture">
-            <div class="team-players__wrap row justify-end">
+            <div class="team-players__wrap row justify-start">
              
                   <Avataaar v-for="player in team.players" :key="player.id" v-bind="player.avatar" class="player-avatar" />
+
             </div>
             <q-img
                 :src="avatar"
@@ -14,21 +16,50 @@
             ></q-img>
             <h1 class="team-name"><span>{{team.name}}</span></h1>
         </div>
+         <div class="menu__container">
+            <q-btn flat round icon="more_vert"/>
+        </div>
     </header>
 </template>
 <style lang="scss">
 $offset: var(--space-sm);
 $border-radius: 16px;
 .team-profile__header {
-    width: 100%;
-    aspect-ratio: 1/1;
+    margin-right: auto;
+    margin-left: auto;
+
+    aspect-ratio: 3/2;
     position: relative;
+       
+     margin-top: var(--space-xs);
+     
+    @include sm {
+        aspect-ratio: 3/1;
+        margin: var(--space-sm);
+     margin-top: var(--space-md);
+    }
+     .menu__container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        padding: var(--space-xs);
+        padding-top: var(--space-xxxs);
+        @include sm {
+ padding-top: 0;
+        }
+       
+     }
 
     // padding: var(--space-md);
     .team-profile-picture,
     .team-profile-picture--shadow {
         width: calc(100% - $offset * 2);
-        aspect-ratio: 1/1;
+        aspect-ratio: 3/2;
+         @include sm {
+        aspect-ratio: 3/1
+    }
+   
         border-radius: $border-radius;
     }
     .team-profile-picture {
@@ -66,20 +97,21 @@ $border-radius: 16px;
             z-index: 2;
             padding: 0px var(--space-sm);
             .player-avatar {
-                width: 40px;
+                width: 30px;
                 margin-left: var(--space-sm);
-                box-shadow: $pretty-shadow;
+                
                 
             }
         }
     }
     .team-profile-picture--shadow {
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(0, 0, 0, 0.1);
         position: absolute;
         top: $offset;
         z-index: 0;
         left: calc($offset * 0.5);
         box-sizing: border-box;
+        box-shadow: $pretty-shadow;
     }
 }
 </style>

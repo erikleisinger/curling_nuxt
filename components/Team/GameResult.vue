@@ -2,11 +2,14 @@
     <div style="position: relative full-width">
         <div class="result__container--wrap">
             <div class="row no-wrap">
+               
                 <div class="result__header">
                     <slot name="before" />
 
                     <div class="result__container" @click="emit('expand')">
-                        <div class="team__profile--container column no-wrap">
+                        <div class="backdrop--behind"/>
+                        <div class="backdrop"/>
+                        <div class="team__profile--container column no-wrap justify-center">
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
@@ -16,9 +19,9 @@
                                     />
                                 </div>
                             </div>
-                            <div style="width: fit-content; position: relative">
+                            <div class="team-name__container">
                                 <h2
-                                    class="text-sm truncate-text text-center col-grow"
+                                    class="text-sm truncate-text text-center col-grow full-width"
                                 >
                                     {{ home.name }}
                                 </h2>
@@ -32,13 +35,19 @@
                         </div>
 
                         <div
-                            class="row items-center full-width score-container"
+                            class="column full-width game-info__container" ref="gameInfoContainer" @click="reveal"
                         >
+                        <div  class="game-showmore__container row justify-center items-center" :style="{opacity: isRevealed ? 1 : 0}">
+<div class="game-showmore__button">
+                           <q-btn flat @click="onViewMore"> View game</q-btn>
+</div>
+                            </div>
+                     
                             <div
-                                class="row justify-around items-center text-xxxl full-width"
+                                class="row justify-center   full-width no-wrap "
                             >
                                 <div
-                                    class="column justify-center items-center no-wrap relative-position"
+                                    class="column  no-wrap relative-position" style="height: min-content"
                                 >
                                     <div
                                         class="score"
@@ -50,6 +59,7 @@
                                     >
                                         {{ home.points_scored }}
                                     </div>
+                                  
                                     <div
                                         class="verified__container"
                                         v-if="
@@ -65,9 +75,9 @@
                                         />
                                     </div>
                                 </div>
-
+<div class="score q-mx-xs">:</div>
                                 <div
-                                    class="column justify-center items-center no-wrap relative-position"
+                                    class="column   no-wrap relative-position" style="height: min-content"
                                 >
                                     <div
                                         class="score"
@@ -95,6 +105,9 @@
                                     </div>
                                 </div>
                             </div>
+                             <div class="row justify-center full-width game-info__text" v-if="game.rink && game.rink.name">{{game.rink.name}}</div>
+                            <div class="row justify-center full-width game-info__text" v-if="game.sheet && game.sheet.number">Sheet {{game.sheet.number}}/{{numberToLetter(game.sheet.number)}}</div>
+                            <div class="row justify-center full-width game-info__text" v-if="game.start_time">  {{ toTimezone(game.start_time, 'MMMM D, YYYY') }}</div>
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -125,10 +138,7 @@
                             </div>
                             <div class="text-center row justify-center">
                                 <div
-                                    style="
-                                        width: fit-content;
-                                        position: relative;
-                                    "
+                                    class="team-name__container"
                                 >
                                     <h2
                                         class="text-sm truncate-text text-center"
@@ -153,81 +163,18 @@
                         </div>
                     </div>
 
-                    <!-- League / Location -->
-                    <div
-                        class="column items-center q-pt-sm game-details"
-                        v-if="false"
-                    >
-                        <div class="text-xs">
-                            {{ format(toTimezone(result.start_time)) }}
-                        </div>
-                        <div class="row no-wrap q-mr-xs items-center">
-                            <div
-                                class="row no-wrap text-xs q-ml-sm"
-                                v-if="result.rink_name"
-                            >
-                                <q-icon name="location_on" color="red" />
-                                <div class="truncate-text">
-                                    {{ result.rink_name }}
-                                </div>
-                            </div>
-                            <div
-                                class="row no-wrap text-xs q-ml-sm"
-                                v-if="result.sheet_name"
-                            >
-                                <q-icon name="crop_portrait" />
-                                <div
-                                    class="truncate-text"
-                                    v-if="result.sheet_name"
-                                >
-                                    Sheet {{ result.sheet_name }}/{{
-                                        numberToLetter(result.sheet_name)
-                                    }}
-                                </div>
-                                <div class="truncate-text" v-else>
-                                    Unknown sheet
-                                </div>
-                            </div>
-                            <div
-                                class="row no-wrap text-xs justify-end q-ml-sm"
-                                v-if="result.event_name"
-                            >
-                                <q-icon name="emoji_events" color="yellow" />
-                                <div class="truncate-text">
-                                    {{ result.event_name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+             
                 </div>
-                <div style="margin-left: -20px; margin-top: 0px" class="column">
-                    <q-fab
-                        padding="0px"
-                        flat
-                        icon="more_horiz"
-                        color="grey-8"
-                        direction="down"
-                        vertical-actions-align="right"
-                    >
-                        <q-fab-action
-                            icon="visibility"
-                            color="primary"
-                            label="View game"
-                            :to="`/games/view/${gameId}`"
-                        />
-                        <slot name="actions" />
-                    </q-fab>
-                    <q-badge color="deep-purple" rounded floating v-if="notify">
-                    </q-badge>
-                </div>
+
             </div>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
-$result-height: 50px;
+$result-height: 90px;
 $columns: 30% 40% 30%;
 $max-container-width: 500px;
+$container-padding-top: 15px;
 .result__container--wrap {
     max-height: fit-content;
     box-sizing: border-box;
@@ -262,16 +209,49 @@ $max-container-width: 500px;
                     margin: auto;
                 }
             }
+            .team-name__container {
+                margin-top: var(--space-xxs);
+               width: fit-content; 
+               position: relative; 
+               margin-right: auto; 
+               margin-left: auto;
+               text-transform: uppercase;
+            }
+        }
+
+        .backdrop,
+        .backdrop--behind {
+position: absolute;
+            height: $result-height;
+            width: 80%;
+            top: $container-padding-top;
+            margin: auto;
+            left: 0;
+            right: 0;
+        }
+
+        .backdrop {
+            
+            
+            background: linear-gradient(180deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,1) 100%);
+            
+        }
+        .backdrop--behind {
+            
+background: v-bind(gradient);
         }
     }
     .game-details {
         position: relative;
     }
 
-    .score-container {
+    .game-info__container {
+        margin-top: calc($container-padding-top + var(--space-xxxs)) ;
+        z-index: 1;
+        position: relative;
         .score {
-            margin: auto !important;
-            font-size: 35px;
+            line-height: 40px;
+            font-size: 50px;
             transition: all 0.2s;
             position: relative;
             &.winning {
@@ -281,14 +261,35 @@ $max-container-width: 500px;
         .verified__container {
             position: absolute;
             z-index: 1;
-            font-size: 0.4em;
+            font-size: 1em;
             width: min-content;
 
-            right: -0.6em;
+            right: -1em;
 
-            bottom: 0.2em;
+            bottom: -0.1em;
             margin: auto;
             height: 1.1em;
+        }
+        .game-info__text {
+            font-size: 0.7em;
+            text-align: center;
+        }
+        .game-showmore__container {
+            transition: all 0.4s;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            
+            margin-top: -12px;
+            z-index: 2;
+            color: white;
+            
+            font-weight: bold;
+            .game-showmore__button {
+border-radius: 8px;
+background-color: rgba(0,0,0,0.7);
+padding: var(--space-sm);
+            }
         }
     }
 
@@ -316,12 +317,16 @@ import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
+import {useConfirmDialog, onClickOutside} from '@vueuse/core'
 
 const $q = useQuasar();
 
 const dialogStore = useDialogStore();
 
 const { toggleGlobalSearch } = dialogStore;
+const {getColor} = useColor();
+
+const gradient = computed(() => `linear-gradient(90deg, ${getColor(home.value.color)} 0%, ${getColor(away.value.color)} 100%)`)
 
 const props = defineProps({
     authorized: Boolean,
@@ -358,11 +363,29 @@ const home = computed(() => {
     };
 });
 
+const game = computed(
+    () => useRepo(Game).withAll().where("id", props.gameId).first()
+);
+
 const isVerified = computed(
-    () => useRepo(Game).withAll().where("id", props.gameId).first()?.isVerified
+    () => game.value.isVerified
 );
 
 const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
+
+const gameInfoContainer =  ref(null)
+
+const {isRevealed, reveal, confirm, cancel, onConfirm, onCancel} = useConfirmDialog();
+
+onClickOutside(gameInfoContainer, cancel)
+
+const onViewMore = () => {
+    if (!isRevealed.value) return;
+    navigateTo(`/games/view/${game.value.id}`)
+}
+
+
+
 </script>

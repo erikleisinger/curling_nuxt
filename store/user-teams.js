@@ -54,9 +54,6 @@ export const useUserTeamStore = defineStore("user-teams", {
            
             this.userTeams = data ?? []
         },
-        async fetchUserTeamStats() {
-
-        },
         async removeTeam(team) {
             const notStore = useNotificationStore();
             const { name, id } = team;

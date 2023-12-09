@@ -1,54 +1,7 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
     <q-layout view="hhh lpr fff" v-else class="app-layout">
-        <q-header bordered class="bg-white text-black" >
-            <q-toolbar class="global-header row justify-between">
-                 <div
-                    v-if="$q.screen.xs"
-                    style="width: 50%"
-                    class="row "
-                >
-                    <q-btn
-                        flat
-                        round
-                        icon="menu"
-                        color="grey-8"
-                        @click="leftDrawerOpen = !leftDrawerOpen"
-                    />
-                </div>
-
-                <div v-else class="row justify-end" style="width: 50%">
-                    <q-btn flat round icon="search" />
-                    <q-btn flat round icon="notifications" />
-                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
-                </div>
-                <div
-                    class="row full-height items-center col-grow clickable"
-                    @click="goTo('#season')"
-                >
-                    <div
-                        style="height: 50%; aspect-ratio: 1/1; margin-top: -10%"
-                    >
-                        <Logo :color="getColor('deepPurple')" />
-                    </div>
-                </div>
-                 <div
-                    v-if="$q.screen.xs"
-                    style="width: 50%"
-                    class="row justify-end"
-                >
-                    <q-btn
-                        flat
-                        round
-                        icon="add"
-                        color="grey-8"
-                            to="/games/create"
-                    />
-                </div>
-
-             
-            </q-toolbar>
-        </q-header>
+       
         <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile">
             <q-list>
                   <q-item
@@ -100,9 +53,76 @@
         <q-page-container class="page__container--global">
             <slot />
         </q-page-container>
+         <q-footer bordered class="bg-white text-black row justify-between" >
+            <q-toolbar class="global-footer row justify-between">
+             <q-btn flat  icon="home" @click="goTo('/')" :size="$q.screen.xs ? 'md' : 'lg'"  />
+              <q-btn flat icon="groups_2" @click="goTo('#season')" :size="$q.screen.xs ? 'md' : 'lg'"/>
+               <div class="action-button__container">
+ <q-fab color="primary" icon="add" direction="up" class="action-button">
+        <q-fab-action color="primary" @click="onClick" icon="group_add" >
+            <span class="action-button__label">New team</span>
+        </q-fab-action>
+        <q-fab-action color="secondary" @click="onClick" icon="videogame_asset">
+            <span class="action-button__label">New game</span>
+        </q-fab-action>
+      </q-fab>
+               </div>
+                <q-btn flat  icon="token" color="amber"  :size="$q.screen.xs ? 'md' : 'lg'"/>
+                 <q-btn flat  icon="settings" @click="goTo('/profile')" :size="$q.screen.xs ? 'md' : 'lg'"/>
+            </q-toolbar>
+            
+            <!-- <q-toolbar class="global-footer row justify-between">
+                 <div
+                    v-if="$q.screen.xs"
+                    style="width: 50%"
+                    class="row "
+                >
+                    <q-btn
+                        flat
+                        round
+                        icon="menu"
+                        color="grey-8"
+                        @click="leftDrawerOpen = !leftDrawerOpen"
+                    />
+                </div>
+
+                <div v-else class="row justify-end" style="width: 50%">
+                    <q-btn flat round icon="search" />
+                    <q-btn flat round icon="notifications" />
+                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
+                </div>
+                <div
+                    class="row full-height items-center col-grow clickable"
+                    @click="goTo('#season')"
+                >
+                    <div
+                        style="height: 50%; aspect-ratio: 1/1; margin-top: -10%"
+                    >
+                        <Logo :color="getColor('deepPurple')" />
+                    </div>
+                </div>
+                 <div
+                    v-if="$q.screen.xs"
+                    style="width: 50%"
+                    class="row justify-end"
+                >
+                    <q-btn
+                        flat
+                        round
+                        icon="add"
+                        color="grey-8"
+                            to="/games/create"
+                    />
+                </div>
+
+             
+            </q-toolbar> -->
+        </q-footer>
     </q-layout>
 </template>
 <style lang="scss" scoped>
+$footer-height-xs: 3em;
+$footer-height-sm: 4em;
 .app-layout {
     display: flex;
     flex-direction: column;
@@ -113,27 +133,67 @@
     .q-header {
         width: min(960px, 100vw);
         background-color: white;
+        margin: auto;
     }
-    .q-footer,
-    .q-header {
-        left: 0;
-        right: 0;
-        // margin: auto;
-        z-index: $z-tools;
-        position: sticky;
-        top: 0;
-    }
+    // .q-footer,
+    // .q-header {
+    //     left: 0;
+    //     right: 0;
+    //     // margin: auto;
+    //     z-index: $z-tools;
+    //     position: sticky;
+    //     bottom: 0;
+    // }
 
     .q-page-container {
         box-shadow: $pretty-shadow;
         padding-top: unset!important;
     }
 
-    .global-header {
-        height: 4em;
+    .global-footer {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        height: 3em;
+        padding: unset;
 
         @include sm {
-            height: 6em;
+            height: 4em;
+        }
+        >.q-btn {
+            width: min-content;
+            margin: auto;
+        }
+        .action-button__container {
+            position: relative;
+            height: 100%;
+        .action-button {
+            position: absolute;
+            left: 0;
+            right: 0;
+            width: min-content;
+            margin: auto;
+            top: -10px;
+            .q-btn {
+                position: absolute;
+                &:first-child {
+                    top: -90px;
+                }
+                &:not(:first-child) {
+                    top: -50px;
+                }
+                &:nth-child(2) {
+                    left: -60px;
+                }
+            }
+            .action-button__label {
+                position: absolute;
+                bottom: -2em;
+                color: black;
+                text-transform: uppercase;
+                font-size: 0.8em;
+            }
+        }
+            
         }
     }
     :deep(.q-drawer) {
@@ -143,12 +203,13 @@
     }
 }
 .page__container--global {
-      height: calc((100 * var(--vh, 1vh)) - 65px);
+      height: calc((100 * var(--vh, 1vh)) - $footer-height-xs);
     overflow: auto;
     scroll-behavior: smooth;
+    padding: unset!important;
+    margin: unset!important;
     @include sm {
-        height: auto;
-        overflow: unset;
+          height: calc((100 * var(--vh, 1vh)) - $footer-height-sm);
     }
  
 }
@@ -195,7 +256,7 @@ onClickOutside(fab, () => {
 });
 
 const goTo = (view) => {
-    navigateTo("/");
+    navigateTo(`${view}`);
 };
 
 const { avatar } = useUserStore();

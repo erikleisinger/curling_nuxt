@@ -9,7 +9,7 @@
             :key="game.id"
             class="result__container"
         >
-            <TeamGameResult2              :gameId="game.id"
+            <TeamGameResult              :gameId="game.id"
                 :notify="canVerify(game)"
                 :authorized="
                     !!isAuthorized(
@@ -67,7 +67,7 @@
                         class="game-request-response__container row items-center no-wrap"
                     ></div>
                 </template>
-            </TeamGameResult2>
+            </TeamGameResult>
             <q-separator />
         </div>
         <div class="show-more__container row justify-center items-center" v-if="gamesPaginated.length < totalGames">

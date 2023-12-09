@@ -1,9 +1,5 @@
 <template>
-    <div :style="`height: ${height}; width: 100%; position: relative`">
-        <!-- <div class="ticks__container column justify-between items-center">
-            <div  class="full-width text-center" style="margin-top: -0.5em">{{max}}%</div>
-            <div  class="full-width text-center" style="margin-bottom: -0.5em">{{min}}%</div>
-        </div> -->
+    <div :style="`height: ${height}`">
         <canvas ref="chart" id="canvas" />
     </div>
 </template>
@@ -43,7 +39,10 @@ const loading = ref(true);
 
 const dayjs = useDayjs();
 
+
 onMounted(async () => {
+        getMinMax()
+
     const annotations = { ...props.annotations };
     const data = { ...props.data };
     const tooltip = { ...props.tooltip };
@@ -59,6 +58,12 @@ onMounted(async () => {
                     tension: 0,
                     borderWidth: 5,
                 },
+            },
+            layout: {
+                padding: {
+                    left: 0,
+                    top: 0
+                }
             },
 
             responsive: true,
@@ -107,6 +112,7 @@ onMounted(async () => {
                         
                         padding: 0,
                         autoSkip: false,
+                         
                         callback: (e) => {                       
                             const numDataPoints = props.data.datasets[0].data.length
                             if (e !== 0 && e!== numDataPoints - 1) return ''
@@ -127,16 +133,27 @@ onMounted(async () => {
                     grid: {
                         display: false,
                     },
-                    min: 0,
-                    //max: 100,
+                    min: min.value,
+                    max: max.value,
+                  
                     position: 'right',
+                   
                 
                     ticks: {
+                          stepSize: max.value - min.value,
                         callback: (e, e2, e3) => {
                             return `${e}%`;
                         },
+
                         padding: 0,
-                        // display: false,
+                        
+                        mirror: true,
+                        z: 100,
+                        color: 'rgba(0,0,0,0.8)',
+                         textStrokeColor: 'white',
+                    backdropColor: 'rgba(0,0,0,0.3)',
+                    // showLabelBackdrop: true,
+                        
                     },
                 },
             },
@@ -144,7 +161,7 @@ onMounted(async () => {
     });
 
     Object.seal(chart.value);
-    getMinMax()
+
     loading.value = false;
   
 });
@@ -153,11 +170,13 @@ const min = ref(0);
 const max = ref(0)
 
 const getMinMax = () => {
-    const {scales} = myChart || {};
-    const {y} = scales || {};
-    const {min:chartMin, max:chartMax} = y || {};
-    min.value = chartMin ?? 0
-    max.value = chartMax ?? 0
+
+    const allData = ((props.data?.datasets && props?.data?.datasets[0]?.data) ?? []).map(({y}) => y)
+
+    
+    max.value = Number.parseFloat((Math.max(...allData)).toFixed())
+      min.value = Number.parseFloat((Math.min(...allData)).toFixed())
+
 
 
 }
