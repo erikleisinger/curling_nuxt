@@ -212,8 +212,7 @@ const setPendingAvatar = (event) => {
 const teamAvatarKey = computed(() => team.value.avatar_url);
 
 const enabled = computed(() => team.value.avatar_type === 'upload' && !!team.value.avatar_url)
-const {getTeamAvatar} = useAvatar();
-const {isLoading, data: avatarUrl} = getTeamAvatar(team.value.avatar_url, enabled.value)
+
 
 const storage = useStorageStore();
 
@@ -222,6 +221,23 @@ const $q = useQuasar();
 const visible = ref(false);
 
 // const avatarUrl = computed(() => data?.data);
+const getAvatar = async () => {
+    const client = useSupabaseClient();
+const { data } = await client.storage.from("Avatars").download(team.value.avatar_url);
+if (!data) return null;
+
+return window.URL.createObjectURL(data)
+
+}
+
+// TODO: set default pic
+const { isLoading, data: avatarUrl } = useQuery({
+    queryKey: ["avatar", "team", props.teamId],
+    queryFn: () => getAvatar(),
+    refetchOnWindowFocus: false,
+});
+
+
 
 const avatarType = computed(() => {
     if (team.value.avatar_type === "upload") {
