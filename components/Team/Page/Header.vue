@@ -147,14 +147,14 @@ const players = computed(() => {
         });
 });
     const { getTeamPlayers } = useTeam();
-
+const { isOnTeam } = useTeam();
 const {isLoading} = useQuery({
     queryKey: ['team', 'players', props.teamId],
     queryFn: () => getTeamPlayers(props.teamId, isOnTeam(props.teamId)),
     refetchOnWindowFocus: false,
 })
 
-const { isOnTeam } = useTeam();
+
 
 </script>
 <script lang="ts">

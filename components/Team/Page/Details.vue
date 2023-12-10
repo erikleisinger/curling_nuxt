@@ -31,7 +31,7 @@
             {{ team.name }}
         </h2>
         <q-input dense v-else v-model="editedValues.name" label="Team name" />
-        <h3 class="rink-name">Home rink</h3>
+        <h3 class="rink-name" v-if="team.rink">{{team.rink?.name}} </h3>
     </header>
     <section class="team-players__section" v-if="props.teamId">
         <div
@@ -214,12 +214,15 @@ const props = defineProps<{
 const emit = defineEmits(["back"]);
 
 const team = computed(() => props.teamId ? 
-    useRepo(Team).with("players").where("id", props.teamId).first() : {
+    useRepo(Team).withAll().where("id", props.teamId).first() : {
         name: null,
         avatar_url: null,
         players: []
     }
 );
+
+
+
 
 const permanentPlayers = computed(() => team.value.players.filter(({pivot}) => !pivot.status))
 const { getTeamAvatar } = useAvatar();
