@@ -66,8 +66,6 @@
 .line-chart__container {
     margin-left: auto;
     margin-right: auto;
-
-    min-height: 300px;
     position: relative;
     .chart-options__container {
         height: 100%;

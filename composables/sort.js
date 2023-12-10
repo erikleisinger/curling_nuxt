@@ -1,10 +1,10 @@
 export const useSort = () => {
-    const sortAlphabetically = (a,b) => {
+    const sortAlphabetically = (a,b, asc = true) => {
         if (a < b) {
-            return -1;
+            return asc ? -1 : 1;
           }
           if (a > b) {
-            return 1;
+            return asc ? 1: -1;
           }
           return 0;
     }

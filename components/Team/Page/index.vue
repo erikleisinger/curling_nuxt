@@ -38,7 +38,9 @@
     <ChartTeamStatsTime
         :teamId="Number(route.params.id)"
         :visibleStats="['Hammer efficiency']"
+        class="q-mb-md"
     />
+   
     <GameResultList :teamId="Number(route.params.id)"/>
 </template>
 <script setup lang="ts">
@@ -57,7 +59,6 @@ const toPercent = (val: number) => {
 };
 
 const getIcon = (val: number) => {
-    console.log('VALUE: ', val)
     return val > 50 ? 'arrow_drop_up' : 'arrow_drop_down'
 }
 const getPercentileColor = (val:number) => {

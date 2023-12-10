@@ -1,15 +1,16 @@
 <template>
-    <div style="position: relative full-width">
+    <div style="position: relative full-width" ref="gameResult">
         <div class="result__container--wrap">
             <div class="row no-wrap">
-               
                 <div class="result__header">
                     <slot name="before" />
 
                     <div class="result__container" @click="emit('expand')">
-                        <div class="backdrop--behind"/>
-                        <div class="backdrop"/>
-                        <div class="team__profile--container column no-wrap justify-center">
+                        <div class="backdrop--behind" />
+                        <div class="backdrop" />
+                        <div
+                            class="team__profile--container column no-wrap justify-center"
+                        >
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
@@ -21,13 +22,13 @@
                             </div>
                             <div class="team-name__container">
                                 <h2
-                                    class="text-sm truncate-text text-center col-grow full-width"
+                                    class="text-sm truncate-text text-center col-grow full-width highlightable"
                                 >
                                     {{ home.name }}
                                 </h2>
                                 <div
                                     class="placeholder--floating right"
-                                  v-if="home.isPlaceholder"
+                                    v-if="home.isPlaceholder"
                                 >
                                     <q-icon color="grey-6" name="o_smart_toy" />
                                 </div>
@@ -35,19 +36,25 @@
                         </div>
 
                         <div
-                            class="column full-width game-info__container" ref="gameInfoContainer" @click="reveal"
+                            class="column full-width game-info__container"
+                            ref="gameInfoContainer"
+                            @click="reveal"
                         >
-                        <div  class="game-showmore__container row justify-center items-center" :style="{opacity: isRevealed ? 1 : 0}">
-<div class="game-showmore__button">
-                           <q-btn flat @click="onViewMore"> View game</q-btn>
-</div>
-                            </div>
-                     
                             <div
-                                class="row justify-center   full-width no-wrap "
+                                class="game-showmore__container row justify-center items-center"
+                                :style="{ opacity: isRevealed ? 1 : 0 }"
                             >
+                                <div class="game-showmore__button">
+                                    <q-btn flat @click="onViewMore">
+                                        View game</q-btn
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="row justify-center full-width no-wrap">
                                 <div
-                                    class="column  no-wrap relative-position" style="height: min-content"
+                                    class="column no-wrap relative-position"
+                                    style="height: min-content"
                                 >
                                     <div
                                         class="score"
@@ -59,7 +66,7 @@
                                     >
                                         {{ home.points_scored }}
                                     </div>
-                                  
+
                                     <div
                                         class="verified__container"
                                         v-if="
@@ -75,9 +82,10 @@
                                         />
                                     </div>
                                 </div>
-<div class="score q-mx-xs">:</div>
+                                <div class="score q-mx-xs">:</div>
                                 <div
-                                    class="column   no-wrap relative-position" style="height: min-content"
+                                    class="column no-wrap relative-position"
+                                    style="height: min-content"
                                 >
                                     <div
                                         class="score"
@@ -105,9 +113,28 @@
                                     </div>
                                 </div>
                             </div>
-                             <div class="row justify-center full-width game-info__text" v-if="game.rink && game.rink.name">{{game.rink.name}}</div>
-                            <div class="row justify-center full-width game-info__text" v-if="game.sheet && game.sheet.number">Sheet {{game.sheet.number}}/{{numberToLetter(game.sheet.number)}}</div>
-                            <div class="row justify-center full-width game-info__text" v-if="game.start_time">  {{ toTimezone(game.start_time, 'MMMM D, YYYY') }}</div>
+                            <div
+                                class="row justify-center full-width game-info__text highlightable"
+                                v-if="game.rink && game.rink.name"
+                            >
+                                {{ game.rink.name }}
+                            </div>
+                            <div
+                                class="row justify-center full-width game-info__text highlightable"
+                                v-if="game.sheet && game.sheet.number"
+                            >
+                                Sheet {{ game.sheet.number }}/{{
+                                    numberToLetter(game.sheet.number)
+                                }}
+                            </div>
+                            <div
+                                class="row justify-center full-width game-info__text highlightable"
+                                v-if="game.start_time"
+                            >
+                                {{
+                                    toTimezone(game.start_time, "MMMM D, YYYY")
+                                }}
+                            </div>
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -137,11 +164,9 @@
                                 </div>
                             </div>
                             <div class="text-center row justify-center">
-                                <div
-                                    class="team-name__container"
-                                >
+                                <div class="team-name__container">
                                     <h2
-                                        class="text-sm truncate-text text-center"
+                                        class="text-sm truncate-text text-center highlightable"
                                         style="
                                             width: fit-content;
                                             position: relative;
@@ -162,10 +187,7 @@
                             </div>
                         </div>
                     </div>
-
-             
                 </div>
-
             </div>
         </div>
     </div>
@@ -175,6 +197,7 @@ $result-height: 90px;
 $columns: 30% 40% 30%;
 $max-container-width: 500px;
 $container-padding-top: 15px;
+
 .result__container--wrap {
     max-height: fit-content;
     box-sizing: border-box;
@@ -211,17 +234,17 @@ $container-padding-top: 15px;
             }
             .team-name__container {
                 margin-top: var(--space-xxs);
-               width: fit-content; 
-               position: relative; 
-               margin-right: auto; 
-               margin-left: auto;
-               text-transform: uppercase;
+                width: fit-content;
+                position: relative;
+                margin-right: auto;
+                margin-left: auto;
+                text-transform: uppercase;
             }
         }
 
         .backdrop,
         .backdrop--behind {
-position: absolute;
+            position: absolute;
             height: $result-height;
             width: 80%;
             top: $container-padding-top;
@@ -231,14 +254,14 @@ position: absolute;
         }
 
         .backdrop {
-            
-            
-            background: linear-gradient(180deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,1) 100%);
-            
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.65) 0%,
+                rgba(255, 255, 255, 1) 100%
+            );
         }
         .backdrop--behind {
-            
-background: v-bind(gradient);
+            background: v-bind(gradient);
         }
     }
     .game-details {
@@ -246,7 +269,7 @@ background: v-bind(gradient);
     }
 
     .game-info__container {
-        margin-top: calc($container-padding-top + var(--space-xxxs)) ;
+        margin-top: calc($container-padding-top + var(--space-xxxs));
         z-index: 1;
         position: relative;
         .score {
@@ -279,16 +302,16 @@ background: v-bind(gradient);
             position: absolute;
             height: 100%;
             width: 100%;
-            
+
             margin-top: -12px;
             z-index: 2;
             color: white;
-            
+
             font-weight: bold;
             .game-showmore__button {
-border-radius: 8px;
-background-color: rgba(0,0,0,0.7);
-padding: var(--space-sm);
+                border-radius: 8px;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: var(--space-sm);
             }
         }
     }
@@ -301,11 +324,11 @@ padding: var(--space-sm);
         top: 0;
         &:not(.right) {
             left: -1em;
-               margin-right: var(--space-xs)
+            margin-right: var(--space-xs);
         }
         &.right {
             right: -1em;
-            margin-left: var(--space-xs)
+            margin-left: var(--space-xs);
         }
     }
 }
@@ -317,16 +340,55 @@ import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
-import {useConfirmDialog, onClickOutside} from '@vueuse/core'
+import { useConfirmDialog, onClickOutside } from "@vueuse/core";
+import * as HR from "hrjs";
+
+let hrjsInstance;
+
+const gameResult = ref(null);
+
+const highlightColor = ref('#B4FFEB')
+
+const highlight = (val) => {
+    const highlightables = gameResult.value.querySelectorAll(".highlightable");
+    const regex = new RegExp(val.toLowerCase(), "i");
+    Array.from(highlightables).forEach((el) => {
+       el.innerHTML = el.innerText.replaceAll('\n', '')
+        el.innerText.match(regex)?.forEach((match) => {
+            const newhtml = el.innerHTML.replace(
+                match,
+                `<span style="background-color: ${highlightColor.value}">${match}</span>`
+            );
+
+            el.innerHTML = newhtml;
+        });
+    });
+};
+
+watch(
+    () => props.search,
+    (val) => {
+        highlight(val);
+    }
+);
+
+onBeforeUnmount(() => {
+    hrjsInstance = null;
+});
 
 const $q = useQuasar();
 
 const dialogStore = useDialogStore();
 
 const { toggleGlobalSearch } = dialogStore;
-const {getColor} = useColor();
+const { getColor } = useColor();
 
-const gradient = computed(() => `linear-gradient(90deg, ${getColor(home.value.color)} 0%, ${getColor(away.value.color)} 100%)`)
+const gradient = computed(
+    () =>
+        `linear-gradient(90deg, ${getColor(home.value.color)} 0%, ${getColor(
+            away.value.color
+        )} 100%)`
+);
 
 const props = defineProps({
     authorized: Boolean,
@@ -336,6 +398,7 @@ const props = defineProps({
         default: true,
     },
     gameId: Number,
+    search: String,
 });
 
 const away = computed(() => {
@@ -363,29 +426,25 @@ const home = computed(() => {
     };
 });
 
-const game = computed(
-    () => useRepo(Game).withAll().where("id", props.gameId).first()
+const game = computed(() =>
+    useRepo(Game).withAll().where("id", props.gameId).first()
 );
 
-const isVerified = computed(
-    () => game.value.isVerified
-);
+const isVerified = computed(() => game.value.isVerified);
 
 const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
 
-const gameInfoContainer =  ref(null)
+const gameInfoContainer = ref(null);
 
-const {isRevealed, reveal, confirm, cancel, onConfirm, onCancel} = useConfirmDialog();
+const { isRevealed, reveal, confirm, cancel, onConfirm, onCancel } =
+    useConfirmDialog();
 
-onClickOutside(gameInfoContainer, cancel)
+onClickOutside(gameInfoContainer, cancel);
 
 const onViewMore = () => {
     if (!isRevealed.value) return;
-    navigateTo(`/games/view/${game.value.id}`)
-}
-
-
-
+    navigateTo(`/games/view/${game.value.id}`);
+};
 </script>

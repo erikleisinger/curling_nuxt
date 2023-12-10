@@ -1,6 +1,47 @@
 <template>
-    <!-- v-element-visibility="onElementVis" -->
     <div>
+        <div class="full-width row justify-between items-center">
+            <q-input
+                dense
+                class="col-grow q-pl-sm"
+                label="Search games"
+                v-model="searchInput"
+            >
+                <template v-slot:prepend>
+                    <q-icon name="search"></q-icon>
+                </template>
+            </q-input>
+            <q-btn flat round icon="sort">
+                <q-menu>
+                    <div class="column">
+                        <q-btn
+                            no-wrap
+                            flat
+                            :icon-right="
+                                sortDateOrder === 'asc'
+                                    ? 'keyboard_arrow_up'
+                                    : 'keyboard_arrow_down'
+                            "
+                            @click="onClickSort('Date')"
+                            :text-color="!!sortDateOrder ? 'primary' : ''"
+                            >Sort by date</q-btn
+                        >
+                        <q-btn
+                            no-wrap
+                            flat
+                            :icon-right="
+                                sortOpponentOrder === 'asc'
+                                    ? 'keyboard_arrow_up'
+                                    : 'keyboard_arrow_down'
+                            "
+                            @click="onClickSort('Opponent')"
+                            :text-color="!!sortOpponentOrder ? 'primary' : ''"
+                            >Sort by opponent</q-btn
+                        >
+                    </div>
+                </q-menu>
+            </q-btn>
+        </div>
         <div class="loading-container" v-if="loading">
             <q-inner-loading :showing="true" color="primary" />
         </div>
@@ -9,7 +50,8 @@
             :key="game.id"
             class="result__container"
         >
-            <TeamGameResult              :gameId="game.id"
+            <TeamGameResult
+                :gameId="game.id"
                 :notify="canVerify(game)"
                 :authorized="
                     !!isAuthorized(
@@ -19,6 +61,7 @@
                 "
                 @invite="inviteTeam($event, game)"
                 :home="teamId"
+                :search="searchInput"
             >
                 <!-- Verification -->
                 <template
@@ -70,18 +113,39 @@
             </TeamGameResult>
             <q-separator />
         </div>
-        <div class="show-more__container row justify-center items-center" v-if="gamesPaginated.length < totalGames">
-            <q-btn text outline flat color="blue" @click="showMore" :loading="loadingMore" v-ripple>Show more</q-btn>
+        <div v-if="!gamesPaginated.length" class="no-games__container">
+            No games were found.
+        </div>
+        <div
+            class="show-more__container row justify-center items-center"
+            v-if="cursor < gamesFiltered.length"
+        >
+            <q-btn
+                text
+                outline
+                flat
+                color="blue"
+                @click="showMore"
+                :loading="loadingMore"
+                v-ripple
+                >Show more</q-btn
+            >
         </div>
     </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
+.no-games__container {
+    padding: var(--space-md);
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
 .loading-container {
     min-height: 100px;
     position: relative;
 }
 .show-more__container {
-    padding: var(--space-sm)
+    padding: var(--space-sm);
 }
 .result__container {
     padding-top: var(--space-xs);
@@ -93,10 +157,11 @@ import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
 import { vElementVisibility } from "@vueuse/components";
 import { isPlaceholder } from "@/utils/team";
-import { useQuery} from '@tanstack/vue-query'
+import { useQuery } from "@tanstack/vue-query";
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
+
 const props = defineProps({
     teamId: Number,
     filterOpposition: {
@@ -109,27 +174,64 @@ const initialized = ref(false);
 
 const totalGames = computed(() => games.value.length);
 
-const cursor = ref(3)
+const cursor = ref(3);
 
-const loadingMore = ref(false)
+const loadingMore = ref(false);
 
 const showMore = async () => {
     loadingMore.value = true;
-  setTimeout(() => {
-if (cursor.value + 3 > totalGames.length) {
-        cursor.value = totalGames.length
-    } else {
-        cursor.value += 3;
-    }
-       loadingMore.value = false;
-  }, 20)
-  
- 
- 
-  
-}
+    setTimeout(() => {
+        if (cursor.value + 3 > totalGames.length) {
+            cursor.value = totalGames.length;
+        } else {
+            cursor.value += 3;
+        }
+        loadingMore.value = false;
+    }, 20);
+};
 
-const gamesPaginated = computed(() => [...games.value].splice(0, cursor.value))
+// order functions
+
+const { sortAlphabetically } = useSort();
+const orderByOpponent = (a, b) => {
+    const aName = a.teams.find((t) => t.team.id !== props.teamId)?.team.name;
+    const bName = b.teams.find(({ team }) => team.id !== props.teamId)?.team
+        .name;
+    return sortAlphabetically(aName, bName, sortOpponentOrder.value === "asc");
+};
+
+const orderByDate = (a, b) => {
+    if (a.start_time > b.start_time) {
+        return sortDateOrder.value === "asc" ? 1 : -1;
+    } else if (b.start_time > a.start_time) {
+        return sortDateOrder.value === "asc" ? -1 : 1;
+    }
+    return 0;
+};
+
+const searchInput = ref(null);
+const { toTimezone } = useTime();
+
+const gamesFiltered = computed(() => {
+    return [...games.value] .filter((game) => {
+            if (!searchInput.value) {
+                console.log('no search input!')
+                return true;
+            }
+            const regex = new RegExp(searchInput.value.toLowerCase());
+            return (
+                regex.test(game.teams[0].team.name.toLowerCase()) ||
+                regex.test(game.teams[1].team.name.toLowerCase()) ||
+                regex.test(game.rink.name.toLowerCase()) ||
+                regex.test(toTimezone(game.start_time).toLowerCase())
+            );
+        })
+})
+const gamesPaginated = computed(() =>
+    [...gamesFiltered.value]
+       
+        .splice(0, cursor.value)
+);
 
 const games = computed(() => {
     if (loading.value) return [];
@@ -137,7 +239,7 @@ const games = computed(() => {
     const t =
         useRepo(Game)
             .query()
-            .with("teams")
+            .withAllRecursive()
 
             .whereHas("teams", (q) => {
                 return q.whereIn("team_id", [props.teamId]);
@@ -150,7 +252,13 @@ const games = computed(() => {
             })
             .orderBy('start_time', 'desc')
             .get() ?? [];
-    return t
+    return t.sort(
+        sortOpponentOrder.value
+            ? orderByOpponent
+            : sortDateOrder.value
+            ? orderByDate
+            : () => 1
+    );
 });
 
 const loading = ref(true);
@@ -160,18 +268,18 @@ const fetchGames = async () => {
 
     await nextTick();
 
-    const {getGames} = useGame();
+    const { getGames } = useGame();
 
     getGames({
         team_id_param: props.teamId,
         game_id_param: null,
-    })
-    
+    });
+
     loading.value = false;
 };
 
 onMounted(() => {
-   fetchGames();
+    fetchGames();
 });
 
 const confirmUnsaved = ref(false);
@@ -363,5 +471,30 @@ const cancelRequest = async (game) => {
         text: `Invitation to ${game.away_name} was cancelled.`,
         state: "completed",
     });
+};
+
+const sortDateOrder = ref(null);
+const sortOpponentOrder = ref(null);
+
+const onClickSort = (type) => {
+    const typeKey = `sort${type}Order`;
+    const sortTypes = {
+        sortDateOrder: sortDateOrder,
+        sortOpponentOrder: sortOpponentOrder,
+    };
+    Object.keys(sortTypes)
+        .filter((key) => key !== typeKey)
+        .forEach((key) => {
+            sortTypes[key].value = null;
+        });
+
+    const steps = [null, "desc", "asc"];
+
+    if (sortTypes[typeKey].value === "asc") {
+        sortTypes[typeKey].value = null;
+    } else {
+        const index = steps.indexOf(sortTypes[typeKey].value);
+        sortTypes[typeKey].value = steps[index + 1];
+    }
 };
 </script>
