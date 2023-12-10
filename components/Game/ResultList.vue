@@ -121,7 +121,7 @@
                     ></div>
                 </template>
             </TeamGameResult>
-            <q-separator />
+         
         </div>
         <div v-if="!gamesPaginated.length" class="no-games__container">
             No games were found.

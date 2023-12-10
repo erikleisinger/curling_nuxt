@@ -5,6 +5,7 @@ export const useTeam = () => {
     const getTeamPlayers = async (teamId: number, andRequests: boolean = false) => {
         if (!teamId) return [];
         const client = useSupabaseClient();
+        console.log('get team players: ', andRequests)
 
         const { data } = await client
             .from("team_profile_junction")
@@ -44,6 +45,7 @@ export const useTeam = () => {
                 )
                 .eq("team_id", teamId)
                 .eq("status", "pending");
+                console.log('got requests: ', requests)
             const playerRepo = useRepo(Player);
             const teamPlayerRepo = useRepo(TeamPlayer);
             [...data, ...requests].forEach((p) => {

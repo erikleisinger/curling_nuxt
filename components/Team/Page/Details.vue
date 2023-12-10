@@ -17,7 +17,6 @@
                 :teamId="props.teamId"
                 :editable="editing"
                 :emitOnly="editing"
-                @update="onAvatarUpdate"
             />
             <div
                 class="avatar-edit__overlay row justify-center items-center"
@@ -58,7 +57,11 @@
                     ></q-btn>
                 </TeamPlayerRemove>
             </div>
+            <div class="player-avatar__container">
             <Avataaar v-bind="player.avatar" class="player-avatar" />
+            <q-badge color="orange" floating  align="bottom" v-if="player.pivot && player.pivot.status">Invitation sent</q-badge>
+            </div>
+           
             <div class="text-center player-name truncate-text">
                 {{ player.first_name }}
             </div>
@@ -71,9 +74,18 @@
             class="column items-center player-avatars__container"
         >
             <div class="player-avatar__add row justify-center items-center">
-                <q-btn flat round icon="add" color="white" size="sm" />
+                <q-btn
+                    flat
+                    round
+                    icon="add"
+                    color="white"
+                    size="sm"
+                    @click="openPlayerSearch"
+                />
             </div>
-            <div class="text-center player-name truncate-text">Add player</div>
+            <div class="text-center player-name truncate-text">
+                Invite player
+            </div>
         </div>
     </section>
 </template>
@@ -149,7 +161,7 @@
     }
 
     .player-avatars__container {
-        width: 33.33%;
+        width: 31%;
         margin-bottom: var(--space-md);
         position: relative;
         transition: all 0.5s;
@@ -161,13 +173,36 @@
             width: 100%;
             border-radius: 8px;
         }
+        .invitation-badge {
+            height: 50px;
+            width: 50px;
+            position: absolute;
+            background-color: red;
+            right: 10px;
+            bottom: 0;
+        }
+        .player-avatar__container {
+           width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            .q-badge {
+                left: 0!important;
+                right: 0!important;
+                margin: auto;
+                width: fit-content;
+               
+            }
+        }
     }
 }
 </style>
 <script setup lang="ts">
+import { useDialogStore } from "@/store/dialog";
+import {useTeamRequestStore} from '@/store/team-requests'
 import Team from "@/store/models/team";
 import { useTeamStore } from "@/store/teams";
-import { useQuery} from '@tanstack/vue-query'
+import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
 
 const queryClient = useQueryClient();
@@ -183,10 +218,7 @@ const team = computed(() =>
 
 const { getTeamAvatar } = useAvatar();
 
-const { isLoading, data: avatar } = getTeamAvatar(props.teamId)
-
-
-
+const { isLoading, data: avatar } = getTeamAvatar(props.teamId);
 
 const editing = ref(false);
 
@@ -248,13 +280,14 @@ const onClickEdit = async () => {
                     file,
                     props.teamId
                 );
-           queryClient.invalidateQueries({
-                    queryKey: ['teamavatar', props.teamId],
-                });
+            queryClient.invalidateQueries({
+                queryKey: ["teamavatar", props.teamId],
+            });
         }
 
-        if (hasChanged) queryClient.invalidateQueries({
-                queryKey: ["team", "page",props.teamId],
+        if (hasChanged)
+            queryClient.invalidateQueries({
+                queryKey: ["team", "page", props.teamId],
             });
         saving.value = false;
 
@@ -263,9 +296,30 @@ const onClickEdit = async () => {
     }
 };
 
-const onAvatarUpdate = async (data) => {
-    editedValues.value.avatar_url = data;
+const { toggleGlobalSearch } = useDialogStore();
+
+const openPlayerSearch = () => {
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: "Search for a user to invite",
+            resourceTypes: ["profile"],
+            callback: inviteUser,
+            filterIds: [...team.value.players].map(({ id }) => id),
+        },
+    });
 };
+
+const inviteUser = async (e) => {
+     await useTeamRequestStore().sendTeamRequest({
+        requestee_profile_id: e.profile_id,
+        team_id: props.teamId,
+    });
+    queryClient.invalidateQueries({
+        queryKey: ['team', 'players', props.teamId]
+    })
+    
+}
 
 const { isOnTeam } = useTeam();
 </script>

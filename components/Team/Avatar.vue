@@ -199,7 +199,7 @@ const visible = ref(false);
 
 const {getTeamAvatar} = useAvatar();
 
-const defaultAvatar = new URL('~/assets/rink.jpg', import.meta.url).href;
+
 
 const avatar_url = computed(() => team.value.avatar_url)
 
