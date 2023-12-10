@@ -1,8 +1,10 @@
 <template>
     <header class="team-profile__header">
+      
         <div class="team-profile-picture--shadow" />
         <div class="team-profile-picture">
-            <div class="team-players__wrap row justify-start">
+            
+            <div class="team-players__wrap row justify-end">
                 <Avataaar
                     v-for="player in team.players"
                     :key="player.id"
@@ -20,26 +22,7 @@
                 <span>{{ team.name }}</span>
             </h1>
         </div>
-        <div class="menu__container">
-            <q-btn flat round icon="more_vert">
-                <q-menu auto-close>
-                    <q-list separator>
-                        <q-item clickable v-ripple>
-                            <q-item-section avatar>
-                                <q-icon color="primary" name="edit"></q-icon>
-                            </q-item-section>
-                            <q-item-section>Edit team</q-item-section>
-                        </q-item>
-                         <q-item clickable v-ripple>
-                            <q-item-section avatar>
-                                <q-icon color="primary" name="edit"></q-icon>
-                            </q-item-section>
-                            <q-item-section>Edit team</q-item-section>
-                        </q-item>
-                    </q-list>
-                </q-menu>
-            </q-btn>
-        </div>
+
     </header>
 </template>
 <style lang="scss">
@@ -59,19 +42,9 @@ $border-radius: 16px;
         margin: var(--space-sm);
         margin-top: var(--space-md);
     }
-    .menu__container {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 1;
-        padding: var(--space-xs);
-        padding-top: var(--space-xxxs);
-        @include sm {
-            padding-top: 0;
-        }
-    }
 
-    // padding: var(--space-md);
+
+
     .team-profile-picture,
     .team-profile-picture--shadow {
         width: calc(100% - $offset * 2);
@@ -94,7 +67,6 @@ $border-radius: 16px;
         .team-name {
             position: absolute;
             bottom: 0;
-            // mix-blend-mode: difference;
             font-weight: bold;
             background-color: rgba(0, 0, 0, 0.5);
             border-bottom-left-radius: $border-radius;
@@ -134,9 +106,12 @@ $border-radius: 16px;
 import Team from "@/store/models/team";
 import TP from "@/store/models/team-player";
 import { TEAM_POSITIONS } from "@/constants/team";
+import { useQuery} from '@tanstack/vue-query'
 const props = defineProps<{
     teamId: number | string;
 }>();
+
+
 
 const team = computed(() => {
     return useRepo(Team).with("players").where("id", props.teamId).first();
@@ -144,7 +119,20 @@ const team = computed(() => {
 
 const { getTeamAvatar } = useAvatar();
 
-const { data: avatar } = getTeamAvatar(team.value.avatar_url, true);
+
+const { data: avatar } = getTeamAvatar(props.teamId, {
+    enabled: !!team.value
+})
+// useQuery({
+//             queryKey: ['teamavatar', avatar_url],
+//             queryFn:  () => getTeamAvatar(team.value.avatar_url, props.teamId),
+//             refetchOnWindowFocus: false,
+//             cacheTime: Infinity,
+//             staleTime: Infinity,
+//             placeholderData: defaultAvatar,
+//             enabled: !!team.value,
+//         })
+
 
 const players = computed(() => {
     const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
@@ -162,13 +150,17 @@ const players = computed(() => {
             );
         });
 });
-const getPlayers = async () => {
     const { getTeamPlayers } = useTeam();
-    console.log("getting players");
-    getTeamPlayers(props.teamId, false);
-};
 
-onMounted(() => {
-    getPlayers();
-});
+const {isLoading} = useQuery({
+    queryKey: ['team', 'players', props.teamId],
+    queryFn: () => getTeamPlayers(props.teamId),
+    refetchOnWindowFocus: false,
+})
+
+</script>
+<script lang="ts">
+export default {
+    name: "TeamHeader",
+};
 </script>

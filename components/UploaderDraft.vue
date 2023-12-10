@@ -5,6 +5,7 @@
         @change="handleUpload"
         accept="png, jpg"
         :disabled="uploading"
+
     />
 </template>
 <style lang="scss" scoped>

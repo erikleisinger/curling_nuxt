@@ -37,7 +37,7 @@
                     v-if="editable && visible"
                     style="z-index: 10"
                     @upload="setPendingAvatar"
-                    :emitOnly="create"
+                    :emitOnly="emitOnly"
                     resourceType="team"
                     :resourceId="teamId"
                 />
@@ -153,9 +153,9 @@
 <script setup>
 import { useStorageStore } from "@/store/storage";
 import { onClickOutside, useElementHover, useImage } from "@vueuse/core";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery} from '@tanstack/vue-query'
 
-const defaultAvatar = new URL('~/assets/rink.jpg', import.meta.url).href;
+
 
 import Team from "@/store/models/team";
 const props = defineProps({
@@ -163,6 +163,7 @@ const props = defineProps({
     color: String,
     create: Boolean,
     editable: Boolean,
+    emitOnly: Boolean,
     highlight: Boolean,
     invitable: Boolean,
     teamId: Number,
@@ -178,6 +179,7 @@ const team = computed(
 const pendingAvatarUrl = ref(null);
 
 const setPendingAvatar = (event) => {
+    console.log('set pending avatar: ', event)
     emit("update", event);
     const { file } = event;
     pendingAvatarUrl.value = URL.createObjectURL(file);
@@ -195,24 +197,17 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-const getAvatar = async () => {
-    if (!team.value.avatar_url) return defaultAvatar;
-    const client = useSupabaseClient();
-    const { data } = await client.storage
-        .from("Avatars")
-        .download(team.value.avatar_url);
-    if (!data) return defaultAvatar;
-    return window.URL.createObjectURL(data);
-};
+const {getTeamAvatar} = useAvatar();
 
-// TODO: set default pic
-const { isLoading,  data: avatarUrl } = useQuery({
-    queryKey: ["avatar", "team", props.teamId],
-    queryFn: getAvatar,
-    refetchOnWindowFocus: false,
-    placeholderData: defaultAvatar,
+const defaultAvatar = new URL('~/assets/rink.jpg', import.meta.url).href;
+
+const avatar_url = computed(() => team.value.avatar_url)
+
+const { isLoading,  data: avatarUrl } =  getTeamAvatar(props.teamId, {
     enabled: !!team.value
-});
+})
+
+
 
 const avatar = ref(null);
 const loaded = ref(true);

@@ -364,8 +364,7 @@ export const useTeamStore = defineStore("team", {
                 console.error(error);
                 return;
             }
-            const team = await this.refreshTeam(teamId);
-            if (team) this.insertTeamIntoStore(team);
+            
         },
         async updateTeamPlayer(updatedPlayer: {id: number, [key: string]: string | number}) {
             const notStore = useNotificationStore();
@@ -432,7 +431,7 @@ export const useTeamStore = defineStore("team", {
                 });
     
                 const [updates] = data;
-          
+                console.log('store upload done')
                 return updates;
             }
         },

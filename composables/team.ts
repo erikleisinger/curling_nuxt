@@ -1,12 +1,10 @@
-import Player from '@/store/models/player'
-import TeamPlayer from '@/store/models/team-player'
+import Player from "@/store/models/player";
+import TeamPlayer from "@/store/models/team-player";
+import Team from "@/store/models/team";
 export const useTeam = () => {
-    const getTeamPlayers = async (teamId: number, andRequests: boolean) => {
-        console.log('teamid: ', teamId)
+    const getTeamPlayers = async (teamId: number, andRequests: boolean = false) => {
         if (!teamId) return [];
         const client = useSupabaseClient();
-
-        let returnVal;
 
         const { data } = await client
             .from("team_profile_junction")
@@ -25,6 +23,8 @@ export const useTeam = () => {
         `
             )
             .eq("team_id", teamId);
+
+            useRepo(TeamPlayer).where('team_id', teamId).delete();
 
         if (andRequests) {
             const { data: requests } = await client
@@ -47,15 +47,15 @@ export const useTeam = () => {
             const playerRepo = useRepo(Player);
             const teamPlayerRepo = useRepo(TeamPlayer);
             [...data, ...requests].forEach((p) => {
-                const status = p.status ?? null
+                const status = p.status ?? null;
                 playerRepo.save(p.user);
                 teamPlayerRepo.save({
                     id: p.id,
                     player_id: p.user.id,
                     team_id: teamId,
                     status,
-                    position: p.position
-                })  
+                    position: p.position,
+                });
             });
         } else {
             const playerRepo = useRepo(Player);
@@ -68,11 +68,19 @@ export const useTeam = () => {
                     player_id: p.user.id,
                     team_id: teamId,
                     status: null,
-                    position: p.position
-                })  
-            })
+                    position: p.position,
+                });
+            });
+            
         }
-        return returnVal;
+        return true;
     };
-    return { getTeamPlayers };
+
+    const isOnTeam = (teamId: number) => {
+        const { user: userId } = useUser();
+        const team = useRepo(Team).with("players").where("id", teamId).first();
+        if (!team) return false;
+        return [...(team.players ?? [])].some(({ id }) => id === userId.value);
+    };
+    return { getTeamPlayers, isOnTeam };
 };

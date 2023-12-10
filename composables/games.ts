@@ -9,9 +9,7 @@ export const useGame = () => {
             team_id_param,
             game_id_param
         });
-        console.log('GOT GAMES: ', data)
         
-
         if (!data) return;
 
         const dayjs = useDayjs();

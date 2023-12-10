@@ -12,8 +12,8 @@ import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
 const route = useRoute();
 
 const {isLoading} = useQuery({
-    queryKey: ['team', 'stats', route.params.id],
-    queryFn: () => GET_TEAM_WITH_STATS(route.params.id),
+    queryKey: ['team', 'page', route.params.id],
+    queryFn: () => GET_TEAM_WITH_STATS(Number(route.params.id)),
     refetchOnWindowFocus: false,
 })
 
