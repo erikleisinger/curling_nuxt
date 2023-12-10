@@ -114,7 +114,11 @@ const props = defineProps<{
 
 
 const team = computed(() => {
-    return useRepo(Team).with("players").where("id", props.teamId).first();
+    const t = useRepo(Team).with("players").where("id", props.teamId).first()
+    return {
+        ...t,
+        players: t.players?.filter(({pivot}) => !pivot.status) ?? []
+    };
 });
 
 const { getTeamAvatar } = useAvatar();

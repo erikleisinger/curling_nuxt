@@ -3,11 +3,11 @@
         <div class="back-button__container">
             <q-btn flat round icon="arrow_back_ios" @click="emit('back')" />
         </div>
-        <div class="edit-button__container" v-if="isOnTeam(props.teamId)">
+        <div class="edit-button__container" v-if="isOnTeam(props.teamId) || !props.teamId">
             <q-btn
                 flat
                 round
-                :icon="editing ? 'done' : 'edit'"
+                :icon="editing || !props.teamId ? 'done' : 'edit'"
                 @click="onClickEdit"
                 :loading="saving"
             />
@@ -15,8 +15,9 @@
         <div class="avatar-container">
             <TeamAvatar
                 :teamId="props.teamId"
-                :editable="editing"
-                :emitOnly="editing"
+                :editable="editing || !props.teamId"
+                :emitOnly="editing || !props.teamId"
+                @update="updateAvatar"
             />
             <div
                 class="avatar-edit__overlay row justify-center items-center"
@@ -26,13 +27,13 @@
                 <q-icon flat round name="edit" size="md" color="white" />
             </div>
         </div>
-        <h2 class="team-name text-center" v-if="!editing">
+        <h2 class="team-name text-center" v-if="!editing && props.teamId">
             {{ team.name }}
         </h2>
-        <q-input dense v-else v-model="editedValues.name" />
+        <q-input dense v-else v-model="editedValues.name" label="Team name" />
         <h3 class="rink-name">Home rink</h3>
     </header>
-    <section class="team-players__section">
+    <section class="team-players__section" v-if="props.teamId">
         <div
             v-for="player in team.players"
             :key="player.id"
@@ -40,7 +41,7 @@
         >
             <div
                 class="delete-player__overlay row justify-center items-center"
-                v-if="editing && team.players.length > 1"
+                v-if="editing && permanentPlayers.length > 1"
             >
                 <TeamPlayerRemove
                     v-slot="{ remove }"
@@ -212,10 +213,15 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["back"]);
 
-const team = computed(() =>
-    useRepo(Team).with("players").where("id", props.teamId).first()
+const team = computed(() => props.teamId ? 
+    useRepo(Team).with("players").where("id", props.teamId).first() : {
+        name: null,
+        avatar_url: null,
+        players: []
+    }
 );
 
+const permanentPlayers = computed(() => team.value.players.filter(({pivot}) => !pivot.status))
 const { getTeamAvatar } = useAvatar();
 
 const { isLoading, data: avatar } = getTeamAvatar(props.teamId);
@@ -250,16 +256,26 @@ const setOriginalValues = () => {
     };
 };
 
+const createTeam = async () => {
+    if (!editedValues.value.name) return;
+    const client = useSupabaseClient();
+    const {data} = await client.from('teams').insert({
+        name: editedValues.value.name,
+    }).select('id').single();
+    const {id} = data;
+    return id;
+}
+
 const saving = ref(false);
 
 const onClickEdit = async () => {
     // Begin edit state
-    if (!editing.value) {
+    if (!editing.value && !!props.teamId) {
         setOriginalValues();
         setEditedValues(false);
         editing.value = true;
         // End edit state & save
-    } else {
+    } else if (props.teamId) {
         let hasChanged = false;
         if (editedValues.value.name !== originalValues.value.name) {
             saving.value = true;
@@ -273,28 +289,42 @@ const onClickEdit = async () => {
         if (editedValues.value.avatar_url !== originalValues.value.avatar_url) {
             hasChanged = true;
             saving.value = true;
-            const { file, path } = editedValues.value.avatar_url;
-            if (file && path)
-                await useTeamStore().uploadAvatarToTeam(
-                    path,
-                    file,
-                    props.teamId
-                );
-            queryClient.invalidateQueries({
-                queryKey: ["teamavatar", props.teamId],
-            });
+
+            await updateTeamAvatar(props.teamId)
         }
 
         if (hasChanged)
             queryClient.invalidateQueries({
                 queryKey: ["team", "page", props.teamId],
             });
-        saving.value = false;
+      
 
         setEditedValues(true);
         editing.value = false;
+        saving.value = false;
+    } else {
+        saving.value = true
+        const id = await createTeam();
+        await updateTeamAvatar(id);
+
+        navigateTo(`/teams/${id}`)
+
     }
+      
 };
+
+const updateTeamAvatar = async (teamId: number) => {
+const { file, path } = editedValues.value.avatar_url;
+            if (file && path)
+                await useTeamStore().uploadAvatarToTeam(
+                    path,
+                    file,
+                    teamId
+                );
+            queryClient.invalidateQueries({
+                queryKey: ["teamavatar", teamId],
+            });
+}
 
 const { toggleGlobalSearch } = useDialogStore();
 
@@ -322,6 +352,10 @@ const inviteUser = async (e) => {
 }
 
 const { isOnTeam } = useTeam();
+
+const updateAvatar = (data) => {
+    editedValues.value.avatar_url = data;
+}
 </script>
 <script lang="ts">
 export default {

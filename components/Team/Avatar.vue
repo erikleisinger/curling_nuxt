@@ -179,7 +179,6 @@ const team = computed(
 const pendingAvatarUrl = ref(null);
 
 const setPendingAvatar = (event) => {
-    console.log('set pending avatar: ', event)
     emit("update", event);
     const { file } = event;
     pendingAvatarUrl.value = URL.createObjectURL(file);

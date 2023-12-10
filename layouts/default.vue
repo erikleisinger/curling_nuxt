@@ -73,10 +73,10 @@
                         direction="up"
                         class="action-button"
                     >
-                        <q-fab-action color="primary" icon="group_add">
+                        <q-fab-action color="primary" icon="group_add" @click="newTeamOpen = true">
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                        <q-fab-action color="secondary" icon="videogame_asset">
+                        <q-fab-action color="secondary" icon="videogame_asset" >
                             <span class="action-button__label">New game</span>
                         </q-fab-action>
                     </q-fab>
@@ -94,59 +94,25 @@
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 />
             </q-toolbar>
-
-            <!-- <q-toolbar class="global-footer row justify-between">
-                 <div
-                    v-if="$q.screen.xs"
-                    style="width: 50%"
-                    class="row "
-                >
-                    <q-btn
-                        flat
-                        round
-                        icon="menu"
-                        color="grey-8"
-                        @click="leftDrawerOpen = !leftDrawerOpen"
-                    />
-                </div>
-
-                <div v-else class="row justify-end" style="width: 50%">
-                    <q-btn flat round icon="search" />
-                    <q-btn flat round icon="notifications" />
-                       <q-btn flat round icon="scoreboard" color="primary" to="/games/create" />
-                </div>
-                <div
-                    class="row full-height items-center col-grow clickable"
-                    @click="goTo('#season')"
-                >
-                    <div
-                        style="height: 50%; aspect-ratio: 1/1; margin-top: -10%"
-                    >
-                        <Logo :color="getColor('deepPurple')" />
-                    </div>
-                </div>
-                 <div
-                    v-if="$q.screen.xs"
-                    style="width: 50%"
-                    class="row justify-end"
-                >
-                    <q-btn
-                        flat
-                        round
-                        icon="add"
-                        color="grey-8"
-                            to="/games/create"
-                    />
-                </div>
-
-             
-            </q-toolbar> -->
         </q-footer>
     </q-layout>
+    <q-dialog v-model="newTeamOpen" persistent  >
+        <q-card class="team-details__viewer">
+          <TeamPageDetails
+        @back="newTeamOpen = false"
+   
+       
+    />
+        </q-card>
+    </q-dialog>
 </template>
 <style lang="scss" scoped>
 $footer-height-xs: 3em;
 $footer-height-sm: 4em;
+.team-details__viewer {
+     width: min(100vw, 500px); 
+        height: min(100vh, 600px);
+}
 .app-layout {
     display: flex;
     flex-direction: column;
@@ -258,6 +224,8 @@ import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
+
+const newTeamOpen = ref(false)
 
 const { logout } = useSession();
 const { getColor } = useColor();

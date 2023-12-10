@@ -4,8 +4,8 @@
         @click="viewing = true"
         style="cursor: pointer"
     />
-    <div class="row justify-around">
-        <TeamAttribute title="Games played" color="amber" class="col-5">
+    <div class="row justify-around" v-if="stats.games_played">
+        <TeamAttribute title="Games played" color="amber"  :class="$q.screen.xs ? 'col-5' : 'col-2'">
             <span>
                 {{ stats.games_played ?? 0 }}
             </span>
@@ -13,7 +13,7 @@
         <TeamAttribute
             title="Win %"
             color="amber"
-            class="col-5"
+            :class="$q.screen.xs ? 'col-5' : 'col-2'"
             :percent="stats.winPercentile"
         >
             <span> {{ stats.winPercent }}% </span>
@@ -33,7 +33,7 @@
         <TeamAttribute
             title="Hammer first end"
             color="amber"
-            class="col-5"
+           :class="$q.screen.xs ? 'col-5' : 'col-2'"
             :percent="stats.HFEPercentile"
         >
             <span> {{ stats.HFEPercent }}% </span>
@@ -53,7 +53,7 @@
         <TeamAttribute
             title="Hammer last end"
             color="amber"
-            class="col-5"
+           :class="$q.screen.xs ? 'col-5' : 'col-2'"
             :percent="stats.HLEPercentile"
         >
             <span> {{ stats.HLEPercent }}% </span>
@@ -73,12 +73,17 @@
     </div>
 
     <ChartTeamStatsTime
+    v-if="stats.games_played"
         :teamId="Number(route.params.id)"
         :visibleStats="['Hammer efficiency']"
         class="q-mb-md"
     />
 
-    <GameResultList :teamId="Number(route.params.id)" />
+    <GameResultList :teamId="Number(route.params.id)" v-if="stats.games_played"/>
+
+    <div v-if="!stats.games_played" class="full-width text-center q-pa-lg">
+        {{team.name}} hasn't played any games!
+    </div>
        <q-dialog v-model="viewing" persistent  >
         <q-card class="team-details__viewer">
           <TeamPageDetails
@@ -100,11 +105,15 @@
 <script setup lang="ts">
 import Team from "@/store/models/team";
 
+const $q = useQuasar();
+
 const route = useRoute();
+
+const team = computed(() => useRepo(Team).withAll().where("id", route.params.id).first())
 
 const stats = computed(
     () =>
-        useRepo(Team).withAll().where("id", route.params.id).first()
+            team.value
             ?.totalStats ?? {}
 );
 

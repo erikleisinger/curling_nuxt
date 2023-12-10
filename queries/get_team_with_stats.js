@@ -26,7 +26,7 @@ export default async (id) => {
 
         const [t] = data;
 
-        const {name: teamName, ...totalStats} = await getTeamStats(id);
+        const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
        
         const { avatar_type, avatar_url, team_avatar, id: team_id, name, ...stats } = t;
 
