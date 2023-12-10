@@ -11,14 +11,14 @@
                 <!-- <q-icon size="1em" :name="icon" :color="color" /> -->
                 <h3 class="text-sm truncate-text">{{ title }}</h3>
             </div>
-            <div class="row">
-                <div class="text-xxxl text-bold value row">
+            <div class="row no-wrap">
+                <div class="text-xxxl text-bold value row no-wrap">
                     <slot />
                     <span v-if="expanded">
                         <slot name="contentExpanded" />
                     </span>
                 </div>
-                <div class="text-sm row items-center q-ml-sm extra-text">
+                <div class="text-sm row items-center  extra-text no-wrap">
                     <slot name="extra" />
                 </div>
             </div>

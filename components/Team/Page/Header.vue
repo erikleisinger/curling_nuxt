@@ -127,15 +127,7 @@ const { getTeamAvatar } = useAvatar();
 const { data: avatar } = getTeamAvatar(props.teamId, {
     enabled: !!team.value
 })
-// useQuery({
-//             queryKey: ['teamavatar', avatar_url],
-//             queryFn:  () => getTeamAvatar(team.value.avatar_url, props.teamId),
-//             refetchOnWindowFocus: false,
-//             cacheTime: Infinity,
-//             staleTime: Infinity,
-//             placeholderData: defaultAvatar,
-//             enabled: !!team.value,
-//         })
+
 
 
 const players = computed(() => {

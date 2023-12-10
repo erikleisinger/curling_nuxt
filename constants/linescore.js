@@ -8,4 +8,5 @@ export const views = {
     LINESCORE: "linescore",
     DETAILS: "details",
     CONFIRM: "confirm",
+    GAME_PARAMS: 'gameparams'
 };

@@ -1,10 +1,10 @@
 <template>
-<div class="end-count__container ">
-   <h2 class="text-md text-bold title">Select # of ends</h2>
-    <div class="full-height full-width column end-count__select">
-        <q-btn color="deep-purple" rounded @click="onSelect(6)" >6 Ends</q-btn>
-        <q-btn color="deep-purple" rounded @click="onSelect(8)" >8 Ends</q-btn>
-        <q-btn color="deep-purple" rounded @click="onSelect(10)" 
+<div class="end-count__container column justify-center full-height no-wrap">
+   <h2 class="text-xl text-bold title text-center">Select # of ends</h2>
+    <div class="row end-count__select justify-around">
+        <q-btn color="deep-purple" rounded @click="onSelect(6)" size="xl" >6 Ends</q-btn>
+        <q-btn color="deep-purple" rounded @click="onSelect(8)" size="xl" >8 Ends</q-btn>
+        <q-btn color="deep-purple" rounded @click="onSelect(10)" size="xl" 
             >10 Ends</q-btn
         >
     </div>
@@ -17,8 +17,11 @@
         margin-top: var(--space-sm);
       }
       .end-count__select {
+        max-width: max(300px, 50%);
     padding: var(--space-md);
     box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
     .q-btn {
         margin-bottom: var(--space-md);
     }

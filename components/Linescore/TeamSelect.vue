@@ -1,17 +1,76 @@
 <template>
-    <h2 class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center">
-        <slot/>
-    </h2>
-    <h3 class="text-sm  title  text-center">
-        <slot name="subtitle"/>
-    </h3>
-    <div class="linescore-confirmation__wrap">
-        <div class="linescore-confirmation__container">
+    <div class="linescore-confirmation__wrap ">
+        <div class="row items-end justify-center q-px-md">
+            <div class="column items-center">
+            <h2
+                class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center"
+            >
+                <slot v-bind:toggleCustom="toggleCustom" />
+            </h2>
+            <div v-if="homeTeam" class="text-center">Use the arrows to select a team, or press the avatar to search.</div>
+             <div v-else-if="!homeTeam && !customOpposition" @click="toggleCustom">Can't find a team?</div>
+             <div v-else>Press the avatar below to search for a team.</div>
+            </div>
+        </div>
+
+        <div class="row justify-around items-center no-wrap">
+            <q-btn
+                flat
+                round
+                icon="arrow_back"
+                size="xl"
+                v-if="homeTeam"
+                @click="selectTeam(-1)"
+                :style="{
+                    visibility: currentHomeTeam === 0 ? 'hidden' : 'visible',
+                }"
+            />
+            <div class="full-width column items-center no-wrap">
+                <div class="team-avatar__container" @click="toggleSelect">
+                    <TeamAvatar
+                        :teamId="selections.id"
+                        :viewable="false"
+                        v-if="showAvatar"
+                    />
+                </div>
+                <div class="text-center" v-if="!customOpposition">
+                    {{ selections.name }}
+                </div>
+                <q-input v-else label="Type an opposition name" class="full-width q-px-lg"  v-model="selections.name"/>
+            </div>
+            <q-btn
+                flat
+                round
+                icon="arrow_forward"
+                size="xl"
+                v-if="homeTeam"
+                @click="selectTeam(+1)"
+                :style="{
+                    visibility:
+                        currentHomeTeam >= homeTeams.length - 1
+                            ? 'hidden'
+                            : 'visible',
+                }"
+            />
+        </div>
+        <div class="row justify-center items-start">
+            <q-btn
+                icon="check_circle"
+                :color="selections?.name ? 'green' : ''"
+                size="50px"
+                flat
+                round
+                dense
+                @click="emit('select')"
+                :disable="!selections?.name"
+            />
+        </div>
+        <!-- <div class="linescore-confirmation__container">
             <div class="team__card row items-center justify-center">
                 <div class="column items-center  full-width">
                
                         <div style="width: 50%" class="q-mb-md" @click="toggleSelect">
-                            <!-- v-bind="parseAvatar(teamSelection?.home?.team_avatar)" -->
+               
                             <TeamAvatar
                                 :teamId="
                                     selections?.id
@@ -70,16 +129,22 @@
                 </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <style lang="scss" scoped>
 .linescore-confirmation__wrap {
     width: 100%;
     height: 100%;
-    display: flex;
-    // background-color: rgba(0, 0, 0, 0.1);
-    background-color: white;
+    display: grid;
+    grid-template-rows: 25% 50% 25%;
+    .team-avatar__container {
+        width: 50vh;
+        max-width: 200px;
+        @include sm {
+            max-width: 300px;
+        }
+    }
     .linescore-confirmation__container {
         display: grid;
         grid-template-rows: auto 50px auto;
@@ -98,8 +163,6 @@
             margin: calc(-1 * var(--space-xs)) 0px;
         }
         .team__card {
-            background-color: white;
-
             position: relative;
             .no-opposition__floating {
                 width: 100%;
@@ -162,6 +225,7 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import { useUserTeamStore } from "@/store/user-teams";
 
 const { toggleLineScore, toggleGlobalSearch } = useDialogStore();
 
@@ -170,6 +234,7 @@ const props = defineProps({
     allowCustom: Boolean,
     restrictIds: Array,
     filterIds: Array,
+    homeTeam: Boolean,
 });
 
 const selections = computed({
@@ -188,31 +253,67 @@ const emit = defineEmits(["select", "update:modelValue"]);
 const customOpposition = ref(false);
 
 const toggleSelect = () => {
+    if (props.homeTeam) return;
     toggleGlobalSearch({
         open: true,
         options: {
             resourceTypes: ["team"],
             restrictIds: props.restrictIds,
             filterIds: props.filterIds,
-            callback: (selection) =>
-                (selections.value = {
+            callback: (selection) => {
+                customOpposition.value = false;
+ selections.value = {
                     ...selection,
                     team_avatar: selection.avatar,
-                }),
+                }
+            }
+               ,
             inputLabel: "Select your team",
         },
     });
 };
 
+const homeTeams = computed(() => useUserTeamStore().userTeams);
+const currentHomeTeam = computed(() =>
+    homeTeams.value.findIndex(({ id }) => id === selections.value.id)
+);
+
+const selectTeam = (inc) => {
+    if (inc < 0 && currentHomeTeam.value === 0) return;
+    if (inc > 0 && currentHomeTeam.value >= homeTeams.value.length) return;
+    selections.value = homeTeams.value[currentHomeTeam.value + inc];
+};
+
+const showAvatar = ref(true);
+
+watch(
+    () => selections.value,
+    () => {
+        showAvatar.value = false;
+        nextTick(() => {
+            showAvatar.value = true;
+        });
+    },
+    { immediate: true }
+);
+
 onMounted(() => {
-    toggleSelect();
-})
+    if (props.homeTeam) {
+        selections.value = homeTeams.value[0];
+    }
+});
 
 const customOppositionName = ref(null);
 
+const toggleCustom = () => {
+    if (customOpposition.value) return;
+    selections.value = {};
+    customOpposition.value = true;
+};
+
 const setCustomOpposition = () => {
-    const {name} = {...selections.value}
-    selections.value = {name}
+    const { name } = { ...selections.value };
+    selections.value = { name };
     customOpposition.value = false;
-}
+};
 </script>

@@ -1,6 +1,7 @@
 <template>
 <NuxtLayout>
-    <div class="full-height">
+    <div class="full-height linescore__container">
+  
         <div
             v-if="view === views.NO_TEAM"
             class="full-height full-width row justify-center q-pa-md"
@@ -26,11 +27,27 @@
                 </div>
             </div>
         </div>
-        <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
+        <!-- <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
+
             <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(6)">6 ends</q-btn>
                <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(8)">8 Ends</q-btn>
                   <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(10)">10 Ends</q-btn>
-        </div>
+        </div> -->
+        <div style="z-index:1; transform:translateX(0); position: relative" class="full-height">
+            <div class="nav--container">
+                <q-btn icon="arrow_back" flat round @click="goBack"/>
+            </div>
+        <LinescoreEndCountSelect v-if="view === views.END_COUNT_SELECT" v-model="endCount" @update:modelValue="view = views.HOME_SELECT"/>
+        <LinescoreTeamSelect v-if="view === views.HOME_SELECT" homeTeam v-model="gameParams.home" @select="view = views.AWAY_SELECT" >
+            <h2 class="text-xl text-bold title text-center">Select your team</h2>
+        </LinescoreTeamSelect>
+        <LinescoreTeamSelect v-if="view === views.AWAY_SELECT"  v-model="gameParams.away" @select="view = views.GAME_PARAMS" >
+            <h2 class="text-xl text-bold title text-center">Select opposition</h2>
+           
+        </LinescoreTeamSelect>
+          <LinescoreColorHammerSelect v-if="view === views.GAME_PARAMS" v-model="gameParams" @select="goLinescore"  />
+   
+   
         <LinescoreEditor
             v-model="gameParams"
             :score="score"
@@ -44,7 +61,7 @@
             :canEditDetails="!showLinescore && view === views.DETAILS"
             @ready="showLinescore = true"
             :compact="showLinescore && view !== views.DETAILS"
-            v-if="view !== views.END_COUNT_SELECT"
+            v-if="view === views.LINESCORE || view === views.DETAILS"
             @endcount="view = views.END_COUNT_SELECT"
         >
             <div class="scoreboard--wrap full-height" >
@@ -172,6 +189,8 @@
                 </transition>
             </div>
         </LinescoreEditor>
+    </div>
+       
     <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
@@ -183,6 +202,9 @@
     >
         Are you sure you want to close? All unsaved changes will be lost.
     </DialogConfirmation>
+          <div class="blobs--container full-width full-height" style="z-index:0">
+        <DialogLinescoreBlobs :step="currentStep"/>
+        </div>
     </div>
 </NuxtLayout>
 </template>
@@ -191,6 +213,27 @@ $column-width: 26vh;
 $gutter-width: 20vw;
 $scroll-margin: -100px;
 $team-nav-margin: 6vh;
+$blob-blur: 32px;
+.linescore__container {
+    position: relative;
+    overflow-x: hidden;
+    .blobs--container {
+        position: absolute;
+        z-index: -1;
+        top:0;
+        filter: blur($blob-blur);
+    -webkit-filter: blur($blob-blur);
+    -moz-filter: blur($blob-blur);
+  -o-filter: blur($blob-blur);
+  -ms-filter: blur($blob-blur);
+
+    }
+    .nav--container {
+        position: fixed;
+        top: 0;
+        padding: var(--space-xs)
+    }
+}
 .scoreboard--wrap {
     width: 100%;
     height: 100%;
@@ -261,6 +304,25 @@ const dayjs = useDayjs();
 const $q = useQuasar();
 const dialogStore = useDialogStore();
 const { toggleLineScore, toggleTeamViewer, toggleGlobalSearch } = dialogStore;
+
+const viewOrder = {
+    [views.END_COUNT_SELECT]: 0,
+    [views.HOME_SELECT]: 1,
+    [views.AWAY_SELECT]:2,
+    [views.GAME_PARAMS]: 3,
+    [views.LINESCORE]: 4,
+    [views.DETAILS]: 5
+    
+}
+
+const currentStep = computed(() => viewOrder[view.value] ?? 0)
+
+const goBack = () => {
+    if (currentStep.value === 0) return;
+    const currentIndex = Object.keys(viewOrder).indexOf(view.value)
+    console.log(currentIndex)
+    view.value = Object.keys(viewOrder)[currentIndex - 1];
+}
 
 /**
  * Game variables
@@ -719,4 +781,8 @@ const goBackToLinescore = () => {
     showLinescore.value = true;
     view.value = null;
 };
+const goLinescore = () => {
+    showLinescore.value = true;
+    view.value = views.LINESCORE
+}
 </script>

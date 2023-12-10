@@ -18,7 +18,7 @@
                 <h2 class="text-sm text-center">
                     {{ format(selections.start_time, "HH:mm a") }}
                 </h2>
-                <div class="edit--floating" v-if="canEdit">
+                <!-- <div class="edit--floating" v-if="canEdit">
                     <q-btn
                         icon="edit"
                         flat
@@ -28,7 +28,7 @@
                         dense
                         @click="dateSelectOpen = true"
                     />
-                </div>
+                </div> -->
             </div>
             <InputDate
                 v-if="canEditDetails && dateSelectOpen"
@@ -45,7 +45,7 @@
             }"
             ref="linescoreContainer"
         >
-            <template v-slot:headerPrepend>
+            <!-- <template v-slot:headerPrepend>
                 <div
                     class="row items-center full-height full-width justify-center"
                     v-if="!summary"
@@ -61,11 +61,11 @@
                         @click="emit('endcount')"
                     />
                 </div>
-            </template>
+            </template> -->
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
-                        v-if="summary"
+                        
                         avatarSize="100%"
                         v-model="selections.home"
                         :hasHammer="
@@ -73,7 +73,7 @@
                             selections.home?.id
                         "
                     />
-                    <Teleport
+                    <!-- <Teleport
                         to=".avatar-unnested__home"
                         :disabled="!mode.includes('home')"
                     >
@@ -135,13 +135,13 @@
                                 Select your team
                             </template>
                         </LinescoreAvatar>
-                    </Teleport>
+                    </Teleport> -->
                 </div>
             </template>
             <template v-slot:avatarAway>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
-                        v-if="summary"
+                      
                         avatarSize="100%"
                         v-model="selections.away"
                         :hasHammer="
@@ -149,7 +149,7 @@
                             selections.away?.id
                         "
                     />
-                    <Teleport
+                    <!-- <Teleport
                         to=".avatar-unnested__away"
                         :disabled="!mode.includes('away')"
                     >
@@ -209,7 +209,7 @@
                                 Select opposition
                             </template>
                         </LinescoreAvatar>
-                    </Teleport>
+                    </Teleport> -->
                 </div>
             </template>
 
@@ -264,7 +264,7 @@
                 >
                     {{ selections?.rink?.name ?? "Unspecified rink" }}
                 </h2>
-                <div class="edit--floating text-sm" v-if="canEditDetails">
+                <!-- <div class="edit--floating text-sm" v-if="canEditDetails">
                     <q-btn
                         icon="edit"
                         flat
@@ -274,7 +274,7 @@
                         dense
                         size="sm"
                     />
-                </div>
+                </div> -->
             </div>
         </div>
         <div
@@ -346,6 +346,7 @@
     flex-direction: column;
     overflow-y: visible;
     box-sizing: border-box;
+    padding-top: 50px;
     .avatars-unnested__container {
         width: 100%;
         box-sizing: border-box;
@@ -463,7 +464,7 @@ const endCount = computed(() => Object.keys(props.score)?.length ?? 0);
 
 const showLinescore = computed(() => {
     return (
-        !initing.value &&
+        // !initing.value &&
         !props.summary &&
         props.canEdit &&
         !!selections.value.home?.id &&
@@ -523,7 +524,8 @@ watch(
 
 const initing = ref(true);
 
-onMounted(async () => {
+
+const mountAnimation = async () => {
     if (props.static) {
                 mode.value.push("away");
                 mode.value.push("home");
@@ -565,7 +567,11 @@ onMounted(async () => {
         },
         "<"
     );
-    // }, 0);
+}
+onMounted(async () => {
+    if (true) return;
+    await mountAnimation();
+ 
 });
 
 const checkCompletionState = () => {
@@ -649,16 +655,16 @@ const nestAll = () => {
     });
 };
 
-watch(
-    () => props.compact,
-    (val) => {
-        if (val) {
-            nestAll();
-        } else {
-            unnestAll();
-        }
-    }
-);
+// watch(
+//     () => props.compact,
+//     (val) => {
+//         if (val) {
+//             nestAll();
+//         } else {
+//             unnestAll();
+//         }
+//     }
+// );
 
 const tweenScore = () => {
     console.log("tween score: ", totalScore.value);

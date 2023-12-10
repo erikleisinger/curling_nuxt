@@ -133,14 +133,14 @@ onMounted(async () => {
                     grid: {
                         display: false,
                     },
-                    min: min.value,
-                    max: max.value,
+                    min: 0,
+                    max: 100,
                   
                     position: 'right',
                    
                 
                     ticks: {
-                          stepSize: max.value - min.value,
+                        //   stepSize: 100 - 0,
                         callback: (e, e2, e3) => {
                             return `${e}%`;
                         },
