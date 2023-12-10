@@ -78,8 +78,8 @@
                         <q-fab-action color="amber" icon="group_add" @click="newTeamOpen = true">
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                        <q-fab-action color="blue" icon="videogame_asset" >
-                            <span class="action-button__label" @click="navigateTo('/games/create')">New game</span>
+                        <q-fab-action color="blue" icon="videogame_asset" @click="navigateTo('/games/create')">
+                            <span class="action-button__label" >New game</span>
                         </q-fab-action>
                         <q-fab-action color="red" icon="logout" @click="logout" >
                             <span class="action-button__label">Logout</span>
