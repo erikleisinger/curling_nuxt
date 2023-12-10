@@ -57,15 +57,17 @@
                 <q-btn
                     flat
                     icon="home"
-                    @click="goTo('/')"
+                    @click="goTo('#')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 />
                 <q-btn
                     flat
                     icon="groups_2"
-                    @click="goTo('#season')"
+                    @click="goTo('/')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
-                />
+                >
+                    <q-badge color="red" floating   v-if="teamRequests && teamRequests.length">{{teamRequests.length}}</q-badge>
+                </q-btn>
                 <div class="action-button__container">
                     <q-fab
                         color="primary"
@@ -73,11 +75,14 @@
                         direction="up"
                         class="action-button"
                     >
-                        <q-fab-action color="primary" icon="group_add" @click="newTeamOpen = true">
+                        <q-fab-action color="amber" icon="group_add" @click="newTeamOpen = true">
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                        <q-fab-action color="secondary" icon="videogame_asset" >
+                        <q-fab-action color="blue" icon="videogame_asset" >
                             <span class="action-button__label">New game</span>
+                        </q-fab-action>
+                        <q-fab-action color="red" icon="logout" @click="logout" >
+                            <span class="action-button__label">Logout</span>
                         </q-fab-action>
                     </q-fab>
                 </div>
@@ -174,6 +179,9 @@ $footer-height-sm: 4em;
                     &:nth-child(2) {
                         left: -60px;
                     }
+                    &:nth-child(3) {
+                        right: -60px;
+                    }
                 }
                 .action-button__label {
                     position: absolute;
@@ -222,6 +230,7 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
 import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
+import {useTeamRequestStore} from '@/store/team-requests'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
@@ -270,19 +279,7 @@ const onSelect = (selection) => {
         return navigateTo(`/teams/${selection.id}`);
     }
 
-    // if (selection.resourcetype === 'team') {
-    // resource.value = {
-    //     ...selection,
-    //     team_avatar: selection.avatar
-    // }
-    // } else {
-    //     resource.value = selection;
-    // }
-
-    // if (selection.resourcetype === 'team') {
-    //     return navigateTo(`/teams/${selection.id}`)
-    // }
-
-    // showSearch.value = false;
 };
+
+const teamRequests = computed(() => useTeamRequestStore().requests)
 </script>

@@ -12,7 +12,6 @@ export const useAvatar = () => {
             .eq("id", teamId);
         const [res = {}] = data ?? [];
         const { avatar_url } = res;
-        console.log(avatar_url);
         return avatar_url;
     };
     const getAvatar = async (teamId: number) => {

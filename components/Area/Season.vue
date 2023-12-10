@@ -1,17 +1,22 @@
 <template>
     <div class="season__wrap">
+        <aside v-if="teamRequests && teamRequests.length">
+            <div v-for="request in teamRequests" :key="request.id">
+                <TeamRequest :request="request" viewable/>
+                <q-separator />
+            </div>
+        </aside>
         <header class="season__header">
             <div v-if="latestResult">
-            Latest result:
-            {{latestResult.result}} vs {{latestResult.opposition?.name ?? 'Unnamed team'}}
-
+                Latest result:
+                {{ latestResult.result }} vs
+                {{ latestResult.opposition?.name ?? "Unnamed team" }}
             </div>
 
             <div v-if="isError">ERROR</div>
         </header>
         <main class="season-content__container">
             <div style="height: 100%">
-
                 <div
                     v-for="team in teams"
                     :key="team.id"
@@ -111,15 +116,19 @@ $col-width: 80px;
             }
         }
     }
+    .team-request__container {
+        padding: var(--space-xs);
+    }
 }
-</style>        
+</style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useElementBounding } from "@vueuse/core";
-import Team from '@/store/models/team'
-import { useQuery} from '@tanstack/vue-query'
-import GET_LATEST_RESULT from '@/queries/get_latest_result'
+import Team from "@/store/models/team";
+import { useQuery } from "@tanstack/vue-query";
+import GET_LATEST_RESULT from "@/queries/get_latest_result";
 
 const $q = useQuasar();
 
@@ -129,7 +138,13 @@ const userTeamStore = useUserTeamStore();
  * teams
  */
 
-const teams = computed(() => useRepo(Team).where('id', (val) => userTeamStore.userTeams.some(({id}) => id === val)).get());
+const teams = computed(() =>
+    useRepo(Team)
+        .where("id", (val) =>
+            userTeamStore.userTeams.some(({ id }) => id === val)
+        )
+        .get()
+);
 
 /**
  * element height calculations
@@ -139,20 +154,21 @@ const header = ref(null);
 const { height: headerHeight } = useElementBounding(header);
 const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`);
 
-
 /**
  * BEGIN utility
  */
 
 const { toggleGlobalSearch, toggleTeamViewer } = useDialogStore();
 
-const latestResult = computed(() => null)
+const latestResult = computed(() => null);
 
-const {isLoading, isError} = useQuery({
-    queryKey: ['latestResult'],
+const { isLoading, isError } = useQuery({
+    queryKey: ["latestResult"],
     queryFn: GET_LATEST_RESULT,
     refetchOnWindowFocus: false,
-})
+});
+
+const teamRequests = computed(() => useTeamRequestStore().requests);
 
 
 </script>

@@ -209,7 +209,7 @@ import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
 
 const props = defineProps<{
-    teamId: number;
+    teamId: number | undefined
 }>();
 const emit = defineEmits(["back"]);
 

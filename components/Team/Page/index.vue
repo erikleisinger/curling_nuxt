@@ -1,4 +1,10 @@
 <template>
+<div v-if="teamRequests && teamRequests.length">
+    <div v-for="request in teamRequests" :key="request.id">
+    <TeamRequest :request="request" >
+    </TeamRequest>
+    </div>
+</div>
     <TeamPageHeader
         :teamId="Number(route.params.id)"
         @click="viewing = true"
@@ -104,6 +110,7 @@
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
+import {useTeamRequestStore} from '@/store/team-requests'
 
 const $q = useQuasar();
 
@@ -128,9 +135,9 @@ const getPercentileColor = (val: number) => {
     return val > 50 ? "green" : "red";
 };
 const viewing = ref(false);
-const onTeamEdit = () => {
-    console.log("EDIT");
-};
+
+
+const teamRequests = computed(() => useTeamRequestStore().requests?.filter(({team_id}) => team_id === Number(route.params.id) ?? []));
 </script>
 <script lang="ts">
 export default {
