@@ -78,6 +78,8 @@ const away = computed(() => {
     }
 })
 
+
+
 const getGames = async () => {
     const client = useSupabaseClient();
 
@@ -87,12 +89,14 @@ const getGames = async () => {
     })
     const [team1, team2] = data;
 
+console.log(toTimezone(team1.start_time, null, null, true).unix())
     useRepo(Game).save({
         id: team1.game_id,
         end_count: team1.end_count,
         rink: team1.rink,
         sheet: team1.sheet,
-        hammer_first_end: team1.hammer_first_end
+        hammer_first_end: team1.hammer_first_end,
+        start_time: toTimezone(team1.start_time, null, null, true).unix()
     })
     useRepo(Team).save({
         ...team1.team,

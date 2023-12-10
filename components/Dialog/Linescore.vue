@@ -34,8 +34,11 @@
                   <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(10)">10 Ends</q-btn>
         </div> -->
         <div style="z-index:1; transform:translateX(0); position: relative" class="full-height">
-            <div class="nav--container">
+            <div class="nav--container row justify-between full-width">
                 <q-btn icon="arrow_back" flat round @click="goBack"/>
+                 <q-btn  flat color="green" class="row items-center" @click="save">
+                   <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs"/> <div>Save game</div>
+                 </q-btn>
             </div>
         <LinescoreEndCountSelect v-if="view === views.END_COUNT_SELECT" v-model="endCount" @update:modelValue="view = views.HOME_SELECT"/>
         <LinescoreTeamSelect v-if="view === views.HOME_SELECT" homeTeam v-model="gameParams.home" @select="view = views.AWAY_SELECT" >

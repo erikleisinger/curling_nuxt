@@ -13,10 +13,11 @@
             <div class="relative-position">
                 <h2 class="text-sm text-center">Game Summary</h2>
                 <h1 class="text-md text-bold text-center">
-                    {{ format(selections.start_time, "MMMM DD, YYYY") }}
+                    {{ toTimezone(selections.start_time, "MMMM DD, YYYY", false) }}
                 </h1>
                 <h2 class="text-sm text-center">
-                    {{ format(selections.start_time, "HH:mm a") }}
+                    {{ toTimezone(selections.start_time, "HH:mm a", false) }}
+                    
                 </h2>
                 <!-- <div class="edit--floating" v-if="canEdit">
                     <q-btn
@@ -73,9 +74,10 @@
                             selections.home?.id
                         "
                     />
-                    <!-- <Teleport
+                    <Teleport
                         to=".avatar-unnested__home"
-                        :disabled="!mode.includes('home')"
+                      
+                        v-if="props.summary"
                     >
                         <LinescoreAvatar
                             avatarSize="100%"
@@ -135,7 +137,7 @@
                                 Select your team
                             </template>
                         </LinescoreAvatar>
-                    </Teleport> -->
+                    </Teleport>
                 </div>
             </template>
             <template v-slot:avatarAway>
@@ -149,10 +151,12 @@
                             selections.away?.id
                         "
                     />
-                    <!-- <Teleport
+                    <Teleport
                         to=".avatar-unnested__away"
-                        :disabled="!mode.includes('away')"
+                        
+                        v-if="props.summary"
                     >
+                    <!-- :disabled="!mode.includes('away')" -->
                         <LinescoreAvatar
                             avatarSize="100%"
                             id="avatar-away"
@@ -209,7 +213,7 @@
                                 Select opposition
                             </template>
                         </LinescoreAvatar>
-                    </Teleport> -->
+                    </Teleport>
                 </div>
             </template>
 
@@ -227,22 +231,23 @@
         >
             <div
                 class="avatar-unnested__home"
-                :style="{ 'grid-column': mode.includes('away') ? '' : '1/3' }"
+           
             />
             <div
                 class="avatar-unnested__away"
-                :style="{ 'grid-column': mode.includes('home') ? '' : '1/3' }"
+               
             />
+             <!-- :style="{ 'grid-column': mode.includes('home') ? '' : '1/3' }" -->
         </div>
         <div
             class="row no-wrap full-width justify-around relative-position"
             v-if="summary"
         >
             <div class="totalscore--summary" id="totalscore-home">
-                {{ tweenedHomeScore.total.toFixed() }}
+                {{ totalScore.home }}
             </div>
             <div class="totalscore--summary" id="totalscore-away">
-                {{ tweenedAwayScore.total.toFixed() }}
+                 {{ totalScore.away }}
             </div>
             <div class="end-count__container text-sm">
                 After
@@ -328,7 +333,6 @@
                 </div>
             </transition>
         </div>
-        <!-- <q-space v-if="summary" /> -->
         <div
             class="slot-content"
             :style="{ height: slotHeight }"
@@ -364,6 +368,7 @@
             .team__header {
                 margin: auto;
                 box-sizing: border-box;
+                grid-column: 1/3;
             }
         }
     }
@@ -569,7 +574,7 @@ const mountAnimation = async () => {
     );
 }
 onMounted(async () => {
-    if (true) return;
+    if (!props.summary) return;
     await mountAnimation();
  
 });
@@ -667,7 +672,6 @@ const nestAll = () => {
 // );
 
 const tweenScore = () => {
-    console.log("tween score: ", totalScore.value);
     gsap.to(tweenedHomeScore, {
         delay: 0.3,
         duration: (Number(totalScore.value.home) || 0) / 8,
@@ -700,7 +704,7 @@ watch(
             transformOrigin: "top",
             ease: "elastic",
         });
-    }
+    }, {immediate:true}
 );
 
 const linescoreContainer = ref(null);
