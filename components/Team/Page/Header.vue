@@ -1,12 +1,14 @@
 <template>
     <header class="team-profile__header">
-       
         <div class="team-profile-picture--shadow" />
         <div class="team-profile-picture">
             <div class="team-players__wrap row justify-start">
-             
-                  <Avataaar v-for="player in team.players" :key="player.id" v-bind="player.avatar" class="player-avatar" />
-
+                <Avataaar
+                    v-for="player in team.players"
+                    :key="player.id"
+                    v-bind="player.avatar"
+                    class="player-avatar"
+                />
             </div>
             <q-img
                 :src="avatar"
@@ -14,10 +16,29 @@
                 height="100%"
                 v-if="avatar"
             ></q-img>
-            <h1 class="team-name"><span>{{team.name}}</span></h1>
+            <h1 class="team-name">
+                <span>{{ team.name }}</span>
+            </h1>
         </div>
-         <div class="menu__container">
-            <q-btn flat round icon="more_vert"/>
+        <div class="menu__container">
+            <q-btn flat round icon="more_vert">
+                <q-menu auto-close>
+                    <q-list separator>
+                        <q-item clickable v-ripple>
+                            <q-item-section avatar>
+                                <q-icon color="primary" name="edit"></q-icon>
+                            </q-item-section>
+                            <q-item-section>Edit team</q-item-section>
+                        </q-item>
+                         <q-item clickable v-ripple>
+                            <q-item-section avatar>
+                                <q-icon color="primary" name="edit"></q-icon>
+                            </q-item-section>
+                            <q-item-section>Edit team</q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
+            </q-btn>
         </div>
     </header>
 </template>
@@ -30,15 +51,15 @@ $border-radius: 16px;
 
     aspect-ratio: 3/2;
     position: relative;
-       
-     margin-top: var(--space-xs);
-     
+
+    margin-top: var(--space-xs);
+
     @include sm {
         aspect-ratio: 3/1;
         margin: var(--space-sm);
-     margin-top: var(--space-md);
+        margin-top: var(--space-md);
     }
-     .menu__container {
+    .menu__container {
         position: absolute;
         top: 0;
         right: 0;
@@ -46,20 +67,19 @@ $border-radius: 16px;
         padding: var(--space-xs);
         padding-top: var(--space-xxxs);
         @include sm {
- padding-top: 0;
+            padding-top: 0;
         }
-       
-     }
+    }
 
     // padding: var(--space-md);
     .team-profile-picture,
     .team-profile-picture--shadow {
         width: calc(100% - $offset * 2);
         aspect-ratio: 3/2;
-         @include sm {
-        aspect-ratio: 3/1
-    }
-   
+        @include sm {
+            aspect-ratio: 3/1;
+        }
+
         border-radius: $border-radius;
     }
     .team-profile-picture {
@@ -76,16 +96,13 @@ $border-radius: 16px;
             bottom: 0;
             // mix-blend-mode: difference;
             font-weight: bold;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             border-bottom-left-radius: $border-radius;
             border-top-right-radius: $border-radius;
             padding: 0px var(--space-xs);
             span {
-            color: #fff;
+                color: #fff;
             }
-          
-           
-
         }
 
         .team-players__wrap {
@@ -99,8 +116,6 @@ $border-radius: 16px;
             .player-avatar {
                 width: 30px;
                 margin-left: var(--space-sm);
-                
-                
             }
         }
     }
@@ -117,14 +132,14 @@ $border-radius: 16px;
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
-import TP from '@/store/models/team-player'
+import TP from "@/store/models/team-player";
 import { TEAM_POSITIONS } from "@/constants/team";
 const props = defineProps<{
     teamId: number | string;
 }>();
 
 const team = computed(() => {
-    return useRepo(Team).with('players').where("id", props.teamId).first();
+    return useRepo(Team).with("players").where("id", props.teamId).first();
 });
 
 const { getTeamAvatar } = useAvatar();
@@ -132,26 +147,28 @@ const { getTeamAvatar } = useAvatar();
 const { data: avatar } = getTeamAvatar(team.value.avatar_url, true);
 
 const players = computed(() => {
-        const p = useRepo(TP)
-            .with("player")
-            .where("team_id", props.teamId)
-            .get();
-        return p.map(({ player, status, position }) => ({
+    const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
+    return p
+        .map(({ player, status, position }) => ({
             ...player,
             status,
             position,
-        })).sort((a, b) => {
-            return TEAM_POSITIONS[b.position]?.sortOrder ?? -1 - TEAM_POSITIONS[a.position]?.sortOrder ?? -1
-        })
-    
+        }))
+        .sort((a, b) => {
+            return (
+                TEAM_POSITIONS[b.position]?.sortOrder ??
+                -1 - TEAM_POSITIONS[a.position]?.sortOrder ??
+                -1
+            );
+        });
 });
 const getPlayers = async () => {
     const { getTeamPlayers } = useTeam();
-    console.log('getting players')
+    console.log("getting players");
     getTeamPlayers(props.teamId, false);
 };
 
 onMounted(() => {
     getPlayers();
-})
+});
 </script>

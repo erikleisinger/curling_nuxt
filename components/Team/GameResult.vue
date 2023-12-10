@@ -344,13 +344,19 @@ import { useConfirmDialog, onClickOutside } from "@vueuse/core";
 
 const gameResult = ref(null);
 
-const highlightColor = ref('#B4FFEB')
+const highlightColor = ref("#B4FFEB");
 
 const highlight = (val) => {
     const highlightables = gameResult.value.querySelectorAll(".highlightable");
-    const regex = new RegExp(val.toLowerCase(), "i");
+    let regex;
+    if (!!val) {
+        regex = new RegExp(val.toLowerCase(), "i");
+    }
+
     Array.from(highlightables).forEach((el) => {
-       el.innerHTML = el.innerText.replaceAll('\n', '')
+        el.innerHTML = el.innerText.replaceAll("\n", "");
+        if (!val) return;
+
         el.innerText.match(regex)?.forEach((match) => {
             const newhtml = el.innerHTML.replace(
                 match,
@@ -368,8 +374,6 @@ watch(
         highlight(val);
     }
 );
-
-
 
 const $q = useQuasar();
 

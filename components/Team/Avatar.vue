@@ -196,6 +196,7 @@ const $q = useQuasar();
 const visible = ref(false);
 
 const getAvatar = async () => {
+    if (!team.value.avatar_url) return defaultAvatar;
     const client = useSupabaseClient();
     const { data } = await client.storage
         .from("Avatars")
@@ -205,11 +206,12 @@ const getAvatar = async () => {
 };
 
 // TODO: set default pic
-const { isLoading, data: avatarUrl } = useQuery({
+const { isLoading,  data: avatarUrl } = useQuery({
     queryKey: ["avatar", "team", props.teamId],
     queryFn: getAvatar,
     refetchOnWindowFocus: false,
-    placeholderData: defaultAvatar
+    placeholderData: defaultAvatar,
+    enabled: !!team.value
 });
 
 const avatar = ref(null);

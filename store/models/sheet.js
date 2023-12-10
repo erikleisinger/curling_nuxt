@@ -6,8 +6,7 @@ export default class Sheet extends Model {
     static fields() {
         return {
             id: this.number(),
-            number: this.string("N/A"),
-            
+            number: this.attr("N/A"),
         };
     }
 }

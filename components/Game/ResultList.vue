@@ -6,6 +6,7 @@
                 class="col-grow q-pl-sm"
                 label="Search games"
                 v-model="searchInput"
+                clearable
             >
                 <template v-slot:prepend>
                     <q-icon name="search"></q-icon>
@@ -13,32 +14,41 @@
             </q-input>
             <q-btn flat round icon="sort">
                 <q-menu>
-                    <div class="column">
-                        <q-btn
-                            no-wrap
-                            flat
-                            :icon-right="
-                                sortDateOrder === 'asc'
-                                    ? 'keyboard_arrow_up'
-                                    : 'keyboard_arrow_down'
-                            "
-                            @click="onClickSort('Date')"
-                            :text-color="!!sortDateOrder ? 'primary' : ''"
-                            >Sort by date</q-btn
-                        >
-                        <q-btn
-                            no-wrap
-                            flat
-                            :icon-right="
-                                sortOpponentOrder === 'asc'
-                                    ? 'keyboard_arrow_up'
-                                    : 'keyboard_arrow_down'
-                            "
-                            @click="onClickSort('Opponent')"
-                            :text-color="!!sortOpponentOrder ? 'primary' : ''"
-                            >Sort by opponent</q-btn
-                        >
-                    </div>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="onClickSort('Date')"
+                        :active="!!sortDateOrder"
+                    >
+                        <q-item-section>Sort by date</q-item-section>
+                        <q-item-section avatar>
+                            <q-icon
+                                :name="
+                                    sortDateOrder === 'asc'
+                                        ? 'keyboard_arrow_up'
+                                        : 'keyboard_arrow_down'
+                                "
+                            ></q-icon>
+                        </q-item-section>
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="onClickSort('Opponent')"
+                        :active="!!sortOpponentOrder"
+                    >
+                        <q-item-section>Sort by opponent</q-item-section>
+                        <q-item-section avatar>
+                            <q-icon
+                                :name="
+                                    sortOpponentOrder === 'asc'
+                                        ? 'keyboard_arrow_up'
+                                        : 'keyboard_arrow_down'
+                                "
+                            ></q-icon>
+                        </q-item-section>
+                    </q-item>
+                 
                 </q-menu>
             </q-btn>
         </div>
@@ -213,24 +223,20 @@ const searchInput = ref(null);
 const { toTimezone } = useTime();
 
 const gamesFiltered = computed(() => {
-    return [...games.value] .filter((game) => {
-            if (!searchInput.value) {
-                console.log('no search input!')
-                return true;
-            }
-            const regex = new RegExp(searchInput.value.toLowerCase());
-            return (
-                regex.test(game.teams[0].team.name.toLowerCase()) ||
-                regex.test(game.teams[1].team.name.toLowerCase()) ||
-                regex.test(game.rink.name.toLowerCase()) ||
-                regex.test(toTimezone(game.start_time).toLowerCase())
-            );
-        })
-})
+    return [...games.value].filter((game) => {
+        if (!searchInput.value) return true;
+        
+        const regex = new RegExp(searchInput.value.toLowerCase());
+        return (
+            regex.test(game.teams[0].team.name.toLowerCase()) ||
+            regex.test(game.teams[1].team.name.toLowerCase()) ||
+            regex.test(game.rink.name.toLowerCase()) ||
+            regex.test(toTimezone(game.start_time).toLowerCase())
+        );
+    });
+});
 const gamesPaginated = computed(() =>
-    [...gamesFiltered.value]
-       
-        .splice(0, cursor.value)
+    [...gamesFiltered.value].splice(0, cursor.value)
 );
 
 const games = computed(() => {
@@ -250,7 +256,7 @@ const games = computed(() => {
                     ...props.filterOpposition,
                 ]);
             })
-            .orderBy('start_time', 'desc')
+            .orderBy("start_time", "desc")
             .get() ?? [];
     return t.sort(
         sortOpponentOrder.value
