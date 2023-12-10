@@ -35,8 +35,8 @@
         </div> -->
         <div style="z-index:1; transform:translateX(0); position: relative" class="full-height">
             <div class="nav--container row justify-between full-width">
-                <q-btn icon="arrow_back" flat round @click="goBack"/>
-                 <q-btn  flat color="green" class="row items-center" @click="save">
+                <q-btn icon="arrow_back" flat round @click="goBack" v-if="currentStep"/>
+                 <q-btn  flat color="green" class="row items-center" @click="save" v-if="view === views.DETAILS">
                    <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs"/> <div>Save game</div>
                  </q-btn>
             </div>
