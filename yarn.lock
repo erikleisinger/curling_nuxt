@@ -3810,11 +3810,6 @@ hosted-git-info@^6.0.0:
   dependencies:
     lru-cache "^7.5.1"
 
-hrjs@^1.5.7:
-  version "1.5.7"
-  resolved "https://registry.yarnpkg.com/hrjs/-/hrjs-1.5.7.tgz#901c53832fdc3ce9d0db43e5e3b7d749df51a32d"
-  integrity sha512-gJ7qPV0akGdYIOCjkdVLS6Pn6pEUOhHWbgy+W8owYKf4UsN/4SSalcsQalFg+OWAPEGYgRjmVzjQLGWDcUbNxg==
-
 html-tags@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/html-tags/-/html-tags-3.3.1.tgz#a04026a18c882e4bba8a01a3d39cfe465d40b5ce"

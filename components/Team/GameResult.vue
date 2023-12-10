@@ -341,9 +341,6 @@ import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import { useConfirmDialog, onClickOutside } from "@vueuse/core";
-import * as HR from "hrjs";
-
-let hrjsInstance;
 
 const gameResult = ref(null);
 
@@ -372,9 +369,7 @@ watch(
     }
 );
 
-onBeforeUnmount(() => {
-    hrjsInstance = null;
-});
+
 
 const $q = useQuasar();
 

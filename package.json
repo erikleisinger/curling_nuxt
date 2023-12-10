@@ -50,7 +50,6 @@
     "chartjs-plugin-annotation": "^3.0.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "gsap": "^3.12.2",
-    "hrjs": "^1.5.7",
     "nuxt-quasar-ui": "^2.0.2",
     "pinch-zoom-js": "2.3.4",
     "pinia": "^2.1.4",
