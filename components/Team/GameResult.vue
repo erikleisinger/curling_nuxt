@@ -115,7 +115,10 @@
                             >
                                 <q-badge
                                     :color="isVerified ? 'primary' : 'red'"
-                                    @click="verifiedPopup = true"
+                                    @click="() => {
+                                        if (isVerified) return;
+                                        verifiedPopup = true;
+                                    }"
                                     >{{
                                         isVerified ? "Verified" : "Unverified"
                                     }}</q-badge
