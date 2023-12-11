@@ -34,7 +34,6 @@ import TeamPlayer from "@/store/models/team-player";
 import { useStorageStore } from "@/store/storage";
 import { useTeamStore } from "@/store/teams";
 import { useTeamRequestStore } from "@/store/team-requests";
-import { useUserTeamStore } from "@/store/user-teams";
 
 const editedItem = {
     id: 0,
@@ -123,7 +122,7 @@ const save = async () => {
             });
     }
     useStorageStore().removeAvatar(0);
-    await useUserTeamStore().fetchUserTeams(true);
+    
 
     return navigateTo(`/teams/${id}`);
 };

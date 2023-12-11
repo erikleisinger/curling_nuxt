@@ -1,15 +1,28 @@
 <template>
-    <div class="linescore-confirmation__wrap ">
+    <div class="linescore-confirmation__wrap">
         <div class="row items-end justify-center q-px-md">
             <div class="column items-center">
-            <h2
-                class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center"
-            >
-                <slot v-bind:toggleCustom="toggleCustom" />
-            </h2>
-            <div v-if="homeTeam" class="text-center">Use the arrows to select a team, or press the avatar to search.</div>
-             <div v-else-if="!homeTeam && !customOpposition" @click="toggleCustom">Can't find a team?</div>
-             <div v-else>Press the avatar below to search for a team.</div>
+                <h2
+                    class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center"
+                >
+                    <slot v-bind:toggleCustom="toggleCustom" />
+                </h2>
+                <div v-if="homeTeam" class="text-center">
+                    Use the arrows to select a team, or press the avatar to
+                    search.
+                </div>
+                <div v-else-if="!customOpposition" class="text-center">
+                    Press the avatar below to search for a team.
+                </div>
+                <div
+                    v-if="!homeTeam && !customOpposition"
+                    @click="toggleCustom"
+                    class="text-underline"
+                    style="cursor: pointer"
+                >
+                    Can't find a team?
+                </div>
+                <div v-else class="text-center">Type a custom opposition name, or press the avatar below to search for a team.</div>
             </div>
         </div>
 
@@ -36,7 +49,12 @@
                 <div class="text-center" v-if="!customOpposition">
                     {{ selections.name }}
                 </div>
-                <q-input v-else label="Type an opposition name" class="full-width q-px-lg"  v-model="selections.name"/>
+                <q-input
+                    v-else
+                    label="Type an opposition name"
+                    class="full-width q-px-lg"
+                    v-model="selections.name"
+                />
             </div>
             <q-btn
                 flat
@@ -226,6 +244,7 @@
 <script setup>
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
+import Team from "@/store/models/team";
 
 const { toggleLineScore, toggleGlobalSearch } = useDialogStore();
 
@@ -262,25 +281,31 @@ const toggleSelect = () => {
             filterIds: props.filterIds,
             callback: (selection) => {
                 customOpposition.value = false;
- selections.value = {
+                selections.value = {
                     ...selection,
                     team_avatar: selection.avatar,
-                }
-            }
-               ,
+                };
+            },
             inputLabel: "Select your team",
         },
     });
 };
 
-const homeTeams = computed(() => useUserTeamStore().userTeams);
+const homeTeams = computed(() =>
+    useRepo(Team)
+        .where("id", (id) =>
+            useUserTeamStore().userTeams.some(({ id: teamId }) => teamId === id)
+        )
+        .get()
+);
 const currentHomeTeam = computed(() =>
     homeTeams.value.findIndex(({ id }) => id === selections.value.id)
 );
 
 const selectTeam = (inc) => {
+    console.log(currentHomeTeam.value, homeTeams.value.length);
     if (inc < 0 && currentHomeTeam.value === 0) return;
-    if (inc > 0 && currentHomeTeam.value >= homeTeams.value.length) return;
+    if (inc > 0 && currentHomeTeam.value >= homeTeams.value.length - 1) return;
     selections.value = homeTeams.value[currentHomeTeam.value + inc];
 };
 
@@ -298,7 +323,7 @@ watch(
 );
 
 onMounted(() => {
-    if (props.homeTeam) {
+    if (props.homeTeam && !selections.value?.id) {
         selections.value = homeTeams.value[0];
     }
 });
