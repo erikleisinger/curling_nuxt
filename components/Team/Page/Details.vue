@@ -25,7 +25,7 @@
             {{ team.name }}
         </h2>
         <q-input dense v-else v-model="editedValues.name" label="Team name" :maxlength="MAX_TEAM_NAME_LENGTH" :rules="[VALIDATION_RULES.REQUIRED]" />
-        <h3 class="rink-name" v-if="team.rink_id && !editing">{{selectedRink.name}} </h3>
+        <h3 class="rink-name" v-if="team.rink_id || !editing">{{selectedRink.name}} </h3>
         <q-input dense v-else readonly  @click="openRinkSearch" :model-value="selectedRink.name" label="Home rink"/>
         
     </header>
@@ -65,6 +65,9 @@
             <div class="text-center player-name truncate-text">
                 {{ player.last_name }}
             </div>
+        </div>
+        <div v-if="!team.players?.length">
+            {{team.name}} has no players.
         </div>
         <div
             v-if="editing"
@@ -262,8 +265,8 @@ const setEditedValues = (wipe = false) => {
 };
 
 const selectedRink = computed(() => {
-    if (!originalValues.value.rink_id && !team.value.rink_id && !editedValues.value.rink_id) return null;
-    return useRepo(Rink).where('id', editedValues.value.rink_id ||  team.value.rink_id).first()
+    if (!originalValues.value.rink_id && !team.value.rink_id && !editedValues.value.rink_id) return {};
+    return useRepo(Rink).where('id', editedValues.value.rink_id ||  team.value.rink_id).first() ?? {}
 })
 
 const originalValues = ref({});

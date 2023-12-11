@@ -171,6 +171,7 @@ import { isPlaceholder } from "@/utils/team";
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
+import Rink from '@/store/models/rink'
 
 const props = defineProps({
     teamId: Number,
@@ -258,7 +259,10 @@ const games = computed(() => {
             })
             .orderBy("start_time", "desc")
             .get() ?? [];
-    return t.sort(
+    return t.map((game) => ({
+        ...game,
+        rink: useRepo(Rink).where('id', game.rink_id).first()
+    })).sort(
         sortOpponentOrder.value
             ? orderByOpponent
             : sortDateOrder.value

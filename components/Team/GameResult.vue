@@ -341,8 +341,11 @@ const highlight = (val) => {
 watch(
     () => props.search,
     (val) => {
-        highlight(val);
-    }
+        nextTick(() => {
+ highlight(val);
+        })
+       
+    }, {immediate: true}
 );
 
 const $q = useQuasar();

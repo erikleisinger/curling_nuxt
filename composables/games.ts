@@ -97,7 +97,6 @@ export const useGame = () => {
             ),
             color
         `).in('team_id', [homeTeamId, awayTeamId])
-        console.log('games: ', data)
         const games = data?.filter(({game_id}) => data.filter((g) => g.game_id === game_id)?.length > 1);
         useRepo(Game).save(games?.map(({game}) => game))
         useRepo(GameTeam).save(games)
@@ -120,7 +119,6 @@ export const useGame = () => {
             `
             )
             .in("game_id", games?.map(({game_id}) => game_id));
-            console.log('stats: ', stats)
 
         stats?.forEach((stat) => {
             useRepo(GameTeam).where('team_id', stat.team_id).where('game_id', stat.game_id).update({
