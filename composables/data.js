@@ -25,7 +25,7 @@ export const useData = () => {
       await getCurrentUser()
 
       const operations = [
-        () => fetchRinks(),
+        // () => fetchRinks(),
         () => fetchUserTeams(true),
         () => getTeamRequestsByUser(userStore.id),
        

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { useNotificationStore } from "@/store/notification";
 import Team from '@/store/models/team'
+import Rink from '@/store/models/rink'
 
 export const useUserTeamStore = defineStore("user-teams", {
     state: () => {
@@ -57,6 +58,8 @@ export const useUserTeamStore = defineStore("user-teams", {
                     rink_id: t.rink_id
                 }
             )))
+
+            await useRepo(Rink).save(data.filter((t) => !!t.rink).map((t) => t.rink))
 
            
             this.userTeams = data ?? []

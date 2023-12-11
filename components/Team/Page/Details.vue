@@ -32,7 +32,8 @@
         </h2>
         <q-input dense v-else v-model="editedValues.name" label="Team name" />
         <h3 class="rink-name" v-if="team.rink_id && !editing">{{selectedRink.name}} </h3>
-        <q-select v-if="editing" dense label="Select a home rink" v-model="editedValues.rink_id" :options="rinks" behavior="menu" option-value="id" option-label="name" emit-value map-options/>
+        <q-input dense v-else readonly  @click="openRinkSearch" :model-value="selectedRink.name" label="Home rink"/>
+        
     </header>
     <section class="team-players__section" v-if="props.teamId">
         <div
@@ -253,10 +254,9 @@ const setEditedValues = (wipe = false) => {
     }
 };
 
-const rinks = computed(() => [...useRepo(Rink).all()])
 const selectedRink = computed(() => {
-    if (!originalValues.value.rink_id && !team.value.rink_id) return null;
-    return useRepo(Rink).where('id', originalValues.value.rink_id || team.value.rink_id).first()
+    if (!originalValues.value.rink_id && !team.value.rink_id && !editedValues.value.rink_id) return null;
+    return useRepo(Rink).where('id', editedValues.value.rink_id || originalValues.value.rink_id || team.value.rink_id).first()
 })
 
 const originalValues = ref({});
@@ -365,6 +365,24 @@ const openPlayerSearch = () => {
         },
     });
 };
+
+const selectRink = (rink) => {
+    useRepo(Rink).save(rink)
+    const {id} = rink;
+    editedValues.value.rink_id = id;
+}
+
+const openRinkSearch = () => {
+    toggleGlobalSearch({
+                    open: true,
+                    options: {
+                        callback: selectRink,
+                        inputLabel: 'Search for a rink',
+                        resourceTypes: ['rink'],
+
+                    }
+                })
+}
 
 const inviteUser = async (e) => {
      await useTeamRequestStore().sendTeamRequest({
