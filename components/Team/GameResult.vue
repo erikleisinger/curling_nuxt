@@ -113,16 +113,10 @@
                                 class="row full-width justify-center"
                                 v-if="!away.isPlaceholder"
                             >
-                                <q-badge
-                                    :color="isVerified ? 'primary' : 'red'"
-                                    @click="() => {
-                                        if (isVerified) return;
-                                        verifiedPopup = true;
-                                    }"
-                                    >{{
-                                        isVerified ? "Verified" : "Unverified"
-                                    }}</q-badge
-                                >
+                                <TeamGameResultVerification
+                                    :gameId="props.gameId"
+                                    @refresh="refreshQuery"
+                                />
                             </div>
                             <div
                                 class="row full-width justify-center"
@@ -178,68 +172,6 @@
             </div>
         </div>
     </div>
-    <DialogInfo
-        v-if="!!verifiedPopup"
-        :confirmButtonText="
-            away.isPlaceholder ? 'Invite team' : 'Accept result'
-        "
-        cancelButtonText="Reject result"
-        @confirm="onRequestConfirm"
-        @cancel="respondToRequest('rejected')"
-        @close="verifiedPopup = false"
-        cancelColor="negative"
-        :confirmColor="away.isPlaceholder ? 'blue' : 'positive'"
-        :showConfirm="
-            isOnTeam(pendingTeam?.id) ||
-            (isOnTeam(creatorTeam?.id) && away.isPlaceholder)
-        "
-        :showCancel="isOnTeam(pendingTeam?.id)"
-    >
-        <span v-if="isOnTeam(pendingTeam?.id)">
-            <strong>{{ creatorTeam.name }}</strong> added this game result and
-            has invited you to verify that it is real.
-            <br />
-            <br />
-            If the game result is valid (i.e. the game occured), press
-            <span class="text-positive text-bold">Accept Result.</span> It will
-            then contribute towards your season statistics.
-
-            <br />
-            <br />
-            If this game did <strong>not</strong> occur, press
-            <span class="text-negative text-bold">Reject Result</span> and it
-            will only count towards your opposition's season statistics.
-        </span>
-        <span v-else>
-            This game was created by <strong>{{ creatorTeam.name }}</strong
-            >.
-            <span v-if="!away.isPlaceholder">
-                <br />
-                <br />
-
-                It will only contribute to
-                <strong>{{ pendingTeam.name }}'s</strong> statistics once it is
-                verified by a member of <strong>{{ pendingTeam.name }}</strong
-                >.
-            </span>
-            <span v-else>
-                <br />
-                <br />
-                <span class="text-negative"
-                    >The name <strong>{{ pendingTeam.name }}</strong> was used
-                    as a placeholder, as the real
-                    <strong>{{ pendingTeam.name }}</strong> does not have an
-                    account.
-                </span>
-                <span v-if="isOnTeam(creatorTeam.id)">
-                    <br />
-                    <br />
-                    To invite a team to verify this game, press
-                    <strong>Invite team</strong>
-                </span>
-            </span>
-        </span>
-    </DialogInfo>
 </template>
 <style lang="scss" scoped>
 $result-height: 90px;
@@ -383,6 +315,12 @@ import { useQueryClient } from "@tanstack/vue-query";
 
 const queryClient = useQueryClient();
 
+const refreshQuery = () => {
+    queryClient.invalidateQueries({
+        queryKey: ["team", "games", home.value?.id],
+    });
+};
+
 const gameResult = ref(null);
 
 const highlightColor = ref("#B4FFEB");
@@ -458,7 +396,7 @@ const away = computed(() => {
         .with("team")
         .where("team_id", (val) => val !== props.home)
         .where("game_id", props.gameId)
-        .orderBy('team_id', 'asc')
+        .orderBy("team_id", "asc")
         .first() ?? { name: "Unnamed team" };
     return {
         ...t,
@@ -489,9 +427,6 @@ const rink = computed(() =>
         : useRepo(Rink).where("id", game.value.rink_id).first()
 );
 
-const isVerified = computed(() => game.value.isVerified);
-const verifiedPopup = ref(false);
-
 const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
@@ -509,56 +444,4 @@ const onViewMore = () => {
 };
 
 const { isOnTeam } = useTeam();
-
-const pendingTeam = computed(() =>
-    away.value.pending ? away.value : home.value.pending ? home.value : null
-);
-const creatorTeam = computed(() =>
-    away.value.pending ? home.value : home.value.pending ? away.value : null
-);
-
-const { getGameRequestsByUser, updateGameRequestStatus, sendGameRequest } = useGameRequestStore();
-
-const respondToRequest = async (status) => {
-    verifiedPopup.value = false;
-    await updateGameRequestStatus({
-        team_id: pendingTeam.value?.id,
-        game_id: props.gameId,
-        status,
-    });
-    queryClient.invalidateQueries({
-        queryKey: ["team", "games", home.value.id],
-    });
-    getGameRequestsByUser();
-};
-
-const onOptionClick = async (e) => {
-      toggleGlobalSearch({
-        open: false,
-    });
-    await sendGameRequest(e, props.gameId);
-     queryClient.invalidateQueries({
-        queryKey: ["team", "games", home.value.id],
-    });
-  
-};
-
-const onRequestConfirm = () => {
-    if (away.value.isPlaceholder) {
-        toggleGlobalSearch({
-            open: true,
-
-            options: {
-                resourceTypes: ["team"],
-                inputLabel: "Invite a team to verify this game",
-                filterIds: [creatorTeam.value?.id],
-                callback: onOptionClick,
-
-                persistent: true,
-            },
-        });
-    } else {
-        respondToRequest("accepted");
-    }
-};
 </script>

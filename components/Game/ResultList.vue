@@ -232,8 +232,8 @@ const gamesFiltered = computed(() => {
         const regex = new RegExp(searchInput.value.toLowerCase());
         return (
             regex.test(game.teams[0].team.name.toLowerCase()) ||
-            regex.test(game.teams[1].team.name.toLowerCase()) ||
-            regex.test(game.rink.name.toLowerCase()) ||
+            regex.test(game.teams[1]?.team?.name?.toLowerCase()) ||
+            regex.test(game.rink?.name?.toLowerCase()) ||
             regex.test(toTimezone(game.start_time).toLowerCase())
         );
     });
