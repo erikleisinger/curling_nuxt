@@ -13,7 +13,7 @@ export const useGame = () => {
 
     
         
-        if (!data) return;
+        if (!data) return null;
 
         const dayjs = useDayjs();
     
@@ -48,6 +48,7 @@ export const useGame = () => {
                 pending: g.pending,
             });
         });
+        return data;
     
     };
     const getTeamGames = async (team_ids_param: number[], start: number = 0, end: number = 5) => {

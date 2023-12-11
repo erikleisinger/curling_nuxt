@@ -526,6 +526,8 @@ const save = async () => {
     createGameStats(gameToCreate?.home, gameId);
     createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId);
 
+    if (shouldSendInvitation && params.away?.id) useGameRequestStore().sendGameRequest(params.away, gameId)
+
     return navigateTo(`/games/view/${gameId}`);
 };
 

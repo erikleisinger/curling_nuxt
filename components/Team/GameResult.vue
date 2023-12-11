@@ -40,11 +40,11 @@
                         <div
                             class="column full-width game-info__container"
                             ref="gameInfoContainer"
-                            @click="reveal"
+                           
                         >
                             <div
                                 class="game-showmore__container row justify-center items-center"
-                                :style="{ opacity: isRevealed ? 1 : 0 }"
+                                :style="{ opacity: isRevealed ? 1 : 0, pointerEvents: isRevealed ? 'all' : 'none' }"
                             >
                                 <div class="game-showmore__button">
                                     <q-btn flat @click="onViewMore">
@@ -53,7 +53,7 @@
                                 </div>
                             </div>
 
-                            <div class="row justify-center full-width no-wrap ">
+                            <div class="row justify-center full-width no-wrap "  @click="reveal">
                                 <div
                                     class="column no-wrap "
                                     style="height: min-content"
@@ -111,9 +111,10 @@
                                     toTimezone(game.start_time, "MMMM D, YYYY")
                                 }}
                             </div>
-                            <!-- <div v-if="isVerified" class="row full-width justify-center">
-                                <q-badge v-if="isVerified">Verified</q-badge>
-                            </div> -->
+                             <div  class="row full-width justify-center">
+                                <q-badge :color="isVerified ? 'primary' : 'red'" @click="verifiedPopup = true">{{isVerified ? 'Verified' : 'Unverified'}}</q-badge>
+                            </div> 
+
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -170,6 +171,30 @@
             </div>
         </div>
     </div>
+      <DialogInfo
+        v-if="!!verifiedPopup"
+        confirmButtonText="Accept result"
+        cancelButtonText="Reject result"
+        @confirm="respondToRequest('accepted')"
+        @close="respondToRequest('rejected')"
+        cancelColor="negative"
+        confirmColor="positive"
+        :showConfirm="isOnTeam(pendingTeam)"
+        :showCancel="isOnTeam(pendingTeam)"
+    >
+    <span v-if="isOnTeam(pendingTeam)">
+        <strong>{{creatorTeam.name}}</strong> added this game result and has invited you to verify that it is real.
+        <br/>
+         <br/>
+        If the game result is valid (i.e. the game occured), press <span class="text-positive text-bold">Accept Result.</span> It will then contribute towards your season statistics.
+
+         <br/>
+         <br/>
+        If this game did <strong>not</strong> occur, press <span class="text-negative text-bold">Reject Result</span> and it will only count towards your opposition's season statistics.
+         
+    </span>
+        
+    </DialogInfo>
 </template>
 <style lang="scss" scoped>
 $result-height: 90px;
@@ -311,6 +336,10 @@ import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import Rink from '@/store/models/rink'
 import { useConfirmDialog, onClickOutside } from "@vueuse/core";
+import { useQueryClient } from "@tanstack/vue-query";
+
+
+const queryClient = useQueryClient();
 
 const gameResult = ref(null);
 
@@ -413,6 +442,7 @@ const game = computed(() =>
 const rink = computed(() => !game.value.rink_id ? null : useRepo(Rink).where('id', game.value.rink_id).first())
 
 const isVerified = computed(() => game.value.isVerified);
+const verifiedPopup = ref(false)
 
 const emit = defineEmits(["expand", "invite"]);
 
@@ -429,4 +459,20 @@ const onViewMore = () => {
     if (!isRevealed.value) return;
     navigateTo(`/games/view/${game.value.id}`);
 };
+
+const {isOnTeam} = useTeam();
+
+const pendingTeam = computed(() => away.value.pending ? away.value.id : home.value.pending ? home.value.id : null)
+const creatorTeam = computed(() => away.value.pending ? home.value : home.value.pending ? away.value : null)
+
+const {updateGameRequestStatus} = useGameRequestStore();
+
+const respondToRequest = async (status) => {
+    verifiedPopup.value = false;
+    await updateGameRequestStatus({team_id: pendingTeam.value, game_id: props.gameId, status })
+    queryClient.invalidateQueries({
+        queryKey: ["team", "games", home.value.id]
+    })
+
+}
 </script>

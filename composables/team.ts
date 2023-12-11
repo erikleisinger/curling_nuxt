@@ -80,7 +80,8 @@ export const useTeam = () => {
         const { user: userId } = useUser();
         const team = useRepo(Team).with("players").where("id", teamId).first();
         if (!team) return false;
-        return [...(team.players ?? [])].some(({ id }) => id === userId.value);
+       return [...(team.players ?? [])].some(({ id }) => id === userId.value);
+     
     };
     return { getTeamPlayers, isOnTeam };
 };

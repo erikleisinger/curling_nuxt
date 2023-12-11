@@ -53,7 +53,7 @@
                 </q-menu>
             </q-btn>
         </div>
-        <div class="loading-container" v-if="loading">
+        <div class="loading-container" v-if="isLoading">
             <q-inner-loading :showing="true" color="primary" />
         </div>
         <div
@@ -173,6 +173,7 @@ import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
 import Rink from '@/store/models/rink'
+import { useQuery} from '@tanstack/vue-query'
 
 const props = defineProps({
     teamId: Number,
@@ -242,7 +243,7 @@ const gamesPaginated = computed(() =>
 );
 
 const games = computed(() => {
-    if (loading.value) return [];
+    if (isLoading.value) return [];
 
     const t =
         useRepo(Game)
@@ -272,26 +273,17 @@ const games = computed(() => {
     );
 });
 
-const loading = ref(true);
+const {getGames} = useGame();
 
-const fetchGames = async () => {
-    loading.value = true;
-
-    await nextTick();
-
-    const { getGames } = useGame();
-
-    getGames({
+const { isLoading } = useQuery({
+    queryKey: ["team", "games", props.teamId],
+    queryFn: () => getGames({
         team_id_param: props.teamId,
         game_id_param: null,
-    });
-
-    loading.value = false;
-};
-
-onMounted(() => {
-    fetchGames();
+    }),
+    refetchOnWindowFocus: false,
 });
+
 
 const confirmUnsaved = ref(false);
 
