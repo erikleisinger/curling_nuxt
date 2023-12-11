@@ -345,12 +345,11 @@
 <style lang="scss" scoped>
 .linescore-editor__container {
     overflow-x: hidden;
-    // padding-bottom: var(--space-sm);
     display: flex;
     flex-direction: column;
     overflow-y: visible;
     box-sizing: border-box;
-    padding-top: 50px;
+    padding-top: 58px;
     .avatars-unnested__container {
         width: 100%;
         box-sizing: border-box;

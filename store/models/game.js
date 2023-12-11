@@ -13,7 +13,7 @@ export default class Game extends Model {
             teams: this.hasMany(GameTeam, 'game_id', 'id'),
             end_count: this.number(),
             hammer_first_end: this.number(),
-            rink: this.hasOne(Rink, 'id'),
+            rink_id: this.number(),
             sheet: this.hasOne(Sheet, 'id'),
             start_time: this.number()
         };

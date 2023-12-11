@@ -31,7 +31,8 @@
             {{ team.name }}
         </h2>
         <q-input dense v-else v-model="editedValues.name" label="Team name" />
-        <h3 class="rink-name" v-if="team.rink">{{team.rink?.name}} </h3>
+        <h3 class="rink-name" v-if="team.rink_id && !editing">{{selectedRink.name}} </h3>
+        <q-select v-if="editing" dense label="Select a home rink" v-model="editedValues.rink_id" :options="rinks" behavior="menu" option-value="id" option-label="name" emit-value map-options/>
     </header>
     <section class="team-players__section" v-if="props.teamId">
         <div
@@ -201,6 +202,7 @@
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
 import {useTeamRequestStore} from '@/store/team-requests'
+import Rink from '@/store/models/rink'
 import Team from "@/store/models/team";
 import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
@@ -239,15 +241,23 @@ const setEditedValues = (wipe = false) => {
             name: null,
             avatar_url: null,
             players: [],
+            rink_id: null,
         };
     } else {
         editedValues.value = {
             name: team.value?.name,
             avatar_url: team.value?.avatar_url,
             players: team.value?.players,
+            rink_id: team.value?.rink_id || null,
         };
     }
 };
+
+const rinks = computed(() => [...useRepo(Rink).all()])
+const selectedRink = computed(() => {
+    if (!originalValues.value.rink_id && !team.value.rink_id) return null;
+    return useRepo(Rink).where('id', originalValues.value.rink_id || team.value.rink_id).first()
+})
 
 const originalValues = ref({});
 
@@ -264,6 +274,7 @@ const createTeam = async () => {
     const client = useSupabaseClient();
     const {data} = await client.from('teams').insert({
         name: editedValues.value.name,
+        rink_id:editedValues.value.rink_id
     }).select('id').single();
     const {id} = data;
     return id;
@@ -280,11 +291,23 @@ const onClickEdit = async () => {
         // End edit state & save
     } else if (props.teamId) {
         let hasChanged = false;
+        let updates = {};
         if (editedValues.value.name !== originalValues.value.name) {
             saving.value = true;
             hasChanged = true;
-            await useTeamStore().updateTeamName(
-                editedValues.value.name,
+            updates.name = editedValues.value.name;
+            
+        }
+
+        if (editedValues.value.rink_id !== originalValues.value.rink_id) {
+            saving.value = true;
+            hasChanged = true;
+            updates.rink_id = editedValues.value.rink_id
+        }
+
+        if (hasChanged) {
+            await useTeamStore().updateTeam(
+                updates,
                 props.teamId
             );
         }

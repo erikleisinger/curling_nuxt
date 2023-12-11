@@ -167,7 +167,6 @@ import { useNotificationStore } from "@/store/notification";
 import { useThrottleFn } from "@vueuse/core";
 import { vElementVisibility } from "@vueuse/components";
 import { isPlaceholder } from "@/utils/team";
-import { useQuery } from "@tanstack/vue-query";
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";

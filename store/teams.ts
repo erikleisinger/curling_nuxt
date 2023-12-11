@@ -351,12 +351,13 @@ export const useTeamStore = defineStore("team", {
             const { sortNameAlphabetically } = useSort();
             this.teams.sort(sortNameAlphabetically);
         },
-        async updateTeamName(newName: string, teamId: number) {
+        async updateTeam(updates: object, teamId: number) {
+            console.log('updats: ', updates)
             const { client, fetchHandler } = useSupabaseFetch();
             const { error } = await fetchHandler(() =>
                 client
                     .from(TABLE_NAMES.TEAMS)
-                    .update({ name: newName })
+                    .update(updates)
                     .eq("id", teamId)
             );
 

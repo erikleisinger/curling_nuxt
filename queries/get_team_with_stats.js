@@ -1,5 +1,6 @@
 import TeamModel from "@/store/models/team";
 import Rink from '@/store/models/rink'
+import TeamRink from '@/store/models/team-rink'
 
 const getTeamStats = async (id) => {
     const client = useSupabaseClient();
@@ -15,15 +16,7 @@ const getTeamStats = async (id) => {
         return t;
 }
 
-const getRink = async (rinkId) => {
 
-    const client = useSupabaseClient();
-    const {data} = await client.from('rinks').select(`
-    id,
-    name,
-    province`).eq('id', rinkId).single()
-    return data;
-}
 
 export default async (id) => {
     try {
@@ -39,11 +32,9 @@ export default async (id) => {
 
         const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
        
-        const { avatar_type, avatar_url, team_avatar, id: team_id, name, ...stats } = t
-        const {rink_id} = t;;
-        const rink = await getRink(rink_id)
+        const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id, ...stats } = t
 
-        useRepo(Rink).save(rink)
+       
 
         const obj = {
             avatar_type,
@@ -63,10 +54,20 @@ export default async (id) => {
                 ...totalStats,
                 team_id: totalStats.id
             },
-            rink
+            
             
         };
         useRepo(TeamModel).save(obj);
+        if(rink_id) {
+            const rink = {...useRepo(Rink).where('id', rink_id).first()};
+            if (rink) {
+                useRepo(TeamModel).where('id', team_id).update({
+                    rink_id
+                })
+            }
+          
+        }
+        
         return obj;
     } catch (e) {
         throw new Error(e);

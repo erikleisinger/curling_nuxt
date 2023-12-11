@@ -27,9 +27,10 @@ export const useGame = () => {
             }
     
             useRepo(Team).save(team);
+
             useRepo(Game).save({
                 id: g.game_id,
-                rink: g.rink,
+                rink_id: g.rink?.id,
                 start_time: dayjs(g.start_time).unix(),
                 sheet: g.sheet
             });

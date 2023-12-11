@@ -5,12 +5,14 @@ import {usePlayerStore} from "@/store/players";
 import {useUserStore} from '@/store/user'
 import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
+import {useRinkStore} from '@/store/rinks'
 
 export const useData = () => {
     const teamStore = useTeamStore();
     const playerStore = usePlayerStore();
     const userStore = useUserStore();
     const userTeamStore = useUserTeamStore();
+    const rinkStore = useRinkStore();
   const progress = ref(0)
 
   const initData = async () => {
@@ -18,12 +20,15 @@ export const useData = () => {
       const {getCurrentUser} = userStore;
       const {fetchUserTeams} = userTeamStore;
       const {getTeamRequestsByUser} = useTeamRequestStore();
+      const {fetchRinks} = useRinkStore();
 
       await getCurrentUser()
 
       const operations = [
+        () => fetchRinks(),
         () => fetchUserTeams(true),
-        () => getTeamRequestsByUser(userStore.id)
+        () => getTeamRequestsByUser(userStore.id),
+       
       ];
       const incrementValue = 1 / operations.length;
       const promises = operations.map(
