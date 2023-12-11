@@ -1,13 +1,16 @@
 import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/notification";
 import Team from '@/types/team'
+import { useUserTeamStore } from "@/store/user-teams";
 
 export const useGameRequestStore = defineStore("game-requests", {
     state: () => {
         return {
             requestsToRespond: 0,
+            requests: [],
         } as {
             requestsToRespond: number;
+            requests: any[];
         };
     },
     actions: {
@@ -32,6 +35,36 @@ export const useGameRequestStore = defineStore("game-requests", {
                 })
                 return true
             }
+        },
+        async getGameRequestsByUser(userId: string) {
+            const teams = useUserTeamStore().userTeams;
+            const client = useSupabaseClient();
+            const {data} = await client.from('game_requests').select(`
+            id,
+            game_id,
+            team_id,
+            status
+            `).in('team_id', teams.map(({id}) => id)).eq('status', 'pending');
+            console.log('got game requests: ', data)
+            if (!data?.length) return;
+            const gameIds = data.map(({game_id}) => game_id)
+
+            const {data:gamesData} = await client.from('games').select(`
+            id,
+         
+            home (
+                id,
+                name,
+                avatar_url
+            ),
+            start_time
+            `)
+            .in('id', gameIds)
+            this.requests = data.map((req) => ({
+                ...req,
+                game: gamesData?.find(({id}) => id === req.game_id)
+            }))
+
         },
         async sendGameRequest(team: Team, game_id: number) {
             const {id, name} = team;

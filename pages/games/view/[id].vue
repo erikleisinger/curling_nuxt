@@ -1,19 +1,33 @@
 <template>
     <NuxtLayout>
         <q-inner-loading :showing="loading" color="primary" />
+        <aside class="game-request__container" v-if="gameRequest">
+            <GameRequest :request="gameRequest"/>
+            <q-separator/>
+        </aside>
         <LinescoreEditor v-if="!!currentGame && !loading" :canEdit="false" v-model="currentGame" summary :score="score" :compact="false" static/>
         <TeamStatsView v-if="!!currentGame && !loading" :teamId="home.id" :oppositionId="away.id" h2h/>
     </NuxtLayout>
 </template>
-
+<style lang="scss" scoped>
+    .game-request__container {
+        position: fixed;
+        top: 0;
+        background-color: white;
+        z-index: 4;
+    }
+</style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import Game from '@/store/models/game'
 import Team from '@/store/models/team';
 import GameTeam from '@/store/models/game-team';
 import TeamStats from '@/store/models/team-stats'
+import {useGameRequestStore} from '@/store/game-requests'
 const route = useRoute();
 const { getGameResult } = useGame();
+
+const gameRequest = computed(() => useGameRequestStore().requests.find(({game_id}) => game_id === Number(route.params.id)))
 
 const loading = ref(false);
 const result = ref(null);

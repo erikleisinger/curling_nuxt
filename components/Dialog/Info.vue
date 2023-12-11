@@ -7,7 +7,7 @@
                 <slot/>
             </q-card-section>
              <slot name="buttons">
-            <q-card-actions align="right" class="row justify-between">
+            <q-card-actions align="right" class="row " :class="{'justify-between': !!showCancel && !!showConfirm, 'justify-end': !showCancel || !showConfirm}">
                
            <q-btn flat :label="props.cancelButtonText" :color="cancelColor" @click="emit('cancel')" v-close-popup v-if="showCancel"></q-btn>
           <q-btn flat :label="props.confirmButtonText" :color="confirmColor" @click="emit('confirm')" v-close-popup v-if="showConfirm"></q-btn>

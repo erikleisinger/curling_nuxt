@@ -1,18 +1,14 @@
 <template>
     <div style="position: relative full-width" ref="gameResult">
-     
         <div class="result__container--wrap">
             <div class="row no-wrap">
                 <div class="result__header">
                     <slot name="before" />
 
                     <div class="result__container" @click="emit('expand')">
-                           
                         <div class="backdrop--behind" />
                         <div class="backdrop" />
-                        <div
-                            class="team__profile--container column no-wrap "
-                        >
+                        <div class="team__profile--container column no-wrap">
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
@@ -24,7 +20,7 @@
                             </div>
                             <div class="team-name__container">
                                 <h2
-                                    class="text-sm  text-center col-grow full-width highlightable"
+                                    class="text-sm text-center col-grow full-width highlightable"
                                 >
                                     {{ home.name }}
                                 </h2>
@@ -40,11 +36,13 @@
                         <div
                             class="column full-width game-info__container"
                             ref="gameInfoContainer"
-                           
                         >
                             <div
                                 class="game-showmore__container row justify-center items-center"
-                                :style="{ opacity: isRevealed ? 1 : 0, pointerEvents: isRevealed ? 'all' : 'none' }"
+                                :style="{
+                                    opacity: isRevealed ? 1 : 0,
+                                    pointerEvents: isRevealed ? 'all' : 'none',
+                                }"
                             >
                                 <div class="game-showmore__button">
                                     <q-btn flat @click="onViewMore">
@@ -53,9 +51,12 @@
                                 </div>
                             </div>
 
-                            <div class="row justify-center full-width no-wrap "  @click="reveal">
+                            <div
+                                class="row justify-center full-width no-wrap"
+                                @click="reveal"
+                            >
                                 <div
-                                    class="column no-wrap "
+                                    class="column no-wrap"
                                     style="height: min-content"
                                 >
                                     <div
@@ -68,8 +69,6 @@
                                     >
                                         {{ home.points_scored }}
                                     </div>
-
-                                   
                                 </div>
                                 <div class="score q-mx-xs">:</div>
                                 <div
@@ -86,7 +85,6 @@
                                     >
                                         {{ away.points_scored }}
                                     </div>
-                                   
                                 </div>
                             </div>
                             <div
@@ -111,10 +109,31 @@
                                     toTimezone(game.start_time, "MMMM D, YYYY")
                                 }}
                             </div>
-                             <div  class="row full-width justify-center">
-                                <q-badge :color="isVerified ? 'primary' : 'red'" @click="verifiedPopup = true">{{isVerified ? 'Verified' : 'Unverified'}}</q-badge>
-                            </div> 
-
+                            <div
+                                class="row full-width justify-center"
+                                v-if="!away.isPlaceholder"
+                            >
+                                <q-badge
+                                    :color="isVerified ? 'primary' : 'red'"
+                                    @click="verifiedPopup = true"
+                                    >{{
+                                        isVerified ? "Verified" : "Unverified"
+                                    }}</q-badge
+                                >
+                            </div>
+                            <div
+                                class="row full-width justify-center"
+                                v-if="
+                                    away.isPlaceholder &&
+                                    isOnTeam(creatorTeam.id)
+                                "
+                            >
+                                <q-badge
+                                    color="blue"
+                                    @click="verifiedPopup = true"
+                                    >Invite team</q-badge
+                                >
+                            </div>
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -123,85 +142,100 @@
                                     <TeamAvatar
                                         :teamId="away.id"
                                         :color="away.color"
-                                        :viewable="viewAway && !away.isPlaceholder"
+                                        :viewable="
+                                            viewAway && !away.isPlaceholder
+                                        "
                                         :invitable="
                                             away.isPlaceholder && authorized
-                                        "
-                                        @invite="
-                                            toggleGlobalSearch({
-                                                open: true,
-                                                options: {
-                                                    inputLabel:
-                                                        'Search for a team to invite',
-                                                    resourceTypes: ['team'],
-                                                    filterIds: [home.id],
-                                                    callback: (team) =>
-                                                        emit('invite', team),
-                                                },
-                                            })
                                         "
                                     />
                                 </div>
                             </div>
-                          
-                                <div class="team-name__container">
-                                    <h2
-                                        class="text-sm  text-center highlightable"
-                                        style="
-                                            width: fit-content;
-                                            position: relative;
-                                        "
-                                    >
-                                        {{ away.name }}
-                                    </h2>
-                                    <div
-                                        class="placeholder--floating"
-                                        v-if="away.isPlaceholder"
-                                    >
-                                        <q-icon
-                                            color="grey-6"
-                                            name="o_smart_toy"
-                                        />
-                                    </div>
+
+                            <div class="team-name__container">
+                                <h2
+                                    class="text-sm text-center highlightable"
+                                    style="
+                                        width: fit-content;
+                                        position: relative;
+                                    "
+                                >
+                                    {{ away.name }}
+                                </h2>
+                                <div
+                                    class="placeholder--floating"
+                                    v-if="away.isPlaceholder"
+                                >
+                                    <q-icon color="grey-6" name="o_smart_toy" />
                                 </div>
-                           
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-      <DialogInfo
+    <DialogInfo
         v-if="!!verifiedPopup"
-        confirmButtonText="Accept result"
+        :confirmButtonText="
+            away.isPlaceholder ? 'Invite team' : 'Accept result'
+        "
         cancelButtonText="Reject result"
-        @confirm="respondToRequest('accepted')"
+        @confirm="onRequestConfirm"
         @cancel="respondToRequest('rejected')"
         @close="verifiedPopup = false"
         cancelColor="negative"
-        confirmColor="positive"
-        :showConfirm="isOnTeam(pendingTeam?.id)"
+        :confirmColor="away.isPlaceholder ? 'blue' : 'positive'"
+        :showConfirm="
+            isOnTeam(pendingTeam?.id) ||
+            (isOnTeam(creatorTeam?.id) && away.isPlaceholder)
+        "
         :showCancel="isOnTeam(pendingTeam?.id)"
     >
-    <span v-if="isOnTeam(pendingTeam?.id)">
-        <strong>{{creatorTeam.name}}</strong> added this game result and has invited you to verify that it is real.
-        <br/>
-         <br/>
-        If the game result is valid (i.e. the game occured), press <span class="text-positive text-bold">Accept Result.</span> It will then contribute towards your season statistics.
+        <span v-if="isOnTeam(pendingTeam?.id)">
+            <strong>{{ creatorTeam.name }}</strong> added this game result and
+            has invited you to verify that it is real.
+            <br />
+            <br />
+            If the game result is valid (i.e. the game occured), press
+            <span class="text-positive text-bold">Accept Result.</span> It will
+            then contribute towards your season statistics.
 
-         <br/>
-         <br/>
-        If this game did <strong>not</strong> occur, press <span class="text-negative text-bold">Reject Result</span> and it will only count towards your opposition's season statistics.
-         
-    </span>
-    <span v-else>
-        This game was created by <strong>{{creatorTeam.name}}</strong>.
-         <br/>
-         <br/>
-        It will only contribute to <strong>{{pendingTeam.name}}'s</strong> statistics once it is verified by a member of <strong>{{pendingTeam.name}}</strong>.
-         
-    </span>
-        
+            <br />
+            <br />
+            If this game did <strong>not</strong> occur, press
+            <span class="text-negative text-bold">Reject Result</span> and it
+            will only count towards your opposition's season statistics.
+        </span>
+        <span v-else>
+            This game was created by <strong>{{ creatorTeam.name }}</strong
+            >.
+            <span v-if="!away.isPlaceholder">
+                <br />
+                <br />
+
+                It will only contribute to
+                <strong>{{ pendingTeam.name }}'s</strong> statistics once it is
+                verified by a member of <strong>{{ pendingTeam.name }}</strong
+                >.
+            </span>
+            <span v-else>
+                <br />
+                <br />
+                <span class="text-negative"
+                    >The name <strong>{{ pendingTeam.name }}</strong> was used
+                    as a placeholder, as the real
+                    <strong>{{ pendingTeam.name }}</strong> does not have an
+                    account.
+                </span>
+                <span v-if="isOnTeam(creatorTeam.id)">
+                    <br />
+                    <br />
+                    To invite a team to verify this game, press
+                    <strong>Invite team</strong>
+                </span>
+            </span>
+        </span>
     </DialogInfo>
 </template>
 <style lang="scss" scoped>
@@ -235,7 +269,6 @@ $container-padding-top: 10px;
         position: relative;
 
         .team__profile--container {
-
             .team-avatar__container {
                 .team-avatar--wrap {
                     position: relative;
@@ -275,7 +308,6 @@ $container-padding-top: 10px;
         .backdrop--behind {
             background: v-bind(gradient);
         }
-       
     }
     .game-details {
         position: relative;
@@ -294,7 +326,7 @@ $container-padding-top: 10px;
                 font-weight: bold;
             }
         }
-      
+
         .game-info__text {
             font-size: 0.7em;
             text-align: center;
@@ -342,10 +374,9 @@ import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
-import Rink from '@/store/models/rink'
+import Rink from "@/store/models/rink";
 import { useConfirmDialog, onClickOutside } from "@vueuse/core";
 import { useQueryClient } from "@tanstack/vue-query";
-
 
 const queryClient = useQueryClient();
 
@@ -378,11 +409,12 @@ const highlight = (val) => {
 watch(
     () => props.search,
     (val) => {
+        if (!val) return;
         nextTick(() => {
- highlight(val);
-        })
-       
-    }, {immediate: true}
+            highlight(val);
+        });
+    },
+    { immediate: true }
 );
 
 const $q = useQuasar();
@@ -410,12 +442,12 @@ const props = defineProps({
     search: String,
     viewHome: {
         type: Boolean,
-        default: true
+        default: true,
     },
     viewAway: {
         type: Boolean,
-        default: true
-    }
+        default: true,
+    },
 });
 
 const away = computed(() => {
@@ -423,6 +455,7 @@ const away = computed(() => {
         .with("team")
         .where("team_id", (val) => val !== props.home)
         .where("game_id", props.gameId)
+        .orderBy('team_id', 'asc')
         .first() ?? { name: "Unnamed team" };
     return {
         ...t,
@@ -447,10 +480,14 @@ const game = computed(() =>
     useRepo(Game).withAll().where("id", props.gameId).first()
 );
 
-const rink = computed(() => !game.value.rink_id ? null : useRepo(Rink).where('id', game.value.rink_id).first())
+const rink = computed(() =>
+    !game.value.rink_id
+        ? null
+        : useRepo(Rink).where("id", game.value.rink_id).first()
+);
 
 const isVerified = computed(() => game.value.isVerified);
-const verifiedPopup = ref(false)
+const verifiedPopup = ref(false);
 
 const emit = defineEmits(["expand", "invite"]);
 
@@ -468,19 +505,57 @@ const onViewMore = () => {
     navigateTo(`/games/view/${game.value.id}`);
 };
 
-const {isOnTeam} = useTeam();
+const { isOnTeam } = useTeam();
 
-const pendingTeam = computed(() => away.value.pending ? away.value : home.value.pending ? home.value : null)
-const creatorTeam = computed(() => away.value.pending ? home.value : home.value.pending ? away.value : null)
+const pendingTeam = computed(() =>
+    away.value.pending ? away.value : home.value.pending ? home.value : null
+);
+const creatorTeam = computed(() =>
+    away.value.pending ? home.value : home.value.pending ? away.value : null
+);
 
-const {updateGameRequestStatus} = useGameRequestStore();
+const { getGameRequestsByUser, updateGameRequestStatus, sendGameRequest } = useGameRequestStore();
 
 const respondToRequest = async (status) => {
     verifiedPopup.value = false;
-    await updateGameRequestStatus({team_id: pendingTeam.value, game_id: props.gameId, status })
+    await updateGameRequestStatus({
+        team_id: pendingTeam.value?.id,
+        game_id: props.gameId,
+        status,
+    });
     queryClient.invalidateQueries({
-        queryKey: ["team", "games", home.value.id]
-    })
+        queryKey: ["team", "games", home.value.id],
+    });
+    getGameRequestsByUser();
+};
 
-}
+const onOptionClick = async (e) => {
+      toggleGlobalSearch({
+        open: false,
+    });
+    await sendGameRequest(e, props.gameId);
+     queryClient.invalidateQueries({
+        queryKey: ["team", "games", home.value.id],
+    });
+  
+};
+
+const onRequestConfirm = () => {
+    if (away.value.isPlaceholder) {
+        toggleGlobalSearch({
+            open: true,
+
+            options: {
+                resourceTypes: ["team"],
+                inputLabel: "Invite a team to verify this game",
+                filterIds: [creatorTeam.value?.id],
+                callback: onOptionClick,
+
+                persistent: true,
+            },
+        });
+    } else {
+        respondToRequest("accepted");
+    }
+};
 </script>

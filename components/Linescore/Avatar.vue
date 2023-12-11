@@ -138,7 +138,7 @@
             border: 1px solid rgba(0, 0, 0, 0.3);
         }
         .hammer-container {
-            z-index: $z-tools;
+            z-index: 1;
             position: absolute;
             bottom: -1;
 

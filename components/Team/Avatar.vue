@@ -19,11 +19,9 @@
                 }"
             >
              <q-circular-progress v-if="avatarUploading" indeterminate color="white" size="md" />
-                <div class="text-white text-bold" v-else-if="!editable">
-                    {{ invitable ? "Invite" : "View" }}
-                </div>
+                
 
-                <q-icon v-else name="edit" color="white" size="md" />
+                <q-icon v-else-if="editable" name="edit" color="white" size="md" />
             </div>
             <div
                 class="ring"

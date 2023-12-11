@@ -50,7 +50,8 @@
             </q-list>
         </q-drawer>
         <q-page-container class="page__container--global">
-            <slot />
+            <AreaNotifications v-if="notificationsOpen"/>
+            <slot v-else/>
         </q-page-container>
         <q-footer bordered class="bg-white text-black row justify-between">
             <q-toolbar class="global-footer row justify-between">
@@ -78,7 +79,7 @@
                         <q-fab-action color="amber" icon="group_add" @click="newTeamOpen = true">
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                        <q-fab-action color="blue" icon="videogame_asset" @click="navigateTo('/games/create')">
+                        <q-fab-action color="blue" icon="videogame_asset" @click="goTo('/games/create')">
                             <span class="action-button__label" >New game</span>
                         </q-fab-action>
                         <q-fab-action color="red" icon="logout" @click="logout" >
@@ -88,10 +89,13 @@
                 </div>
                 <q-btn
                     flat
-                    icon="token"
-                    color="amber"
+                    icon="notifications"
+                    :color="notificationsOpen ? 'blue' : ''"
                     :size="$q.screen.xs ? 'md' : 'lg'"
-                />
+                    @click="notificationsOpen = !notificationsOpen"
+                >
+                <q-badge color="red" floating   v-if="requests && requests.length">{{requests.length}}</q-badge>
+                </q-btn>
                 <q-btn
                     flat
                     icon="settings"
@@ -231,10 +235,12 @@ import { useUserStore } from "@/store/user";
 import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import {useTeamRequestStore} from '@/store/team-requests'
+import { useGameRequestStore } from "@/store/game-requests";
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
 const newTeamOpen = ref(false)
+const notificationsOpen = ref(false)
 
 const { logout } = useSession();
 const { getColor } = useColor();
@@ -255,6 +261,7 @@ onClickOutside(fab, () => {
 });
 
 const goTo = (view) => {
+    notificationsOpen.value = false;
     navigateTo(`${view}`);
 };
 
@@ -282,4 +289,13 @@ const onSelect = (selection) => {
 };
 
 const teamRequests = computed(() => useTeamRequestStore().requests)
+const gameRequests = computed(() => useGameRequestStore().requests)
+
+const requests = computed(() => [...teamRequests.value.map((i) => ({
+    ...i,
+    type: 'team'
+})), ...gameRequests.value.map((i) => ({
+    ...i,
+    type: 'game'
+}))])
 </script>
