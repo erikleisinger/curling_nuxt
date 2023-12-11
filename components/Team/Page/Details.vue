@@ -1,7 +1,7 @@
 <template>
     <header class="team-header__details row justify-center items-center">
         <div class="back-button__container">
-            <q-btn flat round icon="arrow_back_ios" @click="emit('back')" />
+            <q-btn flat round icon="arrow_back" @click="onBackClick" />
         </div>
         <div class="edit-button__container" v-if="isOnTeam(props.teamId) || !props.teamId">
             <q-btn
@@ -19,13 +19,6 @@
                 :emitOnly="editing || !props.teamId"
                 @update="updateAvatar"
             />
-            <div
-                class="avatar-edit__overlay row justify-center items-center"
-                style="pointer-events: none"
-                v-if="editing"
-            >
-                <q-icon flat round name="edit" size="md" color="white" />
-            </div>
         </div>
         <h2 class="team-name text-center" v-if="!editing && props.teamId">
             {{ team.name }}
@@ -91,6 +84,17 @@
             </div>
         </div>
     </section>
+     <DialogConfirmation
+        v-if="!!confirmUnsaved"
+        confirmButtonText="Discard"
+        cancelButtonText="Cancel"
+        @confirm="emit('back')"
+        @close="confirmUnsaved = false"
+        cancelColor=""
+        confirmColor="negative"
+    >
+        Are you sure you want to close? All unsaved changes will be lost.
+    </DialogConfirmation>
 </template>
 <style lang="scss" scoped>
 .team-header__details {
@@ -133,7 +137,7 @@
         position: absolute;
         top: 0;
 
-        padding: var(--space-xs);
+        margin: var(--space-xs);
     }
     .edit-button__container {
         right: 0;
@@ -228,6 +232,7 @@ const team = computed(() => props.teamId ?
 
 
 const permanentPlayers = computed(() => team.value.players.filter(({pivot}) => !pivot.status))
+const visiblePlayers = computed(() => isOnTeam() || editing.value ? team.value.players : permanentPlayers.value)
 const { getTeamAvatar } = useAvatar();
 
 const { isLoading, data: avatar } = getTeamAvatar(props.teamId);
@@ -256,7 +261,7 @@ const setEditedValues = (wipe = false) => {
 
 const selectedRink = computed(() => {
     if (!originalValues.value.rink_id && !team.value.rink_id && !editedValues.value.rink_id) return null;
-    return useRepo(Rink).where('id', editedValues.value.rink_id || originalValues.value.rink_id || team.value.rink_id).first()
+    return useRepo(Rink).where('id', editedValues.value.rink_id ||  team.value.rink_id).first()
 })
 
 const originalValues = ref({});
@@ -266,8 +271,26 @@ const setOriginalValues = () => {
         name: team.value?.name,
         avatar_url: team.value?.avatar_url,
         players: team.value?.players,
+        rink_id: team.value?.rink_id
     };
 };
+
+const {objTheSame} = useValidation();
+
+const confirmUnsaved = ref(false)
+
+
+const areUnsavedChanges = () => {
+    return objTheSame(editedValues.value, originalValues.value)
+}
+
+const onBackClick = () => {
+        if (editing.value && !areUnsavedChanges()) {
+            confirmUnsaved.value = true;
+        } else {
+            emit('back')
+        }
+}
 
 const createTeam = async () => {
     if (!editedValues.value.name) return;
@@ -326,6 +349,7 @@ const onClickEdit = async () => {
       
 
         setEditedValues(true);
+        setOriginalValues();
         editing.value = false;
         saving.value = false;
     } else {

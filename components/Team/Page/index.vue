@@ -10,7 +10,7 @@
         @click="viewing = true"
         style="cursor: pointer"
     />
-    <div class="row justify-around" v-if="stats.games_played">
+    <div class="row justify-around attributes" v-if="stats.games_played">
         <TeamAttribute title="Games played" color="amber"  :class="$q.screen.xs ? 'col-5' : 'col-2'">
             <span>
                 {{ stats.games_played ?? 0 }}
@@ -106,6 +106,9 @@
         width: min(100vw, 500px); 
         height: min(100vh, 600px);
 
+    }
+    .attributes {
+        margin: 0px var(--space-md)
     }
 </style>
 <script setup lang="ts">

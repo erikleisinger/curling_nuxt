@@ -17,6 +17,7 @@
                 spinner-color="white"
                 height="100%"
                 v-if="avatar"
+              
             ></q-img>
             <h1 class="team-name">
                 <span>{{ team.name }}</span>
@@ -32,13 +33,18 @@ $border-radius: 16px;
     margin-right: auto;
     margin-left: auto;
 
-    aspect-ratio: 3/2;
+    // aspect-ratio: 3/2;
     position: relative;
-
-    margin-top: var(--space-xs);
+    margin: var(--space-md);
+    margin-top: calc(var(--space-md) + var(--space-xxxs)) ;
+    margin-bottom: calc(var(--space-lg) + var(--space-xxs));
+    
+   
+    // aspect-ratio: 1/1;
+  
 
     @include sm {
-        aspect-ratio: 3/1;
+        
         margin: var(--space-sm);
         margin-top: var(--space-md);
     }
@@ -48,9 +54,10 @@ $border-radius: 16px;
     .team-profile-picture,
     .team-profile-picture--shadow {
         width: calc(100% - $offset * 2);
-        aspect-ratio: 3/2;
+        aspect-ratio: 8/7;
+        // aspect-ratio: 3/2;
         @include sm {
-            aspect-ratio: 3/1;
+            aspect-ratio: 5/2;
         }
 
         border-radius: $border-radius;
@@ -110,6 +117,8 @@ import { useQuery} from '@tanstack/vue-query'
 const props = defineProps<{
     teamId: number | string;
 }>();
+
+const $q = useQuasar();
 
 
 

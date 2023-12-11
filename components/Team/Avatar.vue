@@ -15,9 +15,11 @@
                 :class="{
                     desktop: $q.platform.is.desktop,
                     visible: editable || visible,
+                    editable,
                 }"
             >
-                <div class="text-white text-bold" v-if="!editable">
+             <q-circular-progress v-if="avatarUploading" indeterminate color="white" size="md" />
+                <div class="text-white text-bold" v-else-if="!editable">
                     {{ invitable ? "Invite" : "View" }}
                 </div>
 
@@ -34,12 +36,13 @@
 
             <div class="inner-wrap">
                 <UploaderDraft
-                    v-if="editable && visible"
+                    v-if="editable"
                     style="z-index: 10"
                     @upload="setPendingAvatar"
                     :emitOnly="emitOnly"
                     resourceType="team"
                     :resourceId="teamId"
+                    @loading="avatarUploading = $event"
                 />
                 <div>
                     <div class="uploaded-avatar__container">
@@ -133,6 +136,10 @@
                 cursor: pointer;
             }
         }
+        &.editable {
+            opacity: 1;
+            cursor: pointer;
+        }
     }
     &:not(.desktop) {
         &.visible {
@@ -175,6 +182,8 @@ const emit = defineEmits(["edit", "invite", "update"]);
 const team = computed(
     () => useRepo(Team).where("id", props.teamId).first() ?? {}
 );
+
+const avatarUploading = ref(false)
 
 const pendingAvatarUrl = ref(null);
 

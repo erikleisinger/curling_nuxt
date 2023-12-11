@@ -32,7 +32,7 @@ export default async (id) => {
 
         const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
        
-        const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id, ...stats } = t
+        const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, ...stats } = t
 
        
 
@@ -41,7 +41,7 @@ export default async (id) => {
             avatar_url,
             team_avatar,
             id: team_id,
-            
+            rink_id,
             name,
             stats: [
                 {
@@ -57,16 +57,9 @@ export default async (id) => {
             
             
         };
+        if(rink)useRepo(Rink).save(rink)
         useRepo(TeamModel).save(obj);
-        if(rink_id) {
-            const rink = {...useRepo(Rink).where('id', rink_id).first()};
-            if (rink) {
-                useRepo(TeamModel).where('id', team_id).update({
-                    rink_id
-                })
-            }
-          
-        }
+        
         
         return obj;
     } catch (e) {

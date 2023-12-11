@@ -79,6 +79,8 @@
     .tabs__container {
         margin-right: auto;
         margin-left: auto;
+        padding-left: var(--space-xs);
+        
         max-width: 100vw;
         .q-tabs {
             flex-grow: 0;

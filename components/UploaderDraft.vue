@@ -27,7 +27,7 @@ const props = defineProps({
     resourceId: [Number, String],
 });
 
-const emit = defineEmits(["upload"]);
+const emit = defineEmits(["upload", 'loading']);
 
 const uploading = ref(false);
 const src = ref("");
@@ -36,8 +36,8 @@ const fileUpload = ref(null);
 
 const compressFile = async (file) => {  
     const options = {
-        maxSizeMB: 0.029,
-        maxWidthOrHeight: 300,
+        maxSizeMB: 0.3,
+        // maxWidthOrHeight: 300,
         useWebWorker: true,
     };
     try {
@@ -48,7 +48,9 @@ const compressFile = async (file) => {
 };
 
 const handleUpload = async (e) => {
+    if (!e?.target?.files) return;
     uploading.value = true;
+    emit('loading', true)
     if (props.emitOnly) {
         const file = await createFile(e)
         emit('upload', file)
@@ -57,6 +59,7 @@ const handleUpload = async (e) => {
         uploadAvatar(e)
     }
     uploading.value = false;
+    emit('loading', false)
 }
 
 const createFile = async (evt) => {
@@ -75,38 +78,22 @@ files.value = evt.target.files;
         return {path, file}
 }
 
-const MAX_AVATAR_FILE_SIZE = 35000;
+const MAX_AVATAR_FILE_SIZE = 2000000;
 
 const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
     if (!files.value || files.value.length === 0) return;
 
-    // const notStore = useNotificationStore();
-    // const notId = notStore.addNotification({
-    //     state: "pending",
-    //     text: `Uploading avatar...`,
-    //     timeout: 10000,
 
-    // });
     try {
         const {path, file} = await createFile(evt)
         if (props.resourceType === "team") {
             const updates = await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
             useRepo(Team).where('id', props.resourceId).update({...updates, avatar_type: 'upload'})
         }
-        // notStore.updateNotification(notId, {
-        //     state: "completed",
-        //     text: "Avatar updated!",
-        //     timeout: 3000,
-        // });
-    } catch  {
-        // notStore.updateNotification(notId, {
-        //     state: "failed",
-        //     text: `Error uploading avatar: ${e.message} (code ${
-        //         e?.code ?? "X"
-        //     })`,
-        //     timeout: 10000,
-        // });
+
+    } catch(e)  {
+       console.log('error uploading: ', e)
     }
 
     uploading.value = false;
@@ -115,3 +102,9 @@ const uploadAvatar = async (evt) => {
 
 
 </script>
+<script >
+export default {
+    name: "FileUpload",
+};
+</script>
+
