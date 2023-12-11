@@ -19,8 +19,9 @@
                         v-ripple
                         @click="onClickSort('Date')"
                         :active="!!sortDateOrder"
+                        
                     >
-                        <q-item-section>Sort by date</q-item-section>
+                        <q-item-section no-wrap>Sort by date</q-item-section>
                         <q-item-section avatar>
                             <q-icon
                                 :name="
@@ -37,7 +38,7 @@
                         @click="onClickSort('Opponent')"
                         :active="!!sortOpponentOrder"
                     >
-                        <q-item-section>Sort by opponent</q-item-section>
+                        <q-item-section no-wrap>Sort by opponent</q-item-section>
                         <q-item-section avatar>
                             <q-icon
                                 :name="

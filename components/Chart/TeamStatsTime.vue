@@ -18,17 +18,52 @@
             </q-tabs>
             <q-btn flat icon="filter_list" dense class="q-px-sm">
                 <q-menu v-model="filterMenuOpen" auto-close>
-                    <div class="column">
-                    <q-btn @click="setMinMax(7, 'day')"  square flat>Past week</q-btn>
-                    <q-btn @click="setMinMax(1, 'month')" flat square>Past month</q-btn>
-                     <q-btn @click="setMinMax(0)" flat square>All time</q-btn>
-                    </div>
+                    
+                   
+                     <q-item
+                        clickable
+                        v-ripple
+                        @click="setMinMax('week')"
+                        :active="timeframe === 'week'"
+                       
+                        
+                    >
+                        <q-item-section no-wrap>Past week</q-item-section>
+                        
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="setMinMax('month')"
+                         :active="timeframe === 'month'"
+                       
+                        
+                    >
+                        <q-item-section no-wrap>Past month</q-item-section>
+                        
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="setMinMax(null)"
+                        :active="!timeframe"
+                       
+                        
+                    >
+                        <q-item-section no-wrap>All time</q-item-section>
+                        
+                    </q-item>
+                  
+                
                 </q-menu>
             </q-btn>
         </div>
 
         <div class="row no-wrap" v-if="!isLoading && !refreshingData">
-            <div class="col-12">
+            <div class="col-12 relative-position">
+                <div class="no-stats__overlay" v-if="!stats">
+                    No stats were found.
+                </div>
                 <ChartTeamStatsTimeEfficiency
                     :opponentId="opponentId"
                     :teamId="teamId"
@@ -63,6 +98,19 @@
     </div>
 </template>
 <style lang="scss" scoped>
+.no-stats__overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .line-chart__container {
     margin-left: auto;
     margin-right: auto;
@@ -100,13 +148,28 @@ import { useDebounceFn } from "@vueuse/core";
 import { useQuery } from "@tanstack/vue-query";
 import TeamStats from "@/store/models/team-stats";
 
+
+
+
 const props = defineProps({
     opponentId: Number,
     teamId: Number,
     visibleStats: Array,
 });
 
-const minDate = ref(null);
+
+const stats = computed(() => {
+    return useRepo(TeamStats)
+        .where("team_id", props.teamId)
+         .where('start_time', (val) => {
+            if (!val) return false;
+            if (!minDate.value) return true;
+            return toUTC(val, null, false, true).unix() > toUTC(minDate.value, null, false, true).unix()
+        })    
+        .get()?.length ?? 0;
+}
+    
+);
 
 
 const refreshingData = ref(false)
@@ -114,21 +177,24 @@ const filterMenuOpen = ref(false)
 
 const { toUTC } = useTime();
 
-const setMinMax = (amount, unit) => {
-    if (!amount) {
-        minDate.value = null;
-        
-    } else {
- const now = toUTC(null, null, false, true);
-    const min = now.subtract(amount, unit).toISOString();
-    minDate.value = min;
-    }
-   
+const timeframe = ref(null)
+
+const setMinMax = (tf) => {
+    timeframe.value = tf;
+}
+
+const minDate = computed(() => {
+    if (!timeframe.value) return null;
+     const now = toUTC(null, null, false, true);
+    return now.subtract(1, timeframe.value).toISOString();
+})
+
+watch(minDate, () => {
     refreshingData.value = true;
     nextTick(() => {
         refreshingData.value = false;
     })
-};
+})
 
 const currentIndex = ref(0);
 
