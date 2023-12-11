@@ -46,7 +46,10 @@ export const useGameRequestStore = defineStore("game-requests", {
             status
             `).in('team_id', teams.map(({id}) => id)).eq('status', 'pending');
             console.log('got game requests: ', data)
-            if (!data?.length) return;
+            if (!data?.length) {
+                this.requests = [];
+                return;
+            }
             const gameIds = data.map(({game_id}) => game_id)
 
             const {data:gamesData} = await client.from('games').select(`
