@@ -38,8 +38,8 @@
     "vue-tsc": "^1.8.3"
   },
   "dependencies": {
-    "@nuxtjs/supabase": "^0.3.8",
-    "@pinia-orm/nuxt": "^1.6.7",
+    "@nuxtjs/supabase": "^1.1.4",
+    "@pinia-orm/nuxt": "^1.7.0",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
     "@tanstack/vue-query": "^4.35.3",

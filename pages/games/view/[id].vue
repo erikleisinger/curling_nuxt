@@ -89,7 +89,6 @@ const getGames = async () => {
     })
     const [team1, team2] = data;
 
-console.log(toTimezone(team1.start_time, null, null, true).unix())
     useRepo(Game).save({
         id: team1.game_id,
         end_count: team1.end_count,
@@ -204,6 +203,11 @@ const generateScore = async (game) => {
     return s
 };
 
+// Var that indicates we should remove
+// The team-stat from piniaOrm for the opposition
+// when component unmounts
+const cleanupOpposition = ref(false)
+
 const getStatsForGame = async (game) => {
     const { data } = await useSupabaseClient()
         .from("team_stats")
@@ -221,13 +225,26 @@ const getStatsForGame = async (game) => {
         .eq("game_id", game?.id);
     if (!data?.length) return null;
     data.forEach((stat) => {
-        if (!stat.team_id) return;
+        if (!stat.team_id && !game.away?.id) return;
+        if (!stat.team_id) cleanupOpposition.value = true;
         useRepo(TeamStats).save({
             ...stat,
+            team_id: stat.team_id ?? game.away.id,
             games_played: 1,
         })
     })
 };
+
+const cleanupOppositionStats = () => {
+ const {away, id: gameId} = currentGame.value;
+    const {id} = away;
+    useRepo(TeamStats).destroy(`[${id},${gameId}]`)
+}
+
+onBeforeUnmount(() => {
+    if (cleanupOpposition.value) cleanupOppositionStats();
+   
+})
 
 const { format, toTimezone } = useTime();
 </script>

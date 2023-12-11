@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="full-width row justify-between items-center">
+        <div class="full-width row justify-between items-center" v-if="gamesPaginated.length">
             <q-input
                 dense
                 class="col-grow q-pl-sm"

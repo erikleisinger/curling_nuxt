@@ -44,6 +44,7 @@ export const useSupabaseFetch = () => {
         const { headers: outgoingHeaders } = client.auth;
         const { Authorization } = outgoingHeaders;
         const token = Authorization.split(" ")[1];
+      
         if (email !== parseJwt(token).email) {
             reloadNuxtApp({
                 path: route.fullPath
@@ -55,7 +56,7 @@ export const useSupabaseFetch = () => {
         promise: Function,
         callbacks?: { onError?: string | Function; onSuccess?: string }
     ) => {
-        await checkHeaders();
+        // await checkHeaders();
         const { data, error } = await promise();
         let errorMsg;
         if (error) {

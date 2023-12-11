@@ -453,6 +453,7 @@ const createSheet = async (rink_id, sheet_number) => {
 };
 const saving = ref(false);
 const save = async () => {
+   
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
     const rinkCopy = gameParams.value.rink;
@@ -467,8 +468,10 @@ const save = async () => {
     )
         shouldSendInvitation = true;
 
-    toggleLineScore({ open: false });
+    // toggleLineScore({ open: false });
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
+
+  
 
     const conceded = score.value[Object.keys(score.value).length].home === "X";
 
@@ -503,6 +506,7 @@ const save = async () => {
     }
 
     const gameId = await createGame(gameToCreate);
+   
     if (!gameId) return;
 
     const ends = generateEnds(

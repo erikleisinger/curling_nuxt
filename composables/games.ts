@@ -29,7 +29,7 @@ export const useGame = () => {
                 team = g.team;
             }
 
-            if (g.rink) useRepo(Rink).save(g.rink)
+            if (g.rink?.id) useRepo(Rink).save(g.rink)
      
             useRepo(Team).save(team);
 

@@ -31,6 +31,7 @@ export default async (id) => {
         const [t] = data;
 
         const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
+
        
         const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, ...stats } = t
 
@@ -41,7 +42,7 @@ export default async (id) => {
             avatar_url,
             team_avatar,
             id: team_id,
-            rink_id,
+            
             name,
             stats: [
                 {
@@ -57,6 +58,7 @@ export default async (id) => {
             
             
         };
+        if (rink_id) obj.rink_id = rink_id
         if(rink)useRepo(Rink).save(rink)
         useRepo(TeamModel).save(obj);
         

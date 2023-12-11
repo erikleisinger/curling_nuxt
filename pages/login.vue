@@ -165,7 +165,7 @@ const validatePassword = (val) => {
 
 const onSubmit = async (e) => {
     loading.value = true;
-    const client = useSupabaseAuthClient();
+    const client = useSupabaseClient();
     if (tab.value === TAB_NAMES.value.SIGN_IN) {
         const { error } = await client.auth.signInWithPassword({
             email: email.value,

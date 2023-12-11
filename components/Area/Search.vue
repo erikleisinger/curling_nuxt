@@ -268,6 +268,7 @@ const search = () => {
 const loading = ref(false);
 
 const useSearch = useThrottleFn(async () => {
+
     loading.value = true;
     const formatted = searchInput.value
         .split(" ")
@@ -275,12 +276,13 @@ const useSearch = useThrottleFn(async () => {
         .join(" | ");
     const client = useSupabaseClient();
 
-    // if (global.value) {
     const { data } = await client
         .rpc("search_resources", {
             searchquery: formatted,
         })
         .limit(25);
+
+
     results.value = data.reduce((all, current) => {
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;

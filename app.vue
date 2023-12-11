@@ -44,7 +44,7 @@ onBeforeMount(async () => {
      navigateTo(`/gateway?redirect=${route.fullPath}`)
 });
 
-const client = useSupabaseAuthClient();
+const client = useSupabaseClient();
 client.auth.onAuthStateChange((_, _session) => {
     if (_session?.access_token) {
         const accessToken = useCookie("sb-access-token");

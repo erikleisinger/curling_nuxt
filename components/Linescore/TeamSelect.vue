@@ -11,7 +11,7 @@
                     Use the arrows to select a team, or press the avatar to
                     search.
                 </div>
-                <div v-else-if="!customOpposition" class="text-center">
+                <div v-else-if="!customOpposition && !homeTeam" class="text-center">
                     Press the avatar below to search for a team.
                 </div>
                 <div
@@ -22,7 +22,7 @@
                 >
                     Can't find a team?
                 </div>
-                <div v-else class="text-center">Type a custom opposition name, or press the avatar below to search for a team.</div>
+                <div v-else-if="!homeTeam" class="text-center">Type a custom opposition name, or press the avatar below to search for a team.</div>
             </div>
         </div>
 

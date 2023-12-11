@@ -188,7 +188,7 @@ export const useTeamStore = defineStore("team", {
             let userId = userStore.id;
 
             if (!userId) {
-                const client = useSupabaseAuthClient();
+                const client = useSupabaseClient();
                 const sesh = await client.auth.getUser();
 
                 const { id } = sesh.data.user || {};

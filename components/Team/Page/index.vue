@@ -10,7 +10,7 @@
         @click="viewing = true"
         style="cursor: pointer"
     />
-    <div class="row justify-around attributes" v-if="stats.games_played">
+    <div class="row justify-around attributes" v-if="hasPlayedGames">
         <TeamAttribute title="Games played" color="amber"  :class="$q.screen.xs ? 'col-5' : 'col-2'">
             <span>
                 {{ stats.games_played ?? 0 }}
@@ -79,15 +79,15 @@
     </div>
 
     <ChartTeamStatsTime
-    v-if="stats.games_played"
+    v-if="hasPlayedGames"
         :teamId="Number(route.params.id)"
         :visibleStats="['Hammer efficiency']"
         class="q-mb-md"
     />
 
-    <GameResultList :teamId="Number(route.params.id)" v-if="stats.games_played"/>
+    <GameResultList :teamId="Number(route.params.id)" />
 
-    <div v-if="!stats.games_played" class="full-width text-center q-pa-lg">
+    <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
         {{team.name}} hasn't played any games!
     </div>
        <q-dialog v-model="viewing" persistent  >
@@ -118,6 +118,8 @@ import {useTeamRequestStore} from '@/store/team-requests'
 const $q = useQuasar();
 
 const route = useRoute();
+
+const hasPlayedGames = computed(() => !!team.value?.games?.length)
 
 const team = computed(() => useRepo(Team).withAll().where("id", route.params.id).first())
 
