@@ -176,13 +176,14 @@
         confirmButtonText="Accept result"
         cancelButtonText="Reject result"
         @confirm="respondToRequest('accepted')"
-        @close="respondToRequest('rejected')"
+        @cancel="respondToRequest('rejected')"
+        @close="verifiedPopup = false"
         cancelColor="negative"
         confirmColor="positive"
-        :showConfirm="isOnTeam(pendingTeam)"
-        :showCancel="isOnTeam(pendingTeam)"
+        :showConfirm="isOnTeam(pendingTeam?.id)"
+        :showCancel="isOnTeam(pendingTeam?.id)"
     >
-    <span v-if="isOnTeam(pendingTeam)">
+    <span v-if="isOnTeam(pendingTeam?.id)">
         <strong>{{creatorTeam.name}}</strong> added this game result and has invited you to verify that it is real.
         <br/>
          <br/>
@@ -191,6 +192,13 @@
          <br/>
          <br/>
         If this game did <strong>not</strong> occur, press <span class="text-negative text-bold">Reject Result</span> and it will only count towards your opposition's season statistics.
+         
+    </span>
+    <span v-else>
+        This game was created by <strong>{{creatorTeam.name}}</strong>.
+         <br/>
+         <br/>
+        It will only contribute to <strong>{{pendingTeam.name}}'s</strong> statistics once it is verified by a member of <strong>{{pendingTeam.name}}</strong>.
          
     </span>
         
@@ -462,7 +470,7 @@ const onViewMore = () => {
 
 const {isOnTeam} = useTeam();
 
-const pendingTeam = computed(() => away.value.pending ? away.value.id : home.value.pending ? home.value.id : null)
+const pendingTeam = computed(() => away.value.pending ? away.value : home.value.pending ? home.value : null)
 const creatorTeam = computed(() => away.value.pending ? home.value : home.value.pending ? away.value : null)
 
 const {updateGameRequestStatus} = useGameRequestStore();
