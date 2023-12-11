@@ -10,6 +10,7 @@
                 :icon="editing || !props.teamId ? 'done' : 'edit'"
                 @click="onClickEdit"
                 :loading="saving"
+                :disable="editing && !editedValues.name"
             />
         </div>
         <div class="avatar-container">
@@ -23,7 +24,7 @@
         <h2 class="team-name text-center" v-if="!editing && props.teamId">
             {{ team.name }}
         </h2>
-        <q-input dense v-else v-model="editedValues.name" label="Team name" />
+        <q-input dense v-else v-model="editedValues.name" label="Team name" :maxlength="MAX_TEAM_NAME_LENGTH" :rules="[VALIDATION_RULES.REQUIRED]" />
         <h3 class="rink-name" v-if="team.rink_id && !editing">{{selectedRink.name}} </h3>
         <q-input dense v-else readonly  @click="openRinkSearch" :model-value="selectedRink.name" label="Home rink"/>
         
@@ -212,6 +213,7 @@ import Team from "@/store/models/team";
 import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
+import {MAX_TEAM_NAME_LENGTH, VALIDATION_RULES} from '@/constants/validation'
 
 const queryClient = useQueryClient();
 

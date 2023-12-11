@@ -72,6 +72,7 @@
                 @invite="inviteTeam($event, game)"
                 :home="teamId"
                 :search="searchInput"
+                :viewHome="false"
             >
                 <!-- Verification -->
                 <template

@@ -1,28 +1,30 @@
 <template>
     <div style="position: relative full-width" ref="gameResult">
+     
         <div class="result__container--wrap">
             <div class="row no-wrap">
                 <div class="result__header">
                     <slot name="before" />
 
                     <div class="result__container" @click="emit('expand')">
+                           
                         <div class="backdrop--behind" />
                         <div class="backdrop" />
                         <div
-                            class="team__profile--container column no-wrap justify-center"
+                            class="team__profile--container column no-wrap "
                         >
                             <div class="team-avatar__container">
                                 <div class="team-avatar--wrap">
                                     <TeamAvatar
                                         :teamId="home.id"
                                         :color="home.color"
-                                        :viewable="!!home.id"
+                                        :viewable="viewHome && !!home.id"
                                     />
                                 </div>
                             </div>
                             <div class="team-name__container">
                                 <h2
-                                    class="text-sm truncate-text text-center col-grow full-width highlightable"
+                                    class="text-sm  text-center col-grow full-width highlightable"
                                 >
                                     {{ home.name }}
                                 </h2>
@@ -51,9 +53,9 @@
                                 </div>
                             </div>
 
-                            <div class="row justify-center full-width no-wrap">
+                            <div class="row justify-center full-width no-wrap ">
                                 <div
-                                    class="column no-wrap relative-position"
+                                    class="column no-wrap "
                                     style="height: min-content"
                                 >
                                     <div
@@ -67,20 +69,7 @@
                                         {{ home.points_scored }}
                                     </div>
 
-                                    <div
-                                        class="verified__container"
-                                        v-if="
-                                            !away.pending &&
-                                            !home.pending &&
-                                            home.points_scored >
-                                                away.points_scored
-                                        "
-                                    >
-                                        <q-icon
-                                            name="verified"
-                                            color="primary"
-                                        />
-                                    </div>
+                                   
                                 </div>
                                 <div class="score q-mx-xs">:</div>
                                 <div
@@ -97,27 +86,14 @@
                                     >
                                         {{ away.points_scored }}
                                     </div>
-                                    <div
-                                        class="verified__container"
-                                        v-if="
-                                            !away.pending &&
-                                            !home.pending &&
-                                            away.points_scored >
-                                                home.points_scored
-                                        "
-                                    >
-                                        <q-icon
-                                            name="verified"
-                                            color="primary"
-                                        />
-                                    </div>
+                                   
                                 </div>
                             </div>
                             <div
                                 class="row justify-center full-width game-info__text highlightable"
-                                v-if="game.rink && game.rink.name"
+                                v-if="rink"
                             >
-                                {{ game.rink.name }}
+                                {{ rink.name }}
                             </div>
                             <div
                                 class="row justify-center full-width game-info__text highlightable"
@@ -135,6 +111,9 @@
                                     toTimezone(game.start_time, "MMMM D, YYYY")
                                 }}
                             </div>
+                            <!-- <div v-if="isVerified" class="row full-width justify-center">
+                                <q-badge v-if="isVerified">Verified</q-badge>
+                            </div> -->
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -143,7 +122,7 @@
                                     <TeamAvatar
                                         :teamId="away.id"
                                         :color="away.color"
-                                        :viewable="!away.isPlaceholder"
+                                        :viewable="viewAway && !away.isPlaceholder"
                                         :invitable="
                                             away.isPlaceholder && authorized
                                         "
@@ -163,10 +142,10 @@
                                     />
                                 </div>
                             </div>
-                            <div class="text-center row justify-center">
+                          
                                 <div class="team-name__container">
                                     <h2
-                                        class="text-sm truncate-text text-center highlightable"
+                                        class="text-sm  text-center highlightable"
                                         style="
                                             width: fit-content;
                                             position: relative;
@@ -184,7 +163,7 @@
                                         />
                                     </div>
                                 </div>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -196,7 +175,7 @@
 $result-height: 90px;
 $columns: 30% 40% 30%;
 $max-container-width: 500px;
-$container-padding-top: 15px;
+$container-padding-top: 10px;
 
 .result__container--wrap {
     max-height: fit-content;
@@ -223,8 +202,7 @@ $container-padding-top: 15px;
         position: relative;
 
         .team__profile--container {
-            // max-width: 30%;
-            justify-content: center;
+
             .team-avatar__container {
                 .team-avatar--wrap {
                     position: relative;
@@ -235,6 +213,7 @@ $container-padding-top: 15px;
             .team-name__container {
                 margin-top: var(--space-xxs);
                 width: fit-content;
+                max-width: 100%;
                 position: relative;
                 margin-right: auto;
                 margin-left: auto;
@@ -263,13 +242,14 @@ $container-padding-top: 15px;
         .backdrop--behind {
             background: v-bind(gradient);
         }
+       
     }
     .game-details {
         position: relative;
     }
 
     .game-info__container {
-        margin-top: calc($container-padding-top + var(--space-xxxs));
+        margin-top: calc($container-padding-top + var(--space-xs));
         z-index: 1;
         position: relative;
         .score {
@@ -281,18 +261,7 @@ $container-padding-top: 15px;
                 font-weight: bold;
             }
         }
-        .verified__container {
-            position: absolute;
-            z-index: 1;
-            font-size: 1em;
-            width: min-content;
-
-            right: -1em;
-
-            bottom: -0.1em;
-            margin: auto;
-            height: 1.1em;
-        }
+      
         .game-info__text {
             font-size: 0.7em;
             text-align: center;
@@ -300,7 +269,7 @@ $container-padding-top: 15px;
         .game-showmore__container {
             transition: all 0.4s;
             position: absolute;
-            height: 100%;
+            height: $result-height;
             width: 100%;
 
             margin-top: -12px;
@@ -340,6 +309,7 @@ import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
+import Rink from '@/store/models/rink'
 import { useConfirmDialog, onClickOutside } from "@vueuse/core";
 
 const gameResult = ref(null);
@@ -398,6 +368,14 @@ const props = defineProps({
     },
     gameId: Number,
     search: String,
+    viewHome: {
+        type: Boolean,
+        default: true
+    },
+    viewAway: {
+        type: Boolean,
+        default: true
+    }
 });
 
 const away = computed(() => {
@@ -428,6 +406,8 @@ const home = computed(() => {
 const game = computed(() =>
     useRepo(Game).withAll().where("id", props.gameId).first()
 );
+
+const rink = computed(() => !game.value.rink_id ? null : useRepo(Rink).where('id', game.value.rink_id).first())
 
 const isVerified = computed(() => game.value.isVerified);
 

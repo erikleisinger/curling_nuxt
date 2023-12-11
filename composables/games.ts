@@ -2,6 +2,7 @@ import GameTeam from '@/store/models/game-team'
 import TeamStats from '@/store/models/team-stats'
 import Team from '@/store/models/team'
 import Game from '@/store/models/game'
+import Rink from '@/store/models/rink'
 
 export const useGame = () => {
     const getGames = async ({team_id_param, game_id_param} : {team_id_param: number, game_id_param: number}) => {
@@ -9,6 +10,8 @@ export const useGame = () => {
             team_id_param,
             game_id_param
         });
+
+    
         
         if (!data) return;
 
@@ -25,7 +28,9 @@ export const useGame = () => {
             } else {
                 team = g.team;
             }
-    
+
+            if (g.rink) useRepo(Rink).save(g.rink)
+     
             useRepo(Team).save(team);
 
             useRepo(Game).save({
