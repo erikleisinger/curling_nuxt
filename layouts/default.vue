@@ -51,7 +51,8 @@
         </q-drawer>
         <q-page-container class="page__container--global">
           
-            <AreaNotifications v-if="notificationsOpen" />
+            <AchievementHistory v-show="notificationsOpen" :open="notificationsOpen" v-model="unreadNotificationCount" />
+            <div v-if="notificationsOpen"/>
            
             <slot v-else />
          
@@ -97,7 +98,7 @@
                     :size="$q.screen.xs ? 'md' : 'lg'"
                     @click="notificationsOpen = !notificationsOpen"
                 >
-               <q-badge color="red" floating   v-if="!isLoading && notifications && notifications.length">{{notifications.length}}</q-badge>
+               <q-badge color="red" floating   v-if="!!unreadNotificationCount">{{unreadNotificationCount}}</q-badge>
                 </q-btn>
                 <q-btn
                     flat
@@ -239,7 +240,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import {useTeamRequestStore} from '@/store/team-requests'
 import { useGameRequestStore } from "@/store/game-requests";
-import {useQuery} from '@tanstack/vue-query'
+
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
@@ -292,13 +293,7 @@ const onSelect = (selection) => {
 
 };
 
-const {user: userId} = useUser();
+const unreadNotificationCount = ref(0)
 
-const {getAchievements} = useNotification();
- const {isLoading, data: notifications} = useQuery({
-        queryKey: ['achievements', userId.value],
-        queryFn: getAchievements,
-        refetchOnMount: true,
-    })
 
 </script>

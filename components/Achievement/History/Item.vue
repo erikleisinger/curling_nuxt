@@ -2,16 +2,13 @@
     <!-- BADGES -->
     <q-item v-if="item.type === 'badge_earned'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar
-            ><q-icon size="lg" name="token" color="amber">
-                <q-badge floating class="modifier_badge">
-                    <q-icon name="add_circle" size="xs" color="green" />
-                </q-badge>
-            </q-icon>
+            >
+            <BadgeIcon :badge="item.name" height="2.5em"/>
         </q-item-section>
         <q-item-section>
             <span
-                ><strong>{{ item.team.name }}</strong> earned the badge
-                {{ item.name }}!</span
+                ><strong>{{ item.team.name }}</strong> earned the 
+                <strong>{{BADGE_NAMES[item.name]}}</strong> badge!</span
             >
             <q-item-label caption>{{
                 getAchievementDate(item.created_at)
@@ -179,6 +176,7 @@
 </style>
 <script setup>
 import { parseAvatar } from "@/utils/avatar";
+import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 const props = defineProps({
     item: Object,
 });

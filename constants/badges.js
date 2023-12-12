@@ -121,14 +121,49 @@ export const BADGE_FORMULA_EXPLANATIONS = {
     strategist: `Possess hammer in the last end ${BADGE_THRESHOLDS.strategist}% of the time or more.`,
     stealdefense: `With hammer, give up a steal ${BADGE_THRESHOLDS.stealdefense}% of the time or less.`
 }
+export const BADGE_NAMES = {
+    'win_1': 'Chicken Dinner 1',
+    'win_5': 'Chicken Dinner 5',
+    'win_10': 'Chicken Dinner 10',
+    'win_25': 'Chicken Dinner 25',
+    'win_50': 'Chicken Dinner 50',
+    'win_100': 'Chicken Dinner 100',
+    shutout: 'Shutout',
+    handshakes: 'Handshakes',
+    conversion: 'Conversion Queens',
+    bandit: 'Bandits!',
+    force: 'Indomitable',
+    score_5: '5-Ender',
+    score_6: '6-Ender',
+    score_7: '7-Ender',
+    score_8: '8-Ender',
+}
 
 export const BADGE_DESCRIPTIONS = {
-    showoff: `"Take two, force to one" is a dated proverb for punks and losers. Here's a better idea: just make that double-runback triple for 5 and be done with it. Bada bing!`,
-    bandit: "You couldn't score your own points, so you had to steal someone else's. What a way to live!",
-    bulwark: `Ebenezer Scrooge was a man of vision, and baby, you're playing that vision out. If your opposition wants a deuce, they'll have to *earn* one. Humbug!`,
-    minimalist: `Why scatter rocks everywhere when it'll just make a mess of things! `,
-    survivalist: `Everybody's good at something: flute-playing, motorcycle repair, petting dogs, dentistry. You're good at only scoring one point with hammer. Is this something to be proud of? No! But to live fully, we must accept all parts of ourselves, even the parts that are bad at scoring two with hammer. And at least they didn't steal, right? Right?`
+    'win_1': 'Won 1 game (chicken cutlet)',
+    'win_5': 'Won 5 games (5 piece chicken nuggies)',
+    'win_10': 'Won 10 games (10 piece chicken nuggies)',
+    'win_25': 'Won 25 games (1/4 chicken combo + fries)',
+    'win_50': 'Won 50 games (chicken potroast)',
+    'win_100': 'Won 100 games (full blown honey-basted chicken)',
+    shutout: 'Opponent scores no points.',
+    handshakes: 'Won a game by handshakes.',
+    conversion: 'Score 2+ points every time you have hammer.',
+    bandit: 'Steal every end of a game.',
+    force: 'Without hammer, stole or forced every end.',
+    score_5: 'Score five points in a single end.',
+    score_6: 'Score six points in a single end.',
+    score_7: 'Score seven points in a single end.',
+    score_8: 'Score eight points in a single end.'
 }
+
+// export const BADGE_DESCRIPTIONS = {
+//     showoff: `"Take two, force to one" is a dated proverb for punks and losers. Here's a better idea: just make that double-runback triple for 5 and be done with it. Bada bing!`,
+//     bandit: "You couldn't score your own points, so you had to steal someone else's. What a way to live!",
+//     bulwark: `Ebenezer Scrooge was a man of vision, and baby, you're playing that vision out. If your opposition wants a deuce, they'll have to *earn* one. Humbug!`,
+//     minimalist: `Why scatter rocks everywhere when it'll just make a mess of things! `,
+//     survivalist: `Everybody's good at something: flute-playing, motorcycle repair, petting dogs, dentistry. You're good at only scoring one point with hammer. Is this something to be proud of? No! But to live fully, we must accept all parts of ourselves, even the parts that are bad at scoring two with hammer. And at least they didn't steal, right? Right?`
+// }
 
 export const LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
