@@ -37,7 +37,11 @@ import {useUserTeamStore} from '@/store/user-teams'
         game_id
         `).or(`team_id.in.(${teamList}),profile_id.eq.${userId.value}`).order('created_at', {ascending: false})
 
-        return data;
+        return data.filter(({type, team, profile}) => {
+            if (type !== 'team_request') return true;
+            // ensure we don't see team requests sent to another person
+            return profile.id === userId.value
+        });
     }
 
     const {isLoading, data: achievements} = useQuery({
