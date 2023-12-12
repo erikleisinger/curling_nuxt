@@ -479,10 +479,7 @@ const save = async () => {
         home: params?.home?.id,
         home_color: params?.homeColor,
         away_color: params?.awayColor,
-        hammer_first_end:
-            params?.hammerFirstEndTeam === "away"
-                ? params.away?.id
-                : params?.home?.id,
+        hammer_first_end: params?.hammerFirstEndTeam,
         end_count: endCount.value,
         completed: false,
         conceded,

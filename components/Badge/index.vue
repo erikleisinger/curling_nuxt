@@ -41,7 +41,14 @@
         'win_50': 'Chicken Dinner 50',
         'win_100': 'Chicken Dinner 100',
         shutout: 'Shutout',
-        handshakes: 'Handshakes'
+        handshakes: 'Handshakes',
+        conversion: 'Conversion Queens',
+        bandit: 'Bandits!',
+        force: 'Indomitable',
+        score_5: '5-Ender',
+        score_6: '6-Ender',
+        score_7: '7-Ender',
+        score_8: '8-Ender',
     }
 
     const BADGE_DESCRIPTIONS = {
@@ -51,8 +58,15 @@
         'win_25': 'Won 25 games (1/4 chicken combo + fries)',
         'win_50': 'Won 50 games (chicken potroast)',
         'win_100': 'Won 100 games (full blown honey-basted chicken)',
-        shutout: 'Opponent scores no points',
-        handshakes: 'Won a game by handshakes'
+        shutout: 'Opponent scores no points.',
+        handshakes: 'Won a game by handshakes.',
+        conversion: 'Score 2+ points every time you have hammer.',
+        bandit: 'Steal every end of a game.',
+        force: 'Without hammer, stole or forced every end.',
+        score_5: 'Score five points in a single end.',
+        score_6: 'Score six points in a single end.',
+        score_7: 'Score seven points in a single end.',
+        score_8: 'Score eight points in a single end.'
     }
 
     const {toTimezone} = useTime();

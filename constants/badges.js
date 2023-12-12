@@ -16,6 +16,13 @@ export const BADGE_BACKGROUNDS = {
     win_100: 'bg-badge--amber',
     shutout: 'bg-badge--pale-red',
     handshakes: 'bg-badge--green',
+    conversion: 'bg-badge--purple',
+    force: 'bg-badge--pink',
+    'score_5': 'bg-badge--blue',
+    'score_6': 'bg-badge--blue',
+    'score_7': 'bg-badge--blue',
+    'score_8': 'bg-badge--blue',
+
 }   
 
 export const BADGE_COLORS = {
