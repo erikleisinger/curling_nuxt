@@ -1,5 +1,5 @@
 <template>
     <NuxtLayout>
-        <AreaSeason/>
+        <div>Home page</div>
     </NuxtLayout>
 </template>

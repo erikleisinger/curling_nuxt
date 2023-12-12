@@ -2,10 +2,8 @@
         <h1 class="text-md text-bold q-pa-md row justify-between items-center">
             Notifications
         </h1>
-        <div v-for="request in requests" :key="request.id" style="min-height: 50px">
-            <NotificationRequest :request="request" />
-            <q-separator/>
-        </div>
+        <q-separator/>
+        <AreaSeason/>
 </template>
 <script setup>
 

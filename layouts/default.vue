@@ -50,8 +50,11 @@
             </q-list>
         </q-drawer>
         <q-page-container class="page__container--global">
-            <AreaNotifications v-if="notificationsOpen"/>
-            <slot v-else/>
+          
+            <AreaNotifications v-if="notificationsOpen" />
+           
+            <slot v-else />
+         
         </q-page-container>
         <q-footer bordered class="bg-white text-black row justify-between">
             <q-toolbar class="global-footer row justify-between">
@@ -67,7 +70,7 @@
                     @click="goTo('/teams')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 >
-                    <q-badge color="red" floating   v-if="teamRequests && teamRequests.length">{{teamRequests.length}}</q-badge>
+                    
                 </q-btn>
                 <div class="action-button__container">
                     <q-fab
@@ -94,7 +97,7 @@
                     :size="$q.screen.xs ? 'md' : 'lg'"
                     @click="notificationsOpen = !notificationsOpen"
                 >
-                <q-badge color="red" floating   v-if="requests && requests.length">{{requests.length}}</q-badge>
+               <q-badge color="red" floating   v-if="!isLoading && notifications && notifications.length">{{notifications.length}}</q-badge>
                 </q-btn>
                 <q-btn
                     flat
@@ -236,6 +239,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import {useTeamRequestStore} from '@/store/team-requests'
 import { useGameRequestStore } from "@/store/game-requests";
+import {useQuery} from '@tanstack/vue-query'
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
@@ -288,14 +292,13 @@ const onSelect = (selection) => {
 
 };
 
-const teamRequests = computed(() => useTeamRequestStore().requests)
-const gameRequests = computed(() => useGameRequestStore().requests)
+const {user: userId} = useUser();
 
-const requests = computed(() => [...teamRequests.value.map((i) => ({
-    ...i,
-    type: 'team'
-})), ...gameRequests.value.map((i) => ({
-    ...i,
-    type: 'game'
-}))])
+const {getAchievements} = useNotification();
+ const {isLoading, data: notifications} = useQuery({
+        queryKey: ['achievements', userId.value],
+        queryFn: getAchievements,
+        refetchOnMount: true,
+    })
+
 </script>
