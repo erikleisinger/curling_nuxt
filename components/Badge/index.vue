@@ -22,7 +22,7 @@
         border-radius: 8px;
    background-color: rgba(0, 0, 0, 0.015);
    height: min-content;
-   max-width: 150px;
+   max-width: min(50%, 150px);
    .badge-description {
     min-height: 2em;
    }
