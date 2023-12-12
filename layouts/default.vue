@@ -58,13 +58,13 @@
                 <q-btn
                     flat
                     icon="home"
-                    @click="goTo('#')"
+                    @click="goTo('/')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 />
                 <q-btn
                     flat
                     icon="groups_2"
-                    @click="goTo('/')"
+                    @click="goTo('/teams')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 >
                     <q-badge color="red" floating   v-if="teamRequests && teamRequests.length">{{teamRequests.length}}</q-badge>
