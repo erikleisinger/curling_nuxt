@@ -130,6 +130,12 @@
         width: min(100vw, 500px); 
         height: min(100vh, 600px);
         padding: var(--space-xs);
+        
+
+    }
+
+    .badges-viewer {
+        padding-top: 0px;
         .badges-viewer__header {
             padding: var(--space-sm);
             
@@ -137,7 +143,6 @@
         .badges-view {
             margin-top: var(--space-sm)
         }
-
     }
      .attributes {
         margin: 0px var(--space-md)
