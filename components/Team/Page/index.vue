@@ -10,12 +10,12 @@
         @click="viewing = true"
         style="cursor: pointer"
     />
-    <div :class="{'column': $q.screen.xs, 'row no-wrap': !$q.screen.xs}">
-    <div class=" team-badges__container "  v-if="badges">
+    <div :class="{'column': $q.screen.xs, 'row no-wrap': !$q.screen.xs}" class="team-info">
+    <div class=" team-badges__container " :class="$q.screen.xs ? 'col-12' : 'col-6'" v-if="badges">
         <div class="row items-center" :class="{'col-6 justify-around': !$q.screen.xs, 'justify-between': $q.screen.xs}">
         <Badge v-for="badge in badgesLimited" :key="badge.id" :badge="badge"/>
         </div>
-            <div class="text-sm text-right q-mt-xs text-underline" style="cursor: pointer" @click="badgesOpen = true">View all badges</div>
+            <div class="text-sm  q-mt-xs text-underline" :class="$q.screen.xs ? 'text-right' : 'text-center'" style="cursor: pointer" @click="badgesOpen = true">View all badges</div>
     </div>
 
     <div class="row  attributes justify-around" :class="{'col-6 ': !$q.screen.xs}" v-if="hasPlayedGames">
@@ -120,6 +120,11 @@
  
 </template>
 <style lang="scss" scoped>
+.team-info {
+    @include sm {
+        margin-top: var(--space-xl)
+    }
+}
     .team-details__viewer,
     .badges-viewer {
         width: min(100vw, 500px); 
@@ -145,7 +150,7 @@
    
     .team-badges__container {
         padding: 0px calc(var(--space-md) + var(--space-xs));
-        margin-bottom: var(--space-lg);
+        margin-bottom: var(--space-md);
     }
 </style>
 <script setup lang="ts">
@@ -190,7 +195,7 @@ const getBadges = async (team_id: number) => {
     return data;
 }
 
-const badgesLimited = computed(() => [...badges.value].splice(0,2))
+const badgesLimited = computed(() => [...badges.value].splice(0,$q.screen.xs ? 2 : 4))
 
 const {isLoading, data: badges} = useQuery({
     queryKey: ['team', 'badges', Number(route.params.id)],
