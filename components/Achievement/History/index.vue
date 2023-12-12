@@ -33,7 +33,8 @@ import {useUserTeamStore} from '@/store/user-teams'
         ),
         name,
         type,
-        info
+        info,
+        game_id
         `).or(`team_id.in.(${teamList}),profile_id.eq.${userId.value}`).order('created_at', {ascending: false})
 
         return data;

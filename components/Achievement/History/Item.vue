@@ -99,6 +99,51 @@
             }}</q-item-label>
         </q-item-section>
     </q-item>
+
+    <!-- TEAM REQUESTS -->
+
+    <q-item v-if="item.type === 'team_request'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
+        <q-item-section avatar @click.stop>
+            <div style="width: 35px" class="relative-position">
+                <TeamAvatar :teamId="item.team.id" viewable> </TeamAvatar>
+                
+            </div>
+        </q-item-section>
+        <q-item-section>
+            <span style="word-break: break-all">
+                You were invited to join
+                
+                <strong>{{ item.team.name }}</strong>
+            </span>
+
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+
+    <!-- GAME REQUESTS -->
+
+    <q-item v-if="item.type === 'game_request'" v-ripple clickable  @click="navigateTo(`/games/view/${item.game_id}`)">
+        <q-item-section avatar @click.stop>
+            <div style="width: 35px" class="relative-position">
+                <TeamAvatar :teamId="item.info.requester_id" viewable> </TeamAvatar>
+                
+            </div>
+        </q-item-section>
+        <q-item-section>
+            <span >
+                 <strong style="word-break: break-all">{{ item.info.requester_name }}</strong>
+                asked you to verify a game
+                
+               
+            </span>
+
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
 </template>
 <style lang="scss" scoped>
 .modifier_badge {

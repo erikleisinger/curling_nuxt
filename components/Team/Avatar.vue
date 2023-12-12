@@ -234,7 +234,7 @@ const clickAvatar = () => {
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
     } else if (props.viewable) {
-        return navigateTo(`/teams/${team.value.id}`);
+        return navigateTo(`/teams/${props.teamId}`);
     } else if (props.invitable) {
         emit("invite");
     }
