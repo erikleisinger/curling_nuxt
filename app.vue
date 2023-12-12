@@ -32,16 +32,12 @@ const vh = window.innerHeight * 0.01;
  document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
-const getBadges = async () => {
-    const client = useSupabaseClient();
-    const {data} = await client.from('team_stats_total').select('*').eq('id', 20).single();
-    console.log(data)
-}
+
 
 onMounted(async () => {
  setVh();
  useEventListener(window, 'resize', setVh)
- getBadges()
+
 })
 
 onBeforeMount(async () => {

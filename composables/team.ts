@@ -79,9 +79,7 @@ export const useTeam = () => {
     const isOnTeam = (teamId: number) => {
         const { user: userId } = useUser();
         const team = useRepo(Team).with("players").where("id", teamId).first();
-        console.log(team)
         if (!team) return false;
-        console.log(team.players)
        return [...(team.players ?? [])].some(({ id }) => id === userId.value);
      
     };

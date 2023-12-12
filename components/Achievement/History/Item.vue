@@ -1,7 +1,6 @@
 <template>
     <!-- BADGES -->
-    <q-inner-loading v-if="isLoading"/>
-    <q-item v-if="item.type === 'badge_earned'" v-ripple clickable>
+    <q-item v-if="item.type === 'badge_earned'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar
             ><q-icon size="lg" name="token" color="amber">
                 <q-badge floating class="modifier_badge">
@@ -22,7 +21,7 @@
 
     <!-- TEAM ROSTER CHANGES -->
 
-    <q-item v-if="item.type === 'team_roster_change'" v-ripple clickable>
+    <q-item v-if="item.type === 'team_roster_change'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar>
             <div style="width: 35px" class="relative-position">
                 <TeamAvatar :teamId="item.team.id"> </TeamAvatar>
@@ -57,7 +56,7 @@
 
      <!-- GAME_RESULTS -->
 
-    <q-item v-if="item.type === 'game_result'" v-ripple clickable>
+    <q-item v-if="item.type === 'game_result'" v-ripple clickable @click="navigateTo(`/games/view/${item.game_id}`)">
          <q-item-section avatar class="relative-position">
             <div style="width: 35px" class=" game-avatar--home">
                 <TeamAvatar :teamId="item.team.id"> </TeamAvatar>

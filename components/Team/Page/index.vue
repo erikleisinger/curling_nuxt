@@ -10,8 +10,16 @@
         @click="viewing = true"
         style="cursor: pointer"
     />
-    <div class="row justify-around attributes" v-if="hasPlayedGames">
-        <TeamAttribute title="Games played" color="amber"  :class="$q.screen.xs ? 'col-5' : 'col-2'">
+    <div :class="{'column': $q.screen.xs, 'row no-wrap': !$q.screen.xs}">
+    <div class=" team-badges__container "  v-if="badges">
+        <div class="row items-center" :class="{'col-6 justify-around': !$q.screen.xs, 'justify-between': $q.screen.xs}">
+        <Badge v-for="badge in badgesLimited" :key="badge.id" :badge="badge"/>
+        </div>
+            <div class="text-sm text-right q-mt-xs text-underline" style="cursor: pointer" @click="badgesOpen = true">View all badges</div>
+    </div>
+
+    <div class="row  attributes justify-around" :class="{'col-6 ': !$q.screen.xs}" v-if="hasPlayedGames">
+        <TeamAttribute title="Games played" color="amber"    class="col-5">
             <span>
                 {{ stats.games_played ?? 0 }}
             </span>
@@ -19,7 +27,7 @@
         <TeamAttribute
             title="Win %"
             color="amber"
-            :class="$q.screen.xs ? 'col-5' : 'col-2'"
+            class="col-5"
             :percent="stats.winPercentile"
         >
             <span> {{ stats.winPercent }}% </span>
@@ -39,7 +47,7 @@
         <TeamAttribute
             title="Hammer first end"
             color="amber"
-           :class="$q.screen.xs ? 'col-5' : 'col-2'"
+            class="col-5"
             :percent="stats.HFEPercentile"
         >
             <span> {{ stats.HFEPercent }}% </span>
@@ -59,7 +67,7 @@
         <TeamAttribute
             title="Hammer last end"
             color="amber"
-           :class="$q.screen.xs ? 'col-5' : 'col-2'"
+            class="col-5"
             :percent="stats.HLEPercentile"
         >
             <span> {{ stats.HLEPercent }}% </span>
@@ -76,6 +84,7 @@
                 >
             </template>
         </TeamAttribute>
+    </div>
     </div>
 
     <ChartTeamStatsTime
@@ -99,21 +108,50 @@
     />
         </q-card>
     </q-dialog>
+      <q-dialog v-model="badgesOpen" v-if="badges && badges.length"  >
+        <q-card class="badges-viewer ">
+            <h3 class="text-md text-bold  badges-viewer__header">Badges ({{badges.length}})</h3>
+            <q-separator/>
+            <div class="row justify-between items-start badges-view">
+          <Badge v-for="badge in badges" :key="badge.id" :badge="badge" class="q-mb-sm"/>
+            </div>
+        </q-card>
+    </q-dialog>
  
 </template>
 <style lang="scss" scoped>
-    .team-details__viewer {
+    .team-details__viewer,
+    .badges-viewer {
         width: min(100vw, 500px); 
         height: min(100vh, 600px);
+        padding: var(--space-xs);
+        .badges-viewer__header {
+            padding: var(--space-sm);
+            
+        }
+        .badges-view {
+            margin-top: var(--space-sm)
+        }
 
     }
-    .attributes {
+     .attributes {
         margin: 0px var(--space-md)
+    }
+    @include sm {
+ .attributes {
+        margin: unset;
+    }
+    }
+   
+    .team-badges__container {
+        padding: 0px calc(var(--space-md) + var(--space-xs));
+        margin-bottom: var(--space-lg);
     }
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
 import {useTeamRequestStore} from '@/store/team-requests'
+import {useQuery} from '@tanstack/vue-query'
 
 const $q = useQuasar();
 
@@ -140,9 +178,26 @@ const getPercentileColor = (val: number) => {
     return val > 50 ? "green" : "red";
 };
 const viewing = ref(false);
-
+const badgesOpen = ref(false)
 
 const teamRequests = computed(() => useTeamRequestStore().requests?.filter(({team_id}) => team_id === Number(route.params.id) ?? []));
+
+
+const getBadges = async (team_id: number) => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('badges').select('*').eq('team_id', team_id).order('created_at', {ascending:false})
+    console.log(data)
+    return data;
+}
+
+const badgesLimited = computed(() => [...badges.value].splice(0,2))
+
+const {isLoading, data: badges} = useQuery({
+    queryKey: ['team', 'badges', Number(route.params.id)],
+    queryFn: () => getBadges(Number(route.params.id))
+})
+
+
 </script>
 <script lang="ts">
 export default {

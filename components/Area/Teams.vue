@@ -8,12 +8,13 @@
             </div>
         </aside>
 
-        <header class="season__header">
-            <h1 class="text-md text-bold q-pa-md row justify-between items-center">
+        <header class="season__header row justify-between no-wrap align-center">
+            <h1 class="text-md text-bold  row justify-between items-center">
             My teams
         </h1>
-        <q-separator/>
+        <q-btn flat round icon="add" dense @click="newTeamOpen = true"/>
         </header>
+           <q-separator/>
         <main class="season-content__container">
             <div style="height: 100%">
                 <div
@@ -29,77 +30,32 @@
                         <template v-slot:append> </template>
                     </ProfileCard>
                 </div>
-                <div class="team-table__item" style="overflow: visible">
-                    <ProfileCard>
-                        Add team
-                        <template v-slot:avatar>
-                            <q-fab
-                                direction="down"
-                                dense
-                                padding="8px"
-                                :persistent="false"
-                                icon="add"
-                                color="primary"
-                                vertical-actions-align="left"
-                            >
-                                <q-fab-action
-                                    rounded
-                                    color="primary"
-                                    icon="add"
-                                    to="/teams/create"
-                                    no-wrap
-                                    ref="buttonOption"
-                                    style="width: fit-content"
-                                    label="Create new team"
-                                >
-                                </q-fab-action>
-                                <q-fab-action
-                                    rounded
-                                    icon="search"
-                                    color="white"
-                                    text-color="primary"
-                                    label="Search for a team to join"
-                                    @click="
-                                        toggleGlobalSearch({
-                                            open: true,
-                                            options: {
-                                                resourceTypes: ['team'],
-                                                inputLabel:
-                                                    'Search for a team to join',
-                                                filterIds: teams.map(
-                                                    ({ id }) => id
-                                                ),
-                                                callback: (team) => {
-                                                    toggleTeamViewer({
-                                                        open: true,
-                                                        team,
-                                                        options: {
-                                                            priority: true,
-                                                        },
-                                                    });
-                                                },
 
-                                                persistent: true,
-                                            },
-                                        })
-                                    "
-                                    no-wrap
-                                >
-                                </q-fab-action>
-                            </q-fab>
-                        </template>
-                        <template v-slot:append> </template>
-                    </ProfileCard>
-                </div>
             </div>
         </main>
     </div>
+      <q-dialog v-model="newTeamOpen" persistent  >
+        <q-card class="team-details__viewer">
+          <TeamPageDetails
+        @back="newTeamOpen = false"
+   
+       
+    />
+        </q-card>
+    </q-dialog>
 </template>
 <style lang="scss" scoped>
 $col-width: 80px;
+.team-details__viewer {
+     width: min(100vw, 500px); 
+        height: min(100vh, 600px);
+}
 .season__wrap {
     height: 100%;
     overflow: auto;
+    .season__header {
+        padding: var(--space-sm);
+    }
     .season-content__container {
         min-height: v-bind(mainHeight);
         height: v-bind(mainHeight);
@@ -132,6 +88,8 @@ import GET_LATEST_RESULT from "@/queries/get_latest_result";
 const $q = useQuasar();
 
 const userTeamStore = useUserTeamStore();
+
+const newTeamOpen = ref(false)
 
 /**
  * teams

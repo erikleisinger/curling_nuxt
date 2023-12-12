@@ -7,7 +7,15 @@ export const BADGE_BACKGROUNDS = {
     minimalist: 'bg-badge--teal',
     survivalist: 'bg-badge--green',
     strategist: 'bg-badge--pink',
-    stealdefense: 'bg-badge--blue-grey'
+    stealdefense: 'bg-badge--blue-grey',
+    win_1: 'bg-badge--amber',
+    win_5: 'bg-badge--amber',
+    win_10: 'bg-badge--amber',
+    win_25: 'bg-badge--amber',
+    win_50: 'bg-badge--amber',
+    win_100: 'bg-badge--amber',
+    shutout: 'bg-badge--pale-red',
+    handshakes: 'bg-badge--green',
 }   
 
 export const BADGE_COLORS = {
