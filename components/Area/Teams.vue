@@ -1,4 +1,5 @@
 <template>
+
     <div class="season__wrap">
         <aside v-if="teamRequests && teamRequests.length">
             <div v-for="request in teamRequests" :key="request.id">
@@ -6,14 +7,12 @@
                 <q-separator />
             </div>
         </aside>
-        <header class="season__header">
-            <div v-if="latestResult">
-                Latest result:
-                {{ latestResult.result }} vs
-                {{ latestResult.opposition?.name ?? "Unnamed team" }}
-            </div>
 
-            <div v-if="isError">ERROR</div>
+        <header class="season__header">
+            <h1 class="text-md text-bold q-pa-md row justify-between items-center">
+            My teams
+        </h1>
+        <q-separator/>
         </header>
         <main class="season-content__container">
             <div style="height: 100%">
@@ -104,7 +103,7 @@ $col-width: 80px;
     .season-content__container {
         min-height: v-bind(mainHeight);
         height: v-bind(mainHeight);
-        overflow: auto;
+        overflow: hidden;
         position: relative;
         max-width: 100%;
         .team-table__item {
@@ -152,7 +151,7 @@ const teams = computed(() =>
 
 const header = ref(null);
 const { height: headerHeight } = useElementBounding(header);
-const mainHeight = computed(() => `calc(100% - ${headerHeight.value}px)`);
+const mainHeight = computed(() => `calc(100% - ${headerHeight.value + 50}px)`);
 
 /**
  * BEGIN utility
