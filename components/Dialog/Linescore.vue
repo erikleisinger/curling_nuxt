@@ -523,29 +523,28 @@ const save = async () => {
         shouldSendInvitation
     );
 
-    createGameStats(gameToCreate?.home, gameId);
-    createGameStats(shouldSendInvitation ? null : gameToCreate?.away, gameId);
+
 
     if (shouldSendInvitation && params.away?.id) useGameRequestStore().sendGameRequest(params.away, gameId)
 
     return navigateTo(`/games/view/${gameId}`);
 };
 
-const createGameStats = async (team_id_param, game_id_param) => {
-    const client = useSupabaseClient();
-    const { data } = await client.rpc("get_team_game_statistics", {
-        team_id_param,
-        game_id_param,
-    });
-    const [stats] = data;
-    if (!stats) return;
-    const { errors } = await client.from("team_stats").insert({
-        ...stats,
-        team_id: team_id_param,
-        game_id: game_id_param,
-    });
-    if (errors) console.error(errors);
-};
+// const createGameStats = async (team_id_param, game_id_param) => {
+//     const client = useSupabaseClient();
+//     const { data } = await client.rpc("get_team_game_statistics", {
+//         team_id_param,
+//         game_id_param,
+//     });
+//     const [stats] = data;
+//     if (!stats) return;
+//     const { errors } = await client.from("team_stats").insert({
+//         ...stats,
+//         team_id: team_id_param,
+//         game_id: game_id_param,
+//     });
+//     if (errors) console.error(errors);
+// };
 
 const createTeamGameJunction = async (game, isPending) => {
     const {
