@@ -50,12 +50,14 @@
             </q-list>
         </q-drawer>
         <q-page-container class="page__container--global">
-          
-            <AchievementHistory v-show="notificationsOpen" :open="notificationsOpen" v-model="unreadNotificationCount" />
-            <div v-if="notificationsOpen"/>
-           
+            <AchievementHistory
+                v-show="notificationsOpen"
+                :open="notificationsOpen"
+                v-model="unreadNotificationCount"
+            />
+            <div v-if="notificationsOpen" />
+
             <slot v-else />
-         
         </q-page-container>
         <q-footer bordered class="bg-white text-black row justify-between">
             <q-toolbar class="global-footer row justify-between">
@@ -71,7 +73,6 @@
                     @click="goTo('/teams')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                 >
-                    
                 </q-btn>
                 <div class="action-button__container">
                     <q-fab
@@ -80,13 +81,21 @@
                         direction="up"
                         class="action-button"
                     >
-                        <q-fab-action color="amber" icon="group_add" @click="newTeamOpen = true">
+                        <q-fab-action
+                            color="amber"
+                            icon="group_add"
+                            @click="newTeamOpen = true"
+                        >
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                        <q-fab-action color="blue" icon="videogame_asset" @click="goTo('/games/create')">
-                            <span class="action-button__label" >New game</span>
+                        <q-fab-action
+                            color="blue"
+                            icon="videogame_asset"
+                            @click="goTo('/games/create')"
+                        >
+                            <span class="action-button__label">New game</span>
                         </q-fab-action>
-                        <q-fab-action color="red" icon="logout" @click="logout" >
+                        <q-fab-action color="red" icon="logout" @click="logout">
                             <span class="action-button__label">Logout</span>
                         </q-fab-action>
                     </q-fab>
@@ -96,9 +105,14 @@
                     icon="notifications"
                     :color="notificationsOpen ? 'blue' : ''"
                     :size="$q.screen.xs ? 'md' : 'lg'"
-                    @click="notificationsOpen = !notificationsOpen"
+                    @click="toggleNotifications"
                 >
-               <q-badge color="red" floating   v-if="!!unreadNotificationCount">{{unreadNotificationCount}}</q-badge>
+                    <q-badge
+                        color="red"
+                        floating
+                        v-if="!!unreadNotificationCount"
+                        >{{ unreadNotificationCount }}</q-badge
+                    >
                 </q-btn>
                 <q-btn
                     flat
@@ -109,13 +123,9 @@
             </q-toolbar>
         </q-footer>
     </q-layout>
-    <q-dialog v-model="newTeamOpen" persistent  >
+    <q-dialog v-model="newTeamOpen" persistent>
         <q-card class="team-details__viewer">
-          <TeamPageDetails
-        @back="newTeamOpen = false"
-   
-       
-    />
+            <TeamPageDetails @back="newTeamOpen = false" />
         </q-card>
     </q-dialog>
 </template>
@@ -123,8 +133,8 @@
 $footer-height-xs: 3em;
 $footer-height-sm: 4em;
 .team-details__viewer {
-     width: min(100vw, 500px); 
-        height: min(100vh, 600px);
+    width: min(100vw, 500px);
+    height: min(100vh, 600px);
 }
 .app-layout {
     display: flex;
@@ -236,16 +246,16 @@ $footer-height-sm: 4em;
 import { useNavigationStore } from "@/store/navigation";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useUserStore } from "@/store/user";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, useEventListener, useThrottleFn } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import {useTeamRequestStore} from '@/store/team-requests'
+import { useTeamRequestStore } from "@/store/team-requests";
 import { useGameRequestStore } from "@/store/game-requests";
 
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
 
-const newTeamOpen = ref(false)
-const notificationsOpen = ref(false)
+const newTeamOpen = ref(false);
+const notificationsOpen = ref(false);
 
 const { logout } = useSession();
 const { getColor } = useColor();
@@ -290,10 +300,27 @@ const onSelect = (selection) => {
     if (selection.resourcetype === "team") {
         return navigateTo(`/teams/${selection.id}`);
     }
-
 };
 
-const unreadNotificationCount = ref(0)
+const unreadNotificationCount = ref(0);
 
+useEventListener(
+    window,
+    "popstate",
+    () => {
+        if (notificationsOpen.value) {
+            notificationsOpen.value = false;
+        } 
+    }
+);
 
+const toggleNotifications = () => {
+    notificationsOpen.value = !notificationsOpen.value;
+    if (notificationsOpen.value) {
+        navigateTo("#notifications");
+    } else {
+        const route = useRoute()
+        navigateTo(route.path, {replace: true});
+    }
+};
 </script>

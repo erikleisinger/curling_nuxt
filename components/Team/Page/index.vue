@@ -108,7 +108,7 @@
     />
         </q-card>
     </q-dialog>
-      <q-dialog v-model="badgesOpen" v-if="badges && badges.length"  >
+      <q-dialog v-model="badgesOpen" v-if="badges && badges.length" :persistent="$q.platform.is.mobile"  >
         <q-card class="badges-viewer ">
             <h3 class="text-md text-bold  badges-viewer__header">Badges ({{badges.length}})</h3>
             <q-separator/>
@@ -162,6 +162,8 @@
 import Team from "@/store/models/team";
 import {useTeamRequestStore} from '@/store/team-requests'
 import {useQuery} from '@tanstack/vue-query'
+import {useEventListener} from '@vueuse/core'
+import { Console } from 'console';
 
 const $q = useQuasar();
 
@@ -196,7 +198,6 @@ const teamRequests = computed(() => useTeamRequestStore().requests?.filter(({tea
 const getBadges = async (team_id: number) => {
     const client = useSupabaseClient();
     const {data} = await client.from('badges').select('*').eq('team_id', team_id).order('created_at', {ascending:false})
-    console.log(data)
     return data;
 }
 
@@ -207,6 +208,20 @@ const {isLoading, data: badges} = useQuery({
     queryFn: () => getBadges(Number(route.params.id))
 })
 
+useEventListener(
+    window,
+    "popstate",
+    () => {
+        if (badgesOpen.value) {
+            history.go(1)
+            badgesOpen.value = false;
+        } 
+        if (viewing.value) {
+            history.go(1)
+            viewing.value = false;
+        }
+    }
+);
 
 </script>
 <script lang="ts">
