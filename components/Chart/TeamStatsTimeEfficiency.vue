@@ -68,7 +68,7 @@ const chartData = () => {
             previous.push({
                 hammer_end_count: d.hammer_end_count,
                 hammer_conversion_count: d.hammer_conversion_count,
-                hammer_blank_count: d.hammer_blank_count,
+            
             });
 
             const sums = previous.reduce(
@@ -77,7 +77,7 @@ const chartData = () => {
                     {
                         hammer_end_count,
                         hammer_conversion_count,
-                        hammer_blank_count,
+                    
                     }
                 ) => {
                     return {
@@ -85,7 +85,7 @@ const chartData = () => {
                             all.hammer_end_count + hammer_end_count,
                         hammer_conversion_count:
                             all.hammer_conversion_count +
-                            (hammer_conversion_count - hammer_blank_count),
+                            hammer_conversion_count,
                     };
                 },
                 {
@@ -101,10 +101,10 @@ const chartData = () => {
                 ({
                     hammer_conversion_count,
                     hammer_end_count,
-                    hammer_blank_count,
+               
                 }) =>
                     (hammer_conversion_count /
-                        (hammer_end_count - hammer_blank_count)) *
+                        hammer_end_count) *
                     100
             );
           

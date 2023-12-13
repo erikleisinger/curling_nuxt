@@ -132,6 +132,7 @@
                                 userTeamStore.userTeams.map(({ id }) => id)
                             "
                             :filterIds="[selections.away?.id]"
+                            :viewable="summary"
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select your team

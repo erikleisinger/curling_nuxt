@@ -55,7 +55,7 @@
                 </TeamPlayerRemove>
             </div>
             <div class="player-avatar__container">
-            <Avataaar v-bind="player.avatar" class="player-avatar" />
+            <Avataaar v-bind="player.avatar" class="player-avatar" @click="onPlayerClick(player)" />
             <q-badge color="orange" floating  align="bottom" v-if="player.pivot && player.pivot.status">Invitation sent</q-badge>
             </div>
            
@@ -428,6 +428,12 @@ const { isOnTeam } = useTeam();
 
 const updateAvatar = (data) => {
     editedValues.value.avatar_url = data;
+}
+
+const onPlayerClick = ({id}) => {
+   
+    if (editing.value) return;
+    navigateTo(`/player/${id}`)
 }
 </script>
 <script lang="ts">

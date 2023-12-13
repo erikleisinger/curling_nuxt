@@ -12,7 +12,7 @@
             <TeamAvatar
                 :teamId="selections?.id"
                 :color="selections?.color"
-                :viewable="false"
+                :viewable="viewable"
                 :animateRing="!!(editing && selectColor && selections?.color)"
                 :highlight="false"
                 @click="onAvatarClick"
@@ -203,6 +203,7 @@ const props = defineProps({
         type: Array,
         default: [],
     },
+    viewable: Boolean,
 });
 const emit = defineEmits(["confirm", "update:color", "update:hammer", "update:modelValue"]);
 const selections = useVModel(props, "modelValue", emit);
