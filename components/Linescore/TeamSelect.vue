@@ -1,6 +1,6 @@
 <template>
     <div class="linescore-confirmation__wrap">
-        <div class="row items-end justify-center q-px-md">
+        <div class="row items-end justify-center q-px-md q-mb-sm">
             <div class="column items-center">
                 <h2
                     class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center"
@@ -155,7 +155,7 @@
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: 25% 50% 25%;
+    grid-template-rows: auto auto 25%;
     .team-avatar__container {
         width: 50vh;
         max-width: 200px;
