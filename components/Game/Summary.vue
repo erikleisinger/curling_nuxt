@@ -397,7 +397,6 @@
     }
     
     .team__header {
-        // transition: all 0.2s;
         .avatar__container {
             height: v-bind(avatarSize);
             max-width: 100%;
