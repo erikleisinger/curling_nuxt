@@ -1,9 +1,16 @@
 <template>
     <!-- BADGES -->
-    <q-item v-if="item.type === 'badge_earned'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
+    <q-item v-if="item.type === 'badge_earned'" class="achievement-history__item" :class="{unread}" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar
+        class="relative-position"
             >
-            <BadgeIcon :badge="item.name" height="2.5em"/>
+            <div style="width: 35px" class=" game-avatar--home">
+                <TeamAvatar :teamId="item.team.id"> </TeamAvatar>
+                
+            </div>
+            <div class="game-avatar--away">
+            <BadgeIcon :badge="item.name" height="40px"/>
+            </div>
         </q-item-section>
         <q-item-section>
             <span
@@ -18,7 +25,7 @@
 
     <!-- TEAM ROSTER CHANGES -->
 
-    <q-item v-if="item.type === 'team_roster_change'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
+    <q-item v-if="item.type === 'team_roster_change'" class="achievement-history__item" :class="{unread}" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar>
             <div style="width: 35px" class="relative-position">
                 <TeamAvatar :teamId="item.team.id"> </TeamAvatar>
@@ -53,10 +60,10 @@
 
      <!-- GAME_RESULTS -->
 
-    <q-item v-if="item.type === 'game_result'" v-ripple clickable @click="navigateTo(`/games/view/${item.game_id}`)">
+    <q-item v-if="item.type === 'game_result'" class="achievement-history__item" :class="{unread}" v-ripple clickable @click="navigateTo(`/games/view/${item.game_id}`)">
          <q-item-section avatar class="relative-position">
-            <div style="width: 35px" class=" game-avatar--home">
-                <TeamAvatar :teamId="item.team.id"> </TeamAvatar>
+            <div style="width: 35px" class=" game-avatar--home" >
+                <TeamAvatar :teamId="item.team.id" > </TeamAvatar>
                 
             </div>
             <div style="width: 35px" class="game-avatar--away">
@@ -98,7 +105,7 @@
 
     <!-- TEAM REQUESTS -->
 
-    <q-item v-if="item.type === 'team_request'" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
+    <q-item v-if="item.type === 'team_request'" class="achievement-history__item" :class="{unread}" v-ripple clickable @click="navigateTo(`/teams/${item.team.id}`)">
         <q-item-section avatar @click.stop>
             <div style="width: 35px" class="relative-position">
                 <TeamAvatar :teamId="item.team.id" viewable> </TeamAvatar>
@@ -120,7 +127,7 @@
 
     <!-- GAME REQUESTS -->
 
-    <q-item v-if="item.type === 'game_request'" v-ripple clickable  @click="navigateTo(`/games/view/${item.game_id}`)">
+    <q-item v-if="item.type === 'game_request'" class="achievement-history__item" :class="{unread}" v-ripple clickable  @click="navigateTo(`/games/view/${item.game_id}`)">
         <q-item-section avatar @click.stop>
             <div style="width: 35px" class="relative-position">
                 <TeamAvatar :teamId="item.info.requester_id" viewable> </TeamAvatar>
@@ -142,6 +149,10 @@
     </q-item>
 </template>
 <style lang="scss" scoped>
+.achievement-history__item {
+    &.unread {
+        background-color: #ecf8fe;
+    }
 .modifier_badge {
     top: unset !important;
     bottom: -4px !important;
@@ -163,6 +174,12 @@
 .game-avatar--home,
 .game-avatar--away {
     position: absolute;
+    &.loss {
+        border: 1px solid red;
+    }
+    &.win {
+        border: 1px solid green;
+    }
 }
 
 .game-avatar--home {
@@ -173,12 +190,19 @@
     // bottom: 12px;
     right: 8px;
 }
+.badge-earned--floating {
+    position: absolute;
+    bottom: 0;
+}
+}
+
 </style>
 <script setup>
 import { parseAvatar } from "@/utils/avatar";
 import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 const props = defineProps({
     item: Object,
+    unread: Boolean,
 });
 const { toTimezone } = useTime();
 
@@ -192,6 +216,8 @@ const getProfileName = (profile) => {
     if (profile.id === userId.value) return "You";
     return `${profile.first_name} ${profile.last_name}`;
 };
+
+
 
 
 </script>

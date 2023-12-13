@@ -1,17 +1,20 @@
 <template>
-<div>
-    <h1
-        class="text-md text-bold row justify-between items-center notifications__header"
-    >
-        Notifications
-    </h1>
-    <q-separator />
-    <div v-for="a in achievements" :key="a.id">
-        <AchievementHistoryItem :item="a" />
-
+    <div>
+        <h1
+            class="text-md text-bold row justify-between items-center notifications__header"
+        >
+            Notifications
+        </h1>
         <q-separator />
+        <div v-for="(a, index) in achievements" :key="a.id">
+            <AchievementHistoryItem
+                :item="a"
+                :unread="index < unreadCountVisible"
+            />
+
+            <q-separator />
+        </div>
     </div>
-</div>
 </template>
 <style lang="scss" scoped>
 .notifications__header {
@@ -21,6 +24,9 @@
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQuery } from "@tanstack/vue-query";
+import { useQueryClient } from "@tanstack/vue-query";
+
+const queryClient = useQueryClient();
 
 const props = defineProps({
     modelValue: Number,
@@ -38,9 +44,11 @@ const unreadCount = computed({
     },
 });
 
+const unreadCountVisible = ref(0);
+
 const { user: userId } = useUser();
 
-const initialized = ref(false)
+const initialized = ref(false);
 
 const getAchievements = async () => {
     initialized.value = true;
@@ -73,9 +81,7 @@ const getAchievements = async () => {
         .or(`team_id.in.(${teamList}),profile_id.eq.${userId.value}`)
         .order("created_at", { ascending: false });
 
-        getAchievementReads();
-
-
+    getAchievementReads(true);
 
     return data.filter(({ type, team, profile }) => {
         if (type !== "team_request") return true;
@@ -84,8 +90,7 @@ const getAchievements = async () => {
     });
 };
 
-
-const getAchievementReads = async () => {
+const getAchievementReads = async (setVisible = false) => {
     const { user: userId } = useUser();
     const client = useSupabaseClient();
 
@@ -93,45 +98,96 @@ const getAchievementReads = async () => {
         .from("profile_achievement_junction")
         .select("id")
 
-        .eq("profile_id", userId.value)
-    
+        .eq("profile_id", userId.value);
+
     const count = (data ?? [])?.length ?? 0;
-    const diff = achievements.value?.length - count
+    const diff = achievements.value?.length - count;
 
     unreadCount.value = diff < 0 ? 0 : diff;
+
+    if (setVisible) unreadCountVisible.value = diff < 0 ? 0 : diff;
 
     return (data ?? []).length;
 };
 
-
 const { isLoading, data: achievements } = useQuery({
     queryKey: ["achievements", userId.value],
     queryFn: getAchievements,
-    enabled: !initialized.value || props.open
+    refetchOnWindowFocus: false,
+    enabled: !initialized.value || props.open,
 });
-
-
 
 const markUnread = async () => {
     if (unreadCount.value === 0) return;
     const { user: userId } = useUser();
     const client = useSupabaseClient();
-    await client.from('profile_achievement_junction').upsert(achievements.value.map((a) => ({
-        achievement_id: a.id,
-        profile_id: userId.value
-    })))
-    getAchievementReads();
-}
+    await client.from("profile_achievement_junction").upsert(
+        [...achievements.value].splice(0, unreadCount.value).map((a) => ({
+            achievement_id: a.id,
+            profile_id: userId.value,
+        })),
+        { onConflict: ["profile_id", "achievement_id"] }
+    );
+    getAchievementReads(false);
+};
+
+const startWebsockets = () => {
+    const teamList = useUserTeamStore()
+        .userTeams.map(({ id }) => id)
+        .join(", ");
+    const client = useSupabaseClient();
+    client
+        .channel("achievements")
+        .on(
+            "postgres_changes",
+            {
+                event: "INSERT",
+                schema: "public",
+                table: "achievements",
+                filter: `profile_id=eq.${userId.value}`,
+            },
+            () => {
+                console.log("websocket heard");
+
+                queryClient.invalidateQueries({
+                    queryKey: ["achievements", userId.value],
+                });
+            }
+        )
+        .on(
+            "postgres_changes",
+            {
+                event: "INSERT",
+                schema: "public",
+                table: "achievements",
+                filter: `team_id=in.(${teamList})`,
+            },
+            () => {
+                console.log("websocket heard");
+                queryClient.invalidateQueries({
+                    queryKey: ["achievements", userId.value],
+                });
+            }
+        )
+        .subscribe();
+};
 
 onMounted(() => {
     getAchievements();
-})
+    startWebsockets();
+});
 
-watch(() => props.open, (val) => {
-    if (!val) return;
-    markUnread();
-})
-
+watch(
+    () => props.open,
+    (val) => {
+        if (!val) {
+            unreadCountVisible.value = 0;
+            unreadCount.value = 0;
+        } else {
+            markUnread();
+        }
+    }
+);
 </script>
 <script>
 export default {
