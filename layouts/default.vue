@@ -313,14 +313,21 @@ useEventListener(
         } 
     }
 );
-
+ const route = useRoute()
 const toggleNotifications = () => {
     notificationsOpen.value = !notificationsOpen.value;
     if (notificationsOpen.value) {
         navigateTo("#notifications");
     } else {
-        const route = useRoute()
+       
         navigateTo(route.path, {replace: true});
     }
 };
+
+
+watch(() => route.hash, (val, oldVal) => {
+    if (!oldVal || oldVal !== '#notifications') return;
+    notificationsOpen.value = false;
+
+}, {deep: true})
 </script>

@@ -157,6 +157,7 @@ const props = defineProps({
         default: [],
     },
     h2h: Boolean,
+    gameId: Number,
     oppositionId: Number,
     // Requires 'color' to be included in team/oppositionTeam props
     showColors: Boolean,
@@ -188,33 +189,33 @@ const getCumulativeStats = (statsArray) => {
 };
 
 const stats = computed(() => {
-    let games;
-    if (!props.h2h) {
-        games =
-            (useRepo(Game)
-                .query()
-                .with("teams")
+    // let games;
+    // if (!props.h2h) {
+    //     games =
+    //         (useRepo(Game)
+    //             .query()
+    //             .with("teams")
 
-                .whereHas("teams", (q) => {
-                    return q.whereIn("team_id", [props.teamId]);
-                })
+    //             .whereHas("teams", (q) => {
+    //                 return q.whereIn("team_id", [props.teamId]);
+    //             })
 
-                .get() ?? []).map(({id}) => id);
-    } else {
-        games =
-            (useRepo(Game)
-                .query()
-                .with("teams")
+    //             .get() ?? []).map(({id}) => id);
+    // } else {
+    //     games =
+    //         (useRepo(Game)
+    //             .query()
+    //             .with("teams")
 
-                .whereHas("teams", (q) => {
-                    return q.whereIn("team_id", [props.teamId]);
-                })
-                .whereHas("teams", (q) => {
-                    return q.whereIn("team_id", [props.oppositionId]);
-                })
+    //             .whereHas("teams", (q) => {
+    //                 return q.whereIn("team_id", [props.teamId]);
+    //             })
+    //             .whereHas("teams", (q) => {
+    //                 return q.whereIn("team_id", [props.oppositionId]);
+    //             })
 
-                .get() ?? []).map(({id}) => id);
-    }
+    //             .get() ?? []).map(({id}) => id);
+    // }
     if (!props.h2h) {
         return {
             team: useRepo(TeamStats)
@@ -231,13 +232,13 @@ const stats = computed(() => {
             team: getCumulativeStats(
                 useRepo(TeamStats)
                     .where("team_id", props.teamId)
-                    .whereIn("game_id", games)
+                    .whereIn("game_id", props.gameId)
                     .get()
             ),
             opposition: getCumulativeStats(
                 useRepo(TeamStats)
                     .where("team_id", props.oppositionId)
-                    .whereIn("game_id", games)
+                    .whereIn("game_id", props.gameId)
                     .get()
             ),
         };

@@ -83,7 +83,7 @@ import { useUserTeamStore } from "@/store/user-teams";
 import { useElementBounding } from "@vueuse/core";
 import Team from "@/store/models/team";
 import { useQuery } from "@tanstack/vue-query";
-import GET_LATEST_RESULT from "@/queries/get_latest_result";
+// import GET_LATEST_RESULT from "@/queries/get_latest_result";
 
 const $q = useQuasar();
 
@@ -119,11 +119,11 @@ const { toggleGlobalSearch, toggleTeamViewer } = useDialogStore();
 
 const latestResult = computed(() => null);
 
-const { isLoading, isError } = useQuery({
-    queryKey: ["latestResult"],
-    queryFn: GET_LATEST_RESULT,
-    refetchOnWindowFocus: false,
-});
+// const { isLoading, isError } = useQuery({
+//     queryKey: ["latestResult"],
+//     queryFn: GET_LATEST_RESULT,
+//     refetchOnWindowFocus: false,
+// });
 
 const teamRequests = computed(() => useTeamRequestStore().requests);
 

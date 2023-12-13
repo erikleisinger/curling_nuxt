@@ -147,8 +147,6 @@ const startWebsockets = () => {
                 filter: `profile_id=eq.${userId.value}`,
             },
             () => {
-                console.log("websocket heard");
-
                 queryClient.invalidateQueries({
                     queryKey: ["achievements", userId.value],
                 });
@@ -163,7 +161,6 @@ const startWebsockets = () => {
                 filter: `team_id=in.(${teamList})`,
             },
             () => {
-                console.log("websocket heard");
                 queryClient.invalidateQueries({
                     queryKey: ["achievements", userId.value],
                 });

@@ -4,25 +4,11 @@
         color="transparent"
         dense
         clickable
-        @click="() => (isRevealed ? confirm() : reveal())"
     >
         <TeamAvatar :teamId="teamId" class="team-chip__avatar" />
         <span>{{ team.name }}</span>
 
-        <div
-            v-if="isRevealed"
-            style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border-radius: 12px;
-            "
-            class="row justify-center bg-deep-purple text-white"
-        >
-            View
-        </div>
+
     </span>
 </template>
 <style lang="scss" scoped>
@@ -47,7 +33,6 @@
 }
 </style>
 <script setup>
-import { useConfirmDialog } from "@vueuse/core";
 import Team from "@/store/models/team";
 const props = defineProps({
     teamId: Number,
@@ -61,8 +46,5 @@ const team = computed(() => useRepo(Team).where("id", props.teamId).first() ?? {
     avatar_url: props.teamAvatar
 });
 
-const { reveal, isRevealed, confirm, onConfirm, cancel } = useConfirmDialog();
-onConfirm(() => {
-    console.log("confirm");
-});
+
 </script>

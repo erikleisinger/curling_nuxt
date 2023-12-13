@@ -6,7 +6,7 @@
             <q-separator/>
         </aside>
         <LinescoreEditor v-if="!!currentGame && !loading" :canEdit="false" v-model="currentGame" summary :score="score" :compact="false" static/>
-        <TeamStatsView v-if="!!currentGame && !loading" :teamId="home.id" :oppositionId="away.id" h2h/>
+        <TeamStatsView v-if="!!currentGame && !loading" :teamId="home.id" :oppositionId="away.id" h2h :gameId="Number(gameId)"/>
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
@@ -238,6 +238,7 @@ const getStatsForGame = async (game) => {
         )
         .eq("game_id", game?.id);
     if (!data?.length) return null;
+
     data.forEach((stat) => {
         if (!stat.team_id && !game.away?.id) return;
         if (!stat.team_id) cleanupOpposition.value = true;

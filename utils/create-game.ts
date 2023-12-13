@@ -314,8 +314,6 @@ export const createPlayerGameJunction = async (
 };
 
 export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
-    console.table({ends, hammerFirstEnd, homeId, awayId, gameId})
-    console.log(ends)
     const e = Object.entries(ends).reduce((all, [endNo, score], index) => {
         if (score.home === 'X') return all;
 
@@ -353,6 +351,5 @@ export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
         
         return [...all, end];
     }, []);
-    console.log(e)
     return e;
 };
