@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div class="full-width row justify-between items-center" v-if="gamesPaginated.length">
+        <div class="full-width row justify-between items-center">
             <q-input
                 dense
                 class="col-grow q-pl-sm"
-                label="Search games"
+                label="Search by opposition, rink, or date"
                 v-model="searchInput"
                 clearable
             >
@@ -19,7 +19,6 @@
                         v-ripple
                         @click="onClickSort('Date')"
                         :active="!!sortDateOrder"
-                        
                     >
                         <q-item-section no-wrap>Sort by date</q-item-section>
                         <q-item-section avatar>
@@ -38,7 +37,9 @@
                         @click="onClickSort('Opponent')"
                         :active="!!sortOpponentOrder"
                     >
-                        <q-item-section no-wrap>Sort by opponent</q-item-section>
+                        <q-item-section no-wrap
+                            >Sort by opponent</q-item-section
+                        >
                         <q-item-section avatar>
                             <q-icon
                                 :name="
@@ -49,81 +50,140 @@
                             ></q-icon>
                         </q-item-section>
                     </q-item>
-                 
+                </q-menu>
+            </q-btn>
+            <q-btn flat round icon="o_filter_alt">
+                <q-badge floating left class="filter-badge" v-if="colorFilter.length" rounded color="blue">
+                    {{colorFilter.length}}
+                </q-badge>
+                <q-menu>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="toggleColorFilter('yellow')"
+                        :active="colorFilter.includes('yellow')"
+                       
+                    >
+                        <q-item-section no-wrap avatar>
+                            <RockDraggable
+                                :draggable="false"
+                                color="yellow"
+                                width="1.5em"
+                        /></q-item-section>
+                        <q-item-section no-wrap>
+                            Filter by yellow
+                        </q-item-section>
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="toggleColorFilter('blue')"
+                        :active="colorFilter.includes('blue')"
+                      
+                    >
+                        <q-item-section no-wrap avatar>
+                            <RockDraggable
+                                :draggable="false"
+                                color="blue"
+                                width="1.5em"
+                        /></q-item-section>
+                        <q-item-section no-wrap>
+                            Filter by blue
+                        </q-item-section>
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                    @click="toggleColorFilter('red')"
+                        :active="colorFilter.includes('red')"
+                      
+                    >
+                        <q-item-section no-wrap avatar>
+                            <RockDraggable
+                                :draggable="false"
+                                color="red"
+                                width="1.5em"
+                        /></q-item-section>
+                        <q-item-section no-wrap>
+                            Filter by red
+                        </q-item-section>
+                    </q-item>
                 </q-menu>
             </q-btn>
         </div>
         <div class="loading-container" v-if="isLoading">
             <q-inner-loading :showing="true" color="primary" />
         </div>
-        <div
-            v-for="(game, index) in gamesPaginated"
-            :key="game.id"
-            class="result__container"
-        >
-            <TeamGameResult
-                :gameId="game.id"
-                :notify="canVerify(game)"
-                :authorized="
-                    !!isAuthorized(
-                        game.teams.find(({ team_id }) => team_id === teamId)
-                            ?.team_id
-                    )
-                "
-                @invite="inviteTeam($event, game)"
-                :home="teamId"
-                :search="searchInput"
-                :viewHome="false"
+        <div v-if="gamesPaginated.length">
+            <div
+                v-for="(game, index) in gamesPaginated"
+                :key="game.id"
+                class="result__container"
             >
-                <!-- Verification -->
-                <template
-                    v-slot:actions
-                    v-if="
-                        canVerify(game) || isAuthorized(game.teams[0]?.team_id)
+                <TeamGameResult
+                    :gameId="game.id"
+                    :notify="canVerify(game)"
+                    :authorized="
+                        !!isAuthorized(
+                            game.teams.find(({ team_id }) => team_id === teamId)
+                                ?.team_id
+                        )
                     "
+                    @invite="inviteTeam($event, game)"
+                    :home="teamId"
+                    :search="searchInput"
+                    :viewHome="false"
                 >
-                    <q-fab-action
-                        v-if="canVerify(game)"
-                        color="white"
-                        text-color="primary"
-                        icon="verified"
-                        @click="
-                            respondToRequest(
-                                game.id,
-                                true,
-                                index,
-                                game.teams[1]?.team_id
-                            )
-                        "
-                        >Verify game</q-fab-action
-                    >
-                    <q-fab-action
-                        v-if="canVerify(game)"
-                        color="white"
-                        text-color="red"
-                        icon="new_releases"
-                        @click="respondToRequest(game.id, false, index)"
-                        >Reject game</q-fab-action
-                    >
-                    <q-fab-action
+                    <!-- Verification -->
+                    <template
+                        v-slot:actions
                         v-if="
-                            isAuthorized(game.home_id) &&
-                            requiresVerification(game)
+                            canVerify(game) ||
+                            isAuthorized(game.teams[0]?.team_id)
                         "
-                        color="white"
-                        text-color="red"
-                        icon="new_releases"
-                        @click="cancelRequest(game)"
-                        >Cancel verification request</q-fab-action
                     >
-                </template>
-                <template v-slot:before>
-                    <div
-                        class="game-request-response__container row items-center no-wrap"
-                    ></div>
-                </template>
-            </TeamGameResult>
-         
+                        <q-fab-action
+                            v-if="canVerify(game)"
+                            color="white"
+                            text-color="primary"
+                            icon="verified"
+                            @click="
+                                respondToRequest(
+                                    game.id,
+                                    true,
+                                    index,
+                                    game.teams[1]?.team_id
+                                )
+                            "
+                            >Verify game</q-fab-action
+                        >
+                        <q-fab-action
+                            v-if="canVerify(game)"
+                            color="white"
+                            text-color="red"
+                            icon="new_releases"
+                            @click="respondToRequest(game.id, false, index)"
+                            >Reject game</q-fab-action
+                        >
+                        <q-fab-action
+                            v-if="
+                                isAuthorized(game.home_id) &&
+                                requiresVerification(game)
+                            "
+                            color="white"
+                            text-color="red"
+                            icon="new_releases"
+                            @click="cancelRequest(game)"
+                            >Cancel verification request</q-fab-action
+                        >
+                    </template>
+                    <template v-slot:before>
+                        <div
+                            class="game-request-response__container row items-center no-wrap"
+                        ></div>
+                    </template>
+                </TeamGameResult>
+            </div>
         </div>
         <div v-if="!gamesPaginated.length" class="no-games__container">
             No games were found.
@@ -146,6 +206,11 @@
     </div>
 </template>
 <style lang="scss" scoped>
+.filter-badge {
+    right: 4px;
+    bottom: 0;
+    top: unset;
+}
 .no-games__container {
     padding: var(--space-md);
     margin-right: auto;
@@ -172,8 +237,8 @@ import { isPlaceholder } from "@/utils/team";
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
-import Rink from '@/store/models/rink'
-import { useQuery} from '@tanstack/vue-query'
+import Rink from "@/store/models/rink";
+import { useQuery } from "@tanstack/vue-query";
 
 const props = defineProps({
     teamId: Number,
@@ -227,15 +292,25 @@ const { toTimezone } = useTime();
 
 const gamesFiltered = computed(() => {
     return [...games.value].filter((game) => {
-        if (!searchInput.value) return true;
-        
+        if (searchInput.value) {
         const regex = new RegExp(searchInput.value.toLowerCase());
-        return (
+        const searched = (
             regex.test(game.teams[0].team.name.toLowerCase()) ||
             regex.test(game.teams[1]?.team?.name?.toLowerCase()) ||
             regex.test(game.rink?.name?.toLowerCase()) ||
             regex.test(toTimezone(game.start_time).toLowerCase())
         );
+        if (!searched) return false;
+        }
+
+        if (colorFilter.value.length) {
+            const {teams} = game;
+            const myTeam = teams.find(({team_id}) => team_id === props.teamId)
+            return colorFilter.value.includes(myTeam.color)
+        }
+        return true;
+
+        
     });
 });
 const gamesPaginated = computed(() =>
@@ -261,29 +336,31 @@ const games = computed(() => {
             })
             .orderBy("start_time", "desc")
             .get() ?? [];
-    return t.map((game) => ({
-        ...game,
-        rink: useRepo(Rink).where('id', game.rink_id).first()
-    })).sort(
-        sortOpponentOrder.value
-            ? orderByOpponent
-            : sortDateOrder.value
-            ? orderByDate
-            : () => 1
-    );
+    return t
+        .map((game) => ({
+            ...game,
+            rink: useRepo(Rink).where("id", game.rink_id).first(),
+        }))
+        .sort(
+            sortOpponentOrder.value
+                ? orderByOpponent
+                : sortDateOrder.value
+                ? orderByDate
+                : () => 1
+        );
 });
 
-const {getGames} = useGame();
+const { getGames } = useGame();
 
 const { isLoading } = useQuery({
     queryKey: ["team", "games", props.teamId],
-    queryFn: () => getGames({
-        team_id_param: props.teamId,
-        game_id_param: null,
-    }),
+    queryFn: () =>
+        getGames({
+            team_id_param: props.teamId,
+            game_id_param: null,
+        }),
     refetchOnWindowFocus: false,
 });
-
 
 const confirmUnsaved = ref(false);
 
@@ -500,4 +577,14 @@ const onClickSort = (type) => {
         sortTypes[typeKey].value = steps[index + 1];
     }
 };
+
+const colorFilter = ref([]);
+const toggleColorFilter = (color) => {
+    const index = colorFilter.value.indexOf(color)
+    if (index !== -1) {
+        colorFilter.value.splice(index, 1)
+    } else {
+        colorFilter.value.push(color)
+    }
+}
 </script>
