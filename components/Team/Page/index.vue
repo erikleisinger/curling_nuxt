@@ -108,18 +108,19 @@
     />
         </q-card>
     </q-dialog>
-      <q-dialog v-model="badgesOpen" v-if="badges && badges.length" :persistent="$q.platform.is.mobile"  >
-        <q-card class="badges-viewer ">
-            <h3 class="text-md text-bold  badges-viewer__header">Badges ({{badges.length}})</h3>
+      <q-dialog v-model="badgesOpen" v-if="badges && badges.length"  :full-width="$q.screen.xs"  :persistent="$q.screen.xs" >
+        <q-card class="badges-viewer " ref="badgesContainer">
+            <h3 class="text-md text-bold  badges-viewer__header justify-between full-width row items-center">Badges ({{badges.length}})<q-btn flat round icon="close" dense @click="badgesOpen = false"/></h3>
             <q-separator/>
-            <div class="row  items-start badges-view" :class="$q.screen.xs ? 'justify-between' : 'justify-start'">
-          <Badge v-for="badge in [...badges].sort((a,b) => sortAlphabetically(BADGE_NAMES[a.name], BADGE_NAMES[b.name]))" :key="badge.id" :badge="badge" />
+            <div class="row  items-start badges-view " :class="$q.screen.xs ? 'justify-between' : 'justify-start'">
+          <Badge v-for="badge in [...badges].sort((a,b) => sortAlphabetically(BADGE_NAMES[a.name], BADGE_NAMES[b.name]))" :key="badge.id" :badge="badge" :width="badgeWidth" />
             </div>
         </q-card>
     </q-dialog>
  
 </template>
 <style lang="scss" scoped>
+
 .team-info {
     @include sm {
         margin-top: var(--space-xl)
@@ -129,20 +130,23 @@
     .badges-viewer {
         width: min(100vw, 500px); 
         height: min(100vh, 600px);
-        padding: var(--space-xs);
+        
         
 
     }
 
     .badges-viewer {
-        padding-top: 0px;
+       
+        padding: var(--space-xs);
+         padding-top: 0px;
         .badges-viewer__header {
             padding: var(--space-sm);
             
         }
         .badges-view {
             margin-top: var(--space-sm);
-            gap: var(--space-xs)
+            gap: 6px 0px;
+            
         }
     }
      .attributes {
@@ -165,6 +169,7 @@ import {useTeamRequestStore} from '@/store/team-requests'
 import {useQuery} from '@tanstack/vue-query'
 import {useEventListener} from '@vueuse/core'
 import {BADGE_NAMES} from '@/constants/badges'
+import {useElementSize} from '@vueuse/core'
 
 const $q = useQuasar();
 
@@ -213,6 +218,7 @@ useEventListener(
     window,
     "popstate",
     () => {
+        console.log('popstate')
         if (badgesOpen.value) {
             history.go(1)
             badgesOpen.value = false;
@@ -223,6 +229,11 @@ useEventListener(
         }
     }
 );
+
+const badgesContainer = ref(null);
+const {width} = useElementSize(badgesContainer);
+const badgeWidth = computed(() => `${(width.value/ 2) - 3}px`)
+
 
 </script>
 <script lang="ts">

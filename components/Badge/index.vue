@@ -25,11 +25,12 @@
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.015);
     height: min-content;
-    max-width: min(50%, 140px);
-    min-width: min(50%, 140px);
+    max-width: v-bind(badgeWidth);
+    min-width: v-bind(badgeWidth);
+    box-sizing: border-box;
     @include sm {
-        max-width: min(50%, 150px);
-    min-width: min(50%, 150px);
+        max-width: v-bind(badgeWidth);
+    min-width: v-bind(badgeWidth);
     }
     .badge-description {
         min-height: 2em;
@@ -41,7 +42,13 @@
 import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 const props = defineProps({
     badge: Object,
+    width: {
+        type: String,
+        default: '150px'
+    }
 });
+
+const badgeWidth = computed(() => `min(50%, ${props.width})`)
 
 const { toTimezone } = useTime();
 </script>

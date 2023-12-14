@@ -10,8 +10,8 @@
     width: 30px;
     right: 2vw;
     top: 0;
-    border-right: 1px solid rgba(0,0,0,0.5);
- 
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
+
     mix-blend-mode: multiply;
 }
 </style>
@@ -39,9 +39,8 @@ const loading = ref(true);
 
 const dayjs = useDayjs();
 
-
 onMounted(async () => {
-        getMinMax()
+    getMinMax();
 
     const annotations = { ...props.annotations };
     const data = { ...props.data };
@@ -62,8 +61,8 @@ onMounted(async () => {
             layout: {
                 padding: {
                     left: 0,
-                    top: 0
-                }
+                    top: 0,
+                },
             },
 
             responsive: true,
@@ -84,48 +83,44 @@ onMounted(async () => {
                 },
                 tooltip: {
                     ...tooltip,
-                    mode: 'nearest'
-                }
+                    mode: "nearest",
+                },
             },
 
             animation: {
                 animateScale: true,
-
             },
-           
+
             scales: {
-                
                 x: {
                     border: {
                         display: false,
                     },
                     grid: {
                         display: false,
-                        
-                        
                     },
                     ticks: {
                         display: true,
-                        align: 'inner',
+                        align: "inner",
                         maxRotation: 0,
-                        minRotation:0,
-                        
+                        minRotation: 0,
+
                         padding: 0,
                         autoSkip: false,
-                         
-                        callback: (e) => {                       
-                            const numDataPoints = props.data.datasets[0].data.length
-                            if (e !== 0 && e!== numDataPoints - 1) return ''
-                            const {start_time} = numDataPoints - 1 ? props.data.datasets[0].data[numDataPoints - 2].data : props.data.datasets[0].data[e].data
-                            return dayjs(start_time).format('MMM DD')
-                    
-                            
-                          
-                            
+
+                        callback: (e) => {
+                            const numDataPoints =
+                                props.data.datasets[0].data.length;
+                            if (e !== 0 && e !== numDataPoints - 1) return "";
+                            const { start_time } =
+                                numDataPoints - 1
+                                    ? props.data.datasets[0].data[
+                                          numDataPoints - 2
+                                      ].data
+                                    : props.data.datasets[0].data[e].data;
+                            return dayjs(start_time).format("MMM DD");
                         },
-                        
-                    }
-                   
+                    },
                 },
                 y: {
                     border: {
@@ -136,10 +131,9 @@ onMounted(async () => {
                     },
                     min: 0,
                     max: 100,
-                  
-                    position: 'right',
-                   
-                
+
+                    position: "right",
+
                     ticks: {
                         //   stepSize: 100 - 0,
                         callback: (e, e2, e3) => {
@@ -147,14 +141,13 @@ onMounted(async () => {
                         },
 
                         padding: 0,
-                        
+
                         mirror: true,
                         z: 100,
-                        color: 'rgba(0,0,0,0.8)',
-                         textStrokeColor: 'white',
-                    backdropColor: 'rgba(0,0,0,0.3)',
-                    // showLabelBackdrop: true,
-                        
+                        color: "rgba(0,0,0,0.8)",
+                        textStrokeColor: "white",
+                        backdropColor: "rgba(0,0,0,0.3)",
+                        // showLabelBackdrop: true,
                     },
                 },
             },
@@ -164,21 +157,18 @@ onMounted(async () => {
     Object.seal(chart.value);
 
     loading.value = false;
-  
 });
 
 const min = ref(0);
-const max = ref(0)
+const max = ref(0);
 
 const getMinMax = () => {
+    const allData = (
+        (props.data?.datasets && props?.data?.datasets[0]?.data) ??
+        []
+    ).map(({ y }) => y);
 
-    const allData = ((props.data?.datasets && props?.data?.datasets[0]?.data) ?? []).map(({y}) => y)
-
-    
-    max.value = Number.parseFloat((Math.max(...allData)).toFixed())
-      min.value = Number.parseFloat((Math.min(...allData)).toFixed())
-
-
-
-}
+    max.value = Number.parseFloat(Math.max(...allData).toFixed());
+    min.value = Number.parseFloat(Math.min(...allData).toFixed());
+};
 </script>

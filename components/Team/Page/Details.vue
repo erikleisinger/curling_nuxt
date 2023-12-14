@@ -1,7 +1,7 @@
 <template>
     <header class="team-header__details row justify-center items-center">
-        <div class="back-button__container">
-            <q-btn flat round icon="arrow_back" @click="onBackClick" />
+        <div class="close-button__container">
+            <q-btn flat round icon="close" @click="onBackClick" />
         </div>
         <div class="edit-button__container" v-if="isOnTeam(props.teamId) || !props.teamId">
             <q-btn
@@ -136,7 +136,7 @@
         font-size: 1em;
     }
 
-    .back-button__container,
+    .close-button__container,
     .edit-button__container {
         position: absolute;
         top: 0;
@@ -144,10 +144,10 @@
         margin: var(--space-xs);
     }
     .edit-button__container {
-        right: 0;
-    }
-    .back-button__container {
         left: 0;
+    }
+    .close-button__container {
+        right: 0;
     }
 }
 .team-players__section {
