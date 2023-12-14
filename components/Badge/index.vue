@@ -26,6 +26,7 @@
     background-color: rgba(0, 0, 0, 0.015);
     height: min-content;
     max-width: min(50%, 150px);
+    min-width: min(50%, 150px);
     .badge-description {
         min-height: 2em;
     }

@@ -112,8 +112,8 @@
         <q-card class="badges-viewer ">
             <h3 class="text-md text-bold  badges-viewer__header">Badges ({{badges.length}})</h3>
             <q-separator/>
-            <div class="row justify-between items-start badges-view">
-          <Badge v-for="badge in badges" :key="badge.id" :badge="badge" class="q-mb-sm"/>
+            <div class="row  items-start badges-view" :class="$q.screen.xs ? 'justify-between' : 'justify-start'">
+          <Badge v-for="badge in [...badges].sort((a,b) => sortAlphabetically(BADGE_NAMES[a.name], BADGE_NAMES[b.name]))" :key="badge.id" :badge="badge" />
             </div>
         </q-card>
     </q-dialog>
@@ -141,7 +141,8 @@
             
         }
         .badges-view {
-            margin-top: var(--space-sm)
+            margin-top: var(--space-sm);
+            gap: var(--space-xs)
         }
     }
      .attributes {
@@ -163,7 +164,7 @@ import Team from "@/store/models/team";
 import {useTeamRequestStore} from '@/store/team-requests'
 import {useQuery} from '@tanstack/vue-query'
 import {useEventListener} from '@vueuse/core'
-import { Console } from 'console';
+import {BADGE_NAMES} from '@/constants/badges'
 
 const $q = useQuasar();
 
@@ -194,11 +195,11 @@ const badgesOpen = ref(false)
 
 const teamRequests = computed(() => useTeamRequestStore().requests?.filter(({team_id}) => team_id === Number(route.params.id) ?? []));
 
-
+const {sortAlphabetically} = useSort()
 const getBadges = async (team_id: number) => {
     const client = useSupabaseClient();
     const {data} = await client.from('badges').select('*').eq('team_id', team_id).order('created_at', {ascending:false})
-    return data;
+    return data
 }
 
 const badgesLimited = computed(() => [...badges.value].splice(0,$q.screen.xs ? 2 : 4))
