@@ -49,7 +49,7 @@
                         color="green"
                         class="row items-center"
                         @click="save"
-                        v-if="view === views.DETAILS"
+                        v-if="view === views.DETAILS && !saved"
                     >
                         <q-icon
                             size="xs"
@@ -566,7 +566,9 @@ const createSheet = async (rink_id, sheet_number) => {
     return sheetFromDb?.id;
 };
 const saving = ref(false);
+const saved = ref(false)
 const save = async () => {
+    saved.value = true;
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
     const rinkCopy = gameParams.value.rink;
