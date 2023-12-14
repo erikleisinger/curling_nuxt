@@ -118,19 +118,7 @@
                                     @refresh="refreshQuery"
                                 />
                             </div>
-                            <div
-                                class="row full-width justify-center"
-                                v-if="
-                                    away.isPlaceholder &&
-                                    isOnTeam(creatorTeam.id)
-                                "
-                            >
-                                <q-badge
-                                    color="blue"
-                                    @click="verifiedPopup = true"
-                                    >Invite team</q-badge
-                                >
-                            </div>
+
                         </div>
 
                         <div class="team__profile--container column no-wrap">

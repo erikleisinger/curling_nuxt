@@ -442,7 +442,7 @@ const gameParams = ref({
     homeColor: "yellow",
     awayColor: "red",
     hammerFirstEndTeam: null,
-    start_time: dayjs().format("YYYY-MM-DD hh:mm a"),
+    start_time: dayjs().format("YYYY-MM-DD hh:mm"),
     rink: {},
     sheet: {},
 });
@@ -585,7 +585,7 @@ const save = async () => {
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
     const conceded = score.value[Object.keys(score.value).length].home === "X";
-
+    const {toUTC} = useTime()
     const gameToCreate = {
         home: params?.home?.id,
         home_color: params?.homeColor,
@@ -594,10 +594,11 @@ const save = async () => {
         end_count: endCount.value,
         completed: false,
         conceded,
-        start_time: dayjs(
+        start_time: toUTC(
             gameParams.value.start_time,
-            "YYYY MM DD hh mm a"
-        ).toISOString(),
+            "YYYY MM DD hh:mm",
+            true
+        ),
         rink_id: rinkCopy?.id,
         sheet_id: sheetId,
     };

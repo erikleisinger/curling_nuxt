@@ -14,17 +14,28 @@
                 <h2 class="text-sm text-center">Game Summary</h2>
                 <h1 class="text-md text-bold text-center">
                     {{
+                        typeof selections.start_time === 'number' ? 
                         toTimezone(
                             selections.start_time,
+                            "MMMM DD, YYYY",
+                            false
+                        )
+                        : 
+                        format(
+                             selections.start_time,
                             "MMMM DD, YYYY",
                             false
                         )
                     }}
                 </h1>
                 <h2 class="text-sm text-center">
-                    {{ toTimezone(selections.start_time, "HH:mm a", false) }}
+                    {{ 
+                        typeof selections.start_time === 'number' ? 
+                        toTimezone(selections.start_time, "hh:mm a", false)
+                        : format(selections.start_time, "hh:mm a", false)
+                         }}
                 </h2>
-                <!-- <div class="edit--floating" v-if="canEdit">
+                <div class="edit--floating" v-if="canEdit">
                     <q-btn
                         icon="edit"
                         flat
@@ -34,7 +45,7 @@
                         dense
                         @click="dateSelectOpen = true"
                     />
-                </div> -->
+                </div>
             </div>
             <InputDate
                 v-if="canEditDetails && dateSelectOpen"
@@ -718,7 +729,7 @@ const slotHeight = computed(
     () => `calc(100% - ${linescoreContainerHeight.value}px)`
 );
 
-const { format, toTimezone } = useTime();
+const { format, toTimezone, toUTC } = useTime();
 
 const showSheetSelect = ref(null);
 

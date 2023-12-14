@@ -29,6 +29,7 @@ const { getGameResult } = useGame();
 
 const gameRequest = computed(() => useGameRequestStore().requests.find(({game_id}) => game_id === Number(route.params.id)))
 
+
 const loading = ref(false);
 const result = ref(null);
 const error = ref(null);
@@ -102,14 +103,14 @@ const getGames = async () => {
         game_id_param: gameId
     })
     const [team1, team2] = data;
-
+    const {toUTC} = useTime();
     useRepo(Game).save({
         id: team1.game_id,
         end_count: team1.end_count,
         rink: team1.rink,
         sheet: team1.sheet,
         hammer_first_end: team1.hammer_first_end,
-        start_time: toTimezone(team1.start_time, null, null, true).unix()
+        start_time: toUTC(team1.start_time, null, null, true).unix()
     })
     useRepo(Team).save({
         ...team1.team,
@@ -261,7 +262,7 @@ onBeforeUnmount(() => {
    
 })
 
-const { format, toTimezone } = useTime();
+
 </script>
 <script>
 export default {
