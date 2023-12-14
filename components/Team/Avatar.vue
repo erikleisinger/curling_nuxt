@@ -230,7 +230,6 @@ watch(hovered, (val) => {
 });
 
 const clickAvatar = () => {
-console.log('click avatar" ', props.viewable)
     if (!props.viewable && !props.invitable && !props.editable) return;
     if (!visible.value && $q.screen.xs) {
         visible.value = true;
