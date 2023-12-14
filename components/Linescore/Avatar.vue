@@ -11,7 +11,7 @@
             </div>
             <TeamAvatar
                 :teamId="selections?.id"
-                :color="selections?.color"
+                :color="color"
                 :viewable="viewable"
                 :animateRing="!!(editing && selectColor && selections?.color)"
                 :highlight="false"
@@ -187,6 +187,7 @@ const props = defineProps({
         default: "inherit",
     },
     canConfirm: Boolean,
+    color: String,
     defaultColor: {
         type: String,
         default: "red",

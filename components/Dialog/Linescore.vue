@@ -1,215 +1,319 @@
 <template>
-<NuxtLayout>
-    <div class="full-height linescore__container">
-  
-        <div
-            v-if="view === views.NO_TEAM"
-            class="full-height full-width row justify-center q-pa-md"
-            style="box-sizing: border-box"
-        >
-            <div class="column">
-                <h1>You aren't on a team!</h1>
-                <div>
-                    You may only enter linescores for teams on which you are a
-                    member.
-                </div>
-                <div class="full-width column items-center q-mt-md">
-                    <q-btn rounded color="primary" @click="createTeam"
-                        >Create new team</q-btn
-                    >
-                    <q-btn
-                        class="q-mt-md"
-                        rounded
-                        color="primary"
-                        @click="searchForTeam"
-                        >Search existing teams</q-btn
-                    >
+    <NuxtLayout>
+        <div class="full-height linescore__container">
+            <div
+                v-if="view === views.NO_TEAM"
+                class="full-height full-width row justify-center q-pa-md"
+                style="box-sizing: border-box"
+            >
+                <div class="column">
+                    <h1>You aren't on a team!</h1>
+                    <div>
+                        You may only enter linescores for teams on which you are
+                        a member.
+                    </div>
+                    <div class="full-width column items-center q-mt-md">
+                        <q-btn rounded color="primary" @click="createTeam"
+                            >Create new team</q-btn
+                        >
+                        <q-btn
+                            class="q-mt-md"
+                            rounded
+                            color="primary"
+                            @click="searchForTeam"
+                            >Search existing teams</q-btn
+                        >
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
+            <!-- <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
 
             <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(6)">6 ends</q-btn>
                <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(8)">8 Ends</q-btn>
                   <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(10)">10 Ends</q-btn>
         </div> -->
-        <div style="z-index:1; transform:translateX(0); position: relative" class="full-height">
-            <div class="nav--container row justify-between full-width">
-                <q-btn icon="arrow_back" flat round @click="goBack" v-if="currentStep"/>
-                 <q-btn  flat color="green" class="row items-center" @click="save" v-if="view === views.DETAILS">
-                   <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs"/> <div>Save game</div>
-                 </q-btn>
-            </div>
-        <LinescoreEndCountSelect v-if="view === views.END_COUNT_SELECT" v-model="endCount" @update:modelValue="view = views.HOME_SELECT"/>
-        <LinescoreTeamSelect v-if="view === views.HOME_SELECT" homeTeam v-model="gameParams.home" @select="view = views.AWAY_SELECT" >
-            <h2 class="text-xl text-bold title text-center">Select your team</h2>
-        </LinescoreTeamSelect>
-        <LinescoreTeamSelect v-if="view === views.AWAY_SELECT"  v-model="gameParams.away" @select="view = views.GAME_PARAMS" >
-            <h2 class="text-xl text-bold title text-center">Select opposition</h2>
-           
-        </LinescoreTeamSelect>
-          <LinescoreColorHammerSelect v-if="view === views.GAME_PARAMS" v-model="gameParams" @select="goLinescore"  />
-   
-   
-        <LinescoreEditor
-            v-model="gameParams"
-            :score="score"
-            @linescore="goBackToLinescore"
-            @edit="showLinescore = false"
-            :canEdit="true"
-            :selected="visible"
-            ref="editorContainer"
-            @scroll="scrollTo"
-            :summary="view === views.DETAILS"
-            :canEditDetails="!showLinescore && view === views.DETAILS"
-            @ready="showLinescore = true"
-            :compact="showLinescore && view !== views.DETAILS"
-            v-if="view === views.LINESCORE || view === views.DETAILS"
-            @endcount="view = views.END_COUNT_SELECT"
-        >
-            <div class="scoreboard--wrap full-height" >
-                <div class="scoreboard__container full-height" ref="linescoreContainer">
-                    <div
-                        class="scoreboard__score-container row no-wrap full-height"
-                        id="scoreboard-linescore"
-                        ref="scroller"
-                   
-                        :class="{ 'hide-scroll': $q.platform.is.mobile }"
-                        v-if="!$q.platform.is.desktop"
+            <div
+                style="z-index: 1; transform: translateX(0); position: relative"
+                class="full-height"
+            >
+                <div class="nav--container row justify-between full-width">
+                    <q-btn
+                        icon="arrow_back"
+                        flat
+                        round
+                        @click="goBack"
+                        v-if="currentStep"
+                    />
+                    <q-btn
+                        flat
+                        color="green"
+                        class="row items-center"
+                        @click="save"
+                        v-if="view === views.DETAILS"
                     >
-                        <div class="start__padding col-grow" id="scrollstart" />
+                        <q-icon
+                            size="xs"
+                            name="check"
+                            class="q-mr-xs q-pb-xs"
+                        />
+                        <div>Save game</div>
+                    </q-btn>
+                </div>
+                <LinescoreEndCountSelect
+                    v-if="view === views.END_COUNT_SELECT"
+                    v-model="endCount"
+                    @update:modelValue="view = views.HOME_SELECT"
+                />
+                <LinescoreTeamSelect
+                    v-if="view === views.HOME_SELECT"
+                    homeTeam
+                    v-model="gameParams.home"
+                    @select="view = views.AWAY_SELECT"
+                >
+                    <h2 class="text-xl text-bold title text-center">
+                        Select your team
+                    </h2>
+                </LinescoreTeamSelect>
+                <LinescoreTeamSelect
+                    v-if="view === views.AWAY_SELECT"
+                    v-model="gameParams.away"
+                    @select="view = views.GAME_PARAMS"
+                >
+                    <h2 class="text-xl text-bold title text-center">
+                        Select opposition
+                    </h2>
+                </LinescoreTeamSelect>
+                <LinescoreColorHammerSelect
+                    v-if="view === views.GAME_PARAMS"
+                    v-model="gameParams"
+                    @select="view = views.PRE_GAME"
+                />
+                <LinescorePreGameSplash
+                    v-if="view === views.PRE_GAME"
+                    v-model="gameParams"
+                    @next="goLinescore"
+                />
 
-                        <LinescoreScrollerSection
-                            @visible="setVisible(end)"
-                            v-for="end in endNumbers"
-                            :key="`end-input-${end}`"
-                            :endno="end"
-                        >
-                            <div
-                                :id="`scoreboard-end-${end}`"
-                                class="scoreboard__end-container full-height"
-                                :style="{
-                                    maxWidth: $q.platform.is.desktop
-                                        ? `${colWidth()}vw`
-                                        : 'unset',
-                                    minWidth: $q.platform.is.desktop
-                                        ? `${colWidth()}vw`
-                                        : '26vh',
-                                }"
-                            >
-                                <LinescoreColumn
-                                    v-model="score[end]"
-                                    :visible="visible === end"
-                                    :endno="end"
-                                    :extra="end > endCount"
-                                    @remove="removeEnd(end)"
-                                    :shakeable="
-                                        end < endCount &&
-                                        score[end + 1].home !== 'X'
-                                    "
-                                    @shake="concede(end)"
-                                />
-                            </div>
-                        </LinescoreScrollerSection>
-                        <div class="start__padding col-grow" id="scrollend" />
-                        <transition
-                            appear
-                            enter-active-class=" animated fadeIn"
-                            leave-active-class="animated fadeOut"
-                        >
-                            <div
-                                class="next-options__container column"
-                                v-if="
-                                    visible === Object.keys(score).length &&
-                                    visible < endCount + 3
-                                "
-                                style="min-width: 10vw"
-                                :style="{height: `${scrollerHeight}px`}"
-                            >
-                                <q-btn
-                                    icon="add"
-                                    stretch
-                                    class="col-grow q-pa-none"
-                                    @click="goExtra"
-                                    no-wrap
-                                    v-if="showExtraEnd()"
-                                    ><span class="q-pl-xs">Extra</span></q-btn
-                                >
-                                <q-btn
-                                    stretch
-                                    color="primary"
-                                    icon="check"
-                                    no-wrap
-                                    class="col-grow q-pa-none"
-                                    @click="goSummary"
-                                    ><span class="q-pl-xs">Done</span></q-btn
-                                >
-                            </div>
-                        </transition>
-                    </div>
-                    <div
-                        class="scoreboard__score-container row no-wrap full-height"
-                        id="scoreboard-linescore"
-                        ref="scroller"
-                    
-                        v-else
-                    >
+                <LinescoreEditor
+                    v-model="gameParams"
+                    :score="score"
+                    @linescore="goBackToLinescore"
+                    @edit="showLinescore = false"
+                    :canEdit="true"
+                    :selected="visible"
+                    ref="editorContainer"
+                    @scroll="scrollTo"
+                    :summary="view === views.DETAILS"
+                    :canEditDetails="!showLinescore && view === views.DETAILS"
+                    @ready="showLinescore = true"
+                    :compact="showLinescore && view !== views.DETAILS"
+                    v-if="view === views.LINESCORE || view === views.DETAILS"
+                    @endcount="view = views.END_COUNT_SELECT"
+                >
+                    <div class="scoreboard--wrap full-height">
                         <div
-                            :id="`scoreboard-end-${end}`"
-                            class="scoreboard__end-container"
-                            v-for="end in endNumbers"
-                            :key="`end-input-${end}`"
-                            :style="{
-                                maxWidth: $q.platform.is.desktop
-                                    ? `${colWidth()}vw`
-                                    : 'unset',
-                                minWidth: $q.platform.is.desktop
-                                    ? `${colWidth()}vw`
-                                    : '26vh',
-                            }"
+                            class="scoreboard__container full-height"
+                            ref="linescoreContainer"
                         >
-                            <LinescoreColumn
-                                v-model="score[end]"
-                                :visible="true"
-                                :endno="end"
-                                :extra="end > endCount"
-                                :canExtra="
-                                    end >= endCount && score[end].home !== 'X'
-                                "
-                                @remove="removeEnd(end)"
-                                :shakeable="
-                                    end < endCount && score[end].home !== 'X'
-                                "
-                                @shake="concede(end)"
-                            />
+                            <div
+                                class="scoreboard__score-container row no-wrap full-height"
+                                id="scoreboard-linescore"
+                                ref="scroller"
+                                :class="{
+                                    'hide-scroll': $q.platform.is.mobile,
+                                }"
+                                v-if="!$q.platform.is.desktop"
+                            >
+                                <div
+                                    class="start__padding col-grow"
+                                    id="scrollstart"
+                                />
+
+                                <LinescoreScrollerSection
+                                    @visible="setVisible(end)"
+                                    v-for="end in endNumbers"
+                                    :key="`end-input-${end}`"
+                                    :endno="end"
+                                >
+                                    <div
+                                        :id="`scoreboard-end-${end}`"
+                                        class="scoreboard__end-container full-height"
+                                        :style="{
+                                            maxWidth: $q.platform.is.desktop
+                                                ? `${colWidth()}`
+                                                : 'unset',
+                                            minWidth: $q.platform.is.desktop
+                                                ? `${colWidth()}`
+                                                : '26vh',
+                                        }"
+                                    >
+                                        <LinescoreColumn
+                                            v-model="score[end]"
+                                            :visible="visible === end"
+                                            :endno="end"
+                                            :extra="end > endCount"
+                                            @remove="removeEnd(end)"
+                                            :shakeable="
+                                                end < endCount &&
+                                                score[end + 1].home !== 'X'
+                                            "
+                                            @shake="concede(end)"
+                                        />
+                                    </div>
+                                </LinescoreScrollerSection>
+                                <div
+                                    class="start__padding col-grow"
+                                    id="scrollend"
+                                />
+                                <transition
+                                    appear
+                                    enter-active-class=" animated fadeIn"
+                                    leave-active-class="animated fadeOut"
+                                >
+                                    <div
+                                        class="next-options__container column"
+                                        v-if="
+                                            visible ===
+                                                Object.keys(score).length &&
+                                            visible < endCount + 3
+                                        "
+                                        style="min-width: 10vw"
+                                        :style="{
+                                            height: `${scrollerHeight}px`,
+                                        }"
+                                    >
+                                        <q-btn
+                                            icon="add"
+                                            stretch
+                                            class="col-grow q-pa-none"
+                                            @click="goExtra"
+                                            no-wrap
+                                            v-if="showExtraEnd()"
+                                            ><span class="q-pl-xs"
+                                                >Extra</span
+                                            ></q-btn
+                                        >
+                                        <q-btn
+                                            stretch
+                                            color="primary"
+                                            icon="check"
+                                            no-wrap
+                                            class="col-grow q-pa-none"
+                                            @click="goSummary"
+                                            ><span class="q-pl-xs"
+                                                >Done</span
+                                            ></q-btn
+                                        >
+                                    </div>
+                                </transition>
+                            </div>
+                            <div
+                                class="scoreboard__score-container row no-wrap full-height"
+                                id="scoreboard-linescore"
+                                ref="scroller"
+                                v-else
+                            >
+                                <div
+                                    :id="`scoreboard-end-${end}`"
+                                    class="scoreboard__end-container"
+                                    v-for="end in endNumbers"
+                                    :key="`end-input-${end}`"
+                                    :style="{
+                                        maxWidth: $q.platform.is.desktop
+                                            ? `${colWidth()}`
+                                            : 'unset',
+                                        minWidth: $q.platform.is.desktop
+                                            ? `${colWidth()}`
+                                            : '26vh',
+                                    }"
+                                >
+                                    <LinescoreColumn
+                                        v-model="score[end]"
+                                        :visible="true"
+                                        :endno="end"
+                                        :extra="end > endCount"
+                                        :canExtra="
+                                            end >= endCount &&
+                                            score[end].home !== 'X'
+                                        "
+                                        @remove="removeEnd(end)"
+                                        :shakeable="
+                                            end < endCount &&
+                                            score[end].home !== 'X'
+                                        "
+                                        @shake="concede(end)"
+                                        @click="onDesktopScoreClick(end)"
+                                    />
+                       
+                                </div>
+                                                <div
+                                      style="min-width: 12vw"
+                                    id="scrollend"
+                                />
+                                <transition
+                                    appear
+                                    enter-active-class=" animated fadeIn"
+                                    leave-active-class="animated fadeOut"
+                                >
+                                    <div
+                                        class="next-options__container column"
+                                        v-if="arrivedRight"
+                                        style="min-width: 10vw"
+                                        :style="{
+                                            height: `${scrollerHeight}px`,
+                                        }"
+                                    >
+                                        <q-btn
+                                            icon="add"
+                                            stretch
+                                            class="col-grow q-pa-none"
+                                            @click="goExtra"
+                                            no-wrap
+                                            v-if="showExtraEnd()"
+                                            ><span class="q-pl-xs"
+                                                >Extra</span
+                                            ></q-btn
+                                        >
+                                        <q-btn
+                                            stretch
+                                            color="primary"
+                                            icon="check"
+                                            no-wrap
+                                            class="col-grow q-pa-none"
+                                            @click="goSummary"
+                                            ><span class="q-pl-xs"
+                                                >Done</span
+                                            ></q-btn
+                                        >
+                                    </div>
+                                </transition>
+                            </div>
                         </div>
+                    
                     </div>
-                </div>
-                <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-                <div class="full-width row justify-center q-mb-sm" v-if="visible !== endCount" style="position: absolute; bottom: 0">
-                    <q-btn flat round icon="east" color="primary" @click="scrollTo(endCount)"/>
-                </div>
-                </transition>
+                </LinescoreEditor>
             </div>
-        </LinescoreEditor>
-    </div>
-       
-    <DialogConfirmation
-        v-if="!!confirmUnsaved"
-        confirmButtonText="Discard"
-        cancelButtonText="Cancel"
-        @confirm="toggleLineScore({ open: false })"
-        @close="confirmUnsaved = false"
-        cancelColor=""
-        confirmColor="negative"
-    >
-        Are you sure you want to close? All unsaved changes will be lost.
-    </DialogConfirmation>
-          <div class="blobs--container full-width full-height" style="z-index:0">
-        <DialogLinescoreBlobs :step="currentStep"/>
+
+            <DialogConfirmation
+                v-if="!!confirmUnsaved"
+                confirmButtonText="Discard"
+                cancelButtonText="Cancel"
+                @confirm="toggleLineScore({ open: false })"
+                @close="confirmUnsaved = false"
+                cancelColor=""
+                confirmColor="negative"
+            >
+                Are you sure you want to close? All unsaved changes will be
+                lost.
+            </DialogConfirmation>
+            <div
+                class="blobs--container full-width full-height"
+                style="z-index: 0"
+            >
+                <DialogLinescoreBlobs :step="currentStep" />
+            </div>
         </div>
-    </div>
-</NuxtLayout>
+    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 $column-width: 26vh;
@@ -223,18 +327,17 @@ $blob-blur: 32px;
     .blobs--container {
         position: absolute;
         z-index: -1;
-        top:0;
+        top: 0;
         filter: blur($blob-blur);
-    -webkit-filter: blur($blob-blur);
-    -moz-filter: blur($blob-blur);
-  -o-filter: blur($blob-blur);
-  -ms-filter: blur($blob-blur);
-
+        -webkit-filter: blur($blob-blur);
+        -moz-filter: blur($blob-blur);
+        -o-filter: blur($blob-blur);
+        -ms-filter: blur($blob-blur);
     }
     .nav--container {
         position: fixed;
         top: 0;
-        padding: var(--space-xs)
+        padding: var(--space-xs);
     }
 }
 .scoreboard--wrap {
@@ -245,8 +348,10 @@ $blob-blur: 32px;
     align-items: center;
     flex-direction: column;
     box-sizing: border-box;
+     position: relative;
     .scoreboard__container {
         width: 100%;
+       
         .scoreboard__score-container {
             scroll-snap-type: x mandatory;
             scroll-snap-stop: always;
@@ -268,7 +373,7 @@ $blob-blur: 32px;
 
             .scoreboard__end-container {
                 scroll-snap-align: center;
-               scroll-snap-stop: always;
+                scroll-snap-stop: always;
                 overflow: visible;
                 display: grid;
                 min-width: $column-width;
@@ -311,21 +416,21 @@ const { toggleLineScore, toggleTeamViewer, toggleGlobalSearch } = dialogStore;
 const viewOrder = {
     [views.END_COUNT_SELECT]: 0,
     [views.HOME_SELECT]: 1,
-    [views.AWAY_SELECT]:2,
+    [views.AWAY_SELECT]: 2,
     [views.GAME_PARAMS]: 3,
-    [views.LINESCORE]: 4,
-    [views.DETAILS]: 5
-    
-}
+    [views.PRE_GAME]: 4,
+    [views.LINESCORE]: 5,
+    [views.DETAILS]: 6,
+};
 
-const currentStep = computed(() => viewOrder[view.value] ?? 0)
+const currentStep = computed(() => viewOrder[view.value] ?? 0);
 
 const goBack = () => {
     if (currentStep.value === 0) return;
-    const currentIndex = Object.keys(viewOrder).indexOf(view.value)
-    console.log(currentIndex)
+    const currentIndex = Object.keys(viewOrder).indexOf(view.value);
+    console.log(currentIndex);
     view.value = Object.keys(viewOrder)[currentIndex - 1];
-}
+};
 
 /**
  * Game variables
@@ -362,7 +467,7 @@ const endCount = ref(8);
 const setEndCount = (num) => {
     endCount.value = num;
     view.value = null;
-}
+};
 
 const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))
@@ -406,12 +511,21 @@ const setVisible = (index) => {
     visible.value = index;
 };
 
+const onDesktopScoreClick = (e) => {
+    visible.value = e;
+}
+
 const scroller = ref(null);
 const { x, isScrolling, arrivedState } = useScroll(scroller, {
     behavior: "smooth",
 });
 
-const {height: scrollerHeight} = useElementSize(scroller)
+useEventListener(scroller, 'wheel', ({wheelDeltaY}) => {
+    scroller.value.scrollLeft -= wheelDeltaY;
+
+})
+
+const { height: scrollerHeight } = useElementSize(scroller);
 const { right: arrivedRight } = toRefs(arrivedState);
 
 const { width: windowWidth } = useWindowSize();
@@ -453,7 +567,6 @@ const createSheet = async (rink_id, sheet_number) => {
 };
 const saving = ref(false);
 const save = async () => {
-   
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
     const rinkCopy = gameParams.value.rink;
@@ -470,8 +583,6 @@ const save = async () => {
 
     // toggleLineScore({ open: false });
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
-
-  
 
     const conceded = score.value[Object.keys(score.value).length].home === "X";
 
@@ -503,7 +614,7 @@ const save = async () => {
     }
 
     const gameId = await createGame(gameToCreate);
-   
+
     if (!gameId) return;
 
     const ends = generateEnds(
@@ -520,9 +631,8 @@ const save = async () => {
         shouldSendInvitation
     );
 
-
-
-    if (shouldSendInvitation && params.away?.id) useGameRequestStore().sendGameRequest(params.away, gameId)
+    if (shouldSendInvitation && params.away?.id)
+        useGameRequestStore().sendGameRequest(params.away, gameId);
 
     return navigateTo(`/games/view/${gameId}`);
 };
@@ -663,21 +773,22 @@ onMounted(async () => {
         // view.value = views.CONFIRM
     }
     loading.value = false;
-    useEventListener(window, "popstate", useThrottleFn(() => {
-        history.go(1)
-        if (view.value === views.DETAILS) {
-            console.log('DETAILS')
-            goBackToLinescore();
-        } else if (showLinescore.value) {
-            showLinescore.value = false;
-        } else {
-            view.value = views.END_COUNT_SELECT
-        }
-    }, 500));
-
+    useEventListener(
+        window,
+        "popstate",
+        useThrottleFn(() => {
+            history.go(1);
+            if (view.value === views.DETAILS) {
+                console.log("DETAILS");
+                goBackToLinescore();
+            } else if (showLinescore.value) {
+                showLinescore.value = false;
+            } else {
+                view.value = views.END_COUNT_SELECT;
+            }
+        }, 500)
+    );
 });
-
-
 
 /**
  * Calc height of main content
@@ -765,8 +876,9 @@ const searchForTeam = () => {
  */
 
 const colWidth = () => {
-    const numEnds = Object.keys(score.value)?.length;
-    return 100 / numEnds;
+    return '200px';
+    // const numEnds = Object.keys(score.value)?.length;
+    // return 100 / numEnds;
 };
 const showLinescore = ref(false);
 const linescoreContainer = ref(null);
@@ -788,6 +900,6 @@ const goBackToLinescore = () => {
 };
 const goLinescore = () => {
     showLinescore.value = true;
-    view.value = views.LINESCORE
-}
+    view.value = views.LINESCORE;
+};
 </script>

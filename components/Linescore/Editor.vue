@@ -13,11 +13,16 @@
             <div class="relative-position">
                 <h2 class="text-sm text-center">Game Summary</h2>
                 <h1 class="text-md text-bold text-center">
-                    {{ toTimezone(selections.start_time, "MMMM DD, YYYY", false) }}
+                    {{
+                        toTimezone(
+                            selections.start_time,
+                            "MMMM DD, YYYY",
+                            false
+                        )
+                    }}
                 </h1>
                 <h2 class="text-sm text-center">
                     {{ toTimezone(selections.start_time, "HH:mm a", false) }}
-                    
                 </h2>
                 <!-- <div class="edit--floating" v-if="canEdit">
                     <q-btn
@@ -45,6 +50,7 @@
                 marginTop: summary ? '32px' : '',
             }"
             ref="linescoreContainer"
+            @select="onGridSelect"
         >
             <!-- <template v-slot:headerPrepend>
                 <div
@@ -66,19 +72,15 @@
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
-                        
                         avatarSize="100%"
                         v-model="selections.home"
                         :hasHammer="
                             selections.hammerFirstEndTeam ===
                             selections.home?.id
                         "
+                        :color="selections.homeColor"
                     />
-                    <Teleport
-                        to=".avatar-unnested__home"
-                      
-                        v-if="props.summary"
-                    >
+                    <Teleport to=".avatar-unnested__home" v-if="props.summary">
                         <LinescoreAvatar
                             avatarSize="100%"
                             id="avatar-home"
@@ -87,6 +89,7 @@
                                 canEdit && mode.includes('home') && !summary
                             "
                             v-model="selections.home"
+                            :color="selections.homeColor"
                             @update:modelValue="onTeamChange('home', $event)"
                             @update:color="onColorUpdate"
                             @confirm="emit('ready')"
@@ -144,20 +147,16 @@
             <template v-slot:avatarAway>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
-                      
                         avatarSize="100%"
                         v-model="selections.away"
                         :hasHammer="
                             selections.hammerFirstEndTeam ===
                             selections.away?.id
                         "
+                          :color="selections.awayColor"
                     />
-                    <Teleport
-                        to=".avatar-unnested__away"
-                        
-                        v-if="props.summary"
-                    >
-                    <!-- :disabled="!mode.includes('away')" -->
+                    <Teleport to=".avatar-unnested__away" v-if="props.summary">
+                        <!-- :disabled="!mode.includes('away')" -->
                         <LinescoreAvatar
                             avatarSize="100%"
                             id="avatar-away"
@@ -166,6 +165,7 @@
                                 canEdit && mode.includes('home') && !summary
                             "
                             v-model="selections.away"
+                            :color="selections.awayColor"
                             @confirm="emit('ready')"
                             @update:modelValue="onTeamChange('away', $event)"
                             @update:color="onColorUpdate"
@@ -230,25 +230,19 @@
             :class="{ visible: mode.includes('home') || mode.includes('away') }"
             :style="{ order: summary ? 0 : 1 }"
         >
-            <div
-                class="avatar-unnested__home"
-           
-            />
-            <div
-                class="avatar-unnested__away"
-               
-            />
-             <!-- :style="{ 'grid-column': mode.includes('home') ? '' : '1/3' }" -->
+            <div class="avatar-unnested__home" />
+            <div class="avatar-unnested__away" />
+            <!-- :style="{ 'grid-column': mode.includes('home') ? '' : '1/3' }" -->
         </div>
         <div
-            class="row no-wrap full-width justify-around relative-position"
+            class="row no-wrap full-width justify-between relative-position totalscore__container"
             v-if="summary"
         >
             <div class="totalscore--summary" id="totalscore-home">
                 {{ totalScore.home }}
             </div>
             <div class="totalscore--summary" id="totalscore-away">
-                 {{ totalScore.away }}
+                {{ totalScore.away }}
             </div>
             <div class="end-count__container text-sm">
                 After
@@ -351,15 +345,18 @@
     overflow-y: visible;
     box-sizing: border-box;
     padding-top: 58px;
-    .avatars-unnested__container {
-        width: 100%;
-        box-sizing: border-box;
+    .avatars-unnested__container,
+    .totalscore__container {
         display: grid;
         grid-template-columns: repeat(2, 45%);
         column-gap: 10%;
+    }
+    .avatars-unnested__container {
+        width: 100%;
+        box-sizing: border-box;
 
         &.visible {
-            padding: var(--space-md);
+            // padding: var(--space-md);
             padding-bottom: 0px;
         }
 
@@ -376,9 +373,18 @@
         padding: 10%;
         // height: 75%;
     }
-    .totalscore--summary {
-        font-size: 5em;
+    .totalscore__container {
+    //     @include sm {
+    //    padding: 0px var(--space-md);
+    //     }
+ 
+        .totalscore--summary {
+            font-size: 5em;
+
+            text-align: center;
+        }
     }
+
     .end-count__container {
         position: absolute;
         bottom: 1em;
@@ -529,18 +535,16 @@ watch(
 
 const initing = ref(true);
 
-
 const mountAnimation = async () => {
     if (props.static) {
-                mode.value.push("away");
-                mode.value.push("home");
-            setTimeout(() => {
-            
-                tweenScore();
-            }, 1000);
+        mode.value.push("away");
+        mode.value.push("home");
+        setTimeout(() => {
+            tweenScore();
+        }, 1000);
 
-            return;
-        }
+        return;
+    }
     if (!props.canEdit) return;
     await nextTick();
     const tl = gsap.timeline({});
@@ -572,11 +576,10 @@ const mountAnimation = async () => {
         },
         "<"
     );
-}
+};
 onMounted(async () => {
     if (!props.summary) return;
     await mountAnimation();
- 
 });
 
 const checkCompletionState = () => {
@@ -704,7 +707,8 @@ watch(
             transformOrigin: "top",
             ease: "elastic",
         });
-    }, {immediate:true}
+    },
+    { immediate: true }
 );
 
 const linescoreContainer = ref(null);
@@ -739,6 +743,10 @@ const searchRink = () => {
             },
         },
     });
+};
+
+const onGridSelect = (e) => {
+    emit("scroll", e);
 };
 </script>
 

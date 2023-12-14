@@ -67,7 +67,7 @@
 <style lang="scss" scoped>
 .shake-hands__text {
     max-width: 0px;
-    transition: 0.2s all;
+    overflow: hidden;
     &.isRevealed {
         max-width: 500px;
     }
@@ -142,7 +142,7 @@ const props = defineProps({
     visible: Boolean,
 });
 
-const emit = defineEmits(["shake", "remove", "update:model-value"]);
+const emit = defineEmits(["shake", "remove", "update:model-value", "click"]);
 
 const score = computed({
     get() {
@@ -162,6 +162,7 @@ const top = ref(null);
 const bottom = ref(null)
 
 const setTop = () => {
+    emit('click')
     if (!props.visible) return;
     triggerClickAnimation(top.value)
 
@@ -172,6 +173,7 @@ const setTop = () => {
     }
 };
 const setBottom = () => {
+    emit('click')
     if (!props.visible) return;
     triggerClickAnimation(bottom.value)
     if (score.value.home) {

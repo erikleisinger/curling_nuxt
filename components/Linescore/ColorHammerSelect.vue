@@ -1,7 +1,7 @@
 <template>
     <div class="linescore-options__container full-height">
-        <div class="column justify-end " style="max-width: 100vw">
-            <h2 class="text-xl text-bold title q-pa-md text-center">
+        <div class="column  no-wrap" style="max-width: 100vw">
+            <h2 class="text-xl title text-bold title q-px-md text-center">
                 Edit game
             </h2>
             <div class="full-width text-center">
@@ -18,7 +18,7 @@
                             :color="selections.homeColor"
                             :viewable="false"
                         />
-                        <div class="color__container">
+                        <div class="color__container clickable">
                             <div class="color-selection__wrap">
                                 <SelectColor
                                     v-model="selections.homeColor"
@@ -26,7 +26,7 @@
                                 />
                             </div>
                         </div>
-                        <div class="hammer__container">
+                        <div class="hammer__container clickable">
                             <q-icon
                                 clickable
                                 :name="
@@ -65,15 +65,15 @@
                             :color="selections.awayColor"
                             :viewable="false"
                         />
-                        <div class="color__container">
-                            <div class="color-selection__wrap">
+                        <div class="color__container clickable">
+                            <div class="color-selection__wrap ">
                                 <SelectColor
                                     v-model="selections.awayColor"
                                     :prevent="[selections.homeColor]"
                                 />
                             </div>
                         </div>
-                        <div class="hammer__container">
+                        <div class="hammer__container clickable">
                             <q-icon
                                 clickable
                                 :name="
@@ -109,13 +109,13 @@
          <div class="row justify-center items-start">
             <q-btn
                 icon="check_circle"
-                :color="selections?.hammerFirstEndTeam ? 'green' : ''"
+                color="green"
                 size="50px"
                 flat
                 round
                 dense
                 @click="emit('select')"
-                :disable="!selections?.hammerFirstEndTeam"
+               
             />
         </div>
     </div>
@@ -125,7 +125,8 @@ $hammer-container-padding: var(--space-md);
 $color-selection-height: 3em;
 .linescore-options__container {
     display: grid;
-    grid-template-rows: 25% 50% 25%;
+    grid-template-rows: 100px auto 25%;
+    padding-top: 60px;
 }
 .linescore-confirmation__container {
     width: min(500px, 100vw);
@@ -138,6 +139,15 @@ $color-selection-height: 3em;
         display: flex;
         flex-direction: column;
         position: relative;
+
+        .color__container,
+        .hammer__container {
+            z-index: 1;
+            transition: transform 0.2s;
+            &:hover {
+                transform: scale(1.1)
+            }
+        }
 
         .color__container {
             height: auto;

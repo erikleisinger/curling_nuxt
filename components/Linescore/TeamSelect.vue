@@ -3,7 +3,7 @@
         <div class="row items-end justify-center q-px-md q-mb-sm">
             <div class="column items-center">
                 <h2
-                    class="text-md text-bold title q-px-md q-pt-md q-pb-none text-center"
+                    class="text-md text-bold title q-px-md  q-pb-none text-center" style="white-space: nowrap"
                 >
                     <slot v-bind:toggleCustom="toggleCustom" />
                 </h2>
@@ -52,9 +52,18 @@
                 <q-input
                     v-else
                     label="Type an opposition name"
-                    class="full-width q-px-lg"
+                    class="custom-name__input q-px-lg"
                     v-model="selections.name"
-                />
+                
+                   
+                >
+    <template v-slot:append>
+        <q-btn flat round icon="close"  @click="() => {
+                        customOpposition = false;
+                        selections = {}
+                    }"/>
+    </template>
+                </q-input>
             </div>
             <q-btn
                 flat
@@ -155,7 +164,8 @@
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: auto auto 25%;
+    padding-top: 60px;
+    grid-template-rows: 100px auto 25%;
     .team-avatar__container {
         width: 50vh;
         max-width: 200px;
@@ -238,6 +248,10 @@
                 }
             }
         }
+    }
+    .custom-name__input {
+        width: 100vw;
+        max-width: 500px;
     }
 }
 </style>
