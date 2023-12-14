@@ -15,7 +15,8 @@ export default class Game extends Model {
             hammer_first_end: this.number(),
             rink_id: this.number(),
             sheet: this.hasOne(Sheet, 'id'),
-            start_time: this.number()
+            start_time: this.number(),
+            note: this.string()
         };
     }
 

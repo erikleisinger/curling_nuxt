@@ -5,7 +5,8 @@
             <GameRequest :request="gameRequest"/>
             <q-separator/>
         </aside>
-        <LinescoreEditor v-if="!!currentGame && !loading" :canEdit="false" v-model="currentGame" summary :score="score" :compact="false" static/>
+        <!-- :canEdit="canEdit && !!editedGame" :canEditDetails="canEdit && !!editedGame" -->
+        <LinescoreEditor v-if="!!currentGame && !loading"  :canEdit="false" v-model="editedGame" summary :score="score" :compact="false" static/>
         <TeamStatsView v-if="!!currentGame && !loading" :teamId="home.id" :oppositionId="away.id" h2h :gameId="Number(gameId)"/>
     </NuxtLayout>
 </template>
@@ -24,6 +25,7 @@ import Team from '@/store/models/team';
 import GameTeam from '@/store/models/game-team';
 import TeamStats from '@/store/models/team-stats'
 import {useGameRequestStore} from '@/store/game-requests'
+import {useQuery} from '@tanstack/vue-query'
 const route = useRoute();
 const { getGameResult } = useGame();
 
@@ -64,17 +66,7 @@ const init = async () => {
 };
 
 const games = ref([]);
-const currentGame = computed(() => {
-    const g = useRepo(Game).with('teams').where('id', Number(gameId)).first() || {};
-    const {teams} = g;
-    if (!teams) return {};
-    return {
-        ...g,
-        home: home.value,
-        away: away.value,
-        hammerFirstEndTeam: g.hammer_first_end
-    }
-})
+
 
 const home = computed(() => {
    if (loading.value || !currentGame?.value?.teams?.length) return {};
@@ -93,7 +85,23 @@ const away = computed(() => {
     }
 })
 
+const currentGame = computed(() => {
+    const g = useRepo(Game).with('teams').where('id', Number(gameId)).first() || {};
+    const {teams} = g;
+    if (!teams) return {};
+    return {
+        ...g,
+        home: home.value,
+        away: away.value,
+        hammerFirstEndTeam: g.hammer_first_end
+    }
+})
 
+const editedGame = ref(null)
+
+watch(currentGame, (val) => {
+    editedGame.value = val;
+})
 
 const getGames = async () => {
     const client = useSupabaseClient();
@@ -260,6 +268,23 @@ const cleanupOppositionStats = () => {
 onBeforeUnmount(() => {
     if (cleanupOpposition.value) cleanupOppositionStats();
    
+})
+
+const {isOnTeam} = useTeam();
+
+const canEdit = computed(() => isOnTeam(home.value.id) || isOnTeam(away.value.id))
+
+const {getTeamPlayers} = useTeam();
+const enabled = computed(() => !!home.value.id && !!away.value.id)
+const {isLoading: isLoadingPlayers} = useQuery({
+    queryKey: ['game', 'players', Number(route.params.id)],
+    queryFn:  async() => {
+        await Promise.all([getTeamPlayers(home.value.id), getTeamPlayers(away.value.id)])
+        return true;
+    },
+
+    
+    enabled
 })
 
 

@@ -94,8 +94,9 @@ const creatorTeam = computed(() =>
 );
 
 const {isLoading} = useQuery({
-    queryKey: ['game', props.gameId],
-    queryFn: () => getTeamPlayers(pendingTeam.value.id),
+    queryKey: ['game', 'players', props.gameId],
+    queryFn: () => Promise.all([getTeamPlayers(pendingTeam.value.id), getTeamPlayers(creatorTeam.value.id)]),
+   
     enabled: !!pendingTeam.value?.id
 })
 
