@@ -89,7 +89,7 @@
                             selections.hammerFirstEndTeam ===
                             selections.home?.id
                         "
-                        :color="selections.homeColor"
+                        :color="selections.homeColor || selections?.home?.color"
                     />
                     <Teleport to=".avatar-unnested__home" v-if="props.summary">
                         <LinescoreAvatar
@@ -100,7 +100,7 @@
                                 canEdit && mode.includes('home') && !summary
                             "
                             v-model="selections.home"
-                            :color="selections.homeColor"
+                           :color="selections.homeColor || selections?.home?.color"
                             @update:modelValue="onTeamChange('home', $event)"
                             @update:color="onColorUpdate"
                             @confirm="emit('ready')"
@@ -164,7 +164,7 @@
                             selections.hammerFirstEndTeam ===
                             selections.away?.id
                         "
-                          :color="selections.awayColor"
+                          :color="selections.awayColor || selections?.away?.color"
                     />
                     <Teleport to=".avatar-unnested__away" v-if="props.summary">
                         <!-- :disabled="!mode.includes('away')" -->
@@ -176,7 +176,7 @@
                                 canEdit && mode.includes('home') && !summary
                             "
                             v-model="selections.away"
-                            :color="selections.awayColor"
+                           :color="selections.awayColor || selections?.away?.color"
                             @confirm="emit('ready')"
                             @update:modelValue="onTeamChange('away', $event)"
                             @update:color="onColorUpdate"

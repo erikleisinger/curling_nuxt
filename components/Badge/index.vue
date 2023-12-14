@@ -1,7 +1,10 @@
 <template>
     <div class="badge__container">
         <div class="row no-wrap items-center q-mb-sm">
+            <div class="relative-position">
             <BadgeIcon height="2em" class="q-mr-sm" :badge="badge.name" />
+
+            </div>
             <div>
                 <h2 class="text-sm text-bold">{{ BADGE_NAMES[badge.name] }}</h2>
             </div>
@@ -26,6 +29,7 @@
     .badge-description {
         min-height: 2em;
     }
+
 }
 </style>
 <script setup>
