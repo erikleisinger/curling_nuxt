@@ -109,6 +109,7 @@
                     :compact="showLinescore && view !== views.DETAILS"
                     v-if="view === views.LINESCORE || view === views.DETAILS"
                     @endcount="view = views.END_COUNT_SELECT"
+                    style="padding-top: 58px"
                 >
                     <div class="scoreboard--wrap full-height">
                         <div

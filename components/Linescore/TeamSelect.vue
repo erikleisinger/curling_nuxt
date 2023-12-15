@@ -54,6 +54,7 @@
                     label="Type an opposition name"
                     class="custom-name__input q-px-lg"
                     v-model="selections.name"
+                    autofocus
                 
                    
                 >

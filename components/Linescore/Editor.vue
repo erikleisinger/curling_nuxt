@@ -6,7 +6,7 @@
         }"
     >
         <nav
-            class="row no-wrap justify-center full-width items-center q-mt-md"
+            class="row no-wrap justify-center full-width items-center q-mt-md summary-container"
             v-if="summary"
             ref="dateContainer"
         >
@@ -355,7 +355,10 @@
     flex-direction: column;
     overflow-y: visible;
     box-sizing: border-box;
-    padding-top: 58px;
+    padding-top: var(--space-md);
+    .summary-container {
+        margin-bottom: var(--space-lg);
+    }
     .avatars-unnested__container,
     .totalscore__container {
         display: grid;
