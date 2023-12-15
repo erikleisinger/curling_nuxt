@@ -353,3 +353,16 @@ export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
     }, []);
     return e;
 };
+
+export const createSheet = async (rink_id: number, sheet_number: number) => {
+    const client = useSupabaseClient();
+    const { data } = await client
+        .from("sheets")
+        .upsert(
+            { rink_id, number: sheet_number },
+            { onConflict: "rink_id, number" }
+        )
+        .select("id");
+    const [sheetFromDb] = data || [];
+    return sheetFromDb?.id;
+};

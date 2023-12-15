@@ -30,6 +30,7 @@ export const useTime = () => {
         } else {
             parsed = dayjs.tz(date ?? dayjs(), timezone).utc();
         }
+        console.log(parsed, date)
         if (raw) return parsed;
         if (toISO) {
             return parsed.toISOString();

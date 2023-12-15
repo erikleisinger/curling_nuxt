@@ -50,6 +50,7 @@
             <InputDate
                 v-if="canEditDetails && dateSelectOpen"
                 v-model="selections.start_time"
+                @hide="dateSelectOpen = false"
             />
         </nav>
         <LinescoreGrid
@@ -477,7 +478,18 @@ const emit = defineEmits([
     "update:modelValue",
 ]);
 
-const selections = useVModel(props, "modelValue", emit);
+const selections = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
+})
+
+watch(selections, (val) => {
+    emit('update:modelValue', val)
+}, {deep: true})    
 
 const { toggleGlobalSearch } = useDialogStore();
 

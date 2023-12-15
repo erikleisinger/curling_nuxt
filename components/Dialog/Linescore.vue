@@ -403,7 +403,7 @@ import {
     useWindowSize,
     toRefs,
 } from "@vueuse/core";
-import { generateEnds } from "@/utils/create-game";
+import { generateEnds, createSheet } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
@@ -429,7 +429,6 @@ const currentStep = computed(() => viewOrder[view.value] ?? 0);
 const goBack = () => {
     if (currentStep.value === 0) return;
     const currentIndex = Object.keys(viewOrder).indexOf(view.value);
-    console.log(currentIndex);
     view.value = Object.keys(viewOrder)[currentIndex - 1];
 };
 
@@ -554,18 +553,7 @@ const getSheet = async () => {
     return sheetFromDb?.id;
 };
 
-const createSheet = async (rink_id, sheet_number) => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("sheets")
-        .upsert(
-            { rink_id, number: sheet_number },
-            { onConflict: "rink_id, number" }
-        )
-        .select("id");
-    const [sheetFromDb] = data || [];
-    return sheetFromDb?.id;
-};
+
 const saving = ref(false);
 const saved = ref(false)
 const save = async () => {
@@ -783,7 +771,6 @@ onMounted(async () => {
         useThrottleFn(() => {
             history.go(1);
             if (view.value === views.DETAILS) {
-                console.log("DETAILS");
                 goBackToLinescore();
             } else if (showLinescore.value) {
                 showLinescore.value = false;

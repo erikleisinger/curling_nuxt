@@ -6,17 +6,18 @@
                 transition-hide="scale"
                 ref="popup"
                 @hide="onHide"
+                v-model="open"
             >
                 <q-date
-                    v-model="val"
+                    v-model="date"
                     mask="YYYY-MM-DD HH:mm"
-                    @update:model-value="selectDate = false"
+                    @update:model-value="onSelectDate"
                     v-show="selectDate"
                 />
                 <q-time
-                    v-model="val"
+                    v-model="date"
                     mask="YYYY-MM-DD HH:mm"
-                    @update:model-value="endSelection"
+                    @update:model-value="onSelectTime"
                     v-show="!selectDate"
                     :minute-options="[
                         0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55,
@@ -32,12 +33,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 const props = defineProps({
-    modelValue: String,
+    modelValue: [String, Number],
     name: String,
     label: String,
 });
 
+const date = ref(null);
+
 const inputText = computed(() => formatted.value || props.label);
+
+const open = ref(false)
 
 const val = computed({
     get() {
@@ -57,9 +62,14 @@ const formatted = computed(() => {
 
 const selectedMinute = ref(false);
 
-const endSelection = (value: string | null, details: object) => {
+const onSelectTime = (value: string | null, details: object) => {
+    date.value = value;
     if (popup.value && selectedMinute.value) {
         popup.value.hide();
+        nextTick(() => {
+            emit('update:modelValue', date.value)
+        })
+      
 
     } else {
         selectedMinute.value = true;
@@ -69,6 +79,11 @@ const endSelection = (value: string | null, details: object) => {
 const onHide = () => {
         selectDate.value = true;
         selectedMinute.value = false;
+}
+
+const onSelectDate = (val) => {
+    date.value = val;
+    selectDate.value = false
 }
 
 const emit = defineEmits(["update:modelValue"]);
