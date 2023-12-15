@@ -16,7 +16,7 @@
                     class="relative-position"
                 >
     <div class="close-button__container">
-<q-btn  round icon="check" color="white" text-color="green" dense @click="save"/>
+<q-btn  flat round icon="check" color="white"  dense @click="save"/>
     </div>  
                 </q-date>
                 <q-time
@@ -30,7 +30,7 @@
                      class="relative-position"
                 >
         <div class="close-button__container">
-<q-btn  round icon="check" color="white" text-color="green" dense @click="save"/>
+<q-btn  flat round icon="check" color="white"  dense @click="save"/>
     </div>  
                 </q-time>
             </q-popup-proxy>
