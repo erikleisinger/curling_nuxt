@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div
-                class="column justify-center align-center text-xl text-bold text-center text-uppercase text-italic"
+                class="column justify-center align-center text-xl text-bold text-uppercase text-italic"
             >
                 Vs
             </div>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <h2
-                    class="text-lg text-center text-bold text-uppercase q-pt-sm text-italic team-name away"
+                    class="text-lg text-right text-bold text-uppercase q-pt-sm text-italic team-name away"
                 >
                     {{ modelValue.away.name }}
                 </h2>
