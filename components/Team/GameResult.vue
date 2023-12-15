@@ -111,7 +111,7 @@
                             </div>
                             <div
                                 class="row full-width justify-center"
-                                v-if="!away.isPlaceholder"
+                                
                             >
                                 <TeamGameResultVerification
                                     :gameId="props.gameId"
@@ -304,6 +304,7 @@ import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
 
 const refreshQuery = () => {
+    console.log('refresh query')
     queryClient.invalidateQueries({
         queryKey: ["team", "games", home.value?.id],
     });

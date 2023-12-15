@@ -12,7 +12,7 @@
     <DialogInfo
         v-if="!!verifiedPopup"
         :confirmButtonText="
-            !pendingTeam.id ? 'Invite team' : 'Accept result'
+            pendingTeam.id > 100000000 ? 'Invite team' : 'Accept result'
         "
         cancelButtonText="Reject result"
         @confirm="onRequestConfirm"
@@ -21,9 +21,11 @@
         :confirmColor="!pendingTeam.id ? 'blue' : 'positive'"
         :showConfirm="
             isOnTeam(pendingTeam?.id) ||
-            (isOnTeam(creatorTeam?.id) && !pendingTeam?.id)
+            (isOnTeam(creatorTeam?.id) && pendingTeam?.id > 100000000)
         "
     >
+
+    <!-- CREATOR VIEW -->
         <span v-if="isOnTeam(pendingTeam?.id)">
             <strong>{{ creatorTeam.name }}</strong> added this game result and
             has invited you to verify that it is real.
@@ -37,7 +39,7 @@
         <span v-else>
             This game was created by <strong>{{ creatorTeam.name }}</strong
             >.
-            <span v-if="pendingTeam?.id">
+            <span v-if="pendingTeam?.id < 100000000">
                 <br />
                 <br />
 
@@ -67,6 +69,7 @@
 </template>
 <script setup>
 import { useGameRequestStore } from "@/store/game-requests";
+import {useDialogStore} from '@/store/dialog'
 import Game from "@/store/models/game";
 import TeamPlayer from '@/store/models/team-player'
 import { useQuery } from "@tanstack/vue-query";
@@ -119,9 +122,11 @@ const respondToRequest = async (status) => {
     getGameRequestsByUser();
 };
 
+const robotTeam = computed(() => pendingTeam.value?.id > 100000000)
+
 const onRequestConfirm = () => {
-    if (!pendingTeam.value?.id) {
-        toggleGlobalSearch({
+    if (robotTeam.value) {
+        useDialogStore().toggleGlobalSearch({
             open: true,
 
             options: {
@@ -140,7 +145,7 @@ const onRequestConfirm = () => {
 
 
 const onOptionClick = async (e) => {
-      toggleGlobalSearch({
+      useDialogStore().toggleGlobalSearch({
         open: false,
     });
     await sendGameRequest(e, props.gameId);

@@ -17,7 +17,9 @@ export const useGame = () => {
 
         const dayjs = useDayjs();
     
-        data.forEach((g) => {
+        data.forEach((g, index) => {
+            if (index === 0) useRepo(GameTeam).where('game_id', g.game_id).delete()
+            
             let team;
     
             if (!g.team?.id) {
@@ -39,6 +41,7 @@ export const useGame = () => {
                 start_time: dayjs(g.start_time).unix(),
                 sheet: g.sheet
             });
+            
             useRepo(GameTeam).save({
                 team_id: g.team_id ?? g.game_id + 100000000,
                 game_id: g.game_id,
