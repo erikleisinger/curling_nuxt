@@ -210,6 +210,7 @@
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
+import {useUserTeamStore} from '@/store/user-teams'
 import {useTeamRequestStore} from '@/store/team-requests'
 import Rink from '@/store/models/rink'
 import Team from "@/store/models/team";
@@ -360,7 +361,8 @@ const onClickEdit = async () => {
     } else {
         saving.value = true
         const id = await createTeam();
-        await updateTeamAvatar(id);
+        if (editedValues.value.avatar_url)await updateTeamAvatar(id);
+        useUserTeamStore().fetchUserTeams(true);
 
         navigateTo(`/teams/${id}`)
 
