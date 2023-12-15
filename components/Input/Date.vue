@@ -13,7 +13,12 @@
                     mask="YYYY-MM-DD HH:mm"
                     @update:model-value="onSelectDate"
                     v-show="selectDate"
-                />
+                    class="relative-position"
+                >
+    <div class="close-button__container">
+<q-btn  round icon="check" color="white" text-color="green" dense @click="save"/>
+    </div>  
+                </q-date>
                 <q-time
                     v-model="date"
                     mask="YYYY-MM-DD HH:mm"
@@ -22,10 +27,20 @@
                     :minute-options="[
                         0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55,
                     ]"
-                />
+                     class="relative-position"
+                >
+        <div class="close-button__container">
+<q-btn  round icon="check" color="white" text-color="green" dense @click="save"/>
+    </div>  
+                </q-time>
             </q-popup-proxy>
 </template>
 <style lang="scss" scoped>
+.close-button__container {
+    position: absolute;
+    top: 25px;
+    right: var(--space-sm);
+}
 .q-chip {
     margin: unset;
 }
@@ -60,20 +75,16 @@ const formatted = computed(() => {
     return format(props.modelValue, "MMM D, YYYY [at] h:mm A");
 });
 
+const save = () => {
+    popup.value.hide();
+    emit('update:modelValue', date.value)
+}
+
 const selectedMinute = ref(false);
 
 const onSelectTime = (value: string | null, details: object) => {
     date.value = value;
-    if (popup.value && selectedMinute.value) {
-        popup.value.hide();
-        nextTick(() => {
-            emit('update:modelValue', date.value)
-        })
-      
-
-    } else {
-        selectedMinute.value = true;
-    }
+    if (!selectedMinute.value) selectedMinute.value = true;
 };
 
 const onHide = () => {
