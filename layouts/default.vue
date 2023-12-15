@@ -114,12 +114,10 @@
                         >{{ unreadNotificationCount }}</q-badge
                     >
                 </q-btn>
-                <q-btn
-                    flat
-                    icon="settings"
-                    @click="goTo('/profile')"
-                    :size="$q.screen.xs ? 'md' : 'lg'"
-                />
+
+                <div class="profile-avatar--container"  @click="goTo('/profile')">
+                <Avataaar v-bind="avatar"/>
+                </div>
             </q-toolbar>
         </q-footer>
     </q-layout>
@@ -135,6 +133,20 @@ $footer-height-sm: 4em;
 .team-details__viewer {
     width: min(100vw, 500px);
     height: min(100vh, 600px);
+}
+.profile-avatar--container {
+        cursor: pointer;
+        width: 25px;
+        margin-right: auto;
+        margin-left: auto;
+        transition: transform 0.2s;
+        @include sm {
+            width: 40px;
+
+        }
+        &:hover {
+            transform: scale(1.1)
+        }
 }
 .app-layout {
     display: flex;
@@ -250,6 +262,7 @@ import { onClickOutside, useEventListener, useThrottleFn } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useGameRequestStore } from "@/store/game-requests";
+import Player from '@/store/models/player'
 
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
@@ -279,8 +292,9 @@ const goTo = (view) => {
     notificationsOpen.value = false;
     navigateTo(`${view}`);
 };
+const {user: userId} = useUser()
 
-const { avatar } = useUserStore();
+const avatar = computed(() => useRepo(Player).where('id', userId.value).first()?.avatar ?? {})
 
 const toggleSearch = () => {
     toggleGlobalSearch({
