@@ -95,10 +95,10 @@
                             </div>
                             <div
                                 class="row justify-center full-width game-info__text highlightable"
-                                v-if="game.sheet && game.sheet.number"
+                                v-if="sheet && sheet.number"
                             >
-                                Sheet {{ game.sheet.number }}/{{
-                                    numberToLetter(game.sheet.number)
+                                Sheet {{sheet.number }}/{{
+                                    numberToLetter(sheet.number)
                                 }}
                             </div>
                             <div
@@ -298,6 +298,7 @@ import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import Rink from "@/store/models/rink";
+import Sheet from '@/store/models/sheet'
 import { useConfirmDialog, onClickOutside } from "@vueuse/core";
 import { useQueryClient } from "@tanstack/vue-query";
 
@@ -414,6 +415,12 @@ const rink = computed(() =>
     !game.value.rink_id
         ? null
         : useRepo(Rink).where("id", game.value.rink_id).first()
+);
+
+const sheet = computed(() =>
+    !game.value.rink_id
+        ? null
+        : useRepo(Sheet).where("id", game.value.sheet_id).first()
 );
 
 const emit = defineEmits(["expand", "invite"]);
