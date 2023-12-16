@@ -83,7 +83,7 @@ const getAchievements = async () => {
 
     getAchievementReads(true);
 
-    return data.filter(({ type, team, profile }) => {
+    return [...(data ?? [])].filter(({ type, team, profile }) => {
         if (type !== "team_request") return true;
         // ensure we don't see team requests sent to another person
         return profile.id === userId.value;
