@@ -4,9 +4,11 @@
         <div class="pre-game__wrap">
             <div class="column team-container home">
                 <h2
-                    class="text-lg text-center text-bold text-uppercase q-pb-sm text-italic team-name home"
+                    class="text-lg  text-bold text-uppercase q-pb-sm text-italic team-name home"
                 >
+                <div>
                     {{ modelValue.home.name }}
+                </div>
                 </h2>
                 <div class="avatar-container home">
                     <TeamAvatar
@@ -58,7 +60,9 @@
                 <h2
                     class="text-lg text-right text-bold text-uppercase q-pt-sm text-italic team-name away"
                 >
+                <div>
                     {{ modelValue.away.name }}
+                </div>
                 </h2>
             </div>
         </div>
@@ -156,6 +160,29 @@
                     }
                 }
             }
+        }
+    }
+    .team-container {
+        position: relative;
+        .team-name {
+            height: var(--text-lg);
+            box-sizing: content-box;
+            &.home {
+                >div {
+                    left: 0;
+                }
+            }
+            &.away {
+                >div {
+                    right: 0;
+                }
+            }
+            >div {
+            position: absolute;
+            width: 100vw;
+
+            }
+            
         }
     }
 }
