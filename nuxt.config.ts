@@ -21,6 +21,9 @@ export default defineNuxtConfig({
             // ]
         },
     },
+    meta: {
+        title: 'Pebble'
+    },
     dayjs: {
         locales: ["en"],
         plugins: ["relativeTime", "timezone", "utc", 'customParseFormat'],
