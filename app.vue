@@ -24,11 +24,9 @@ import { PUBLIC_ROUTES } from "@/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 
-    const route = useRoute();
-useMeta({
-        title: `Pebble`
-    })
-
+useHead({
+    title: `Pebble`
+})
 const setVh = () => {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -40,7 +38,7 @@ onMounted(async () => {
 });
 
 onBeforeMount(async () => {
-
+    const route = useRoute();
     const user = useSupabaseUser();
     if (
         !PUBLIC_ROUTES.includes(route.fullPath) &&
