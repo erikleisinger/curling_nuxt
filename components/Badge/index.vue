@@ -12,8 +12,13 @@
         <div class="text-sm badge-description">
             {{ BADGE_DESCRIPTIONS[badge.name] }}
         </div>
+        <div class="row no-wrap justify-end">
+            <div class="avatar-container" v-if="showTeam">
+            <TeamAvatar :teamId="badge.team_id" v-if="badge.team_id"/>
+            </div>
         <div class="text-xs text-right">
             {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
+        </div>
         </div>
     </div>
 </template>
@@ -35,6 +40,10 @@
     .badge-description {
         min-height: 2em;
     }
+    .avatar-container {
+        width: 1em;
+        margin-right: var(--space-xs);
+    }
 
 }
 </style>
@@ -42,6 +51,7 @@
 import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 const props = defineProps({
     badge: Object,
+    showTeam: Boolean,
     width: {
         type: String,
         default: '150px'

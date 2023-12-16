@@ -7,10 +7,10 @@
             {{additionalNumber}}
         </div>
         <div
-            class="badge__container column no-wrap flex-shrink"
+            class="badge-icon__container column no-wrap flex-shrink"
             :class="`${BADGE_BACKGROUNDS[badge]}`"
         >
-            <div style="height: 100%" class="badge__container--inner">
+            <div style="height: 100%" class="badge-icon__container--inner">
                 <svg
                     v-if="badge === 'bandit'"
                     xmlns="http://www.w3.org/2000/svg"
@@ -384,7 +384,7 @@ $icon-height: 4em;
 
         width: calc(100% - 6px);
     }
-    .badge__container {
+    .badge-icon__container {
         height: v-bind(height);
         border-radius: 32px;
         aspect-ratio: 1/1;
@@ -399,7 +399,7 @@ $icon-height: 4em;
         svg {
             fill: white;
         }
-        .badge__container--inner {
+        .badge-icon__container--inner {
             padding: v-bind(padding);
             border-radius: inherit;
             border: 1px solid rgba(0, 0, 0, 0.1);

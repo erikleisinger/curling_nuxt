@@ -1,10 +1,14 @@
 <template>
     <NuxtLayout>
+        <div class="edit-container--floating" v-if="canEdit">
+            <q-btn flat round icon="edit" @click="editing = true"/>
+        </div>
+        
         <header class="player-page__header column justify-center items-center">
             <div class="player-avatar__wrap">
                 <Avataaar v-bind="player.avatar" v-if="!isLoading" />
             </div>
-            <h2 class="text-lg text-bold">
+            <h2 class="text-lg text-bold text-center">
                 {{ player.first_name }} {{ player.last_name }}
             </h2>
             <h3 class="text-sm">@{{ player.username }}</h3>
@@ -27,19 +31,31 @@
                 </div>
             </section>
             <section
-               class="player-badges--section"  
-              :class="{ 'col-6': !$q.screen.xs }"
+                class="player-badges--section"
+                :class="{ 'col-6': !$q.screen.xs }"
             >
-              
-                    <Badge :badge="badge" v-for="badge in badges" :key="badge.id" />
-             
-               
-              
+                <Badge
+                    :badge="badge"
+                    v-for="badge in badges"
+                    :key="badge.id"
+                    :showTeam="true"
+                />
             </section>
         </main>
+         <q-dialog v-model="editing" persistent  >
+        <q-card >
+          <AvataaarGenerator role="main" v-model="player.avatar"  @close="editing = false"/>
+        </q-card>
+    </q-dialog>
     </NuxtLayout>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
+.edit-container--floating {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: var(--space-sm);
+}
 .player-page__header {
     .player-avatar__wrap {
         width: min(250px, 50vw);
@@ -55,37 +71,36 @@
     }
     margin-top: var(--space-md);
     .player-teams--section,
-    .player-badges--section
-     {
+    .player-badges--section {
         display: flex;
         flex-wrap: nowrap;
         max-width: 100%;
         @include sm {
             max-width: 50%;
-           
+
             flex-wrap: wrap;
         }
         overflow: auto;
 
         box-sizing: border-box;
         flex-grow: 1;
-       
     }
     .player-teams--section {
         @include sm {
-             margin-left: var(--space-sm);
+            margin-left: var(--space-sm);
         }
-      .player-team__container {
+        .player-team__container {
             width: min-content;
             padding: var(--space-sm);
             cursor: pointer;
         }
-      
-
     }
-    .player-badges--section {
-         @include sm {
-             margin-right: var(--space-sm);
+    :deep(.player-badges--section) {
+        @include sm {
+            margin-right: var(--space-sm);
+        }
+        .badge__container {
+            margin-right: var(--space-sm);
         }
     }
 }
@@ -94,6 +109,7 @@
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
 import Team from "@/store/models/team";
+import {useUserStore} from '@/store/user'
 import { useQuery } from "@tanstack/vue-query";
 
 const route = useRoute();
@@ -174,11 +190,18 @@ const getBadges = async () => {
     return data;
 };
 
+const badgesEnabled = computed(() => !!teams.value.length)
+
 const { isLoading: isLoadingBadges, data: badges } = useQuery({
     queryKey: ["player", "team", "badges", route.params.id],
     queryFn: getBadges,
-    enabled: !!teams.value.length,
+    enabled: badgesEnabled,
 });
+
+
+
+const canEdit = computed(() => useUserStore().id === route.params.id)
+const editing = ref(false);
 </script>
 <script>
 export default {

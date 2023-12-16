@@ -115,7 +115,7 @@
                     >
                 </q-btn>
 
-                <div class="profile-avatar--container"  @click="goTo('/profile')">
+                <div class="profile-avatar--container"  @click="goTo(`/player/${userId}`)">
                 <Avataaar v-bind="avatar"/>
                 </div>
             </q-toolbar>

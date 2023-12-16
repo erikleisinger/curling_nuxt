@@ -4,6 +4,27 @@
             class="row justify-center items-center avatar__container col-12 col-sm-6"
             ref="avatarContainer"
         >
+         <div class="col-12 row justify-between toolbar">
+               <q-btn
+              
+                    @click="emit('close')"
+                    :disable="readOnly || saving"
+                    flat
+                    round
+                    icon="west"
+                    />
+         <q-btn
+               
+                    @click="handleSave"
+                    :disable="readOnly || saving"
+                    color="positive"
+                    :loading="saving"
+                    flat
+                    round
+                    icon="check"
+                    />
+                
+         </div>
             <div class="avatar__wrap">
                 <Avataaar
                     v-if="!loading"
@@ -128,29 +149,14 @@
                 >
                 
        </div>
-         <div class="col-12 row justify-between">
-               <q-btn
-                class="col-grow q-ma-sm q-mb-md"
-                    @click="emit('close')"
-                    :disable="readOnly || saving"
-                    
-                    >Discard</q-btn
-                >
-         <q-btn
-                class="col-grow q-ma-sm q-mb-md"
-                    @click="handleSave"
-                    :disable="readOnly || saving"
-                    color="positive"
-                    :loading="saving"
-                    >Save</q-btn
-                >
-         </div>
+        
 
 </div>
 </template>
 <style lang="scss" scoped>
 .profile__generator--wrap {
     height: inherit;
+    position: relative;
     .avatar__container {
         padding: var(--space-xl);
         padding-bottom: var(--space-xs);
@@ -170,6 +176,12 @@
 .avatar__wrap {
     width: min(275px, 50vw);
 }
+    }
+    .toolbar {
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        padding: var(--space-sm)
     }
 }
 
