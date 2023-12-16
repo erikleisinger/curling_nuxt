@@ -143,8 +143,10 @@ const teams = computed(() =>
         .with("team")
         .where("player_id", route.params.id)
         .get()
-        .map(({ team }) => team)
+        .map(({ team }) => team).sort((a,b) => sortAlphabetically(b.name, a.name))
 );
+
+const {sortAlphabetically} = useSort()
 
 const getPlayerTeams = async () => {
     const { data } = await client
@@ -169,7 +171,7 @@ const getPlayerTeams = async () => {
             player_id: route.params.id,
         }))
     );
-    return teams;
+    return teams
 };
 
 const { isLoading: isLoadingTeams } = useQuery({
@@ -179,6 +181,7 @@ const { isLoading: isLoadingTeams } = useQuery({
 
 //BADGES
 
+const dayjs = useDayjs();
 const getBadges = async () => {
     const { data } = await client
         .from("badges")
@@ -187,7 +190,7 @@ const getBadges = async () => {
             "team_id",
             teams.value.map(({ id }) => id)
         );
-    return data;
+    return data.sort((a,b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
 };
 
 const badgesEnabled = computed(() => !!teams.value.length)
