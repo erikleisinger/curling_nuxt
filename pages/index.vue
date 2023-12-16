@@ -1,5 +1,5 @@
 <template>
     <NuxtLayout>
-        <div>Home page</div>
+        <AreaTeams/>
     </NuxtLayout>
 </template>
