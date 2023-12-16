@@ -231,9 +231,7 @@ watch(hovered, (val) => {
 
 const clickAvatar = () => {
     if (!props.viewable && !props.invitable && !props.editable) return;
-    if (!visible.value && $q.screen.xs) {
-        visible.value = true;
-    } else if (props.viewable) {
+    if (props.viewable) {
         return navigateTo(`/teams/${props.teamId}`);
     } else if (props.invitable) {
         emit("invite");

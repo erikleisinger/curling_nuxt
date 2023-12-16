@@ -8,10 +8,6 @@
 import { useQuery} from '@tanstack/vue-query'
 import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
 
-useMeta({
-        title: `Pebble - TEAM`
-    })
-
 const route = useRoute();
 
 const {isLoading} = useQuery({

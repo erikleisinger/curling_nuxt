@@ -147,7 +147,7 @@
                                 userTeamStore.userTeams.map(({ id }) => id)
                             "
                             :filterIds="[selections.away?.id]"
-                            :viewable="summary"
+                            :viewable="summary && canViewTeams"
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select your team
@@ -221,6 +221,7 @@
                             "
                             :showNames="summary"
                             :filterIds="[selections.home?.id]"
+                            :viewable="canViewTeams && summary && selections.away?.id && selections?.away?.id < 100000000"
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select opposition
@@ -461,6 +462,7 @@ gsap.registerPlugin(Flip);
 const props = defineProps({
     canEdit: Boolean,
     canEditDetails: Boolean,
+    canViewTeams: Boolean,
     compact: Boolean,
     modelValue: Object,
     score: Object,
