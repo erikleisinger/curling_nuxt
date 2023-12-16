@@ -143,7 +143,7 @@ const teams = computed(() =>
         .with("team")
         .where("player_id", route.params.id)
         .get()
-        .map(({ team }) => team).sort((a,b) => sortAlphabetically(b.name, a.name))
+        .map(({ team }) => team).sort((a,b) => sortAlphabetically(a.name, b.name))
 );
 
 const {sortAlphabetically} = useSort()

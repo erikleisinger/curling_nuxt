@@ -17,7 +17,7 @@
             static
             @update:modelValue="onUpdate"
             canViewTeams
-        />
+    />
         <TeamStatsView
             v-if="!isLoadingGames && !loading && !!currentGame"
             :teamId="home.id"
