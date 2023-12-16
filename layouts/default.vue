@@ -66,6 +66,7 @@
                     icon="home"
                     @click="goTo('/')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
+                    :disable="true"
                 />
                 <q-btn
                     flat
