@@ -2,8 +2,7 @@
     <div class="badge__container">
         <div class="row no-wrap items-center q-mb-sm">
             <div class="relative-position">
-            <BadgeIcon height="2em" class="q-mr-sm" :badge="badge.name" />
-
+                <BadgeIcon height="2em" class="q-mr-sm" :badge="badge.name" />
             </div>
             <div>
                 <h2 class="text-sm text-bold">{{ BADGE_NAMES[badge.name] }}</h2>
@@ -13,12 +12,33 @@
             {{ BADGE_DESCRIPTIONS[badge.name] }}
         </div>
         <div class="row no-wrap justify-end">
-            <div class="avatar-container" v-if="showTeam">
-            <TeamAvatar :teamId="badge.team_id" v-if="badge.team_id"/>
+            <div
+                    v-if="typeof badge.team_id === 'object'"
+                    class="row flex-grow-1 h-100"
+                   
+                >
+                <div
+                  v-for="teamId in badge.team_id"
+                        :key="teamId"
+                        class="avatar-container">
+                    <TeamAvatar
+                       
+                        :teamId="teamId"
+                        viewable
+                    />
+                </div>
+                </div>
+            <div class="avatar-container" v-else-if="showTeam && !!badge.team_id" >
+                
+                <TeamAvatar
+                    :teamId="badge.team_id"
+                    viewable
+                    
+                />
             </div>
-        <div class="text-xs text-right">
-            {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
-        </div>
+            <div class="text-xs text-right">
+                {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
+            </div>
         </div>
     </div>
 </template>
@@ -35,7 +55,7 @@
     box-sizing: border-box;
     @include sm {
         max-width: v-bind(badgeWidth);
-    min-width: v-bind(badgeWidth);
+        min-width: v-bind(badgeWidth);
     }
     .badge-description {
         min-height: 2em;
@@ -44,7 +64,6 @@
         width: 1em;
         margin-right: var(--space-xs);
     }
-
 }
 </style>
 <script setup>
@@ -54,11 +73,11 @@ const props = defineProps({
     showTeam: Boolean,
     width: {
         type: String,
-        default: '150px'
-    }
+        default: "150px",
+    },
 });
 
-const badgeWidth = computed(() => `min(50%, ${props.width})`)
+const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
 const { toTimezone } = useTime();
 </script>

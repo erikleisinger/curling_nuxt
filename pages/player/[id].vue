@@ -182,6 +182,7 @@ const { isLoading: isLoadingTeams } = useQuery({
 //BADGES
 
 const dayjs = useDayjs();
+const {toTimezone} = useTime()
 const getBadges = async () => {
     const { data } = await client
         .from("badges")
@@ -190,7 +191,26 @@ const getBadges = async () => {
             "team_id",
             teams.value.map(({ id }) => id)
         );
-    return data.sort((a,b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
+    const e = data
+    .reduce((all, current) => {
+        const duplicate = all.find(({name}) => name === current.name)
+       
+        if (duplicate) {
+             const {team_id, created_at} = duplicate;
+            return [
+                ...all.filter(({name}) => name !== current.name), 
+                {
+                    ...current,
+                    team_id: [...(typeof current.team_id === 'object' ? current.team_id : [current.team_id]), team_id],
+                    created_at: toTimezone(current.created_at, null, false, true).unix() > toTimezone(created_at, null, false, true).unix() ? current.created_at : created_at
+                }
+            ]
+
+        }
+        return [...all, current];
+    }, [])
+    .sort((a,b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
+    return e;
 };
 
 const badgesEnabled = computed(() => !!teams.value.length)
