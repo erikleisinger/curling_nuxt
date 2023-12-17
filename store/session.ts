@@ -20,6 +20,7 @@ export const useSessionStore = defineStore("session", {
             {} as GamePlayerJunction
         ),
         loading: false,
+        pageLoading: false,
         promptScore: false,
         shot: 1,
         shots: useStorage("shots", [] as Shot[]),
@@ -487,6 +488,9 @@ export const useSessionStore = defineStore("session", {
         },
         setLoading(bool: boolean) {
             this.loading = bool;
+        },
+        setPageLoading(bool: boolean) {
+            this.pageLoading = bool;
         },
         async updateScore(
             points_scored: number,

@@ -2,6 +2,9 @@
     <NuxtPage />
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
+    <!-- <div v-if="!globalLoading && pageLoading" class="page-load__wrap">
+    Loading
+</div> -->
 </template>
 <style lang="scss">
 #__nuxt {
@@ -17,11 +20,26 @@
         }
     }
 }
+
+.page-load__wrap {
+    position: fixed;
+    height: calc(100 * var(--vh, 1vh));
+    width: 100vw;
+    background-color: rgba(0,0,0,0.5);
+    top: 0;
+    z-index: 3000;
+}
 </style>
 <script setup lang="ts">
 import { PUBLIC_ROUTES } from "@/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
+import {useSessionStore} from '@/store/session'
+
+const sessionStore = useSessionStore();
+
+const pageLoading = computed(() => sessionStore.pageLoading);
+const globalLoading = computed(() => sessionStore.loading)
 
 useHead({
     title: `Pebble`
@@ -32,7 +50,7 @@ const setVh = () => {
     document.documentElement.style.setProperty("--vh", `${vh}px`);
 };
 
-onMounted(async () => {
+onBeforeMount(async () => {
     setVh();
     useEventListener(window, "resize", setVh);
 });

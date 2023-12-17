@@ -1,11 +1,6 @@
 <template>
     <div>
-        <h1
-            class="text-md text-bold row justify-between items-center notifications__header"
-        >
-            Notifications
-        </h1>
-        <q-separator />
+
         <div v-for="(a, index) in achievements" :key="a.id">
             <AchievementHistoryItem
                 :item="a"
@@ -16,11 +11,7 @@
         </div>
     </div>
 </template>
-<style lang="scss" scoped>
-.notifications__header {
-    padding: var(--space-sm);
-}
-</style>
+
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQuery } from "@tanstack/vue-query";

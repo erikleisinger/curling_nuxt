@@ -84,7 +84,8 @@ const teams = computed(() =>
         .get()
 );
 
-/**
- * element height calculations
- */
+setTimeout(() => {
+    const {setPageLoading} = useLoading();
+    setPageLoading(false)
+}, 500)
 </script>

@@ -174,7 +174,7 @@ const getPlayerTeams = async () => {
     return teams
 };
 
-const { isLoading: isLoadingTeams } = useQuery({
+const { isLoading: isLoadingTeams, isSuccess: teamsDone } = useQuery({
     queryKey: ["player", "teams", route.params.id],
     queryFn: getPlayerTeams,
 });
@@ -215,11 +215,19 @@ const getBadges = async () => {
 
 const badgesEnabled = computed(() => !!teams.value.length)
 
-const { isLoading: isLoadingBadges, data: badges } = useQuery({
+const { isLoading: isLoadingBadges, data: badges, isSuccess: badgesDone } = useQuery({
     queryKey: ["player", "team", "badges", route.params.id],
     queryFn: getBadges,
     enabled: badgesEnabled,
 });
+
+const pageLoaded = computed(() => !!badgesDone.value && !!teamsDone.value)
+
+watch(pageLoaded, (val) => {
+    if (!val) return;
+    const {setPageLoading} = useLoading();
+    setPageLoading(false)
+}, {immediate: true})
 
 
 

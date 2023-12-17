@@ -1,63 +1,28 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
     <q-layout view="hhh lpr fff" v-else class="app-layout">
-        <q-drawer v-model="leftDrawerOpen" side="left" behavior="mobile">
-            <q-list>
-                <q-item clickable v-ripple color="primary" to="/">
-                    <q-item-section
-                        avatar
-                        class="row justify-center items-center"
-                    >
-                        <q-icon name="home" size="1.5em" class="q-mb-xs" />
-                    </q-item-section>
-                    <q-item-section>Home</q-item-section>
-                </q-item>
-                <q-item
-                    clickable
-                    v-ripple
-                    color="primary"
-                    @click="toggleSearch"
-                >
-                    <q-item-section
-                        avatar
-                        class="row justify-center items-center"
-                    >
-                        <q-icon name="search" size="1.5em" class="q-mb-xs" />
-                    </q-item-section>
-                    <q-item-section class="justify-center"
-                        >Search</q-item-section
-                    >
-                </q-item>
-
-                <q-item clickable v-ripple color="primary" to="/profile">
-                    <q-item-section
-                        avatar
-                        class="row justify-center items-center"
-                    >
-                        <q-icon name="person" size="1.5em" class="q-mb-xs" />
-                    </q-item-section>
-                    <q-item-section>My profile</q-item-section>
-                </q-item>
-                <q-item clickable v-ripple color="primary" @click="logout">
-                    <q-item-section
-                        avatar
-                        class="row justify-center items-center"
-                    >
-                        <q-icon name="logout" size="1.5em" class="q-mb-xs" />
-                    </q-item-section>
-                    <q-item-section>Logout</q-item-section>
-                </q-item>
-            </q-list>
-        </q-drawer>
         <q-page-container class="page__container--global">
-            <AchievementHistory
-                v-show="notificationsOpen"
-                :open="notificationsOpen"
-                v-model="unreadNotificationCount"
-            />
-            <div v-if="notificationsOpen" />
+         
+               <DialogPopup  :open="notificationsOpen">
+                <template v-slot:header>
+                            <h1
+            class="text-md text-bold row justify-between items-center "
+        >
+            Notifications
+        </h1>
+      
+                </template>
+                <AchievementHistory
+                   
+                    :open="notificationsOpen"
+                    v-model="unreadNotificationCount"
+                />
+               </DialogPopup>
+         
+                 <slot  />
+       
+            
 
-            <slot v-else />
         </q-page-container>
         <q-footer bordered class="bg-white text-black row justify-between">
             <q-toolbar class="global-footer row justify-between">
@@ -116,8 +81,11 @@
                     >
                 </q-btn>
 
-                <div class="profile-avatar--container"  @click="goTo(`/player/${userId}`)">
-                <Avataaar v-bind="avatar"/>
+                <div
+                    class="profile-avatar--container"
+                    @click="goTo(`/player/${userId}`)"
+                >
+                    <Avataaar v-bind="avatar" />
                 </div>
             </q-toolbar>
         </q-footer>
@@ -136,18 +104,17 @@ $footer-height-sm: 4em;
     height: min(100vh, 600px);
 }
 .profile-avatar--container {
-        cursor: pointer;
-        width: 25px;
-        margin-right: auto;
-        margin-left: auto;
-        transition: transform 0.2s;
-        @include sm {
-            width: 40px;
-
-        }
-        &:hover {
-            transform: scale(1.1)
-        }
+    cursor: pointer;
+    width: 25px;
+    margin-right: auto;
+    margin-left: auto;
+    transition: transform 0.2s;
+    @include sm {
+        width: 40px;
+    }
+    &:hover {
+        transform: scale(1.1);
+    }
 }
 .app-layout {
     display: flex;
@@ -263,7 +230,7 @@ import { onClickOutside, useEventListener, useThrottleFn } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useGameRequestStore } from "@/store/game-requests";
-import Player from '@/store/models/player'
+import Player from "@/store/models/player";
 
 const { globalLoading } = useLoading();
 const leftDrawerOpen = ref(false);
@@ -293,9 +260,11 @@ const goTo = (view) => {
     notificationsOpen.value = false;
     navigateTo(`${view}`);
 };
-const {user: userId} = useUser()
+const { user: userId } = useUser();
 
-const avatar = computed(() => useRepo(Player).where('id', userId.value).first()?.avatar ?? {})
+const avatar = computed(
+    () => useRepo(Player).where("id", userId.value).first()?.avatar ?? {}
+);
 
 const toggleSearch = () => {
     toggleGlobalSearch({
@@ -319,30 +288,27 @@ const onSelect = (selection) => {
 
 const unreadNotificationCount = ref(0);
 
-useEventListener(
-    window,
-    "popstate",
-    () => {
-        if (notificationsOpen.value) {
-            notificationsOpen.value = false;
-        } 
+useEventListener(window, "popstate", () => {
+    if (notificationsOpen.value) {
+        notificationsOpen.value = false;
     }
-);
- const route = useRoute()
+});
+const route = useRoute();
 const toggleNotifications = () => {
     notificationsOpen.value = !notificationsOpen.value;
     if (notificationsOpen.value) {
         navigateTo("#notifications");
     } else {
-       
-        navigateTo(route.path, {replace: true});
+        navigateTo(route.path, { replace: true });
     }
 };
 
-
-watch(() => route.hash, (val, oldVal) => {
-    if (!oldVal || oldVal !== '#notifications') return;
-    notificationsOpen.value = false;
-
-}, {deep: true})
+watch(
+    () => route.hash,
+    (val, oldVal) => {
+        if (!oldVal || oldVal !== "#notifications") return;
+        notificationsOpen.value = false;
+    },
+    { deep: true }
+);
 </script>
