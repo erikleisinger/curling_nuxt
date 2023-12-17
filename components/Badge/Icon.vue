@@ -352,6 +352,7 @@
 $icon-height: 4em;
 .badge__content--container {
     position: relative;
+      width: min-content;
         .badge--additional {
         position: absolute;
         bottom:0;
@@ -370,6 +371,7 @@ $icon-height: 4em;
         font-weight: bold;
         color: white;
         font-size: v-bind(additionalFontDimension);
+      
     }
     .badge-overlay--container {
         position: absolute;

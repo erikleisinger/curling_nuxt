@@ -221,7 +221,8 @@
         right: 0;
     }
     .socials-container {
-        gap: var(--space-sm)
+        gap: var(--space-sm);
+        margin-top: var(--space-xs)
     }
 }
 .team-players__section {
