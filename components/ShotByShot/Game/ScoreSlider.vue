@@ -62,7 +62,7 @@
             }"
             style="transition: all 0.2s; overflow: auto"
         >
-            <InputScore />
+            <ShotByShotInputScore />
         </div>
     </div>
 </template>

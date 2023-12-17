@@ -60,7 +60,7 @@
             </div>
         </q-item-section>
         <q-item-section>
-            <span style="word-break: break-all">
+            <span >
                 <strong>{{ getProfileName(item.profile) }}</strong>
 
                 {{ item.name === "joined_team" ? "joined" : "left" }}
@@ -170,7 +170,7 @@
             </div>
         </q-item-section>
         <q-item-section>
-            <span style="word-break: break-all">
+            <span>
                 You were invited to join
 
                 <strong>{{ item.team.name }}</strong>
@@ -200,7 +200,7 @@
         </q-item-section>
         <q-item-section>
             <span>
-                <strong style="word-break: break-all">{{
+                <strong >{{
                     item.info.requester_name
                 }}</strong>
                 asked you to verify a game

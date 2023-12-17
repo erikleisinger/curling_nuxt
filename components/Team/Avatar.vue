@@ -156,7 +156,6 @@
 }
 </style>
 <script setup>
-import { useStorageStore } from "@/store/storage";
 import { onClickOutside, useElementHover, useImage } from "@vueuse/core";
 import { useQuery} from '@tanstack/vue-query'
 
@@ -197,7 +196,6 @@ const enabled = computed(
     () => team.value.avatar_type === "upload" && !!team.value.avatar_url
 );
 
-const storage = useStorageStore();
 
 const $q = useQuasar();
 

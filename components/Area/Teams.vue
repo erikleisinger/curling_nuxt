@@ -1,20 +1,12 @@
 <template>
-
     <div class="season__wrap">
-        <aside v-if="teamRequests && teamRequests.length">
-            <div v-for="request in teamRequests" :key="request.id">
-                <TeamRequest :request="request" viewable/>
-                <q-separator />
-            </div>
-        </aside>
-
         <header class="season__header row justify-between no-wrap align-center">
-            <h1 class="text-md text-bold  row justify-between items-center">
-            My teams
-        </h1>
-        <q-btn flat round icon="add" dense @click="newTeamOpen = true"/>
+            <h1 class="text-md text-bold row justify-between items-center">
+                My teams
+            </h1>
+            <q-btn flat round icon="add" dense @click="newTeamOpen = true" />
         </header>
-           <q-separator/>
+        <q-separator />
         <main class="season-content__container">
             <div style="height: 100%">
                 <div
@@ -30,25 +22,20 @@
                         <template v-slot:append> </template>
                     </ProfileCard>
                 </div>
-
             </div>
         </main>
     </div>
-      <q-dialog v-model="newTeamOpen" persistent  >
+    <q-dialog v-model="newTeamOpen" persistent>
         <q-card class="team-details__viewer">
-          <TeamPageDetails
-        @back="newTeamOpen = false"
-   
-       
-    />
+            <TeamPageDetails @back="newTeamOpen = false" />
         </q-card>
     </q-dialog>
 </template>
 <style lang="scss" scoped>
 $col-width: 80px;
 .team-details__viewer {
-     width: min(100vw, 500px); 
-        height: min(100vh, 600px);
+    width: min(100vw, 500px);
+    height: min(100vh, 600px);
 }
 .season__wrap {
     height: 100%;
@@ -57,8 +44,6 @@ $col-width: 80px;
         padding: var(--space-sm);
     }
     .season-content__container {
-        min-height: v-bind(mainHeight);
-        height: v-bind(mainHeight);
         overflow: hidden;
         position: relative;
         max-width: 100%;
@@ -77,19 +62,15 @@ $col-width: 80px;
 }
 </style>
 <script setup>
-import { useDialogStore } from "@/store/dialog";
-import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
-import { useElementBounding } from "@vueuse/core";
 import Team from "@/store/models/team";
 import { useQuery } from "@tanstack/vue-query";
-// import GET_LATEST_RESULT from "@/queries/get_latest_result";
 
 const $q = useQuasar();
 
 const userTeamStore = useUserTeamStore();
 
-const newTeamOpen = ref(false)
+const newTeamOpen = ref(false);
 
 /**
  * teams
@@ -106,26 +87,4 @@ const teams = computed(() =>
 /**
  * element height calculations
  */
-
-const header = ref(null);
-const { height: headerHeight } = useElementBounding(header);
-const mainHeight = computed(() => `calc(100% - ${headerHeight.value + 50}px)`);
-
-/**
- * BEGIN utility
- */
-
-const { toggleGlobalSearch, toggleTeamViewer } = useDialogStore();
-
-const latestResult = computed(() => null);
-
-// const { isLoading, isError } = useQuery({
-//     queryKey: ["latestResult"],
-//     queryFn: GET_LATEST_RESULT,
-//     refetchOnWindowFocus: false,
-// });
-
-const teamRequests = computed(() => useTeamRequestStore().requests);
-
-
 </script>

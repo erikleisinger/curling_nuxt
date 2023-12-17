@@ -30,12 +30,6 @@
                 column: scoreboardView,
             }"
         >
-            <!-- <div
-                class="end-count__container"
-                v-if="!hideValues.includes('score')"
-            >
-                {{ `After ${endCount}` }}
-            </div> -->
             <Teleport to=".avatar-home__wrap">
             <div
                 class="column team__header items-center no-wrap"

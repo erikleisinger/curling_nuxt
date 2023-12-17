@@ -3,25 +3,25 @@
         <section class="row justify-start items-center score__container">
             <div class="column col-12 no-wrap input__section">
                 <label class="type__label">Turn</label>
-                <SelectTurn class="justify-around" v-model="editedShot.turn" />
+                <ShotByShotSelectTurn class="justify-around" v-model="editedShot.turn" />
             </div>
             <div class="column col-12 no-wrap input__section">
                 <label class="type__label">Type</label>
                 <div class="row justify-around items-center">
-                    <SelectShotType v-model="editedShot.type_id" />
+                    <ShotByShotSelectShotType v-model="editedShot.type_id" />
                 </div>
             </div>
 
             <div class="column col-12 no-wrap input__section score" >
                 <label class="type__label">Score </label>
-                <InputShotScore v-model="editedShot.score" class="justify-around" />
+                <ShotByShotInputShotScore v-model="editedShot.score" class="justify-around" />
             </div>
         </section>
         <section class="row justify-start items-start line">
             <div class="column col-12 no-wrap input__section">
                 <label class="type__label">Line</label>
                 <div class="row justify-around col-grow items-center">
-                    <SelectLine v-model="editedShot.line" />
+                    <ShotByShotSelectLine v-model="editedShot.line" />
                 </div>
             </div>
              <div class="column col-12 no-wrap input__section">

@@ -15,7 +15,7 @@
             :style="`position:relative; width: 100%; margin-bottom: 7em`"
             class="col-grow curling-rings__wrap"
         >
-            <RockController>
+            <ShotByShotRockController>
                 <template v-slot:buttons>
                     <q-btn round  color="white" @click="endOfEndDialog = true">
 
@@ -26,9 +26,9 @@
                         <q-icon name="leaderboard" color="primary"/>
                     </q-btn>
                 </template>
-            </RockController>
+            </ShotByShotRockController>
         </div>
-        <GameScoreSlider
+        <ShotByShotGameScoreSlider
             :onNext="() => goNext(false)"
             :onBack="() => goPrev(false)"
             @navigate="dialogNavigationOpen = true"
@@ -45,9 +45,9 @@
         >
             Save changes?
         </DialogConfirmation>
-    <DialogGameStats v-if="gameStatsDialog" @close="gameStatsDialog = false" :gameId="store.game.id"/>
-    <DialogEnd v-if="endOfEndDialog" @close="endOfEndDialog = false" @save="goNext(true)"/>
-    <DialogNavigation
+    <ShotByShotDialogGameStats v-if="gameStatsDialog" @close="gameStatsDialog = false" :gameId="store.game.id"/>
+    <ShotByShotDialogEnd v-if="endOfEndDialog" @close="endOfEndDialog = false" @save="goNext(true)"/>
+    <ShotByShotDialogNavigation
         v-model="dialogNavigationOpen"
         @go="goToCustomShot"
         @cancel="dialogNavigationOpen = false"

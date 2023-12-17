@@ -93,7 +93,7 @@
        </div>
         </div>
         <div style="position: relative" class="col-grow">
-            <GameRings ref="rink" :rotated="rotated">
+            <ShotByShotGameRings ref="rink" :rotated="rotated">
               
                      <div
                     style="
@@ -121,7 +121,7 @@
                     :showNumbers="showNumbers"
                     :rotated="rotated"
                 />
-            </GameRings>
+            </ShotByShotGameRings>
         </div>
         <div
             class="row justify-between"

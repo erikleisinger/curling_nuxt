@@ -41,28 +41,7 @@
             </aside>
            
             <header class="row justify-center col-12">
-                <!-- <div class="compare__container">
-                    <q-btn
-                        flat
-                        round
-                        icon="compare_arrows"
-                        color="grey-8"
-                        v-if="!comparisonTeam"
-                        :label="$q.screen.xs ? '' : 'Team comparison'"
-                        @click="
-                            toggleGlobalSearch({
-                                open: true,
-                                options: {
-                                    inputLabel: 'Search for a team to compare',
-                                    resourceTypes: ['team'],
-                                    callback: onSelect,
-                                    filterIds: [teamId],
-                                },
-                            })
-                        "
-                    >
-                    </q-btn>
-                </div> -->
+
                 <div
                     class="full-width row justify-center team-view-options__container"
                     v-if="!!comparisonTeam"
@@ -313,7 +292,6 @@
 $avatar-dimension: 7em;
 
 .overview__container {
-    // padding: var(--space-md);
     padding-top: 0px;
     width: 100%;
     height: fit-content;

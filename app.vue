@@ -1,7 +1,6 @@
 <template>
     <NuxtPage />
     <NotificationHandler />
-    <DialogTeamViewer v-if="isTeamViewerOpen" />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
 </template>
 <style lang="scss">
@@ -59,6 +58,5 @@ client.auth.onAuthStateChange((_, _session) => {
     }
 });
 const dialogStore = useDialogStore();
-const isTeamViewerOpen = computed(() => dialogStore.teamViewer.open);
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 </script>
