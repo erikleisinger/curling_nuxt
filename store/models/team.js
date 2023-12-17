@@ -34,6 +34,9 @@ export default class Team extends Model {
             rink_id: this.number(),
             stats: this.hasMany(TeamStats, 'team_id'),
             totalStats: this.hasOne(TeamStatsTotal, 'team_id'),
+            facebook: this.string(),
+            instagram: this.string(),
+            twitter: this.string()
         }
        
     }

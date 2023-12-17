@@ -2,10 +2,10 @@
     <div class="popup-container">
         <div class="popup-container--header">
             <div class="popup-container--header-content">
-            <slot name="header" />
+                <slot name="header" />
             </div>
         </div>
-          <q-separator />
+        <q-separator />
         <div class="popup-container--slot-content">
             <slot />
         </div>
@@ -59,13 +59,10 @@ const onOpen = () => {
         }
     );
 
-  
     tl.from(".popup-container--slot-content", {
         opacity: 0,
         duration: 0.1,
-
     });
-
 };
 const onClose = () => {
     gsap.to(".popup-container", {

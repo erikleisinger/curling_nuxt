@@ -28,36 +28,6 @@ export const findTeamPosition = (position: TeamPosition, team: Team) => {
     return newPosition;
 };
 
-export const createTeam = async (
-    team: SelectOption,
-    client: SupabaseClient
-) => {
-    const { label } = team;
-    const { data, error } = await client
-        .from(TABLE_NAMES.TEAMS)
-        .insert({
-            name: label,
-        })
-        .select(
-            "id, name, lead_player_id, second_player_id, third_player_id, fourth_player_id, fifth_player_id, sixth_player_id, seventh_player_id"
-        );
-    if (error)
-        throw new DatabaseError({
-            name: ErrorName.INSERT_ERROR,
-            message: `Error creating team '${label}'`,
-            cause: error,
-            table: TABLE_NAMES.TEAMS,
-            fatal: true,
-        });
-    const [newTeam] = data || [];
-    if (!newTeam?.id)
-        throw new ValidationError({
-            name: ErrorName.VALIDATION_FAILED,
-            message: `Error creating team '${label}': received no confirmation from database`,
-            fatal: true,
-        });
-    return newTeam;
-};
 
 export const insertPlayerIntoTeam = async (
     playerId: number,

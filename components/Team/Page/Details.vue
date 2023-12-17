@@ -3,7 +3,10 @@
         <div class="close-button__container">
             <q-btn flat round icon="close" @click="onBackClick" />
         </div>
-        <div class="edit-button__container" v-if="isOnTeam(props.teamId) || !props.teamId">
+        <div
+            class="edit-button__container"
+            v-if="isOnTeam(props.teamId) || !props.teamId"
+        >
             <q-btn
                 flat
                 round
@@ -24,10 +27,70 @@
         <h2 class="team-name text-center" v-if="!editing && props.teamId">
             {{ team.name }}
         </h2>
-        <q-input dense v-else v-model="editedValues.name" label="Team name" :maxlength="MAX_TEAM_NAME_LENGTH" :rules="[VALIDATION_RULES.REQUIRED]" />
-        <h3 class="rink-name" v-if="team.rink_id || !editing">{{selectedRink.name}} </h3>
-        <q-input dense v-else readonly  @click="openRinkSearch" :model-value="selectedRink.name" label="Home rink"/>
-        
+        <q-input
+            dense
+            v-else
+            v-model="editedValues.name"
+            label="Team name"
+            :maxlength="MAX_TEAM_NAME_LENGTH"
+            :rules="[VALIDATION_RULES.REQUIRED]"
+        />
+        <h3 class="rink-name" v-if="team.rink_id && !editing">
+            {{ selectedRink.name }}
+        </h3>
+        <q-input
+            dense
+            v-else-if="!!editing"
+            readonly
+            @click="openRinkSearch"
+            :model-value="selectedRink.name"
+            label="Home rink"
+        />
+
+        <div class="row justify-center socials-container" v-if="!editing">
+             <IconFacebook color="rgba(0,0,0,0.3)" v-if="team.facebook" @click="navigateTo(team.facebook, {open: {
+                target: '_blank'
+             }})"/>
+               <IconInstagram color="rgba(0,0,0,0.3)" v-if="team.instagram" @click="navigateTo(team.instagram, {open: {
+                target: '_blank'
+             }})"/>
+                 <IconTwitter color="rgba(0,0,0,0.3)" v-if="team.twitter" @click="navigateTo(team.twitter, {open: {
+                target: '_blank'
+             }})"/>
+        </div>
+        <q-input
+            v-if="editing"
+            placeholder="Facebook"
+            dense
+            :rules="[(val) => validateSocial(val, 'facebook')]"
+            v-model="editedValues.facebook"
+        >
+            <template v-slot:prepend>
+                <IconFacebook color="rgba(0,0,0,0.3)" />
+            </template>
+        </q-input>
+        <q-input
+            v-if="editing"
+            placeholder="Instagram"
+            dense
+            :rules="[(val) => validateSocial(val, 'instagram')]"
+            v-model="editedValues.instagram"
+        >
+            <template v-slot:prepend>
+                <IconInstagram color="rgba(0,0,0,0.3)" />
+            </template>
+        </q-input>
+        <q-input
+            v-if="editing"
+            placeholder="Twitter"
+            dense
+            :rules="[(val) => validateSocial(val, 'twitter')]"
+            v-model="editedValues.twitter"
+        >
+            <template v-slot:prepend>
+                <IconTwitter color="rgba(0,0,0,0.3)" />
+            </template>
+        </q-input>
     </header>
     <section class="team-players__section" v-if="props.teamId">
         <div
@@ -55,10 +118,20 @@
                 </TeamPlayerRemove>
             </div>
             <div class="player-avatar__container">
-            <Avataaar v-bind="player.avatar" class="player-avatar" @click="onPlayerClick(player)" />
-            <q-badge color="orange" floating  align="bottom" v-if="player.pivot && player.pivot.status">Invitation sent</q-badge>
+                <Avataaar
+                    v-bind="player.avatar"
+                    class="player-avatar"
+                    @click="onPlayerClick(player)"
+                />
+                <q-badge
+                    color="orange"
+                    floating
+                    align="bottom"
+                    v-if="player.pivot && player.pivot.status"
+                    >Invitation sent</q-badge
+                >
             </div>
-           
+
             <div class="text-center player-name truncate-text">
                 {{ player.first_name }}
             </div>
@@ -66,9 +139,7 @@
                 {{ player.last_name }}
             </div>
         </div>
-        <div v-if="!team.players?.length">
-            {{team.name}} has no players.
-        </div>
+        <div v-if="!team.players?.length">{{ team.name }} has no players.</div>
         <div
             v-if="editing"
             class="column items-center player-avatars__container"
@@ -88,7 +159,7 @@
             </div>
         </div>
     </section>
-     <DialogConfirmation
+    <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
         cancelButtonText="Cancel"
@@ -149,6 +220,9 @@
     .close-button__container {
         right: 0;
     }
+    .socials-container {
+        gap: var(--space-sm)
+    }
 }
 .team-players__section {
     display: flex;
@@ -193,16 +267,15 @@
             bottom: 0;
         }
         .player-avatar__container {
-           width: 100%;
+            width: 100%;
             position: relative;
             display: flex;
             justify-content: center;
             .q-badge {
-                left: 0!important;
-                right: 0!important;
+                left: 0 !important;
+                right: 0 !important;
                 margin: auto;
                 width: fit-content;
-               
             }
         }
     }
@@ -210,35 +283,38 @@
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
-import {useUserTeamStore} from '@/store/user-teams'
-import {useTeamRequestStore} from '@/store/team-requests'
-import Rink from '@/store/models/rink'
+import { useUserTeamStore } from "@/store/user-teams";
+import { useTeamRequestStore } from "@/store/team-requests";
+import Rink from "@/store/models/rink";
 import Team from "@/store/models/team";
 import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
-import {MAX_TEAM_NAME_LENGTH, VALIDATION_RULES} from '@/constants/validation'
+import { MAX_TEAM_NAME_LENGTH, VALIDATION_RULES } from "@/constants/validation";
 
 const queryClient = useQueryClient();
 
 const props = defineProps<{
-    teamId: number | undefined
+    teamId: number | undefined;
 }>();
 const emit = defineEmits(["back"]);
 
-const team = computed(() => props.teamId ? 
-    useRepo(Team).withAll().where("id", props.teamId).first() : {
-        name: null,
-        avatar_url: null,
-        players: []
-    }
+const team = computed(() =>
+    props.teamId
+        ? useRepo(Team).withAll().where("id", props.teamId).first()
+        : {
+              name: null,
+              avatar_url: null,
+              players: [],
+          }
 );
 
-
-
-
-const permanentPlayers = computed(() => team.value.players.filter(({pivot}) => !pivot.status))
-const visiblePlayers = computed(() => isOnTeam() || editing.value ? team.value.players : permanentPlayers.value)
+const permanentPlayers = computed(() =>
+    team.value.players.filter(({ pivot }) => !pivot.status)
+);
+const visiblePlayers = computed(() =>
+    isOnTeam() || editing.value ? team.value.players : permanentPlayers.value
+);
 const { getTeamAvatar } = useAvatar();
 
 const { isLoading, data: avatar } = getTeamAvatar(props.teamId);
@@ -254,6 +330,9 @@ const setEditedValues = (wipe = false) => {
             avatar_url: null,
             players: [],
             rink_id: null,
+            facebook: null,
+            instagram: null,
+            twitter: null,
         };
     } else {
         editedValues.value = {
@@ -261,14 +340,26 @@ const setEditedValues = (wipe = false) => {
             avatar_url: team.value?.avatar_url,
             players: team.value?.players,
             rink_id: team.value?.rink_id || null,
+            facebook: team.value?.facebook,
+            instagram: team.value?.instagram,
+            twitter: team.value?.twitter,
         };
     }
 };
 
 const selectedRink = computed(() => {
-    if (!originalValues.value.rink_id && !team.value.rink_id && !editedValues.value.rink_id) return {};
-    return useRepo(Rink).where('id', editedValues.value.rink_id ||  team.value.rink_id).first() ?? {}
-})
+    if (
+        !originalValues.value.rink_id &&
+        !team.value.rink_id &&
+        !editedValues.value.rink_id
+    )
+        return {};
+    return (
+        useRepo(Rink)
+            .where("id", editedValues.value.rink_id || team.value.rink_id)
+            .first() ?? {}
+    );
+});
 
 const originalValues = ref({});
 
@@ -277,37 +368,43 @@ const setOriginalValues = () => {
         name: team.value?.name,
         avatar_url: team.value?.avatar_url,
         players: team.value?.players,
-        rink_id: team.value?.rink_id
+        rink_id: team.value?.rink_id,
+        facebook: team.value?.facebook,
+        instagram: team.value?.instagram,
+        twitter: team.value?.twitter,
     };
 };
 
-const {objTheSame} = useValidation();
+const { objTheSame } = useValidation();
 
-const confirmUnsaved = ref(false)
-
+const confirmUnsaved = ref(false);
 
 const areUnsavedChanges = () => {
-    return objTheSame(editedValues.value, originalValues.value)
-}
+    return objTheSame(editedValues.value, originalValues.value);
+};
 
 const onBackClick = () => {
-        if (editing.value && !areUnsavedChanges()) {
-            confirmUnsaved.value = true;
-        } else {
-            emit('back')
-        }
-}
+    if (editing.value && !areUnsavedChanges()) {
+        confirmUnsaved.value = true;
+    } else {
+        emit("back");
+    }
+};
 
 const createTeam = async () => {
     if (!editedValues.value.name) return;
     const client = useSupabaseClient();
-    const {data} = await client.from('teams').insert({
-        name: editedValues.value.name,
-        rink_id:editedValues.value.rink_id
-    }).select('id').single();
-    const {id} = data;
+    const { data } = await client
+        .from("teams")
+        .insert({
+            name: editedValues.value.name,
+            rink_id: editedValues.value.rink_id,
+        })
+        .select("id")
+        .single();
+    const { id } = data;
     return id;
-}
+};
 
 const saving = ref(false);
 
@@ -325,63 +422,69 @@ const onClickEdit = async () => {
             saving.value = true;
             hasChanged = true;
             updates.name = editedValues.value.name;
-            
         }
 
+        if (editedValues.value.facebook !== originalValues.value.facebook) {
+            saving.value = true;
+            hasChanged = true;
+            updates.facebook = editedValues.value.facebook
+        }
+
+        if (editedValues.value.instagram !== originalValues.value.instagram) {
+            saving.value = true;
+            hasChanged = true;
+            updates.instagram = editedValues.value.instagram;
+        }
+
+        if (editedValues.value.twitter !== originalValues.value.twitter) {
+            saving.value = true;
+            hasChanged = true;
+            updates.twitter = editedValues.value.twitter;
+        }
         if (editedValues.value.rink_id !== originalValues.value.rink_id) {
             saving.value = true;
             hasChanged = true;
-            updates.rink_id = editedValues.value.rink_id
+            updates.rink_id = editedValues.value.rink_id;
         }
 
         if (hasChanged) {
-            await useTeamStore().updateTeam(
-                updates,
-                props.teamId
-            );
+            await useTeamStore().updateTeam(updates, props.teamId);
         }
 
         if (editedValues.value.avatar_url !== originalValues.value.avatar_url) {
             hasChanged = true;
             saving.value = true;
 
-            await updateTeamAvatar(props.teamId)
+            await updateTeamAvatar(props.teamId);
         }
 
         if (hasChanged)
             queryClient.invalidateQueries({
                 queryKey: ["team", "page", props.teamId],
             });
-      
 
         setEditedValues(true);
         setOriginalValues();
         editing.value = false;
         saving.value = false;
     } else {
-        saving.value = true
+        saving.value = true;
         const id = await createTeam();
-        if (editedValues.value.avatar_url)await updateTeamAvatar(id);
+        if (editedValues.value.avatar_url) await updateTeamAvatar(id);
         useUserTeamStore().fetchUserTeams(true);
 
-        navigateTo(`/teams/${id}`)
-
+        navigateTo(`/teams/${id}`);
     }
-      
 };
 
 const updateTeamAvatar = async (teamId: number) => {
-const { file, path } = editedValues.value.avatar_url;
-            if (file && path)
-                await useTeamStore().uploadAvatarToTeam(
-                    path,
-                    file,
-                    teamId
-                );
-            queryClient.invalidateQueries({
-                queryKey: ["teamavatar", teamId],
-            });
-}
+    const { file, path } = editedValues.value.avatar_url;
+    if (file && path)
+        await useTeamStore().uploadAvatarToTeam(path, file, teamId);
+    queryClient.invalidateQueries({
+        queryKey: ["teamavatar", teamId],
+    });
+};
 
 const { toggleGlobalSearch } = useDialogStore();
 
@@ -398,45 +501,60 @@ const openPlayerSearch = () => {
 };
 
 const selectRink = (rink) => {
-    useRepo(Rink).save(rink)
-    const {id} = rink;
+    useRepo(Rink).save(rink);
+    const { id } = rink;
     editedValues.value.rink_id = id;
-}
+};
 
 const openRinkSearch = () => {
+    console.log("rink searh");
     toggleGlobalSearch({
-                    open: true,
-                    options: {
-                        callback: selectRink,
-                        inputLabel: 'Search for a rink',
-                        resourceTypes: ['rink'],
-
-                    }
-                })
-}
+        open: true,
+        options: {
+            callback: selectRink,
+            inputLabel: "Search for a rink",
+            resourceTypes: ["rink"],
+        },
+    });
+};
 
 const inviteUser = async (e) => {
-     await useTeamRequestStore().sendTeamRequest({
+    await useTeamRequestStore().sendTeamRequest({
         requestee_profile_id: e.profile_id,
         team_id: props.teamId,
     });
     queryClient.invalidateQueries({
-        queryKey: ['team', 'players', props.teamId]
-    })
-    
-}
+        queryKey: ["team", "players", props.teamId],
+    });
+};
 
 const { isOnTeam } = useTeam();
 
 const updateAvatar = (data) => {
     editedValues.value.avatar_url = data;
-}
+};
 
-const onPlayerClick = ({id}) => {
-   
+const onPlayerClick = ({ id }) => {
     if (editing.value) return;
-    navigateTo(`/player/${id}`)
-}
+    navigateTo(`/player/${id}`);
+};
+
+const validateSocial = (input, type) => {
+    try {
+        const url = new URL(input);
+        const { origin } = url;
+        console.log(origin);
+        return (
+            origin === `https://www.${type}.com` ||
+            origin === `https://${type}.com` ||
+            `Must be a valid ${type} url.`
+        );
+    } catch {
+        return "Invalid url";
+    }
+
+    return true;
+};
 </script>
 <script lang="ts">
 export default {

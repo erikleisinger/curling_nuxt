@@ -32,8 +32,8 @@ export default async (id) => {
 
         const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
 
-       
-        const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, ...stats } = t
+       console.log('got team: ', t)
+        const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, facebook, instagram, twitter, ...stats } = t
 
        
 
@@ -42,6 +42,9 @@ export default async (id) => {
             avatar_url,
             team_avatar,
             id: team_id,
+            facebook,
+            instagram,
+            twitter,
             
             name,
             stats: [
