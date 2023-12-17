@@ -45,7 +45,7 @@
                 {{ BADGE_DESCRIPTIONS[badge.name] }}
             </p>
           
-            <p class="text-sm row justify-center text-center">
+            <p class="text-sm row justify-center text-center" v-if="!!game">
                {{game.points_for}}
                {{'-'}}
                 {{game.points_against}}
@@ -58,6 +58,9 @@
                    <div class="col-12">
                          on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
                    </div>
+            </p>
+            <p class="text-sm text-center text-italic">
+                {{globalCount}}% of teams have this badge.
             </p>
 
         </div>
@@ -125,6 +128,23 @@ const {isLoading, data: game} = useQuery({
             points_against: opposition.points_scored
         }
     },
+    enabled: isShowing
+})
+
+const getBadgeCountGlobal = async () => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('badges').select('*').eq('name', props.badge.name).eq('earned', true)
+
+    const {data: teams} = await client.from('teams').select('id');
+
+    const numTeamsWithBadge = data?.length ?? 0;
+    const numTeams = teams?.length ?? 0;
+    return Number(((numTeamsWithBadge / numTeams)  * 100).toFixed(0))
+}
+
+const {isLoading: isLoadingGlobalCount, data: globalCount} = useQuery({
+    queryKey: ['badge', 'globalcount', props.badge.name],
+    queryFn: getBadgeCountGlobal,
     enabled: isShowing
 })
 </script>
