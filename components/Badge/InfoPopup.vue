@@ -151,8 +151,8 @@ const {isLoading, data: game} = useQuery({
         return {
             opposition: opposition?.team,
             home: home?.team,
-            points_for: home.points_scored,
-            points_against: opposition.points_scored
+            points_for: home?.points_scored ?? 0,
+            points_against: opposition?.points_scored ?? 0
         }
     },
     enabled: isShowing
