@@ -41,7 +41,7 @@
 .badge__container {
     cursor: pointer;
     display: grid;
-    grid-template-rows: 2.5em 2.5em 1em;
+    grid-template-rows: 2.5em 3.7em 1em;
     padding: var(--space-xs);
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.015);

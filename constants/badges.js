@@ -101,12 +101,12 @@ export const BADGE_NAMES = {
 }
 
 export const BADGE_DESCRIPTIONS = {
-    'win_1': 'Win 1 game (chicken cutlet)',
-    'win_5': 'Win 5 games (5 piece chicken nuggies)',
-    'win_10': 'Win 10 games (10 piece chicken nuggies)',
-    'win_25': 'Win 25 games (1/4 chicken combo + fries)',
-    'win_50': 'Win 50 games (chicken potroast)',
-    'win_100': 'Win 100 games (full blown honey-basted chicken)',
+    'win_1': 'Win 1 game',
+    'win_5': 'Win 5 games',
+    'win_10': 'Win 10 games',
+    'win_25': 'Win 25 games',
+    'win_50': 'Win 50 games',
+    'win_100': 'Win 100 games',
     shutout: 'Opponent scores no points.',
     handshakes: 'Win a game by handshakes.',
     conversion: 'Score 2+ points every time you have hammer.',
