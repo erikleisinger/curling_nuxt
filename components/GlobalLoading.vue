@@ -1,5 +1,5 @@
 <template>
-    <div class="window-height window-width row items-center">
+    <div class="row items-center global-loading__wrap">
         <div
             style="width: 100vw; position: relative"
             class="column items-center"
@@ -31,8 +31,9 @@
     </div>
 </template>
 <style lang="scss" scoped>
-.global-loading__container {
-    // margin-top: v-bind(margin);
+.global-loading__wrap {
+    width: 100vw;
+    height: calc(100 * var(--vh, 1vh))
 }
 .logo-container {
     width: min(15vw, 100px);
