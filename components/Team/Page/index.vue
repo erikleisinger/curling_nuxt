@@ -26,19 +26,33 @@
                     'justify-between': $q.screen.xs,
                 }"
             >
+            <Badge v-if="featuredBadge?.id"  :badge="featuredBadge" >
+                <template v-slot:underlay>
+                    Featured
+                </template>
+                
+            </Badge>
                 <Badge
                     v-for="badge in badgesLimited"
                     :key="badge.id"
                     :badge="badge"
                 />
             </div>
+            <div class="row justify-between">
+                  <div
+                class="text-sm q-mt-xs text-underline"
+                style="cursor: pointer"
+                @click="beginSelectFeatured"
+            >
+                Select featured badge
+            </div>
             <div
                 class="text-sm q-mt-xs text-underline"
-                :class="$q.screen.xs ? 'text-right' : 'text-center'"
                 style="cursor: pointer"
                 @click="badgesOpen = true"
             >
                 View all badges
+            </div>
             </div>
         </div>
 
@@ -149,12 +163,22 @@
             <h3
                 class="text-md text-bold badges-viewer__header justify-between full-width row items-center"
             >
-                Badges ({{ badges.length }})<q-btn
+            <span v-if="!selectingFeatured">
+                Badges ({{ badges.length }})
+                
+            
+
+            </span>
+            <span v-else>
+                Select featured badge
+            </span>
+                <q-btn
                     flat
                     round
                     icon="close"
                     dense
                     @click="badgesOpen = false"
+                    style="margin-right: -12px"
                 />
             </h3>
             <q-separator />
@@ -162,6 +186,7 @@
                 class="row items-start badges-view"
                 :class="$q.screen.xs ? 'justify-between' : 'justify-start'"
             >
+            
                 <Badge
                     v-for="badge in [...badges].sort((a, b) =>
                         sortAlphabetically(
@@ -172,6 +197,9 @@
                     :key="badge.id"
                     :badge="badge"
                     :width="badgeWidth"
+                    :highlight="team.featured_badge_id === badge.id"
+                    @click="selectFeaturedBadge($event, badge.id)"
+                    :canView="!selectingFeatured"
                 />
             </div>
         </q-card>
@@ -217,10 +245,12 @@
 <script setup lang="ts">
 import Team from "@/store/models/team";
 import { useTeamRequestStore } from "@/store/team-requests";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useEventListener } from "@vueuse/core";
 import { BADGE_NAMES } from "@/constants/badges";
-import { useElementSize } from "@vueuse/core";
+import { useElementSize, useDebounceFn } from "@vueuse/core";
+
+const queryClient = useQueryClient()
 
 const $q = useQuasar();
 
@@ -258,6 +288,7 @@ const headerLoaded = ref(false);
 
 const { sortAlphabetically } = useSort();
 const getBadges = async (team_id: number) => {
+
     const client = useSupabaseClient();
     const { data } = await client
         .from("badges")
@@ -267,8 +298,11 @@ const getBadges = async (team_id: number) => {
     return data;
 };
 
+
+
+const featuredBadge = computed(() => [...badges.value].find(({id}) => id === team.value.featured_badge_id));
 const badgesLimited = computed(() =>
-    [...badges.value].splice(0, $q.screen.xs ? 2 : 4)
+    [...badges.value].filter(({id}) => id !== team.value.featured_badge_id).splice(0, $q.screen.xs ? 1 : 3)
 );
 
 const {setLoading} = useLoading();
@@ -308,6 +342,32 @@ useEventListener(window, "popstate", () => {
 const badgesContainer = ref(null);
 const { width } = useElementSize(badgesContainer);
 const badgeWidth = computed(() => `${width.value / 2 - 3}px`);
+
+const selectingFeatured = ref(false);
+
+const beginSelectFeatured = () => {
+    selectingFeatured.value = true;
+    badgesOpen.value = true;
+}
+
+const selectFeaturedBadge = async (event, featured_badge_id) => {
+    if (!selectingFeatured.value) return;
+        useRepo(Team).where('id', Number(route.params.id)).update({
+        featured_badge_id
+    })
+    saveFeaturedBadge(featured_badge_id);
+
+}
+
+const saveFeaturedBadge = useDebounceFn(async (featured_badge_id) => {
+    const client = useSupabaseClient();
+    await client.from('teams').update({
+        featured_badge_id,
+    }).eq('id', Number(route.params.id))
+    queryClient.invalidateQueries({
+        queryKey: ['team', 'page', Number(route.params.id)],
+})
+}, 2000)
 </script>
 <script lang="ts">
 export default {

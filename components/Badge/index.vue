@@ -1,5 +1,8 @@
 <template>
-    <div class="badge__container" @click="showMore = true">
+    <div class="badge__container" @click="onClick" :class="{highlight}">
+        <div class="underlay">
+            <slot name="underlay"/>
+        </div>
         <div class="row no-wrap items-center q-mb-sm">
             <div class="relative-position">
                 <BadgeIcon height="2em" class="q-mr-sm" :badge="badge.name" />
@@ -34,11 +37,13 @@
                 {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
             </div> -->
         </div>
+           <BadgeInfoPopup :badge="badge" v-model="showMore"/>
     </div>
-   <BadgeInfoPopup :badge="badge" v-model="showMore"/>
+
 </template>
 <style lang="scss" scoped>
 .badge__container {
+    position: relative;
     cursor: pointer;
     display: grid;
     grid-template-rows: v-bind(gridRows);
@@ -49,6 +54,10 @@
     max-width: v-bind(badgeWidth);
     min-width: v-bind(badgeWidth);
     box-sizing: border-box;
+    &.highlight {
+        border: 4px solid $blue;
+        box-shadow: $pretty-shadow;
+    }
     @include sm {
         max-width: v-bind(badgeWidth);
         min-width: v-bind(badgeWidth);
@@ -60,6 +69,16 @@
         width: 1em;
         margin-right: var(--space-xs);
     }
+    .underlay {
+        position: absolute;
+        z-index: 0;
+        text-transform: uppercase;
+        top: 0; 
+        letter-spacing: 0.2em;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: rgba(0,0,0,0.2)
+           }
 }
 
 
@@ -73,6 +92,11 @@ import { BADGE_NAMES, BADGE_DESCRIPTIONS, BADGE_BACKGROUNDS } from "@/constants/
 
 const props = defineProps({
     badge: Object,
+    canView: {
+        type: Boolean,
+        default: true,
+    },
+    highlight: Boolean,
     showTeam: Boolean,
     width: {
         type: String,
@@ -85,7 +109,12 @@ const showMore = ref(false);
 const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
 
-const gridRows = computed(() => props.showTeam ? '2.5em 3.7em 1em' : '2.5em 3.7em')
+const gridRows = computed(() => props.showTeam ? '2.5em 3.7em 1em' : '2.5em 3.7em');
+
+const onClick = () => {
+    if (!props.canView) return;
+    showMore.value = true;
+}
 
 </script>
 <script>

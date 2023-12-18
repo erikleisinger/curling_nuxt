@@ -487,7 +487,6 @@ export const useSessionStore = defineStore("session", {
             this.setLoading(false);
         },
         setLoading(bool: boolean) {
-            console.log('set loading: ', bool)
             this.loading = bool;
         },
         setPageLoading(bool: boolean) {
