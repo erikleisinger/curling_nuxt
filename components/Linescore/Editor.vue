@@ -163,7 +163,8 @@
                         v-model="selections.away"
                         :hasHammer="
                             selections.hammerFirstEndTeam ===
-                            selections.away?.id
+                            selections.away?.id ||
+                            !selections.hammerFirstEndTeam
                         "
                           :color="selections.awayColor || selections?.away?.color"
                     />
@@ -199,7 +200,8 @@
                             defaultColor="blue"
                             :hasHammer="
                                 selections.hammerFirstEndTeam ===
-                                selections.away?.id
+                                selections.away?.id ||
+                                !selections.hammerFirstEndTeam
                             "
                             @update:hammer="
                                 selections.hammerFirstEndTeam =
@@ -277,7 +279,7 @@
                 >
                     {{ selections?.rink?.name ?? "Unspecified rink" }}
                 </h2>
-                <!-- <div class="edit--floating text-sm" v-if="canEditDetails">
+                <div class="edit--floating text-sm" v-if="canEditDetails">
                     <q-btn
                         icon="edit"
                         flat
@@ -287,7 +289,7 @@
                         dense
                         size="sm"
                     />
-                </div> -->
+                </div>
             </div>
         </div>
         <div

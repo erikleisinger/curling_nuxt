@@ -200,7 +200,6 @@
     .team-name {
         font-weight: bold;
         text-transform: uppercase;
-        word-break: break-all;
     }
     .rink-name {
         text-align: center;

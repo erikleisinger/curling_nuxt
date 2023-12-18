@@ -8,7 +8,7 @@
                 <div class="logo-container" ref="logo">
                     <Logo color="#673ab7" />
                 </div>
-                <h1 class="q-pb-md text-lg">{{ label }}</h1>
+                <!-- <h1 class="q-pb-md text-lg">{{ label }}</h1>
                 <div class="loading-container">
                     <q-linear-progress
                         rounded
@@ -18,7 +18,7 @@
                         color="deep-purple"
                         :size="$q.screen.xs ? '10px' : '1em'"
                     ></q-linear-progress>
-                </div>
+                </div> -->
             </main>
             <main v-else class="column items-center full-width global-loading__container">
                 <q-icon size="5em" color="negative" name="mood_bad" />
@@ -32,7 +32,7 @@
 </template>
 <style lang="scss" scoped>
 .global-loading__container {
-    margin-top: v-bind(margin);
+    // margin-top: v-bind(margin);
 }
 .logo-container {
     width: min(15vw, 100px);

@@ -31,18 +31,16 @@ export const useGame = () => {
             } else {
                 team = g.team;
             }
-            console.log('game: ', g)
             if (g.rink?.id) useRepo(Rink).save(g.rink)
             if (g.sheet?.id) useRepo(Sheet).save(g.sheet)
-     
             useRepo(Team).save(team);
-
             useRepo(Game).save({
                 id: g.game_id,
                 rink_id: g.rink?.id,
                 start_time: dayjs(g.start_time).unix(),
                 sheet_id: g.sheet?.id,
-                hammer_first_end: g.hammer_first_end
+                hammer_first_end: g.hammer_first_end,
+                end_count: g.end_count
             });
             
             useRepo(GameTeam).save({
@@ -52,6 +50,7 @@ export const useGame = () => {
                 color: g.color,
                 points_scored: g.points_scored ?? 0,
                 pending: g.pending,
+                home_team: g.team.home_team,
             });
         });
         return data;

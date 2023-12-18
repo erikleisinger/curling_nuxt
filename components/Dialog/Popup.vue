@@ -16,7 +16,9 @@
     margin: var(--space-xs);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    max-height: calc(100 * var(--vh, 1vh) - 65px);
+    height: calc(100 * var(--vh, 1vh) - 65px);
+    width: calc(100vw - (2 * var(--space-xs)));
+    max-width: calc(960px - (2 * var(--space-xs)));
     box-sizing: border-box;
     box-shadow: $pretty-shadow;
     overflow: auto;
@@ -92,9 +94,5 @@ onMounted(() => {
             duration: 0,
         });
     }
-    console.log("is open? ", props.open);
 });
-// onDeactivated(() => {
-//     onClose();
-// })
 </script>

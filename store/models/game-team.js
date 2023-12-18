@@ -18,7 +18,8 @@ export default class GameTeam extends Model {
             game: this.belongsTo(Game, 'game_id', 'id'),
             stats: this.hasOne(TeamStat, ['team_id', 'game_id']),
             points_scored: this.number(0),
-            pending: this.boolean()
+            pending: this.boolean(),
+            home_team: this.boolean()
         };
     }
     get isPlaceholder() {

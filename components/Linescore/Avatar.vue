@@ -50,13 +50,11 @@
         </div>
 
         <div
-            class="column items-center full-width q-mt-md"
+            class="column items-center full-width q-mt-md q-px-sm"
             v-if="editing || showNames"
             ref="teamName"
         >
-            <div class="text-sm" v-if="selections?.id || selections?.name">
-                Team
-            </div>
+
             <h2
                 class="text-sm text-bold text-center truncate-text full-width "
                 v-if="selections?.name"

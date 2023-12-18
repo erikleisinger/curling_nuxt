@@ -92,11 +92,10 @@ const { isLoading: isLoadingGames, data: currentGame } = useQuery({
         const { teams } = g;
 
         if (!teams) return {};
-
         const ga = {
             ...g,
-            home: g.teams[0]?.team,
-            away: g.teams[1]?.team,
+            home: g.teams.find(({home_team}) => !!home_team)?.team,
+            away: g.teams.find(({home_team}) => !home_team)?.team,
             hammerFirstEndTeam: g.hammer_first_end,
             homeColor: g.teams[0].color,
             awayColor: g.teams[1].color,
