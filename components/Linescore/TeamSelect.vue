@@ -8,8 +8,11 @@
                     <slot v-bind:toggleCustom="toggleCustom" />
                 </h2>
                 <div v-if="homeTeam" class="text-center">
-                    Use the arrows to select a team, or press the avatar to
-                    search.
+                    <span v-if="homeTeams?.length > 1">Use the arrows to select a team, or press the avatar to
+                    search.</span>
+                    <span v-else>
+                        Since you only have one team, we'll use <strong>{{homeTeams[0].name}}</strong>
+                    </span> 
                 </div>
                 <div v-else-if="!customOpposition && !homeTeam" class="text-center">
                     Press the avatar below to search for a team.
@@ -20,9 +23,9 @@
                     class="text-underline"
                     style="cursor: pointer"
                 >
-                    Can't find a team?
+                    Can't find the team you're looking for?
                 </div>
-                <div v-else-if="!homeTeam" class="text-center">Type a custom opposition name, or press the avatar below to search for a team.</div>
+                <div v-else-if="!homeTeam" class="text-center text-sm">Chances are the team hasn't joined Pebble yet. <strong>For now, type their name in the text field below.</strong> Later on, you can invite them to add this game to their records.</div>
             </div>
         </div>
 
@@ -318,7 +321,6 @@ const currentHomeTeam = computed(() =>
 );
 
 const selectTeam = (inc) => {
-    console.log(currentHomeTeam.value, homeTeams.value.length);
     if (inc < 0 && currentHomeTeam.value === 0) return;
     if (inc > 0 && currentHomeTeam.value >= homeTeams.value.length - 1) return;
     selections.value = homeTeams.value[currentHomeTeam.value + inc];

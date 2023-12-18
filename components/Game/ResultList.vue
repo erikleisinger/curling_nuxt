@@ -185,9 +185,6 @@
                 </TeamGameResult>
             </div>
         </div>
-        <div v-if="!gamesPaginated.length" class="no-games__container">
-            No games were found.
-        </div>
         <div
             class="show-more__container row justify-center items-center"
             v-if="cursor < gamesFiltered.length"

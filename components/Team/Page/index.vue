@@ -125,7 +125,10 @@
     <GameResultList :teamId="Number(route.params.id)" />
 
     <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
+        <div>
         {{ team.name }} hasn't played any games!
+        </div>
+        <q-btn icon="add" color="primary" rounded class="q-mt-md" @click="navigateTo('/games/create')">Add game</q-btn>
     </div>
     <q-dialog v-model="viewing" persistent>
         <q-card class="team-details__viewer">

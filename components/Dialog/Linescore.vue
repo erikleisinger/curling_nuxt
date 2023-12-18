@@ -1,62 +1,63 @@
 <template>
     <NuxtLayout>
-
-            <div
-                style="z-index: 1; transform: translateX(0); position: relative"
-                class="full-height"
-            >
-                <div class="nav--container row justify-between full-width">
-                    <q-btn
-                        icon="arrow_back"
-                        flat
-                        round
-                        @click="goBack"
-                        v-if="currentStep"
-                    />
-                    <q-btn
-                        flat
-                        color="green"
-                        class="row items-center"
-                        @click="save"
-                        v-if="view === views.DETAILS && !saved"
-                    >
-                        <q-icon
-                            size="xs"
-                            name="check"
-                            class="q-mr-xs q-pb-xs"
-                        />
-                        <div>Save game</div>
-                    </q-btn>
-                </div>
-                     <div class="full-height linescore__container" style="z-index:100">
-            <div
-                v-if="view === views.NO_TEAM"
-                class="full-height full-width row justify-center q-pa-md"
-                style="box-sizing: border-box"
-            >
-                <div class="column">
-                    <h1>You aren't on a team!</h1>
-                    <div>
-                        You may only enter linescores for teams on which you are
-                        a member.
-                    </div>
-                    <div class="full-width column items-center q-mt-md">
-                        <q-btn rounded color="primary" @click="newTeamOpen = true"
-                            >Create new team</q-btn
-                        >
-                   
-                    </div>
-                     <div class="full-width  q-mt-md">
-                      <strong>If your team already exists</strong><span>, ask a member of your team to invite you. Once you're on the team, you can enter linescores to your heart's content!</span>
-                   
-                    </div>
-                </div>
-                  <q-dialog v-model="newTeamOpen" persistent>
-        <q-card class="team-details__viewer">
-            <TeamPageDetails @back="newTeamOpen = false" />
-        </q-card>
-    </q-dialog>
+        <div
+            style="z-index: 1; transform: translateX(0); position: relative"
+            class="full-height"
+        >
+            <div class="nav--container row justify-between full-width">
+                <q-btn
+                    icon="arrow_back"
+                    flat
+                    round
+                    @click="goBack"
+                    v-if="currentStep"
+                />
+                <q-btn
+                    flat
+                    color="green"
+                    class="row items-center"
+                    @click="save"
+                    v-if="view === views.DETAILS && !saved"
+                >
+                    <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs" />
+                    <div>Save game</div>
+                </q-btn>
             </div>
+            <div class="full-height linescore__container" style="z-index: 100">
+                <div
+                    v-if="view === views.NO_TEAM"
+                    class="full-height full-width row justify-center q-pa-md"
+                    style="box-sizing: border-box"
+                >
+                    <div class="column">
+                        <h1>You aren't on a team!</h1>
+                        <div>
+                            You may only enter linescores for teams on which you
+                            are a member.
+                        </div>
+                        <div class="full-width column items-center q-mt-md">
+                            <q-btn
+                                rounded
+                                color="primary"
+                                @click="newTeamOpen = true"
+                                >Create new team</q-btn
+                            >
+                        </div>
+                        <div class="full-width q-mt-md">
+                            <strong>If your team already exists</strong
+                            ><span
+                                >, ask a member of your team to invite you. Once
+                                you're on the team, you can enter linescores to
+                                your heart's content!</span
+                            >
+                        </div>
+                    </div>
+                    <q-dialog v-model="newTeamOpen" persistent>
+                        <q-card class="team-details__viewer">
+                            <TeamPageDetails @back="newTeamOpen = false" />
+                        </q-card>
+                    </q-dialog>
+                </div>
                 <LinescoreEndCountSelect
                     v-if="view === views.END_COUNT_SELECT"
                     v-model="endCount"
@@ -93,7 +94,6 @@
                 />
 
                 <LinescoreEditor
-           
                     v-model="gameParams"
                     :score="score"
                     @linescore="goBackToLinescore"
@@ -244,12 +244,8 @@
                                         @shake="concede(end)"
                                         @click="onDesktopScoreClick(end)"
                                     />
-                       
                                 </div>
-                                                <div
-                                      style="min-width: 12vw"
-                                    id="scrollend"
-                                />
+                                <div style="min-width: 12vw" id="scrollend" />
                                 <transition
                                     appear
                                     enter-active-class=" animated fadeIn"
@@ -289,7 +285,6 @@
                                 </transition>
                             </div>
                         </div>
-                    
                     </div>
                 </LinescoreEditor>
             </div>
@@ -325,25 +320,27 @@ $blob-blur: 32px;
     width: min(100vw, 500px);
     height: min(100vh, 600px);
 }
+.blobs--container {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    filter: blur($blob-blur);
+    -webkit-filter: blur($blob-blur);
+    -moz-filter: blur($blob-blur);
+    -o-filter: blur($blob-blur);
+    -ms-filter: blur($blob-blur);
+}
 .linescore__container {
     position: relative;
     overflow-x: hidden;
-    .blobs--container {
-        position: absolute;
-        z-index: -1;
-        top: 0;
-        filter: blur($blob-blur);
-        -webkit-filter: blur($blob-blur);
-        -moz-filter: blur($blob-blur);
-        -o-filter: blur($blob-blur);
-        -ms-filter: blur($blob-blur);
-    }
+
+
+}
     .nav--container {
         position: fixed;
         top: 0;
         padding: var(--space-xs);
     }
-}
 .scoreboard--wrap {
     width: 100%;
     height: 100%;
@@ -352,10 +349,10 @@ $blob-blur: 32px;
     align-items: center;
     flex-direction: column;
     box-sizing: border-box;
-     position: relative;
+    position: relative;
     .scoreboard__container {
         width: 100%;
-       
+
         .scoreboard__score-container {
             scroll-snap-type: x mandatory;
             scroll-snap-stop: always;
@@ -516,17 +513,16 @@ const setVisible = (index) => {
 
 const onDesktopScoreClick = (e) => {
     visible.value = e;
-}
+};
 
 const scroller = ref(null);
 const { x, isScrolling, arrivedState } = useScroll(scroller, {
     behavior: "smooth",
 });
 
-useEventListener(scroller, 'wheel', ({wheelDeltaY}) => {
+useEventListener(scroller, "wheel", ({ wheelDeltaY }) => {
     scroller.value.scrollLeft -= wheelDeltaY;
-
-})
+});
 
 const { height: scrollerHeight } = useElementSize(scroller);
 const { right: arrivedRight } = toRefs(arrivedState);
@@ -556,9 +552,8 @@ const getSheet = async () => {
     return sheetFromDb?.id;
 };
 
-
 const saving = ref(false);
-const saved = ref(false)
+const saved = ref(false);
 const save = async () => {
     saved.value = true;
     const params = { ...gameParams.value };
@@ -579,7 +574,7 @@ const save = async () => {
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
     const conceded = score.value[Object.keys(score.value).length].home === "X";
-    const {toUTC} = useTime()
+    const { toUTC } = useTime();
     const gameToCreate = {
         home: params?.home?.id,
         home_color: params?.homeColor,
@@ -855,7 +850,7 @@ const createTeam = () => {
  */
 
 const colWidth = () => {
-    return '200px';
+    return "200px";
     // const numEnds = Object.keys(score.value)?.length;
     // return 100 / numEnds;
 };
@@ -882,5 +877,5 @@ const goLinescore = () => {
     view.value = views.LINESCORE;
 };
 
-const newTeamOpen = ref(false)
+const newTeamOpen = ref(false);
 </script>
