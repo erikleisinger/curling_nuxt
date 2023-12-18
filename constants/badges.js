@@ -1,29 +1,11 @@
 export const BADGE_BACKGROUNDS = {
     firstend: 'bg-badge--amber',
-    efficiency: 'bg-badge--purple',
-    showoff: 'bg-badge--pale-red',
-    bandit: 'bg-badge--pale-red',
-    bulwark: 'bg-badge--blue',
-    minimalist: 'bg-badge--teal',
-    survivalist: 'bg-badge--green',
-    strategist: 'bg-badge--pink',
-    stealdefense: 'bg-badge--blue-grey',
     win_1: 'bg-badge--amber',
     win_5: 'bg-badge--amber',
     win_10: 'bg-badge--amber',
     win_25: 'bg-badge--amber',
     win_50: 'bg-badge--amber',
     win_100: 'bg-badge--amber',
-    shutout: 'bg-badge--pale-red',
-    handshakes: 'bg-badge--green',
-    conversion: 'bg-badge--purple',
-    force: 'bg-badge--pink',
-    'score_5': 'bg-badge--blue',
-    'score_6': 'bg-badge--blue',
-    'score_7': 'bg-badge--blue',
-    'score_8': 'bg-badge--blue',
-    'ee_win': 'bg-badge--teal',
-    'stolen_win': 'bg-badge--pale-red',
     win_streak_2: 'bg-badge--amber',
     win_streak_3: 'bg-badge--amber',
     win_streak_4: 'bg-badge--amber',
@@ -33,6 +15,15 @@ export const BADGE_BACKGROUNDS = {
     win_streak_8: 'bg-badge--amber',
     win_streak_9: 'bg-badge--amber',
     win_streak_10: 'bg-badge--amber',
+    bulwark: 'bg-badge--blue',
+    'score_5': 'bg-badge--blue',
+    'score_6': 'bg-badge--blue',
+    'score_7': 'bg-badge--blue',
+    'score_8': 'bg-badge--blue',
+   
+    comeback: 'bg-badge--blue',
+    stealdefense: 'bg-badge--blue-grey',
+    minimalist: 'bg-badge--blue-grey',
     lose_streak_2: 'bg-badge--brown',
     lose_streak_3: 'bg-badge--brown',
     lose_streak_4: 'bg-badge--brown',
@@ -42,7 +33,20 @@ export const BADGE_BACKGROUNDS = {
     lose_streak_8: 'bg-badge--brown',
     lose_streak_9: 'bg-badge--brown',
     lose_streak_10: 'bg-badge--brown',
-
+    survivalist: 'bg-badge--green',
+    handshakes: 'bg-badge--green',
+    showoff: 'bg-badge--pale-red',
+    bandit: 'bg-badge--pale-red',
+    shutout: 'bg-badge--pale-red',
+    blewit: 'bg-badge--pale-red',
+    'stolen_win': 'bg-badge--pale-red',
+    strategist: 'bg-badge--pink',
+    force: 'bg-badge--pink',
+    singlemingle: 'bg-badge--purple',
+    conversion: 'bg-badge--purple',
+    efficiency: 'bg-badge--purple',
+    'ee_win': 'bg-badge--teal',
+    singlegame: 'bg-badge--teal',
 }   
 
 export const BADGE_NAMES = {
@@ -83,6 +87,11 @@ export const BADGE_NAMES = {
     lose_streak_8: 'Losing streak 8',
     lose_streak_9: 'Losing streak 9',
     lose_streak_10: 'Losing streak 10',
+    singlemingle: 'Ready to mingle',
+    singlegame: 'Minimalists',
+    minimalist: 'Snoozefest',
+    comeback: 'Against all odds',
+    blewit: 'Totally blew it'
     
 }
 
@@ -124,6 +133,11 @@ export const BADGE_DESCRIPTIONS = {
     lose_streak_8: 'Lose 8 games in a row.',
     lose_streak_9: 'Lose 9 games in a row.',
     lose_streak_10: 'Lose 10 games in a row.',
+    singlemingle: 'Win a game scoring only single points.',
+    singlegame: 'Play a game in which neither team scores 2+ points.',
+    minimalist: 'Blank 3 or more ends in a single game.',
+    comeback: 'Win a game after trailing by 4+ points.',
+    blewit: 'Lose a game after leading by 4+ points.'
 }
 
 export const BADGE_COLORS = {
