@@ -22,7 +22,7 @@
     position: fixed;
     height: calc(100 * var(--vh, 1vh));
     width: 100vw;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     top: 0;
     z-index: 3000;
 }
@@ -31,28 +31,28 @@
 import { PUBLIC_ROUTES } from "@/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import {useSessionStore} from '@/store/session'
+import { useSessionStore } from "@/store/session";
 
 const sessionStore = useSessionStore();
 
 const pageLoading = computed(() => sessionStore.pageLoading);
-const globalLoading = computed(() => sessionStore.loading)
+const globalLoading = computed(() => sessionStore.loading);
 
 const nuxtApp = useNuxtApp();
 
-const {setLoading} = useLoading();
+const { setLoading } = useLoading();
 
-    const route = useRoute();
+const route = useRoute();
 
-    const MANUAL_LOAD_ROUTES = ['teams-id', 'player-id', 'games-view-id']
-nuxtApp.hook('page:finish', () => {
+const MANUAL_LOAD_ROUTES = ["teams-id", "player-id", "games-view-id"];
+nuxtApp.hook("page:finish", () => {
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
-    setLoading(false)
-})
+    setLoading(false);
+});
 
 useHead({
-    title: `Pebble`
-})
+    title: `Pebble`,
+});
 
 const setVh = () => {
     const vh = window.innerHeight * 0.01;
@@ -65,7 +65,6 @@ onBeforeMount(async () => {
 });
 
 onBeforeMount(async () => {
-
     const user = useSupabaseUser();
     if (
         !PUBLIC_ROUTES.includes(route.fullPath) &&

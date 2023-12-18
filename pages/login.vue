@@ -85,6 +85,12 @@
                             lazy-rules
                             rounded
                             outlined
+                            :error="isError"
+                            :error-message="errorMessage"
+                            @update:modelValue="() => {
+                                isError = false;
+                                errorMessage = null
+                            }"
                         />
                         <q-input
                             name="password verification"
@@ -118,6 +124,7 @@
                     </q-card-actions>
                 </q-card>
             </q-form>
+
         </div>
 </template>
 
@@ -139,6 +146,7 @@
 import { ref } from "vue";
 import { VALIDATION_RULES } from "@/constants/validation";
 import { useAuthStore } from "@/store/auth";
+import {useNotificationStore} from '@/store/notification'
 
 const TAB_NAMES = ref({
     SIGN_IN: "signin",
@@ -156,6 +164,9 @@ const username = ref(null);
 const loading = ref(false);
 const tab = ref(TAB_NAMES.value.SIGN_IN);
 const loginForm = ref(null);
+const isError = ref(false);
+const errorMessage = ref(null);
+const signUpSuccess = ref(false)
 
 const authStore = useAuthStore();
 
@@ -171,12 +182,12 @@ const onSubmit = async (e) => {
             email: email.value,
             password: password.value,
         });
-        console.log('error logging in: ', error)
         if (!error) {
             authStore.setLoggedIn(true);
             navigateTo('/gateway')
         } else if (error && error.message) {
-        
+            isError.value = true;
+            errorMessage.value = error.message
         } else {
            
         }
@@ -185,7 +196,7 @@ const onSubmit = async (e) => {
             email: email.value,
             password: password.value,
             options: {
-                emailRedirectTo: "http://localhost:3000/?newuser=true",
+                emailRedirectTo: "https://main--melodic-praline-ba40d3.netlify.app/?newuser=true",
                 data: {
                     username: username.value,
                     first_name: firstName.value,
@@ -194,6 +205,15 @@ const onSubmit = async (e) => {
             },
         });
         if (error) return;
+        console.log('SIGN UP SUCCESS')
+        tab.value = TAB_NAMES.SIGN_IN;
+        const notStore = useNotificationStore();
+         notStore.addNotification({
+            text: 'Sign up successful! Please check your email to verify your account. Follow the link provided and your account will be good to go.',
+            state: 'completed',
+            timeout: 0
+        })
+
     }
     loading.value = false;
 };
