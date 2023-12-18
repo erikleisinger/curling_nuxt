@@ -166,7 +166,7 @@
                     </g>
                 </svg>
 
-                <svg
+            <svg
                  v-else-if="badge === 'win_50' || badge === 'win_100'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
@@ -385,8 +385,10 @@ $icon-height: 4em;
         aspect-ratio: 1/1;
         background-color: white;
         border-radius: 50%;
-        min-width: v-bind(additionalDimension);
-        min-height: v-bind(additionalDimension);
+        width: v-bind(additionalDimension);
+        height: v-bind(additionalDimension);
+        max-width: 32px;
+        max-height: 32px;
         text-align: center;
         border: 1px solid rgba(0, 0, 0, 0.2);
         padding-top: 3px;
@@ -412,7 +414,7 @@ $icon-height: 4em;
     }
     .badge-icon__container {
         height: v-bind(height);
-        border-radius: 32px;
+        border-radius: 50%;
         aspect-ratio: 1/1;
         border: 3px solid white;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
@@ -505,5 +507,5 @@ const additionalNumber = computed(() => {
 });
 
 const additionalDimension = computed(() => `50%`);
-const additionalFontDimension = computed(() => `calc(${props.height} / 2.5)`);
+const additionalFontDimension = computed(() => `min(calc(${props.height} / 2.5), 25px)`);
 </script>

@@ -95,6 +95,7 @@
                 />
 
                 <LinescoreEditor
+           
                     v-model="gameParams"
                     :score="score"
                     @linescore="goBackToLinescore"
@@ -109,7 +110,7 @@
                     :compact="showLinescore && view !== views.DETAILS"
                     v-if="view === views.LINESCORE || view === views.DETAILS"
                     @endcount="view = views.END_COUNT_SELECT"
-                    style="padding-top: 58px"
+                    style="padding-top: 58px; height: 100%"
                 >
                     <div class="scoreboard--wrap full-height">
                         <div

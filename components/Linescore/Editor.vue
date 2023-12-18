@@ -1,9 +1,7 @@
 <template>
     <div
         class="linescore-editor__container hide-scroll"
-        :style="{
-            height: '100%',
-        }"
+   
     >
         <nav
             class="row no-wrap justify-center full-width items-center q-mt-md summary-container"
@@ -152,6 +150,9 @@
                             <template v-slot:teamSelectPrompt>
                                 Select your team
                             </template>
+                            <template v-slot:team-name-append>
+                                <slot name="team-name-append__home"/>
+                            </template>
                         </LinescoreAvatar>
                     </Teleport>
                 </div>
@@ -227,6 +228,9 @@
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select opposition
+                            </template>
+                                   <template v-slot:team-name-append>
+                                <slot name="team-name-append__away"/>
                             </template>
                         </LinescoreAvatar>
                     </Teleport>

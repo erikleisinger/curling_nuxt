@@ -35,36 +35,7 @@
             </div>
         </div>
     </div>
-    <DialogInfo v-if="!!showMore" @close="showMore = false">
-        <div class="column items-center">
-            <BadgeIcon height="4em" class="q-mr-sm" :badge="badge.name" />
-            <h2 class="text-md text-bold" style="margin-top: 8px">
-                {{ BADGE_NAMES[badge.name] }}
-            </h2>
-            <p class="text-sm text-italic">
-                {{ BADGE_DESCRIPTIONS[badge.name] }}
-            </p>
-          
-            <p class="text-sm row justify-center text-center" v-if="!!game">
-               {{game.points_for}}
-               {{'-'}}
-                {{game.points_against}}
-               {{game.points_for > game.points_against ? 'win' : game.points_against > game.points_for ? 'loss' : 'tie'}}
-                vs. 
-                <div style="width: 1.2em; margin: 0px 4px">
-                        <TeamAvatar :teamId="game.team.id"/>
-                    </div>
-                    {{game.team.name}}
-                   <div class="col-12">
-                         on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
-                   </div>
-            </p>
-            <p class="text-sm text-center text-italic">
-                {{globalCount}}% of teams have this badge.
-            </p>
-
-        </div>
-    </DialogInfo>
+   <BadgeInfoPopup :badge="badge" v-model="showMore"/>
 </template>
 <style lang="scss" scoped>
 .badge__container {
@@ -90,10 +61,16 @@
         margin-right: var(--space-xs);
     }
 }
+
+
+
+
+
 </style>
+
 <script setup>
-import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
-import {useQuery} from '@tanstack/vue-query'
+import { BADGE_NAMES, BADGE_DESCRIPTIONS, BADGE_BACKGROUNDS } from "@/constants/badges";
+
 const props = defineProps({
     badge: Object,
     showTeam: Boolean,
@@ -102,51 +79,14 @@ const props = defineProps({
         default: "150px",
     },
 });
-
+    const { toTimezone } = useTime();
 const showMore = ref(false);
 
 const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
-const isShowing = computed(() => showMore.value)
 
-const { toTimezone } = useTime();
-const {getGames} = useGame();
 
-const {isLoading, data: game} = useQuery({
-    queryKey: ['game', Number(props.badge.game_id)],
-     queryFn: () =>
-        getGames({
-            team_id_param: null,
-            game_id_param: Number(props.badge.game_id),
-        }),
-    select: (teams) => {
-        const opposition = teams.find(({team_id}) => team_id !== props.badge.team_id)
-        const home = teams.find(({team_id}) => team_id === props.badge.team_id)
-        return {
-            ...opposition,
-            points_for: home.points_scored,
-            points_against: opposition.points_scored
-        }
-    },
-    enabled: isShowing
-})
 
-const getBadgeCountGlobal = async () => {
-    const client = useSupabaseClient();
-    const {data} = await client.from('badges').select('*').eq('name', props.badge.name).eq('earned', true)
-
-    const {data: teams} = await client.from('teams').select('id');
-
-    const numTeamsWithBadge = data?.length ?? 0;
-    const numTeams = teams?.length ?? 0;
-    return Number(((numTeamsWithBadge / numTeams)  * 100).toFixed(0))
-}
-
-const {isLoading: isLoadingGlobalCount, data: globalCount} = useQuery({
-    queryKey: ['badge', 'globalcount', props.badge.name],
-    queryFn: getBadgeCountGlobal,
-    enabled: isShowing
-})
 </script>
 <script>
 export default {

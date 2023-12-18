@@ -17,7 +17,12 @@
                 :highlight="false"
                 @click="onAvatarClick"
                 v-touchable="editing && !selections?.name"
-                v-memo="[selections?.id, selections?.color, !!selections.name, editing]"
+                v-memo="[
+                    selections?.id,
+                    selections?.color,
+                    !!selections.name,
+                    editing,
+                ]"
             />
 
             <div
@@ -29,7 +34,6 @@
                     'bg-grey-4': !hasHammer,
                 }"
                 @click="onHammerClick"
-            
             >
                 <IconHammer :color="hasHammer ? 'white' : '#36454F'" />
             </div>
@@ -54,59 +58,42 @@
             v-if="editing || showNames"
             ref="teamName"
         >
-
             <h2
-                class="text-sm text-bold text-center truncate-text full-width "
+                class="text-sm text-bold text-center truncate-text full-width"
                 v-if="selections?.name"
             >
-                <span class="relative-position">{{ selections?.name }}
-                      <div class="clear-name-container--floating" v-if="customName === selections?.name">
-                    <q-btn flat round icon="edit" dense padding="0px" class="text-sm" size="0.8em" color="grey-8" @click="showCustomNameInput = true"/>
-                </div>
+                <span class="relative-position"
+                    >{{ selections?.name }}
+                    <div
+                        class="clear-name-container--floating"
+                        v-if="customName === selections?.name"
+                    >
+                        <q-btn
+                            flat
+                            round
+                            icon="edit"
+                            dense
+                            padding="0px"
+                            class="text-sm"
+                            size="0.8em"
+                            color="grey-8"
+                            @click="showCustomNameInput = true"
+                        />
+                    </div>
+                     <div class="placeholder--floating left" v-if="selections.pending && (!selections.id || selections.id > 100000000)">
+                <q-icon color="grey-6" name="o_smart_toy" />
+            </div>
                 </span>
-              
+                
             </h2>
             <h2 v-else class="text-sm text-bold text-center full-width">
                 <slot name="teamSelectPrompt">
-                Click the avatar to select a team
+                    Click the avatar to select a team
                 </slot>
             </h2>
-            <div v-if="allowCustom && !showNames" class="">
-                <div v-if="showCustomInstructions">
-                <h2 class="text-sm text-center full-width q-mt-md" >
-                    Or
-                </h2>
-                 <h2 class="text-sm text-bold text-center full-width q-mt-md">
-                    Type a team name to invite later
-                </h2>
-                </div>
-                <q-input
-                    dense
-                    rounded
-                    outlined
-                    class="q-mt-md"
-                    v-model="customName"
-                    @keydown.enter="setCustomName"
-                    label="Team name"
-                    v-if="showCustomNameInput"
-                >
-                    <template v-slot:append>
-                        <q-btn
-                            v-if="customName && customName !== selections?.name"
-                            flat
-                            round
-                            icon="check"
-                            color="grey-7"
-                            dense
-                            padding="2px"
-                            @click="setCustomName"
-                        />
-                    </template>
-                </q-input>
-               
-            </div>
+           
         </div>
-        <slot name="append"/>
+        <slot name="append" />
     </div>
 </template>
 <style lang="scss">
@@ -171,13 +158,25 @@
     .clear-name-container--floating {
         left: -1.5em;
     }
+    .placeholder--floating {
+        position: absolute;
+        top: 0;
+        &:not(.right) {
+            left: -1.3em;
+            margin-right: var(--space-xs);
+        }
+        &.right {
+            right: -1em;
+            margin-left: var(--space-xs);
+        }
+    }
 }
 </style>
 <script setup>
 import gsap from "gsap";
 import { useVModel } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import {triggerClickAnimation} from '@/utils/gsap'
+import { triggerClickAnimation } from "@/utils/gsap";
 const props = defineProps({
     allowCustom: Boolean,
     avatarSize: {
@@ -204,26 +203,29 @@ const props = defineProps({
     },
     viewable: Boolean,
 });
-const emit = defineEmits(["confirm", "update:color", "update:hammer", "update:modelValue"]);
+const emit = defineEmits([
+    "confirm",
+    "update:color",
+    "update:hammer",
+    "update:modelValue",
+]);
 const selections = useVModel(props, "modelValue", emit);
 
 const customName = ref(null);
 
-const showCustomNameInput = ref(true)
-const showCustomInstructions = ref(true)
+const showCustomNameInput = ref(true);
+const showCustomInstructions = ref(true);
 
 const setCustomName = () => {
     emit("update:modelValue", {
         name: customName.value,
         color: selections.value.color,
     });
-    showCustomNameInput.value =false;
+    showCustomNameInput.value = false;
     showCustomInstructions.value = false;
 };
 
 const avatarContainer = ref(null);
-
-
 
 const onAvatarClick = () => {
     if (!props.editing) return;
@@ -234,7 +236,7 @@ const onAvatarClick = () => {
             resourceTypes: ["team"],
             callback: onAvatarSelect,
             filterIds: props.filterIds,
-            restrictIds: props.restrictIds
+            restrictIds: props.restrictIds,
         },
     });
 };
@@ -258,9 +260,9 @@ const onAvatarSelect = (selection) => {
                 });
             }
         }
-           showCustomNameInput.value =true;
-    showCustomInstructions.value = true;
-    customName.value = null;
+        showCustomNameInput.value = true;
+        showCustomInstructions.value = true;
+        customName.value = null;
     }, 10);
 };
 
@@ -289,22 +291,22 @@ watch(
                 transformOrigin: "top",
             });
             if (!val) return;
-            if (!props.hasHammer) makeButtonAppear(hammerContainer.value)
-               
-                
-                // makeButtonAppear(colorContainer.value)
+            if (!props.hasHammer) makeButtonAppear(hammerContainer.value);
+
+            // makeButtonAppear(colorContainer.value)
         });
-    
     }
 );
 
-watch(() => props.canConfirm, (val) => {
-    if (!val) return;
-    nextTick(() => {
- makeButtonAppear(confirmContainer.value);
-    })
-
-})
+watch(
+    () => props.canConfirm,
+    (val) => {
+        if (!val) return;
+        nextTick(() => {
+            makeButtonAppear(confirmContainer.value);
+        });
+    }
+);
 
 const colorOptions = ref([
     {
@@ -337,7 +339,7 @@ const changeColor = () => {
 
     const next = getNextColorIndex(currentColorIndex, props.preventColors);
     selections.value.color = colorOptions.value[next]?.value || "red";
-    emit('update:color')
+    emit("update:color");
 };
 
 const colorContainer = ref(null);

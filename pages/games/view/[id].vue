@@ -8,7 +8,7 @@
 
         <LinescoreEditor
             v-if="!isLoadingGames && !loading && !!currentGame"
-            :canEdit="canEdit && !!editedGame" 
+            :canEdit="canEdit && !!editedGame"
             :canEditDetails="canEdit && !!editedGame"
             v-model="editedGame"
             summary
@@ -17,7 +17,8 @@
             static
             @update:modelValue="onUpdate"
             canViewTeams
-    />
+        />
+
         <TeamStatsView
             v-if="!isLoadingGames && !loading && !!currentGame"
             :teamId="home.id"
@@ -34,19 +35,36 @@
     background-color: white;
     z-index: 4;
 }
+.game-badges--container {
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    padding: var(--space-md);
+}
+ .placeholder--floating {
+        position: absolute;
+        top: 0;
+        &:not(.right) {
+            left: -1em;
+            margin-right: var(--space-xs);
+        }
+        &.right {
+            right: -1em;
+            margin-left: var(--space-xs);
+        }
+    }
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
-import {createSheet} from '@/utils/create-game'
+import { createSheet } from "@/utils/create-game";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
 import GameTeam from "@/store/models/game-team";
 import TeamStats from "@/store/models/team-stats";
-import Rink from '@/store/models/rink';
-import Sheet from '@/store/models/sheet'
+import Rink from "@/store/models/rink";
+import Sheet from "@/store/models/sheet";
 import { useGameRequestStore } from "@/store/game-requests";
-import {useNotificationStore} from '@/store/notification'
-import { useQuery, useQueryClient} from "@tanstack/vue-query";
+import { useNotificationStore } from "@/store/notification";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 const route = useRoute();
 const { getGameResult } = useGame();
 
@@ -76,7 +94,11 @@ const editedGame = ref(null);
 
 const { getGames } = useGame();
 
-const { isLoading: isLoadingGames, data: currentGame } = useQuery({
+const {
+    isLoading: isLoadingGames,
+    isSuccess: isGamesDone,
+    data: currentGame,
+} = useQuery({
     queryKey: ["game", Number(gameId)],
     queryFn: () =>
         getGames({
@@ -92,20 +114,29 @@ const { isLoading: isLoadingGames, data: currentGame } = useQuery({
         const { teams } = g;
 
         if (!teams) return {};
+        console.log(g)
         const ga = {
             ...g,
-            home: g.teams.find(({home_team}) => !!home_team)?.team,
-            away: g.teams.find(({home_team}) => !home_team)?.team,
+            home: g.teams.filter(({ home_team }) => !!home_team).map((i) => ({
+                ...i.team,
+                pending: i.pending
+            }))[0],
+            away: g.teams.filter(({ home_team }) => !home_team).map((i) => ({
+                ...i.team,
+                pending: i.pending
+            }))[0],
             hammerFirstEndTeam: g.hammer_first_end,
             homeColor: g.teams[0].color,
             awayColor: g.teams[1].color,
-            rink: useRepo(Rink).where('id', g.rink_id).first(),
-            sheet: useRepo(Sheet).where('id', g.sheet_id).first()
+            rink: useRepo(Rink).where("id", g.rink_id).first(),
+            sheet: useRepo(Sheet).where("id", g.sheet_id).first(),
         };
         editedGame.value = ga;
         return ga;
     },
 });
+
+
 
 const home = computed(() => {
     if (isLoadingGames.value) return {};
@@ -298,13 +329,13 @@ watch(
     { immediate: true }
 );
 
-const {toUTC} = useTime();
+const { toUTC } = useTime();
 
 const queryClient = useQueryClient();
 
 const notStore = useNotificationStore();
 
-const updated = ref(false)
+const updated = ref(false);
 
 const onUpdate = async (val) => {
     if (updated.value) {
@@ -313,12 +344,12 @@ const onUpdate = async (val) => {
     }
     updated.value = true;
     const notId = notStore.addNotification({
-            text: 'Updating game...',
-            state: "pending",
-        });
-    const {start_time, rink ={}, sheet = {}} =val;
-    const {id: rink_id} = rink ?? {};
-    const {number: sheet_number} = sheet || {}
+        text: "Updating game...",
+        state: "pending",
+    });
+    const { start_time, rink = {}, sheet = {} } = val;
+    const { id: rink_id } = rink ?? {};
+    const { number: sheet_number } = sheet || {};
 
     let sheet_id;
     if (sheet_number) sheet_id = await createSheet(rink_id, sheet_number);
@@ -326,27 +357,30 @@ const onUpdate = async (val) => {
     const updates = {};
     if (sheet_id) updates.sheet_id = sheet_id;
     if (rink_id) updates.rink_id = rink_id;
-    if(start_time) updates.start_time = toUTC(start_time, null, true)
+    if (start_time) updates.start_time = toUTC(start_time, null, true);
     const client = useSupabaseClient();
-    const {error} = await client.from('games').update(updates).eq('id', Number(gameId))
-    if (!error) queryClient.invalidateQueries({
-        queryKey: ["game", Number(gameId)],
-    })
+    const { error } = await client
+        .from("games")
+        .update(updates)
+        .eq("id", Number(gameId));
+    if (!error)
+        queryClient.invalidateQueries({
+            queryKey: ["game", Number(gameId)],
+        });
 
     if (error) {
         notStore.updateNotification(notId, {
-                state: "failed",
-                text: `Error updating game. Please refresh the page and try again.`,
-            });
+            state: "failed",
+            text: `Error updating game. Please refresh the page and try again.`,
+        });
     } else {
         notStore.updateNotification(notId, {
-                state: "completed",
-                text: `Game updated!`,
-                timeout: 1000,
-            });
+            state: "completed",
+            text: `Game updated!`,
+            timeout: 1000,
+        });
     }
-
-}
+};
 </script>
 <script>
 export default {

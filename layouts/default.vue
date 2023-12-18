@@ -2,27 +2,21 @@
     <GlobalLoading v-if="globalLoading" infinite />
     <q-layout view="hhh lpr fff" v-else class="app-layout">
         <q-page-container class="page__container--global">
-         
-               <DialogPopup  :open="notificationsOpen">
+            <DialogPopup :open="notificationsOpen">
                 <template v-slot:header>
-                            <h1
-            class="text-md text-bold row justify-between items-center "
-        >
-            Notifications
-        </h1>
-      
+                    <h1
+                        class="text-md text-bold row justify-between items-center"
+                    >
+                        Notifications
+                    </h1>
                 </template>
                 <AchievementHistory
-                   
                     :open="notificationsOpen"
                     v-model="unreadNotificationCount"
                 />
-               </DialogPopup>
-         
-                 <slot  />
-       
-            
+            </DialogPopup>
 
+            <slot />
         </q-page-container>
         <q-footer bordered class="bg-white text-black row justify-between">
             <q-toolbar class="global-footer row justify-between">

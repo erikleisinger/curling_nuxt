@@ -32,7 +32,6 @@ export default async (id) => {
 
         const {name: teamName, ...totalStats} = await getTeamStats(id) ?? {}
 
-       console.log('got team: ', t)
         const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, facebook, instagram, twitter, ...stats } = t
 
        

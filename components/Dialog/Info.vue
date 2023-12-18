@@ -1,57 +1,74 @@
 <template>
-    <q-dialog v-model="isOpen"  class="z-max" @hide="emit('close')">
-        
+    <q-dialog v-model="isOpen" class="z-max" @hide="emit('close')">
         <q-card style="max-width: 400px; width: 90vw">
-            
             <q-card-section>
-                <slot/>
+                <slot />
             </q-card-section>
-             <slot name="buttons">
-            <q-card-actions align="right" class="row " :class="{'justify-between': !!showCancel && !!showConfirm, 'justify-end': !showCancel || !showConfirm}">
-               
-           <q-btn flat :label="props.cancelButtonText" :color="cancelColor" @click="emit('cancel')" v-close-popup v-if="showCancel"></q-btn>
-          <q-btn flat :label="props.confirmButtonText" :color="confirmColor" @click="emit('confirm')" v-close-popup v-if="showConfirm"></q-btn>
-           
-        </q-card-actions>
-             </slot>
+            <slot name="buttons">
+                <q-card-actions
+                    align="right"
+                    class="row"
+                    :class="{
+                        'justify-between': !!showCancel && !!showConfirm,
+                        'justify-end': !showCancel || !showConfirm,
+                    }"
+                >
+                    <q-btn
+                        flat
+                        :label="props.cancelButtonText"
+                        :color="cancelColor"
+                        @click="emit('cancel')"
+                        v-close-popup
+                        v-if="showCancel"
+                    ></q-btn>
+                    <q-btn
+                        flat
+                        :label="props.confirmButtonText"
+                        :color="confirmColor"
+                        @click="emit('confirm')"
+                        v-close-popup
+                        v-if="showConfirm"
+                    ></q-btn>
+                </q-card-actions>
+            </slot>
         </q-card>
     </q-dialog>
 </template>
 <style lang="scss">
-    .close-button__floating {
-        position: absolute;
-        right: 0;
-    }
+.close-button__floating {
+    position: absolute;
+    right: 0;
+}
 </style>
 <script setup lang="ts">
-    const isOpen = ref(true)
-    const emit = defineEmits(['close', 'confirm'])
-    const props = defineProps({
-        confirmButtonText: {
-            type: String,
-            default() {
-                return 'Delete'
-            }
+const isOpen = ref(true);
+const emit = defineEmits(["close", "confirm"]);
+const props = defineProps({
+    confirmButtonText: {
+        type: String,
+        default() {
+            return "Delete";
         },
-        confirmColor: {
-            type: String,
-            default() {
-                return 'negative'
-            }
+    },
+    confirmColor: {
+        type: String,
+        default() {
+            return "negative";
         },
-        cancelButtonText: {
-            type: String,
-            default() {
-                return 'Cancel'
-            }
+    },
+    cancelButtonText: {
+        type: String,
+        default() {
+            return "Cancel";
         },
-          cancelColor: {
-            type: String,
-            default() {
-                return 'primary'
-            }
+    },
+    cancelColor: {
+        type: String,
+        default() {
+            return "primary";
         },
-        showConfirm: Boolean,
-        showCancel: Boolean,
-    })
+    },
+    showConfirm: Boolean,
+    showCancel: Boolean,
+});
 </script>

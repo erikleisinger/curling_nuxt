@@ -10,6 +10,9 @@
             <slot />
         </div>
     </div>
+    <div class="popup--overlay">
+
+    </div>
 </template>
 <style lang="scss" scoped>
 .popup-container {
@@ -29,6 +32,17 @@
     .popup-container--header {
         padding: var(--space-sm);
     }
+}
+.popup--overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color:rgba(0,0,0,0.2);
+    opacity: 0;
+    z-index:1;
+    pointer-events: none;
 }
 </style>
 <script setup>
@@ -65,11 +79,20 @@ const onOpen = () => {
         opacity: 0,
         duration: 0.1,
     });
+    tl.to('.popup--overlay', {
+        opacity: 1,
+        delay: 0.1,
+    })
 };
 const onClose = () => {
     gsap.to(".popup-container", {
         scale: 0,
         transformOrigin: `${percentX.value}% bottom`,
+        duration: 0.2,
+        ease: "sine",
+    });
+     gsap.to(".popup--overlay", {
+        opacity: 0,
         duration: 0.2,
         ease: "sine",
     });
