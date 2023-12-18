@@ -41,6 +41,14 @@ const sessionStore = useSessionStore();
 const pageLoading = computed(() => sessionStore.pageLoading);
 const globalLoading = computed(() => sessionStore.loading)
 
+const nuxtApp = useNuxtApp();
+
+const {setLoading} = useLoading();
+
+nuxtApp.hook('page:finish', () => {
+    setLoading(false)
+})
+
 useHead({
     title: `Pebble`
 })
