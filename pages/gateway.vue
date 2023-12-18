@@ -15,6 +15,6 @@ onMounted(async () => {
         navigateTo(nextPage.value)
     } else {
         navigateTo('', {replace: true})
-    }
+}
 });
 </script>

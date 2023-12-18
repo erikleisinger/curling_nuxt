@@ -12,6 +12,14 @@
                 {{ player.first_name }} {{ player.last_name }}
             </h2>
             <h3 class="text-sm">@{{ player.username }}</h3>
+            <h3 class="text-sm">
+                <q-icon name="location_on" color="red" />
+                <span>
+                {{rink?.name || 'No home rink'}}
+                </span>
+                <q-btn icon="edit" flat round dense @click="searchRink" size="xs"/>
+           
+            </h3>
         </header>
         <main class="player--info">
             <section
@@ -110,8 +118,10 @@
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
 import Team from "@/store/models/team";
+import Rink from '@/store/models/rink'
 import {useUserStore} from '@/store/user'
 import { useQuery } from "@tanstack/vue-query";
+import {useDialogStore} from '@/store/dialog'
 
 const route = useRoute();
 const client = useSupabaseClient();
@@ -199,6 +209,7 @@ const getBadges = async () => {
             teams.value.map(({ id }) => id)
         );
     const e = data
+    console.log('got badges: ', data)
     .reduce((all, current) => {
         const duplicate = all.find(({name}) => name === current.name)
        
@@ -228,13 +239,14 @@ const { isLoading: isLoadingBadges, data: badges } = useQuery({
     queryFn: getBadges,
     enabled: badgesEnabled,
     select: (val) => {
+        console.log('got badges')
          badgesDone.value = true;
         return val;
     }
   
 });
 
-const pageLoaded = computed(() => !!badgesDone.value && !!teamsDone.value)
+const pageLoaded = computed(() => (!badgesEnabled.value || !!badgesDone.value) && !!teamsDone.value)
 
 watch(pageLoaded, (val) => {
     if (!val) return;
@@ -249,6 +261,29 @@ watch(pageLoaded, (val) => {
 
 const canEdit = computed(() => useUserStore().id === route.params.id)
 const editing = ref(false);
+
+const rink = computed(() => useRepo(Rink).where('id', player.value.rink_id).first())
+
+const {toggleGlobalSearch} = useDialogStore();
+
+const searchRink = () => {
+    if (!canEdit.value) return;
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: "Search for a rink",
+            resourceTypes: ["rink"],
+            callback: async (selection) => {
+                console.log('selected rink: ', selection)
+                const client = useSupabaseClient();
+                await client.from('profiles').update({
+                    rink_id: selection.id
+                }).eq('id', player.value.id)
+                await useUserStore().getCurrentUser();
+            },
+        },
+    });
+};
 </script>
 <script>
 export default {

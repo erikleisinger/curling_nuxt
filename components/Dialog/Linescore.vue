@@ -1,37 +1,6 @@
 <template>
     <NuxtLayout>
-        <div class="full-height linescore__container">
-            <div
-                v-if="view === views.NO_TEAM"
-                class="full-height full-width row justify-center q-pa-md"
-                style="box-sizing: border-box"
-            >
-                <div class="column">
-                    <h1>You aren't on a team!</h1>
-                    <div>
-                        You may only enter linescores for teams on which you are
-                        a member.
-                    </div>
-                    <div class="full-width column items-center q-mt-md">
-                        <q-btn rounded color="primary" @click="createTeam"
-                            >Create new team</q-btn
-                        >
-                        <q-btn
-                            class="q-mt-md"
-                            rounded
-                            color="primary"
-                            @click="searchForTeam"
-                            >Search existing teams</q-btn
-                        >
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="full-height full-width row" v-if="view === views.END_COUNT_SELECT">
 
-            <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(6)">6 ends</q-btn>
-               <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(8)">8 Ends</q-btn>
-                  <q-btn stretch square color="primary" outline class="col-12 text-lg" style="box-sizing: border-box" @click="setEndCount(10)">10 Ends</q-btn>
-        </div> -->
             <div
                 style="z-index: 1; transform: translateX(0); position: relative"
                 class="full-height"
@@ -59,6 +28,35 @@
                         <div>Save game</div>
                     </q-btn>
                 </div>
+                     <div class="full-height linescore__container" style="z-index:100">
+            <div
+                v-if="view === views.NO_TEAM"
+                class="full-height full-width row justify-center q-pa-md"
+                style="box-sizing: border-box"
+            >
+                <div class="column">
+                    <h1>You aren't on a team!</h1>
+                    <div>
+                        You may only enter linescores for teams on which you are
+                        a member.
+                    </div>
+                    <div class="full-width column items-center q-mt-md">
+                        <q-btn rounded color="primary" @click="newTeamOpen = true"
+                            >Create new team</q-btn
+                        >
+                   
+                    </div>
+                     <div class="full-width  q-mt-md">
+                      <strong>If your team already exists</strong><span>, ask a member of your team to invite you. Once you're on the team, you can enter linescores to your heart's content!</span>
+                   
+                    </div>
+                </div>
+                  <q-dialog v-model="newTeamOpen" persistent>
+        <q-card class="team-details__viewer">
+            <TeamPageDetails @back="newTeamOpen = false" />
+        </q-card>
+    </q-dialog>
+            </div>
                 <LinescoreEndCountSelect
                     v-if="view === views.END_COUNT_SELECT"
                     v-model="endCount"
@@ -323,6 +321,10 @@ $gutter-width: 20vw;
 $scroll-margin: -100px;
 $team-nav-margin: 6vh;
 $blob-blur: 32px;
+.team-details__viewer {
+    width: min(100vw, 500px);
+    height: min(100vh, 600px);
+}
 .linescore__container {
     position: relative;
     overflow-x: hidden;
@@ -847,21 +849,6 @@ const createTeam = () => {
         toggleTeamViewer({ open: true });
     });
 };
-const searchForTeam = () => {
-    toggleLineScore({ open: false });
-    nextTick(() => {
-        toggleGlobalSearch({
-            open: true,
-            options: {
-                resourceTypes: ["team"],
-                inputLabel: "Search for a team to join",
-                callback: (team) => {
-                    toggleTeamViewer({ open: true, team });
-                },
-            },
-        });
-    });
-};
 
 /**
  * Desktop linescore input sizing
@@ -894,4 +881,6 @@ const goLinescore = () => {
     showLinescore.value = true;
     view.value = views.LINESCORE;
 };
+
+const newTeamOpen = ref(false)
 </script>

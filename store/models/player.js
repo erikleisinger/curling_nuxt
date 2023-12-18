@@ -26,6 +26,7 @@ export default class Player extends Model {
             username: this.string(),
             avatar: this.attr({}),
             teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
+            rink_id: this.number(),
         }
        
     }
