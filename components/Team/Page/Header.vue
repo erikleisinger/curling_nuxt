@@ -124,6 +124,7 @@ const $q = useQuasar();
 
 const team = computed(() => {
     const t = useRepo(Team).with("players").where("id", props.teamId).first()
+    console.log(t.players)
     return {
         ...t,
         players: t.players?.filter(({pivot}) => !pivot.status) ?? []
@@ -159,7 +160,7 @@ const players = computed(() => {
 const { isOnTeam } = useTeam();
 const {isLoading} = useQuery({
     queryKey: ['team', 'players', props.teamId],
-    queryFn: () => getTeamPlayers(props.teamId, isOnTeam(props.teamId)),
+    queryFn: () => getTeamPlayers(props.teamId, true),
     refetchOnWindowFocus: false,
 })
 
