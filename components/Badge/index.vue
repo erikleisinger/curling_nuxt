@@ -41,7 +41,7 @@
 .badge__container {
     cursor: pointer;
     display: grid;
-    grid-template-rows: 2.5em 3.7em 1em;
+    grid-template-rows: v-bind(gridRows);
     padding: var(--space-xs);
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.015);
@@ -85,7 +85,7 @@ const showMore = ref(false);
 const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
 
-
+const gridRows = computed(() => props.showTeam ? '2.5em 3.7em 1em' : '2.5em 3.7em')
 
 </script>
 <script>
