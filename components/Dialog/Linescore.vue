@@ -4,7 +4,7 @@
             style="z-index: 1; transform: translateX(0); position: relative"
             class="full-height"
         >
-            <div class="nav--container row justify-between full-width">
+            <div class="nav--container row justify-between full-width" style="z-index: 200">
                 <q-btn
                     icon="arrow_back"
                     flat
