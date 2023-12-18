@@ -38,11 +38,13 @@ export const BADGE_BACKGROUNDS = {
     controlfreak: 'bg-badge--green',
     showoff: 'bg-badge--pale-red',
     bandit: 'bg-badge--pale-red',
+    barnburner: 'bg-badge--pale-red',
     shutout: 'bg-badge--pale-red',
     blewit: 'bg-badge--pale-red',
     'stolen_win': 'bg-badge--pale-red',
     strategist: 'bg-badge--pink',
     force: 'bg-badge--pink',
+    adrenaline: 'bg-badge--pink',
     singlemingle: 'bg-badge--purple',
     conversion: 'bg-badge--purple',
     efficiency: 'bg-badge--purple',
@@ -59,7 +61,7 @@ export const BADGE_NAMES = {
     'win_100': 'Chicken Dinner 100',
     shutout: 'Shutout',
     handshakes: 'Handshakes',
-    conversion: 'Conversion Queens',
+    conversion: 'Converts',
     bandit: 'Bandits!',
     force: 'Indomitable',
     score_5: '5-Ender',
@@ -93,29 +95,30 @@ export const BADGE_NAMES = {
     minimalist: 'Snoozefest',
     comeback: 'Against all odds',
     blewit: 'Totally blew it',
-    controlfreak: 'Never a doubt'
-    
+    controlfreak: 'Never a doubt',
+    adrenaline: 'Drama Queens',
+    barnburner: 'Barn Burner!'
 }
 
 export const BADGE_DESCRIPTIONS = {
-    'win_1': 'Won 1 game (chicken cutlet)',
-    'win_5': 'Won 5 games (5 piece chicken nuggies)',
-    'win_10': 'Won 10 games (10 piece chicken nuggies)',
-    'win_25': 'Won 25 games (1/4 chicken combo + fries)',
-    'win_50': 'Won 50 games (chicken potroast)',
-    'win_100': 'Won 100 games (full blown honey-basted chicken)',
+    'win_1': 'Win 1 game (chicken cutlet)',
+    'win_5': 'Win 5 games (5 piece chicken nuggies)',
+    'win_10': 'Win 10 games (10 piece chicken nuggies)',
+    'win_25': 'Win 25 games (1/4 chicken combo + fries)',
+    'win_50': 'Win 50 games (chicken potroast)',
+    'win_100': 'Win 100 games (full blown honey-basted chicken)',
     shutout: 'Opponent scores no points.',
-    handshakes: 'Won a game by handshakes.',
+    handshakes: 'Win a game by handshakes.',
     conversion: 'Score 2+ points every time you have hammer.',
     bandit: 'Steal every end of a game.',
-    force: 'Without hammer, stole or forced every end.',
+    force: 'Steal or force in every end without hammer.',
     score_5: 'Score five points in a single end.',
     score_6: 'Score six points in a single end.',
     score_7: 'Score seven points in a single end.',
     score_8: 'Score eight points in a single end.',
-    ee_win: 'Won a game in an extra end.',
-    stolen_win: 'Won a game by stealing points.',
-    strategist: 'Had hammer in both the first and last end.',
+    ee_win: 'Win a game in an extra end.',
+    stolen_win: 'Win a game by stealing points.',
+    strategist: 'Have hammer in both the first and last end.',
     showoff: 'Score 2+ points three or more times.',
     win_streak_2: 'Win 2 games in a row.',
     win_streak_3: 'Win 3 games in a row.',
@@ -140,7 +143,9 @@ export const BADGE_DESCRIPTIONS = {
     minimalist: 'Blank 3 or more ends in a single game.',
     comeback: 'Win a game after trailing by 4+ points.',
     blewit: 'Lose a game after leading by 4+ points.',
-    controlfreak: 'Be in the lead for an entire game.'
+    controlfreak: 'Be in the lead for an entire game.',
+    adrenaline: 'Trail your opponent all game... and win.',
+    barnburner: '2+ points are scored in at least half the ends played.'
 }
 
 export const BADGE_COLORS = {
