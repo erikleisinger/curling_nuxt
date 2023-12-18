@@ -35,6 +35,7 @@ export const BADGE_BACKGROUNDS = {
     lose_streak_10: 'bg-badge--brown',
     survivalist: 'bg-badge--green',
     handshakes: 'bg-badge--green',
+    controlfreak: 'bg-badge--green',
     showoff: 'bg-badge--pale-red',
     bandit: 'bg-badge--pale-red',
     shutout: 'bg-badge--pale-red',
@@ -91,7 +92,8 @@ export const BADGE_NAMES = {
     singlegame: 'Minimalists',
     minimalist: 'Snoozefest',
     comeback: 'Against all odds',
-    blewit: 'Totally blew it'
+    blewit: 'Totally blew it',
+    controlfreak: 'Never a doubt'
     
 }
 
@@ -137,7 +139,8 @@ export const BADGE_DESCRIPTIONS = {
     singlegame: 'Play a game in which neither team scores 2+ points.',
     minimalist: 'Blank 3 or more ends in a single game.',
     comeback: 'Win a game after trailing by 4+ points.',
-    blewit: 'Lose a game after leading by 4+ points.'
+    blewit: 'Lose a game after leading by 4+ points.',
+    controlfreak: 'Be in the lead for an entire game.'
 }
 
 export const BADGE_COLORS = {
