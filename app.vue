@@ -1,5 +1,5 @@
 <template>
-    <GlobalLoading v-show="globalLoading" infinite />
+    <GlobalLoading v-if="globalLoading" infinite />
     <NuxtPage />
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />

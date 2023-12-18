@@ -239,7 +239,6 @@ const { isLoading: isLoadingBadges, data: badges } = useQuery({
     queryFn: getBadges,
     enabled: badgesEnabled,
     select: (val) => {
-        console.log('got badges')
          badgesDone.value = true;
         return val;
     }
@@ -274,7 +273,6 @@ const searchRink = () => {
             inputLabel: "Search for a rink",
             resourceTypes: ["rink"],
             callback: async (selection) => {
-                console.log('selected rink: ', selection)
                 const client = useSupabaseClient();
                 await client.from('profiles').update({
                     rink_id: selection.id

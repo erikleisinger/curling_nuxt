@@ -305,7 +305,6 @@ import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
 
 const refreshQuery = () => {
-    console.log('refresh query')
     queryClient.invalidateQueries({
         queryKey: ["team", "games", home.value?.id],
     });

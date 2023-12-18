@@ -36,8 +36,7 @@ const emit = defineEmits(["update:modelValue"]);
 const { confirm, cancel, reveal, isRevealed, onConfirm } = useConfirmDialog();
 
 const onChipClick = () => {
-    if (!props.canEdit) return;
-    console.log("chip: ", isRevealed.value);
+    if (!props.canEdit) return;;
     if (!isRevealed.value) {
         reveal();
     } else {

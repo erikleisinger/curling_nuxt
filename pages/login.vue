@@ -205,7 +205,6 @@ const onSubmit = async (e) => {
             },
         });
         if (error) return;
-        console.log('SIGN UP SUCCESS')
         tab.value = TAB_NAMES.SIGN_IN;
         const notStore = useNotificationStore();
          notStore.addNotification({

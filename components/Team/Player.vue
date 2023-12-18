@@ -194,7 +194,6 @@ const showEdit = ref(false)
 const onClick = () => {
   
     if (!$q.screen.xs) return;
-      console.log('click')
     showEdit.value = true;
 }
 
