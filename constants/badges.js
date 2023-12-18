@@ -22,6 +22,7 @@ export const BADGE_BACKGROUNDS = {
     'score_8': 'bg-badge--blue',
    
     comeback: 'bg-badge--blue',
+    first_game: 'bg-badge--blue',
     stealdefense: 'bg-badge--blue-grey',
     minimalist: 'bg-badge--blue-grey',
     lose_streak_2: 'bg-badge--brown',
@@ -97,7 +98,8 @@ export const BADGE_NAMES = {
     blewit: 'Totally blew it',
     controlfreak: 'Never a doubt',
     adrenaline: 'Drama Queens',
-    barnburner: 'Barn Burner!'
+    barnburner: 'Barn Burner!',
+    first_game: 'On the board!'
 }
 
 export const BADGE_DESCRIPTIONS = {
@@ -145,7 +147,8 @@ export const BADGE_DESCRIPTIONS = {
     blewit: 'Lose a game after leading by 4+ points.',
     controlfreak: 'Be in the lead for an entire game.',
     adrenaline: 'Trail your opponent all game... and win.',
-    barnburner: '2+ points are scored in at least half the ends played.'
+    barnburner: '2+ points are scored in at least half the ends played.',
+    first_game: 'Record your very first game.'
 }
 
 export const BADGE_COLORS = {
