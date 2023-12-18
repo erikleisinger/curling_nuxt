@@ -57,9 +57,12 @@ const { x: mouseX, y: mouseY } = useMouse();
 
 const percentX = ref(0);
 
+const timeline = ref(null)
+
 const onOpen = () => {
     percentX.value = (mouseX.value / window.innerWidth) * 100;
-    const tl = gsap.timeline();
+const tl = gsap.timeline();
+timeline.value = tl
     tl.fromTo(
         ".popup-container",
         {
@@ -85,6 +88,7 @@ const onOpen = () => {
     })
 };
 const onClose = () => {
+    timeline.value.pause();
     gsap.to(".popup-container", {
         scale: 0,
         transformOrigin: `${percentX.value}% bottom`,
@@ -106,8 +110,7 @@ watch(
         if (!val) {
             onClose();
         }
-    },
-    { immediate: true }
+    }
 );
 onMounted(() => {
     if (!props.open) {

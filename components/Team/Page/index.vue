@@ -8,6 +8,7 @@
         :teamId="Number(route.params.id)"
         @click="viewing = true"
         style="cursor: pointer"
+        @loaded="headerLoaded = true"
     />
     <div
         :class="{ column: $q.screen.xs, 'row no-wrap': !$q.screen.xs }"
@@ -249,6 +250,9 @@ const teamRequests = computed(() =>
     )
 );
 
+const badgesLoaded = ref(false);
+const headerLoaded = ref(false);
+
 const { sortAlphabetically } = useSort();
 const getBadges = async (team_id: number) => {
     const client = useSupabaseClient();
@@ -264,10 +268,27 @@ const badgesLimited = computed(() =>
     [...badges.value].splice(0, $q.screen.xs ? 2 : 4)
 );
 
+const {setLoading} = useLoading();
 const { isLoading, data: badges } = useQuery({
     queryKey: ["team", "badges", Number(route.params.id)],
     queryFn: () => getBadges(Number(route.params.id)),
+    select: (val) => {
+        badgesLoaded.value =  true;
+        return val;
+    }
 });
+
+
+
+const pageReady = computed(() => badgesLoaded.value && headerLoaded.value)
+
+watch(pageReady, (val) => {
+    if (!val) return;
+    setTimeout(() => {
+ setLoading(false)
+    }, 50)
+   
+})
 
 useEventListener(window, "popstate", () => {
     console.log("popstate");

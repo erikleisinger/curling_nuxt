@@ -25,6 +25,7 @@
                     @click="navigateTo(`/teams/${team.id}`)"
                 >
                     <div class="player-team__avatar">
+                    
                         <TeamAvatarBadge :teamId="team.id" />
                     </div>
                     <h3 class="text-sm text-center">{{ team.name }}</h3>
@@ -174,9 +175,15 @@ const getPlayerTeams = async () => {
     return teams
 };
 
-const { isLoading: isLoadingTeams, isSuccess: teamsDone } = useQuery({
+const teamsDone = ref(false)
+
+const { isLoading: isLoadingTeams } = useQuery({
     queryKey: ["player", "teams", route.params.id],
     queryFn: getPlayerTeams,
+    select: (val) => {
+        teamsDone.value = true;
+        return val
+    }
 });
 
 //BADGES
@@ -201,7 +208,7 @@ const getBadges = async () => {
                 ...all.filter(({name}) => name !== current.name), 
                 {
                     ...current,
-                    team_id: [...(typeof current.team_id === 'object' ? current.team_id : [current.team_id]), team_id],
+                    team_id: [...(typeof team_id === 'object' ? team_id : [team_id]), current.team_id],
                     created_at: toTimezone(current.created_at, null, false, true).unix() > toTimezone(created_at, null, false, true).unix() ? current.created_at : created_at
                 }
             ]
@@ -214,19 +221,28 @@ const getBadges = async () => {
 };
 
 const badgesEnabled = computed(() => !!teams.value.length)
+const badgesDone = ref(false)
 
-const { isLoading: isLoadingBadges, data: badges, isSuccess: badgesDone } = useQuery({
+const { isLoading: isLoadingBadges, data: badges } = useQuery({
     queryKey: ["player", "team", "badges", route.params.id],
     queryFn: getBadges,
     enabled: badgesEnabled,
+    select: (val) => {
+         badgesDone.value = true;
+        return val;
+    }
+  
 });
 
 const pageLoaded = computed(() => !!badgesDone.value && !!teamsDone.value)
 
 watch(pageLoaded, (val) => {
     if (!val) return;
-    const {setPageLoading} = useLoading();
-    setPageLoading(false)
+    const {setLoading} = useLoading();
+    setTimeout(() => {
+    setLoading(false)
+    }, 50)
+
 }, {immediate: true})
 
 

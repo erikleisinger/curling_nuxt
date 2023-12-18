@@ -118,13 +118,14 @@ const props = defineProps<{
     teamId: number | string;
 }>();
 
+const emit = defineEmits(['loaded'])
+
 const $q = useQuasar();
 
 
 
 const team = computed(() => {
     const t = useRepo(Team).with("players").where("id", props.teamId).first()
-    console.log(t.players)
     return {
         ...t,
         players: t.players?.filter(({pivot}) => !pivot.status) ?? []
@@ -135,7 +136,11 @@ const { getTeamAvatar } = useAvatar();
 
 
 const { data: avatar } = getTeamAvatar(props.teamId, {
-    enabled: !!team.value
+    enabled: !!team.value,
+    select: (val) => {
+        emit('loaded')
+        return val;
+    }
 })
 
 
@@ -163,6 +168,7 @@ const {isLoading} = useQuery({
     queryFn: () => getTeamPlayers(props.teamId, true),
     refetchOnWindowFocus: false,
 })
+
 
 
 

@@ -1,6 +1,6 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
-    <q-layout view="hhh lpr fff" v-else class="app-layout">
+    <q-layout view="hhh lpr fff" v-show="!globalLoading" class="app-layout">
         <q-page-container class="page__container--global">
             <DialogPopup :open="notificationsOpen">
                 <template v-slot:header>

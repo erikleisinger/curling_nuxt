@@ -45,7 +45,11 @@ const nuxtApp = useNuxtApp();
 
 const {setLoading} = useLoading();
 
+    const route = useRoute();
+
+    const MANUAL_LOAD_ROUTES = ['teams-id', 'player-id']
 nuxtApp.hook('page:finish', () => {
+    if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
     setLoading(false)
 })
 
@@ -64,7 +68,7 @@ onBeforeMount(async () => {
 });
 
 onBeforeMount(async () => {
-    const route = useRoute();
+
     const user = useSupabaseUser();
     if (
         !PUBLIC_ROUTES.includes(route.fullPath) &&

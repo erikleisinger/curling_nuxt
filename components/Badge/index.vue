@@ -30,9 +30,9 @@
             >
                 <TeamAvatar :teamId="badge.team_id" viewable />
             </div>
-            <div class="text-xs text-right">
+            <!-- <div class="text-xs text-right">
                 {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
-            </div>
+            </div> -->
         </div>
     </div>
    <BadgeInfoPopup :badge="badge" v-model="showMore"/>
