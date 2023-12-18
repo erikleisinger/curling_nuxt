@@ -85,22 +85,15 @@
         @click="navigateTo(`/games/view/${item.game_id}`)"
     >
         <q-item-section avatar class="relative-position">
+            
             <div
-                class="row no-wrap justify-center  game-result__icon bg-badge--blue-grey "
-                :class="{win: item.name === 'game_win', loss: item.name === 'game_loss', tie: item.name === 'game_tie', 'dense': (item.info.points_for ?? 0) > 9 && (item.info.points_against ?? 0) > 9}"
+                class="row no-wrap justify-center  game-result__icon text-underline"
+                :class="{win: item.name === 'game_win', loss: item.name === 'game_loss', tie: item.name === 'game_tie'}"
             >
-            <!-- ,  -->
-                <div class="q-mr-xxs">
-                    {{ item.info.points_for }}
-                  
-                    </div>
-                <div class="colon">
-               :
-                </div>
-                <div class="q-ml-xxs">
-                    {{ item.info.points_against ?? 0 }}
-                    
-                    </div>
+          <div v-if="item.name === 'game_win'">WIN</div>
+           <div v-if="item.name === 'game_loss'">LOSS</div>
+             <div v-if="item.name === 'game_tie'">TIE</div>
+               
             </div>
         </q-item-section>
         <q-item-section v-if="item.name === 'game_win'">
@@ -240,6 +233,7 @@
         position: absolute;
         &.loss {
             border: 1px solid red;
+          
         }
         &.win {
             border: 1px solid green;
@@ -285,16 +279,19 @@
            border-radius: 50%;
             border: 3px solid white;
         &.tie {
-            box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-            rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+            // box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+            // rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+            $color: $blue-10;
         }
         &.win {
-            box-shadow: rgba(0, 255, 21, 0.25) 0px 6px 12px -2px,
-            rgba(2, 69, 0, 0.3) 0px 0px 4px 1px;
+            // box-shadow: rgba(0, 255, 21, 0.25) 0px 6px 12px -2px,
+            // rgba(2, 69, 0, 0.3) 0px 0px 4px 1px;
+            color: $green;
         }
           &.loss {
-            box-shadow: rgba(255, 0, 0, 0.25) 0px 6px 12px -2px,
-            rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
+            // box-shadow: rgba(255, 0, 0, 0.25) 0px 6px 12px -2px,
+            // rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
+              color: $red;
         }
     }
 }

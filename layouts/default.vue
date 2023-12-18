@@ -1,6 +1,5 @@
 <template>
-    <GlobalLoading v-if="globalLoading" infinite />
-    <q-layout view="hhh lpr fff" v-show="!globalLoading" class="app-layout">
+    <q-layout view="hhh lpr fff" class="app-layout">
         <q-page-container class="page__container--global">
             <DialogPopup :open="notificationsOpen">
                 <template v-slot:header>
@@ -226,7 +225,7 @@ import { useTeamRequestStore } from "@/store/team-requests";
 import { useGameRequestStore } from "@/store/game-requests";
 import Player from "@/store/models/player";
 
-const { globalLoading } = useLoading();
+
 const leftDrawerOpen = ref(false);
 
 const newTeamOpen = ref(false);

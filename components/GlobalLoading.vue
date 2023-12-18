@@ -26,7 +26,7 @@
 }
 .logo-container {
     width: min(15vw, 100px);
-    animation: spin 3s linear infinite;
+    animation: fade 0.2s linear forwards;
 }
 :deep(.loading-container) {
     width: 100vw;
@@ -39,30 +39,18 @@
     }
 }
 
-@keyframes spin {
+@keyframes fade {
     0% {   
-        transform: rotate(0deg) scale(0)
-    }
-
-    10% {
-        transform: rotate(180deg) scale(1)
-    }
-    20% {
-         transform: rotate(360deg);
-    }
-    30% {
-        transform: translateY(2px)
-    }
-    40% {
-        transform: translateY(0px)
+       opacity: 0
     }
     100% {
-        transform: rotate(360deg);
+        opacity: 1
     }
 }
 </style>
 <script setup>
 import { useElementSize } from "@vueuse/core";
+import gsap from 'gsap'
 const props = defineProps({
     error: Boolean,
     errorMessage: {
@@ -86,12 +74,23 @@ const goBack = () => {
     });
 };
 
+
 const $q = useQuasar();
 
 const logo = ref(null);
 
 const { height: logoHeight } = useElementSize(logo);
 const margin = computed(() => `${-1 * logoHeight.value}px`)
+onMounted(() => {
+    gsap.to('.logo-container', 
+    {
+        rotateZ: 360,
+        delay: 0.5,
+        duration: 0.4,
+        repeat: -1,
+        repeatDelay: 1.5,
+    })
+})
 </script>
 <script>
 export default {

@@ -208,7 +208,6 @@ const getBadges = async () => {
             "team_id",
             teams.value.map(({ id }) => id)
         );
-           console.log('got badges: ', data)
     const e = data
  
     .reduce((all, current) => {
@@ -229,7 +228,6 @@ const getBadges = async () => {
         return [...all, current];
     }, [])
     .sort((a,b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
-    console.log(e)
     return e;
 };
 

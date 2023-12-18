@@ -1,4 +1,5 @@
 <template>
+    <GlobalLoading v-show="globalLoading" infinite />
     <NuxtPage />
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
@@ -33,10 +34,11 @@ import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useSessionStore } from "@/store/session";
 
+const { globalLoading } = useLoading();
 const sessionStore = useSessionStore();
 
 const pageLoading = computed(() => sessionStore.pageLoading);
-const globalLoading = computed(() => sessionStore.loading);
+
 
 const nuxtApp = useNuxtApp();
 
