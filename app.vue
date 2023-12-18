@@ -2,9 +2,6 @@
     <NuxtPage />
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
-    <!-- <div v-if="!globalLoading && pageLoading" class="page-load__wrap">
-    Loading
-</div> -->
 </template>
 <style lang="scss">
 #__nuxt {
@@ -47,7 +44,7 @@ const {setLoading} = useLoading();
 
     const route = useRoute();
 
-    const MANUAL_LOAD_ROUTES = ['teams-id', 'player-id']
+    const MANUAL_LOAD_ROUTES = ['teams-id', 'player-id', 'games-view-id']
 nuxtApp.hook('page:finish', () => {
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
     setLoading(false)

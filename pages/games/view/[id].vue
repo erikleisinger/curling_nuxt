@@ -1,6 +1,5 @@
 <template>
     <NuxtLayout>
-        <q-inner-loading :showing="isLoadingGames || loading" color="primary" />
         <aside class="game-request__container" v-if="gameRequest">
             <GameRequest :request="gameRequest" />
             <q-separator />
@@ -81,9 +80,7 @@ const isAuthorized = ref(false);
 
 const { id: gameId } = route.params;
 
-onBeforeMount(async () => {
-    loading.value = true;
-});
+
 
 const score = ref({});
 const stats = ref({});
@@ -93,6 +90,10 @@ const games = ref([]);
 const editedGame = ref(null);
 
 const { getGames } = useGame();
+
+const {setLoading} = useLoading()
+
+const gameLoaded = ref(false)
 
 const {
     isLoading: isLoadingGames,
@@ -114,7 +115,6 @@ const {
         const { teams } = g;
 
         if (!teams) return {};
-        console.log(g)
         const ga = {
             ...g,
             home: g.teams.filter(({ home_team }) => !!home_team).map((i) => ({
@@ -132,6 +132,7 @@ const {
             sheet: useRepo(Sheet).where("id", g.sheet_id).first(),
         };
         editedGame.value = ga;
+        gameLoaded.value = true;
         return ga;
     },
 });
@@ -301,6 +302,8 @@ const canEdit = computed(
 
 const { getTeamPlayers } = useTeam();
 const enabled = computed(() => !!home.value.id && !!away.value.id);
+
+const playersLoaded = ref(false)
 const { isLoading: isLoadingPlayers } = useQuery({
     queryKey: ["game", "players", Number(route.params.id)],
     queryFn: async () => {
@@ -312,12 +315,18 @@ const { isLoading: isLoadingPlayers } = useQuery({
     },
 
     enabled,
+    select: (val) => {
+        playersLoaded.value = true;
+        return val;
+    }
 });
+
+const statsLoaded = ref(false)
 
 const initScoreAndStats = async () => {
     score.value = await generateScore(currentGame.value);
     await getStatsForGame(currentGame.value);
-    loading.value = false;
+    statsLoaded.value = true;
 };
 
 watch(
@@ -328,6 +337,13 @@ watch(
     },
     { immediate: true }
 );
+
+const pageReady = computed(() => playersLoaded.value && gameLoaded.value && statsLoaded.value)
+
+watch(pageReady, (val) => {
+    if (!val) return;
+    setLoading(false)
+})
 
 const { toUTC } = useTime();
 
