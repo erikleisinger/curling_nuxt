@@ -89,7 +89,7 @@ background-position: center;
         border-bottom-right-radius: inherit;
         width: 100%;
         position: relative;
-        padding-top: 3em;
+        padding-top: 2.9em;
         @include sm {
             padding-top: 2.9em;
         }
