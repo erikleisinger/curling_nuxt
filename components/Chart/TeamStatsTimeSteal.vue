@@ -25,6 +25,7 @@ const stats = computed(() => {
       return useRepo(TeamStats)
         .where("team_id", props.teamId)
         .where('start_time', (val) => {
+            if (!val) return false;
             if (!props.minDate) return true;
             return toUTC(val, null, false, true).unix() > toUTC(props.minDate, null, false, true).unix()
         })

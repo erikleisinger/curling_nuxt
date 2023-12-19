@@ -112,12 +112,7 @@ onMounted(async () => {
                             const numDataPoints =
                                 props.data.datasets[0].data.length;
                             if (e !== 0 && e !== numDataPoints - 1) return "";
-                            const { start_time } =
-                                numDataPoints - 1
-                                    ? props.data.datasets[0].data[
-                                          numDataPoints - 2
-                                      ].data
-                                    : props.data.datasets[0].data[e].data;
+                            const { start_time } = props.data.datasets[0].data[e].data;
                             return dayjs(start_time).format("MMM DD");
                         },
                     },
