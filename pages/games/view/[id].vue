@@ -21,7 +21,10 @@
             <template v-slot:name-append__home>
                 <div class="row badges justify-center items-end">
                     <BadgeIcon
-                        v-for="badge in [...badges[home.id]].splice(0, showMoreBadgesHome ? badges[home.id]?.length : 2)"
+                        v-for="badge in [...(badges[home.id] ?? [])].splice(
+                            0,
+                             showMoreBadgesHome ? badges[home.id]?.length : 2
+                        )"
                         :key="badge.id"
                         :badge="badge.name"
                         height="1.9em"
