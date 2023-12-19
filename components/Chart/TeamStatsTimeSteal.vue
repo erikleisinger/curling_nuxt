@@ -1,5 +1,9 @@
 <template>
-    <ChartLineOverTime v-bind="chartData()" height="200px">
+    <ChartLineOverTime v-bind="chartData()" >
+         <template v-slot:annotation>
+            <h3>{{cumulativeAvg}}%</h3>
+            <h4>top {{100 -percentile}}% worldwide</h4>
+        </template>
     </ChartLineOverTime>
 </template>
 <script setup>
@@ -10,7 +14,8 @@ import {
 } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 import TeamStats from "@/store/models/team-stats";
-import Game from '@/store/models/game'
+import Game from '@/store/models/game';
+import Team from "@/store/models/team";
 
 const props = defineProps({
     minDate: String,
@@ -36,6 +41,15 @@ const stats = computed(() => {
 }
     
 );
+
+const t = computed(() => useRepo(Team)
+        .where("id", props.teamId)
+        .with('totalStats')
+        .first())
+
+const percentile = computed(() => t.value?.totalStats?.steal_efficiency_percentile * 100)
+
+const cumulativeAvg = computed(() => (t.value?.totalStats?.steal_efficiency * 100).toFixed(2))
 
 const chartData = () => {
     const { format, toTimezone } = useTime();
@@ -183,19 +197,17 @@ const chartData = () => {
                     if (!opposition_name) return "";
                     return `vs. ${opposition_name}`;
                 },
-                 afterLabel: (d) => {
-                    const { y } = d.raw;
-            
-                    return `Cumulative average: ${y.toFixed(1)}%`;
-                },
-                label: (d) => {
-                    const data = getPointData([d]);
-                    return `${data.non_hammer_steal_count}/${
-                        data.non_hammer_end_count
-                    } ends (${(
+      
+                 footer: ([d]) => {
+                     const data = getPointData([d]);
+             return `This game: ${(
                         (data.non_hammer_steal_count / data.non_hammer_end_count) *
                         100
-                    ).toFixed(1)}%)`;
+                    ).toFixed(1)}%`;
+                },
+                label: (d) => {
+                    const {y} = d.raw;
+                    return `${y.toFixed(1)}%`
                 },
                 title: (d) => {
                     const data = getPointData(d);

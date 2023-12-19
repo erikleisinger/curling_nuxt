@@ -6,13 +6,13 @@
             <q-tabs
                 v-model="currentIndex"
                 active-bg-color="white"
-                active-color="deep-purple"
-                color="deep-purple"
+                :active-color="tabColor"
+                :color="tabColor"
                 shrink
-                class="text-deep-purple"
+            
             >
-                <q-tab label="Hammer efficiency" :name="0" />
-                <q-tab label="Steal efficiency" :name="1" />
+                <q-tab label="Hammer efficiency" :name="0"  />
+                <q-tab label="Steal efficiency" :name="1"  />
                 <q-tab label="Force efficiency" :name="2" />
                 <q-tab label="Steal defense" :name="3" />
             </q-tabs>
@@ -68,7 +68,7 @@
                     :opponentId="opponentId"
                     :teamId="teamId"
                     v-if="currentIndex === 0"
-                    height="200px"
+                    :height="chartHeight"
                     :minDate="minDate"
            
                 />
@@ -76,21 +76,21 @@
                     :opponentId="opponentId"
                     :teamId="teamId"
                     v-if="currentIndex === 1"
-                    height="200px"
+                   :height="chartHeight"
                        :minDate="minDate"
                 />
                 <ChartTeamStatsTimeForce
                     :opponentId="opponentId"
                     :teamId="teamId"
                     v-if="currentIndex === 2"
-                    height="200px"
+                    :height="chartHeight"
                          :minDate="minDate"
                 />
                 <ChartTeamStatsTimeStealDefense
                     :opponentId="opponentId"
                     :teamId="teamId"
                     v-if="currentIndex === 3"
-                    height="200px"
+                    :height="chartHeight"
                          :minDate="minDate"
                 />
             </div>
@@ -115,6 +115,7 @@
     margin-left: auto;
     margin-right: auto;
     position: relative;
+    min-height: v-bind(chartHeight);
     .chart-options__container {
         height: 100%;
         width: 100%;
@@ -133,6 +134,11 @@
         .q-tabs {
             flex-grow: 0;
             flex-shrink: 1;
+            .q-tab {
+                &.red {
+                    color: red!important;
+                }
+            }
         }
     }
 }
@@ -148,7 +154,13 @@ import { useDebounceFn } from "@vueuse/core";
 import { useQuery } from "@tanstack/vue-query";
 import TeamStats from "@/store/models/team-stats";
 
+const tabColor = computed(() => {
+    return ['deep-purple', 'red', 'blue', 'blue-grey'][currentIndex.value]
+})
 
+const $q = useQuasar();
+
+const chartHeight = computed(() => $q.screen.xs ? '250px' : '400px')
 
 
 const props = defineProps({

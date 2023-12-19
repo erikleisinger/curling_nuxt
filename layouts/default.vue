@@ -121,15 +121,7 @@ $footer-height-sm: 4em;
         background-color: white;
         margin: auto;
     }
-    // .q-footer,
-    // .q-header {
-    //     left: 0;
-    //     right: 0;
-    //     // margin: auto;
-    //     z-index: $z-tools;
-    //     position: sticky;
-    //     bottom: 0;
-    // }
+
 
     .q-page-container {
         box-shadow: $pretty-shadow;

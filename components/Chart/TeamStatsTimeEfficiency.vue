@@ -1,6 +1,10 @@
 <template>
 
-    <ChartLineOverTime v-bind="chartData()" height="200px" class="col-10">
+    <ChartLineOverTime v-bind="chartData()"  class="col-12" >
+        <template v-slot:annotation>
+            <h3>{{cumulativeAvg}}%</h3>
+            <h4>top {{100 - percentile}}% worldwide</h4>
+        </template>
     </ChartLineOverTime>
 
 </template>
@@ -30,7 +34,7 @@ const stats = computed(() => {
     return useRepo(TeamStats)
         .where("team_id", props.teamId)
         .where('start_time', (val) => {
-            if (!val) return false;
+            if (!val) return;
             if (!props.minDate) return true;
             return toUTC(val, null, false, true).unix() > toUTC(props.minDate, null, false, true).unix()
         })
@@ -39,6 +43,18 @@ const stats = computed(() => {
 }
     
 );
+
+
+
+const t = computed(() => useRepo(Team)
+        .where("id", props.teamId)
+        .with('totalStats')
+        .first())
+
+const percentile = computed(() => t.value?.totalStats?.hammer_conversion_percentile * 100)
+
+const cumulativeAvg = computed(() => t.value?.totalStats?.hammer_conversion_average.toFixed(2))
+
 
 const chartData = () => {
     const { format, toTimezone } = useTime();
@@ -54,7 +70,6 @@ const chartData = () => {
         .where("id", props.teamId)
         .with('totalStats')
         .first()
-        
 
 
 
@@ -65,12 +80,14 @@ const chartData = () => {
         label: BADGE_TITLES_PLAIN.efficiency,
 
         data: stats.value.map((d, index) => {
+      
             const previous = [...stats.value].splice(0, index);
             previous.push({
                 hammer_end_count: d.hammer_end_count,
                 hammer_conversion_count: d.hammer_conversion_count,
             
             });
+     
 
             const sums = previous.reduce(
                 (
@@ -191,19 +208,18 @@ const chartData = () => {
                     if (!opposition_name) return "";
                     return `vs. ${opposition_name}`;
                 },
-                 afterLabel: (d) => {
-                    const { y } = d.raw;
-               
-                    return `Cumulative average: ${y.toFixed(1)}%`;
-                },
-                label: (d) => {
+                 footer: ([d]) => {
                     const data = getPointData([d]);
-                    return `${data.hammer_conversion_count}/${
-                        data.hammer_end_count
-                    } ends (${(
+    
+               
+                     return `This game: ${(
                         (data.hammer_conversion_count / data.hammer_end_count) *
                         100
-                    ).toFixed(1)}%)`;
+                    ).toFixed(1)}%`;
+                },
+               label: (d) => {
+                    const {y} = d.raw;
+                    return `${y.toFixed(1)}%`
                 },
                 title: (d) => {
                     const data = getPointData(d);
