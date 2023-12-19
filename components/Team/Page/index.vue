@@ -35,7 +35,7 @@
                     :badge="badge"
                 >
                     <template v-slot:underlay>
-                        <span v-if="index === 0">Recent</span>
+                        <span v-if="index === 0 && !!team.featured_badge_id">Recent</span>
                     </template>
                 </Badge>
             </div>
@@ -304,7 +304,7 @@ const featuredBadge = computed(() =>
 const badgesLimited = computed(() =>
     [...badges.value]
         .filter(({ id }) => id !== team.value.featured_badge_id)
-        .splice(0, $q.screen.xs ? 1 : 3)
+        .splice(0, $q.screen.xs ? (team.value.featured_badge_id ? 1 : 2) : (team.value.featured_badge_id ? 3 : 4))
 );
 
 const { setLoading } = useLoading();
