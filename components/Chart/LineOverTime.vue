@@ -165,7 +165,6 @@ return {
 });
 
 onMounted(async () => {
-    console.log(props.height)
     getMinMax();
     const annotations = { ...props.annotations };
     const data = {...props.data, datasets: props.data.datasets.map((d) => ({

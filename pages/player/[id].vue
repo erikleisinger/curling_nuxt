@@ -22,6 +22,7 @@
             </h3>
         </header>
         <main class="player--info">
+
             <section
                 class="player-teams--section hide-scroll"
                 :class="{ 'col-6': !$q.screen.xs }"
@@ -36,9 +37,10 @@
                     
                         <TeamAvatarBadge :teamId="team.id" />
                     </div>
-                    <h3 class="text-sm text-center">{{ team.name }}</h3>
+                    <h3 class="text-sm text-center truncate-text" style="max-width: 100px">{{ team.name }}</h3>
                 </div>
             </section>
+
             <section
                 class="player-badges--section"
                 :class="{ 'col-6': !$q.screen.xs }"
@@ -83,6 +85,7 @@
     .player-badges--section {
         display: flex;
         flex-wrap: nowrap;
+        margin-bottom: var(--space-md);
         max-width: 100%;
         @include sm {
             max-width: 50%;
@@ -102,9 +105,11 @@
             width: min-content;
             padding: var(--space-sm);
             cursor: pointer;
+            height: min-content;
         }
     }
     :deep(.player-badges--section) {
+        
         @include sm {
             margin-right: var(--space-sm);
         }
@@ -231,7 +236,7 @@ const getBadges = async () => {
     return e;
 };
 
-const badgesEnabled = computed(() => !!teams.value.length)
+const badgesEnabled = computed(() => !!teamsDone.value)
 const badgesDone = ref(false)
 
 const { isLoading: isLoadingBadges, data: badges } = useQuery({
