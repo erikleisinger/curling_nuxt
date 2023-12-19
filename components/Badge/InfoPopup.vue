@@ -17,7 +17,7 @@
         
              <div class="badge-popup__additional" :class="BADGE_BACKGROUNDS[badge.name]">
              <div class="badge-popup__additional--inner">
-    <p class="text-sm text-center text-bold row justify-center" >
+                 <p class="text-sm text-center text-bold row justify-center" >
        
                <div v-if="!!globalCount" style="width: fit-content"> {{globalCount}}% of teams have this badge.</div>
                <q-skeleton v-else type="text" width="185px"/>

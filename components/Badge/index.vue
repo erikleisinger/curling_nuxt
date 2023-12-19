@@ -33,9 +33,9 @@
             >
                 <TeamAvatar :teamId="badge.team_id" viewable />
             </div>
-            <!-- <div class="text-xs text-right">
+            <div class="text-xs text-right" v-if="showTime">
                 {{ toTimezone(badge.created_at, null, false, true).fromNow() }}
-            </div> -->
+            </div>
         </div>
            <BadgeInfoPopup :badge="badge" v-model="showMore"/>
     </div>
@@ -100,6 +100,7 @@ const props = defineProps({
     },
     highlight: Boolean,
     showTeam: Boolean,
+    showTime: Boolean,
     width: {
         type: String,
         default: "150px",

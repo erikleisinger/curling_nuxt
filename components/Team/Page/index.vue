@@ -173,7 +173,57 @@
                 <span v-if="!selectingFeatured">
                     Badges ({{ badges.length }})
                 </span>
-                <span v-else> Select featured badge </span>
+                <span v-else class="text-sm"> Select featured badge </span>
+                <div class="row">
+                  <q-btn flat round icon="sort">
+           
+                <q-menu>
+                    <q-item
+                        clickable
+                        v-ripple
+                        @click="onClickSort('Alphabetical')"
+                        :active="!!sortAlphabeticalOrder"
+                       
+                    >
+                       
+                        <q-item-section no-wrap>
+                            Sort Alphabetically
+                        </q-item-section>
+                         <q-item-section no-wrap avatar>
+ <q-icon
+                                :name="
+                                    sortAlphabeticalOrder === 'desc'
+                                        ? 'keyboard_arrow_down'
+                                        : 'keyboard_arrow_up'
+                                "
+                            ></q-icon>
+                            </q-item-section>
+                    </q-item>
+                     <q-item
+                        clickable
+                        v-ripple
+                         @click="onClickSort('Date')"
+                         :active="!!sortDateOrder"
+
+                       
+                    >
+                       
+                        <q-item-section no-wrap>
+                            Sort By Date Earned
+                        </q-item-section>
+                         <q-item-section no-wrap avatar>
+                             <q-icon
+                                 :name="
+                                    sortDateOrder === 'desc'
+                                        ? 'keyboard_arrow_down'
+                                        : 'keyboard_arrow_up'
+                                "
+                            ></q-icon>
+                            </q-item-section>
+                    </q-item>
+
+                </q-menu>
+            </q-btn>
                 <q-btn
                     flat
                     round
@@ -182,6 +232,7 @@
                     @click="badgesOpen = false"
                     style="margin-right: -12px"
                 />
+                </div>
             </h3>
             <q-separator />
             <div
@@ -189,18 +240,14 @@
                 :class="$q.screen.xs ? 'justify-between' : 'justify-start'"
             >
                 <Badge
-                    v-for="badge in [...badges].sort((a, b) =>
-                        sortAlphabetically(
-                            BADGE_NAMES[a.name],
-                            BADGE_NAMES[b.name]
-                        )
-                    )"
+                    v-for="badge in badgesSorted"
                     :key="badge.id"
                     :badge="badge"
                     :width="badgeWidth"
                     :highlight="selectingFeatured && team.featured_badge_id === badge.id"
                     @click="selectFeaturedBadge($event, badge.id)"
                     :canView="!selectingFeatured"
+                    showTime
                 />
             </div>
         </q-card>
@@ -316,6 +363,48 @@ const { isLoading, data: badges } = useQuery({
         return val;
     },
 });
+
+const sortDateOrder = ref(null);
+const sortAlphabeticalOrder = ref('asc');
+
+const onClickSort = (type) => {
+    console.log('click sort: ', type)
+    const typeKey = `sort${type}Order`;
+    const sortTypes = {
+        sortDateOrder: sortDateOrder,
+        sortAlphabeticalOrder: sortAlphabeticalOrder,
+    };
+    Object.keys(sortTypes)
+        .filter((key) => key !== typeKey)
+        .forEach((key) => {
+            sortTypes[key].value = null;
+        });
+
+    const steps = [null, "asc", "desc"];
+
+    if (sortTypes[typeKey].value === "desc") {
+        sortTypes[typeKey].value = null;
+    } else {
+        const index = steps.indexOf(sortTypes[typeKey].value);
+        sortTypes[typeKey].value = steps[index + 1];
+    }
+};
+
+const badgesSorted = computed(() => [...(badges.value ?? [])].sort((a,b) => {
+    if (sortAlphabeticalOrder.value) {
+        console.log('sort alphabetically')
+        const {sortAlphabetically} = useSort();
+        return sortAlphabetically(BADGE_NAMES[a.name].toLowerCase().replaceAll(' ', ''), BADGE_NAMES[b.name].toLowerCase().replaceAll(' ', ''), sortAlphabeticalOrder.value === 'asc')
+    }
+    if (sortDateOrder.value) {
+        const {toTimezone} = useTime();
+        if (sortDateOrder.value === 'asc') {
+            return toTimezone(b.created_at, null, false, true).unix() - toTimezone(a.created_at, null, false, true).unix();
+        }
+        return toTimezone(a.created_at, null, false, true).unix() - toTimezone(b.created_at, null, false, true).unix();
+    }
+    return 1;
+}))
 
 const pageReady = computed(() => badgesLoaded.value && headerLoaded.value);
 
