@@ -17,9 +17,10 @@
         
              <div class="badge-popup__additional" :class="BADGE_BACKGROUNDS[badge.name]">
              <div class="badge-popup__additional--inner">
-    <p class="text-sm text-center text-bold" >
+    <p class="text-sm text-center text-bold row justify-center" >
        
-               <span :style="{opacity: !!globalCount ? 1 : 0}" class="global-count"> {{globalCount}}% of teams have this badge.</span>
+               <div v-if="!!globalCount" style="width: fit-content"> {{globalCount}}% of teams have this badge.</div>
+               <q-skeleton v-else type="text" width="185px"/>
       
             </p>
                 <div class="badge-popup__game-result">
@@ -37,6 +38,11 @@
                     View game
                     </div>  
             </p>
+            <div v-else class="column items-center">
+ <q-skeleton type="text" width="185px"/>
+  <q-skeleton  type="text" width="100px"/>
+   <q-skeleton  type="text" width="80px"/>
+            </div> 
         
              </div>
             </div>
@@ -100,6 +106,7 @@ background-position: center;
        
         .badge-popup__additional--inner {
             margin-top: var(--space-md);
+            padding: 0px var(--space-lg);
         }
         .global-count {
             transition: all 0.2s;
@@ -180,6 +187,9 @@ const getBadgeCountGlobal = async () => {
 const {isLoading: isLoadingGlobalCount, data: globalCount} = useQuery({
     queryKey: ['badge', 'globalcount', props.badge.name],
     queryFn: getBadgeCountGlobal,
-    enabled: isShowing
+    enabled: isShowing,
+    select: (val) => {
+        return val;
+    }
 })
 </script>
