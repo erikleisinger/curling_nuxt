@@ -283,8 +283,8 @@ const useSearch = useThrottleFn(async () => {
         .limit(25);
 
 
-    results.value = data.reduce((all, current) => {
-        if (!props.resourceTypes?.length) return [...all, current];
+    results.value = data.reduce((all, current) => {       
+        if (!props.resourceTypes?.length) return [...all, current];     
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
         if (
             props.filterIds.length && 
@@ -292,7 +292,7 @@ const useSearch = useThrottleFn(async () => {
             props.filterIds.includes(current.profile_id))
         )
             return all;
-        
+       
         if (props.restrictIds?.length && (!props.restrictIds.includes(current.id) && !props.restrictIds.includes(current.profile_id))) return all;
         return [...all, current];
     }, []);

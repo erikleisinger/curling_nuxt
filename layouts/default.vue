@@ -40,23 +40,26 @@
                         direction="up"
                         class="action-button"
                     >
-                        <q-fab-action
-                            color="amber"
-                            icon="group_add"
-                            @click="newTeamOpen = true"
-                        >
-                            <span class="action-button__label">New team</span>
-                        </q-fab-action>
-                        <q-fab-action
-                            color="blue"
+                      <q-fab-action
+                            color="primary"
                             icon="videogame_asset"
                             @click="goTo('/games/create')"
                         >
                             <span class="action-button__label">New game</span>
                         </q-fab-action>
-                        <q-fab-action color="red" icon="logout" @click="logout">
-                            <span class="action-button__label">Logout</span>
+                      <q-fab-action color="blue" icon="insights"  @click="goTo('/games/pregame')" >
+                            <span class="action-button__label">Pre-game</span>
                         </q-fab-action>
+                       
+                        <q-fab-action
+                            color="blue"
+                            icon="group_add"
+                            @click="newTeamOpen = true"
+                        >
+                            <span class="action-button__label">New team</span>
+                        </q-fab-action>
+                       
+                      
                     </q-fab>
                 </div>
                 <q-btn

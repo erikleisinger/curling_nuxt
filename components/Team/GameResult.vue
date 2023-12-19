@@ -404,13 +404,13 @@ const game = computed(() =>
 );
 
 const rink = computed(() =>
-    !game.value.rink_id
+    !game.value?.rink_id
         ? null
         : useRepo(Rink).where("id", game.value.rink_id).first()
 );
 
 const sheet = computed(() =>
-    !game.value.rink_id
+    !game.value?.sheet_id
         ? null
         : useRepo(Sheet).where("id", game.value.sheet_id).first()
 );

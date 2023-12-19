@@ -1,12 +1,13 @@
 <template>
     <NuxtLayout>
-        <div class="edit-container--floating" v-if="canEdit">
-            <q-btn flat round icon="edit" @click="editing = true"/>
-        </div>
         
+           <div class="logout-container--floating" v-if="canEdit">
+            <q-btn flat round icon="logout" @click="logout"/>
+        </div>
         <header class="player-page__header column justify-center items-center">
-            <div class="player-avatar__wrap">
+            <div class="player-avatar__wrap " :class="{clickable: canEdit}" @click="onClickAvatar">
                 <Avataaar v-bind="player.avatar" v-if="!isLoading" />
+                
             </div>
             <h2 class="text-lg text-bold text-center">
                 {{ player.first_name }} {{ player.last_name }}
@@ -61,7 +62,7 @@
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
-.edit-container--floating {
+.logout-container--floating {
     position: absolute;
     top: 0;
     right: 0;
@@ -127,6 +128,8 @@ import Rink from '@/store/models/rink'
 import {useUserStore} from '@/store/user'
 import { useQuery } from "@tanstack/vue-query";
 import {useDialogStore} from '@/store/dialog'
+
+const { logout } = useSession();
 
 const route = useRoute();
 const client = useSupabaseClient();
@@ -287,6 +290,11 @@ const searchRink = () => {
         },
     });
 };
+
+const onClickAvatar = () => {
+    if (!canEdit.value) return;
+    editing.value = true;
+}
 </script>
 <script>
 export default {
