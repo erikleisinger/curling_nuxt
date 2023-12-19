@@ -6,7 +6,6 @@ export const useBadge = () => {
     const hasBadge = (teamId: string, badge: string, team: object) => {
         if (!BADGE_THRESHOLDS[badge] || !BADGE_FIELDS[badge]) return false;
 
-    
         if (!team && !teamId) return false;
         if (!team) {
             team = store.userTeams.find(({ id }) => id === teamId);
@@ -29,5 +28,36 @@ export const useBadge = () => {
         );
     };
 
-    return { hasBadge };
+    const getBadgesForTeam = async (teamId: number) => {
+    const client = useSupabaseClient();
+        const { data } = await client
+            .from("badges")
+            .select("*")
+            .eq("team_id", teamId);
+
+        return data?.reduce((all, current) => {
+            if (all.some(({ name }) => name === current.name)) return all;
+            return [...all, current];
+        }, []);
+    };
+    
+    const getBadgesForGame = async (gameId: number) => {
+        const client = useSupabaseClient();
+        const { data } = await client
+            .from("badges")
+            .select("*")
+            .eq("game_id", gameId);
+        
+            console.log('got badges: ', data)
+            const returnVal = {};
+            data?.forEach((badge) => {
+                const {team_id} = badge;
+                if (!team_id) return;
+                if (!returnVal[team_id]) returnVal[team_id] = [];
+                returnVal[team_id].push(badge)
+            })
+            return returnVal;
+    }
+
+    return { hasBadge, getBadgesForTeam, getBadgesForGame };
 };

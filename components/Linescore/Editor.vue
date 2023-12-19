@@ -91,6 +91,7 @@
                         :color="selections.homeColor || selections?.home?.color"
                     />
                     <Teleport to=".avatar-unnested__home" v-if="props.summary">
+                
                         <LinescoreAvatar
                             avatarSize="100%"
                             id="avatar-home"
@@ -151,7 +152,7 @@
                                 Select your team
                             </template>
                             <template v-slot:team-name-append>
-                                <slot name="team-name-append__home"/>
+                                <slot name="name-append__home"/>
                             </template>
                         </LinescoreAvatar>
                     </Teleport>
@@ -230,7 +231,7 @@
                                 Select opposition
                             </template>
                                    <template v-slot:team-name-append>
-                                <slot name="team-name-append__away"/>
+                                <slot name="name-append__away"/>
                             </template>
                         </LinescoreAvatar>
                     </Teleport>

@@ -84,13 +84,15 @@
                 <q-icon color="grey-6" name="o_smart_toy" />
             </div>
                 </span>
-                
+             
             </h2>
+            
             <h2 v-else class="text-sm text-bold text-center full-width">
                 <slot name="teamSelectPrompt">
                     Click the avatar to select a team
                 </slot>
             </h2>
+               <slot name="team-name-append"/>
            
         </div>
         <slot name="append" />

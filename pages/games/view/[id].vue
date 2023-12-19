@@ -17,7 +17,43 @@
             @update:modelValue="onUpdate"
             canViewTeams
             showVerified
-        />
+        >
+            <template v-slot:name-append__home>
+                <div class="row badges justify-center items-end">
+                    <BadgeIcon
+                        v-for="badge in [...badges[home.id]].splice(0, showMoreBadgesHome ? badges[home.id]?.length : 2)"
+                        :key="badge.id"
+                        :badge="badge.name"
+                        height="1.9em"
+                        @click="viewBadge(badge)"
+                        class="clickable"
+                    />
+                    <div v-if="!showMoreBadgesHome && badges[home.id]?.length > 2" class="clickable" @click="showMoreBadges('home')">
+                        +{{ badges[home.id].length - 2 }}
+                    </div>
+                    <div v-if="showMoreBadgesHome" class="text-sm full-width text-center text-underline clickable" @click="showMoreBadges('home')">Show less</div>
+                </div>
+            </template>
+            <template v-slot:name-append__away>
+                <div class="row badges justify-center items-end">
+                    <BadgeIcon
+                        v-for="badge in [...(badges[away.id] ?? [])].splice(
+                            0,
+                             showMoreBadgesAway ? badges[away.id]?.length : 2
+                        )"
+                        :key="badge.id"
+                        :badge="badge.name"
+                        height="1.9em"
+                        @click="viewBadge(badge)"
+                        class="clickable"
+                    />
+                    <div v-if="!showMoreBadgesAway && badges[away.id]?.length > 2" class="clickable" @click="showMoreBadges('away')">
+                        +{{ badges[away.id].length - 3 }}
+                    </div>
+                       <div v-if="showMoreBadgesAway" class="text-sm full-width text-center text-underline clickable" @click="showMoreBadges('away')">Show less</div>
+                </div>
+            </template>
+        </LinescoreEditor>
 
         <TeamStatsView
             v-if="!isLoadingGames && !loading && !!currentGame"
@@ -26,9 +62,25 @@
             h2h
             :gameId="Number(gameId)"
         />
+        <BadgeInfoPopup
+            v-model="badgeInfoOpen"
+            :badge="badgeToView"
+            v-if="badgeInfoOpen"
+        />
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
+.badges {
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
+    max-width: 100%;
+    overflow: hidden;
+    padding: var(--space-sm);
+    text-overflow: ellipsis;
+    min-width: 0;
+
+    white-space: nowrap;
+}
 .game-request__container {
     position: fixed;
     top: 0;
@@ -40,18 +92,18 @@
     grid-template-columns: repeat(2, 50%);
     padding: var(--space-md);
 }
- .placeholder--floating {
-        position: absolute;
-        top: 0;
-        &:not(.right) {
-            left: -1em;
-            margin-right: var(--space-xs);
-        }
-        &.right {
-            right: -1em;
-            margin-left: var(--space-xs);
-        }
+.placeholder--floating {
+    position: absolute;
+    top: 0;
+    &:not(.right) {
+        left: -1em;
+        margin-right: var(--space-xs);
     }
+    &.right {
+        right: -1em;
+        margin-left: var(--space-xs);
+    }
+}
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
@@ -74,14 +126,31 @@ const gameRequest = computed(() =>
     )
 );
 
+const badgeInfoOpen = ref(false);
+const badgeToView = ref(null);
+
+const viewBadge = (badge) => {
+    badgeInfoOpen.value = true;
+    badgeToView.value = badge;
+};
+
 const loading = ref(false);
 const result = ref(null);
 const error = ref(null);
 const isAuthorized = ref(false);
 
+const showMoreBadgesHome = ref(false);
+const showMoreBadgesAway = ref(false);
+
+const showMoreBadges = (name) => {
+    if (name === 'home') {
+        showMoreBadgesHome.value = !showMoreBadgesHome.value
+    } else {
+        showMoreBadgesAway.value = !showMoreBadgesAway.value
+    }
+}
+
 const { id: gameId } = route.params;
-
-
 
 const score = ref({});
 const stats = ref({});
@@ -92,9 +161,9 @@ const editedGame = ref(null);
 
 const { getGames } = useGame();
 
-const {setLoading} = useLoading()
+const { setLoading } = useLoading();
 
-const gameLoaded = ref(false)
+const gameLoaded = ref(false);
 
 const {
     isLoading: isLoadingGames,
@@ -118,14 +187,18 @@ const {
         if (!teams) return {};
         const ga = {
             ...g,
-            home: g.teams.filter(({ home_team }) => !!home_team).map((i) => ({
-                ...i.team,
-                pending: i.pending
-            }))[0],
-            away: g.teams.filter(({ home_team }) => !home_team).map((i) => ({
-                ...i.team,
-                pending: i.pending
-            }))[0],
+            home: g.teams
+                .filter(({ home_team }) => !!home_team)
+                .map((i) => ({
+                    ...i.team,
+                    pending: i.pending,
+                }))[0],
+            away: g.teams
+                .filter(({ home_team }) => !home_team)
+                .map((i) => ({
+                    ...i.team,
+                    pending: i.pending,
+                }))[0],
             hammerFirstEndTeam: g.hammer_first_end,
             homeColor: g.teams[0].color,
             awayColor: g.teams[1].color,
@@ -138,7 +211,12 @@ const {
     },
 });
 
+const { getBadgesForGame } = useBadge();
 
+const { isLoading: isLoadingBadges, data: badges } = useQuery({
+    queryKey: ["game", "badges", Number(route.params.id)],
+    queryFn: () => getBadgesForGame(Number(route.params.id)),
+});
 
 const home = computed(() => {
     if (isLoadingGames.value) return {};
@@ -304,7 +382,7 @@ const canEdit = computed(
 const { getTeamPlayers } = useTeam();
 const enabled = computed(() => !!home.value.id && !!away.value.id);
 
-const playersLoaded = ref(false)
+const playersLoaded = ref(false);
 const { isLoading: isLoadingPlayers } = useQuery({
     queryKey: ["game", "players", Number(route.params.id)],
     queryFn: async () => {
@@ -319,10 +397,10 @@ const { isLoading: isLoadingPlayers } = useQuery({
     select: (val) => {
         playersLoaded.value = true;
         return val;
-    }
+    },
 });
 
-const statsLoaded = ref(false)
+const statsLoaded = ref(false);
 
 const initScoreAndStats = async () => {
     score.value = await generateScore(currentGame.value);
@@ -339,12 +417,14 @@ watch(
     { immediate: true }
 );
 
-const pageReady = computed(() => playersLoaded.value && gameLoaded.value && statsLoaded.value)
+const pageReady = computed(
+    () => playersLoaded.value && gameLoaded.value && statsLoaded.value
+);
 
 watch(pageReady, (val) => {
     if (!val) return;
-    setLoading(false)
-})
+    setLoading(false);
+});
 
 const { toUTC } = useTime();
 

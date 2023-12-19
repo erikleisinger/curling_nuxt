@@ -335,15 +335,7 @@ const badgesLoaded = ref(false);
 const headerLoaded = ref(false);
 
 const { sortAlphabetically } = useSort();
-const getBadges = async (team_id: number) => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("badges")
-        .select("*")
-        .eq("team_id", team_id)
-        .order("created_at", { ascending: false });
-    return data;
-};
+const {getBadgesForTeam} = useBadge()
 
 const featuredBadge = computed(() =>
     [...badges.value].find(({ id }) => id === team.value.featured_badge_id)
@@ -357,7 +349,7 @@ const badgesLimited = computed(() =>
 const { setLoading } = useLoading();
 const { isLoading, data: badges } = useQuery({
     queryKey: ["team", "badges", Number(route.params.id)],
-    queryFn: () => getBadges(Number(route.params.id)),
+    queryFn: () => getBadgesForTeam(Number(route.params.id)),
     select: (val) => {
         badgesLoaded.value = true;
         return val;
