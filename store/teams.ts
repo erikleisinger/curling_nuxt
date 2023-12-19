@@ -352,7 +352,6 @@ export const useTeamStore = defineStore("team", {
             this.teams.sort(sortNameAlphabetically);
         },
         async updateTeam(updates: object, teamId: number) {
-            console.log('updats: ', updates)
             const { client, fetchHandler } = useSupabaseFetch();
             const { error } = await fetchHandler(() =>
                 client

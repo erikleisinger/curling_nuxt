@@ -1,5 +1,5 @@
 <template>
-    <div class="badge__container" @click="onClick" :class="{highlight}">
+    <div class="badge__container bordered" @click="onClick" :class="{highlight, [BADGE_BACKGROUNDS[badge.name]]: highlight}">
         <div class="underlay">
             <slot name="underlay"/>
         </div>
@@ -54,8 +54,9 @@
     max-width: v-bind(badgeWidth);
     min-width: v-bind(badgeWidth);
     box-sizing: border-box;
+
     &.highlight {
-        border: 4px solid $blue;
+        border: 4px solid;
         box-shadow: $pretty-shadow;
     }
     @include sm {
@@ -73,11 +74,12 @@
         position: absolute;
         z-index: 0;
         text-transform: uppercase;
-        top: 0; 
-        letter-spacing: 0.2em;
-        font-size: 1.5em;
+        top: calc(-1 * var(--space-xxxs)); 
+        letter-spacing: 0em;
+        font-size: 2em;
+
         font-weight: bold;
-        color: rgba(0,0,0,0.2)
+        color: rgba(0,0,0,0.07)
            }
 }
 
@@ -88,7 +90,7 @@
 </style>
 
 <script setup>
-import { BADGE_NAMES, BADGE_DESCRIPTIONS, BADGE_BACKGROUNDS } from "@/constants/badges";
+import { BADGE_NAMES, BADGE_DESCRIPTIONS, BADGE_BACKGROUNDS, BADGE_COLORS } from "@/constants/badges";
 
 const props = defineProps({
     badge: Object,
