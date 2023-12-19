@@ -155,7 +155,7 @@ import { useQuery } from "@tanstack/vue-query";
 import TeamStats from "@/store/models/team-stats";
 
 const tabColor = computed(() => {
-    return ['deep-purple', 'red', 'blue', 'blue-grey'][currentIndex.value]
+    return ['purple', 'red', 'blue', 'blue-grey'][currentIndex.value]
 })
 
 const $q = useQuasar();

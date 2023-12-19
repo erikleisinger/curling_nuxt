@@ -16,6 +16,7 @@
             static
             @update:modelValue="onUpdate"
             canViewTeams
+            showVerified
         />
 
         <TeamStatsView

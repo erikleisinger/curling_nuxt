@@ -35,20 +35,13 @@
 
                         <div
                             class="column full-width game-info__container"
-                            ref="gameInfoContainer"
+                   
                         >
                             <div
-                                class="game-showmore__container row justify-center items-center"
-                                :style="{
-                                    opacity: isRevealed ? 1 : 0,
-                                    pointerEvents: isRevealed ? 'all' : 'none',
-                                }"
+                                class="game-showmore__container row justify-center items-center clickable"
+                                @click="navigateTo(`/games/view/${game.id}`)"
                             >
-                                <div class="game-showmore__button">
-                                    <q-btn flat @click="onViewMore">
-                                        View game</q-btn
-                                    >
-                                </div>
+                               
                             </div>
 
                             <div
@@ -299,7 +292,7 @@ import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import Rink from "@/store/models/rink";
 import Sheet from '@/store/models/sheet'
-import { useConfirmDialog, onClickOutside } from "@vueuse/core";
+
 import { useQueryClient } from "@tanstack/vue-query";
 
 const queryClient = useQueryClient();
@@ -426,17 +419,9 @@ const emit = defineEmits(["expand", "invite"]);
 
 const { format, toTimezone } = useTime();
 
-const gameInfoContainer = ref(null);
 
-const { isRevealed, reveal, confirm, cancel, onConfirm, onCancel } =
-    useConfirmDialog();
 
-onClickOutside(gameInfoContainer, cancel);
 
-const onViewMore = () => {
-    if (!isRevealed.value) return;
-    navigateTo(`/games/view/${game.value.id}`);
-};
 
 const { isOnTeam } = useTeam();
 </script>

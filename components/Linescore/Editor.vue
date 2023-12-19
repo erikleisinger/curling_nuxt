@@ -263,14 +263,21 @@
             <div class="totalscore--summary" id="totalscore-away">
                 {{ totalScore.away }}
             </div>
-            <div class="end-count__container text-sm">
+            <div class="end-count__container text-sm ">
+           
                 After
                 {{
                     Object.values(score).filter((e) => e?.home !== "X")?.length
                 }}
+           
+                 
             </div>
+           
         </div>
         <div class="full-width row justify-center" v-if="summary">
+             <div class="row full-width justify-center q-mb-md" v-if="showVerified">
+           <TeamGameResultVerification  :gameId="selections.id" />
+            </div>
             <div
                 class="info__section relative-position"
                 style="width: fit-content"
@@ -473,6 +480,10 @@ const props = defineProps({
     modelValue: Object,
     score: Object,
     selected: Number,
+    showVerified: {
+        type: Boolean,
+        default: false,
+    },
     summary: Boolean,
     static: Boolean,
 });
