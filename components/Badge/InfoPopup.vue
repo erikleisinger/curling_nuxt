@@ -6,7 +6,7 @@
             </div>
             <div class="badge-popup__content column items-center">
                  <div class="cutout"/>
-            <h2 class="text-md text-bold text-uppercase" style="margin-top: 8px">
+            <h2 class="text-xl text-bold text-uppercase text-center" style="margin-top: 8px; line-height: 1.4em">
                 {{ BADGE_NAMES[badge.name] }}
             </h2>
             <p class="text-sm text-italic text-center q-px-md">
