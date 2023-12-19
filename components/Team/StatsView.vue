@@ -78,13 +78,13 @@
                             :visible="
                                 viewDetails.includes(BADGE_TITLES_PLAIN[badge])
                             "
-                            :dense="!!oppositionId"
-                            :prependPercent="!!oppositionId"
+                            dense
+                            prependPercent
                         />
                     </div>
                     <div
                         class="col-6 q-pl-md"
-                        v-if="!reloading && oppositionId && oppositionTeam"
+                        v-if="!reloading && (oppositionId || oppositionTeam)"
                     >
                         <LazyTeamStatsViewPercentage
                             class="full-width"
@@ -151,6 +151,7 @@ import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import TeamStats from "@/store/models/team-stats";
 
+
 const props = defineProps({
     exclude: {
         type: Array,
@@ -159,6 +160,7 @@ const props = defineProps({
     h2h: Boolean,
     gameId: Number,
     oppositionId: Number,
+    oppositionName: String,
     // Requires 'color' to be included in team/oppositionTeam props
     showColors: Boolean,
     teamId: Number,
@@ -182,7 +184,7 @@ const getCumulativeStats = (statsArray) => {
     return statsArray.reduce((all, current) => {
         const allCopy = { ...all };
         Object.keys(current).forEach((key) => {
-            allCopy[key] = allCopy[key] ?? 0 + current[key];
+            allCopy[key] = (typeof allCopy[key] === 'number' ? allCopy[key] : 0) + current[key];
         });
         return allCopy;
     }, {});
@@ -229,24 +231,34 @@ const stats = computed(() => {
         };
     } else {
         return {
-            team: getCumulativeStats(
+            team: props.gameId ? getCumulativeStats(
                 useRepo(TeamStats)
                     .where("team_id", props.teamId)
                     .whereIn("game_id", props.gameId)
-                    .get()
-            ),
-            opposition: getCumulativeStats(
+                    .get()) : getCumulativeStats(
+                useRepo(TeamStats)
+                    .where("team_id", props.teamId)
+                    .get()),
+            opposition: props.game_id ? getCumulativeStats(
                 useRepo(TeamStats)
                     .where("team_id", props.oppositionId)
                     .whereIn("game_id", props.gameId)
-                    .get()
-            ),
+                    .get()) :
+                     props.oppositionId ? 
+                    getCumulativeStats(
+                useRepo(TeamStats)
+                    .where("team_id", props.oppositionId)
+                    .get()) : 
+                getCumulativeStats(useRepo(Team).withAll().where('name', (val) => {
+                    return val.toLowerCase().replaceAll(' ', '') === props.oppositionName.toLowerCase().replaceAll(' ', '')
+                }).get().map(({stats}) => stats[0]))
         };
     }
 });
 const oppositionTeam = computed(() => {
-    if (!props.oppositionId) return null;
-    const t =
+    if (!props.oppositionId && !props.oppositionName) return null;
+    if (props.oppositionId) {
+ const t =
         useRepo(Team)
             .with("stats")
             .with("games")
@@ -256,6 +268,21 @@ const oppositionTeam = computed(() => {
         ...t,
         ...t.totalStats,
     };
+    } else {
+         const t =
+        useRepo(Team)
+            .with("stats")
+            .with("games")
+            .where('name', (val) => {
+                    return val.toLowerCase().replaceAll(' ', '') === props.oppositionName.toLowerCase().replaceAll(' ', '')
+                })
+            .first() ?? {};
+    return {
+        ...t,
+        ...t.totalStats,
+    };
+    }
+   
 });
 
 const EXCLUDE_FIELDS = ["survivalist", ...props.exclude];

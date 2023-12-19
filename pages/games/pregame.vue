@@ -66,15 +66,18 @@
                         <span>{{ number }}{{ numberToLetter(number) }}</span>
                     </div>
                 </div>
+                <div class="full-width row justify-center q-mt-md">
+                <q-btn rounded color="primary" :disable="generating || !sheet || !rink || !opponent || !team" @click="generatePreGame" :loading="generating">Generate</q-btn>
+                </div>
             </section>
             <section>
               
-                <div class="row color-stats__container justify-around" v-if="colorStats?.red?.win || colorStats?.yellow?.win || colorStats?.blue?.win">
+                <div class="row color-stats__container justify-around" v-if="allSheetGameCount">
                       <h3 class="text-md text-center text-bold col-12">Color selection</h3>
                       <h4 class="text-sm text-center" style="margin-top: -1em">
                         On sheet {{ sheet }}{{ numberToLetter(sheet) }}, % of the time each color wins
                       </h4>
-                <div class="column">
+                <div class="column" v-if="colorStats.yellow !== undefined">
                     <div class="row">
                         <div style="width: 1em" class="q-mr-sm">
                             <RockIcon :draggable="false" color="yellow" />
@@ -85,8 +88,8 @@
                     <div class="text-bold text-lg">
                         <strong
                             >{{
-                                (colorStats.yellow.win /
-                                    (sheetGames.length / 2)) *
+                                (colorStats.yellow /
+                                    allSheetGameCount) *
                                 100
                             }}%</strong
                         >
@@ -94,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="column">
+                <div class="column" v-if="colorStats.red !== undefined">
                     <div class="row">
                         <div style="width: 1em" class="q-mr-sm">
                             <RockIcon :draggable="false" color="red" />
@@ -105,15 +108,15 @@
                     <div class="text-bold text-lg">
                         <strong
                             >{{
-                                (colorStats.red.win /
-                                    (sheetGames.length / 2)) *
+                                (colorStats.red /
+                                    allSheetGameCount) *
                                 100
                             }}%</strong
                         >
                      
                     </div>
                 </div>
-                 <div class="column">
+                 <div class="column" v-if="colorStats.blue !== undefined">
                     <div class="row">
                         <div style="width: 1em" class="q-mr-sm">
                             <RockIcon :draggable="false" color="blue" />
@@ -124,8 +127,8 @@
                     <div class="text-bold text-lg">
                         <strong
                             >{{
-                                (colorStats.blue.win /
-                                    (sheetGames.length / 2)) *
+                                (colorStats.blue /
+                                    allSheetGameCount) *
                                 100
                             }}%</strong
                         >
@@ -133,6 +136,13 @@
                     </div>
                 </div>
                 </div>
+                 <TeamStatsView
+            v-if="!generating && showStats"
+            :teamId="team.id"
+            :oppositionId="opponent?.id"
+            :oppositionName="opponent?.name"
+            h2h
+        />
             </section>
         </main>
     </div>
@@ -181,7 +191,11 @@
 <script setup>
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
+
 import GameTeam from "@/store/models/game-team";
+import TeamStats from '@/store/models/team-stats'
+import Team from '@/store/models/team'
+import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
 
 const { toggleGlobalSearch } = useDialogStore();
 
@@ -206,7 +220,6 @@ const toggleRinkSearch = () => {
 };
 
 const toggleTeamSearch = () => {
-    console.log(useUserTeamStore().userTeams.map(({ id }) => id));
     toggleGlobalSearch({
         open: true,
         options: {
@@ -215,6 +228,7 @@ const toggleTeamSearch = () => {
             restrictIds: useUserTeamStore().userTeams.map(({ id }) => id),
             callback: (selection) => {
                 team.value = selection;
+                GET_TEAM_WITH_STATS(selection?.id)
             },
         },
     });
@@ -228,6 +242,7 @@ const toggleOpponentSearch = () => {
             resourceTypes: ["team"],
             callback: (selection) => {
                 opponent.value = selection;
+                 GET_TEAM_WITH_STATS(selection?.id)
             },
         },
     });
@@ -245,10 +260,7 @@ const searchParams = computed(() => ({
     opponent: opponent.value,
 }));
 
-watch(searchParams, (val) => {
-    if (!val.rink || !val.sheet || !val.team || !val.opponent) return;
-    generatePreGame();
-});
+
 
 const getSheet = async (number, rink_id) => {
     const client = useSupabaseClient();
@@ -267,10 +279,15 @@ const sheetGamesFiltered = computed(() =>
     sheetGames.value.filter(({ team: t }) => t?.id === team.value?.id)
 );
 const opponentGames = ref([]);
+const myGames = ref([])
 
 const { getGames } = useGame();
 
+const generating = ref(false)
+const showStats = ref(false)
 const generatePreGame = async () => {
+    generating.value = true;
+    showStats.value = false;
     const { id: rink_id } = rink.value;
 
     const sheetId = await getSheet(sheet.value, rink_id);
@@ -279,13 +296,10 @@ const generatePreGame = async () => {
         team_id_param: team?.value?.id,
         game_id_param: null,
     });
-    console.log("games: ", games);
-    const filtered = games.filter(
+    myGames.value = games.filter(
         (game) =>
-            game?.team?.id === team.value?.id ||
-            game.team?.id === opponent.value?.id ||
-            game.team?.name?.toLowerCase().replaceAll(" ", "") ===
-                opponent.value.name?.toLowerCase().replaceAll(" ", "")
+            game?.team?.id === team.value?.id
+
     );
     sheetGames.value = games.filter(({ sheet }) => sheet?.id === sheetId);
     opponentGames.value = games.filter(
@@ -294,27 +308,14 @@ const generatePreGame = async () => {
             game.team?.name?.toLowerCase().replaceAll(" ", "") ===
                 opponent.value.name?.toLowerCase().replaceAll(" ", "")
     );
-    console.log("filtered: ", filtered);
-    generateColorStats(sheetId);
+     await generateColorStats(sheetId);
+    await generateHeadToHead()
+    generating.value = false;
+    showStats.value = true;
 };
 
-const colorStats = ref({
-    yellow: {
-        win: 0,
-        loss: 0,
-        tie: 0,
-    },
-    red: {
-        win: 0,
-        loss: 0,
-        tie: 0,
-    },
-    blue: {
-        win: 0,
-        loss: 0,
-        tie: 0,
-    },
-});
+const colorStats = ref({});
+const allSheetGameCount = ref(0)
 
 const generateColorStats = async (sheet_id) => {
     const client = useSupabaseClient();
@@ -322,13 +323,13 @@ const generateColorStats = async (sheet_id) => {
         .from("games")
         .select("id")
         .eq("sheet_id", sheet_id);
+    allSheetGameCount.value = allGames?.length
     const gameIds = allGames.map(({ id }) => id);
     const { data: stats } = await client
         .from("team_stats")
         .select("*")
         .in("game_id", gameIds);
     stats.forEach((stat) => {
-        console.log("stat: ", stat);
         const gameTeam = useRepo(GameTeam)
             .where("game_id", stat.game_id)
             .where("team_id", (val) => {
@@ -337,9 +338,37 @@ const generateColorStats = async (sheet_id) => {
             .first();
         if (!gameTeam) return;
         const { color } = gameTeam;
-        colorStats.value[color][
-            stat.win ? "win" : stat.loss ? "loss" : "tie"
-        ] = 1;
+        if (!colorStats.value[color]) colorStats.value[color] = 0
+        colorStats.value[color] += stat.win
     });
 };
+
+const getCumulativeStats = (statsArray) => {
+    return statsArray.reduce((all, current) => {
+        const allCopy = { ...all };
+        Object.keys(current).forEach((key) => {
+            allCopy[key] = (typeof allCopy[key] === 'number' ? allCopy[key] : 0) + current[key];
+        });
+        return allCopy;
+    }, {});
+};
+
+const generateHeadToHead = async () => {
+    const client = useSupabaseClient();
+    const {data:games} = await client.from('games').select('id').or(`home.eq.${team.value.id},away.eq.${team.value.id}`);
+    const {data:teamstats} = await client.from('team_stats').select('*').in('game_id', games.map(({id}) => id))
+    console.log('got teamstats: ', teamstats)
+    teamstats.forEach((stat) => {
+        
+        useRepo(TeamStats).save({...stat,
+        team_id: stat.team_id || stat.game_id + 100000000})
+    })
+    const h2hGames = myGames.value.filter(({game_id}) => opponentGames.value.some(({game_id: gid}) => gid === game_id))
+
+
+    const stats = useRepo(TeamStats).query().whereIn('game_id', h2hGames.map(({game_id}) => game_id)).get();
+
+}
+
+
 </script>
