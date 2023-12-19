@@ -17,14 +17,16 @@
         
              <div class="badge-popup__additional" :class="BADGE_BACKGROUNDS[badge.name]">
              <div class="badge-popup__additional--inner">
-    <p class="text-sm text-center text-bold">
-                {{globalCount}}% of teams have this badge.
+    <p class="text-sm text-center text-bold" >
+       
+               <span :style="{opacity: !!globalCount ? 1 : 0}" class="global-count"> {{globalCount}}% of teams have this badge.</span>
+      
             </p>
                 <div class="badge-popup__game-result">
 
                 </div>
           
-            <p class="text-sm row justify-center text-center" v-if="!!game">
+            <p class="text-sm row justify-center text-center other-info" v-if="!!game">
                    <div class="col-12 text-italic">
                          Earned on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
                    </div>
@@ -90,13 +92,19 @@ background-position: center;
         width: 100%;
         position: relative;
         padding-top: 2.9em;
+        min-height: 178px;
         @include sm {
             padding-top: 2.9em;
+
         }
        
         .badge-popup__additional--inner {
             margin-top: var(--space-md);
         }
+        .global-count {
+            transition: all 0.2s;
+        }
+    
     }
 }
 </style>
