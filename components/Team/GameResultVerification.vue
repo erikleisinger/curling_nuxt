@@ -3,7 +3,6 @@
         :color="isVerified ? 'primary' : 'red'"
         @click="
             () => {
-                if (isVerified) return;
                 verifiedPopup = true;
             }
         "
@@ -20,13 +19,14 @@
         cancelColor="negative"
         :confirmColor="!pendingTeam.id ? 'blue' : 'positive'"
         :showConfirm="
+        !isVerified &&
             isOnTeam(pendingTeam?.id) ||
             (isOnTeam(creatorTeam?.id) && pendingTeam?.id > 100000000)
         "
     >
 
     <!-- CREATOR VIEW -->
-        <span v-if="isOnTeam(pendingTeam?.id)">
+        <span v-if="!isVerified && isOnTeam(pendingTeam?.id)">
             <strong>{{ creatorTeam.name }}</strong> added this game result and
             has invited you to verify that it is real.
             <br />
@@ -36,7 +36,7 @@
             then contribute towards your season statistics.
 
         </span>
-        <span v-else>
+        <span v-else-if="!isVerified">
             This game was created by <strong>{{ creatorTeam.name }}</strong
             >.
             <span v-if="pendingTeam?.id < 100000000">
@@ -65,6 +65,15 @@
                 </span>
             </span>
         </span>
+        <span v-else>
+              This game was created by <strong>{{ creatorTeam.name }}</strong
+            >.
+            <br/>
+
+        <br/>
+        It has been verified by <strong>{{ pendingTeam.name }}</strong
+                > and contributes towards their season stats.
+        </span>
     </DialogInfo>
 </template>
 <script setup>
@@ -90,7 +99,7 @@ const game = computed(() =>
 );
 
 const pendingTeam = computed(() =>
-    game.value.teams.find(({ pending }) => !!pending)?.team ?? {}
+    game.value.teams.find(({ home_team }) => !home_team)?.team ?? {}
 );
 const creatorTeam = computed(() =>
     game.value.teams.find(({ pending }) => !pending)?.team ?? {}
@@ -125,6 +134,7 @@ const respondToRequest = async (status) => {
 const robotTeam = computed(() => pendingTeam.value?.id > 100000000)
 
 const onRequestConfirm = () => {
+    if (isVerified.value) return;
     if (robotTeam.value) {
         useDialogStore().toggleGlobalSearch({
             open: true,
