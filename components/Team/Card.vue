@@ -54,7 +54,7 @@
                     />
                     <div class="text-xl text-bold wins text-right" v-else>
                         <span v-if="team?.totalStats?.wins_average">
-                            {{ team?.totalStats?.wins_average * 100 }}%
+                            {{ (team?.totalStats?.wins_average * 100).toFixed() }}%
                         </span>
                         <span v-else>0</span>
                     </div>

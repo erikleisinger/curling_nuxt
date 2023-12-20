@@ -2,7 +2,7 @@
     <ChartLineOverTime v-bind="chartData()" >
                  <template v-slot:annotation>
             <h3>{{cumulativeAvg}}%</h3>
-            <h4>top {{100 -percentile}}% worldwide</h4>
+            <h4>top {{(100 -percentile).toFixed()}}% worldwide</h4>
         </template>
     </ChartLineOverTime>
 </template>
