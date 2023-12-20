@@ -19,29 +19,29 @@
             showVerified
         >
             <template v-slot:name-append__home>
-                <div class="row badges justify-center items-end">
+                <div class="row badges justify-center items-end" v-if="!isLoadingBadges">
                     <Badge
-                        v-for="badge in [...(badges[home.id] ?? [])].splice(
+                        v-for="badge in [...(badges[home?.id] ?? [])].splice(
                             0,
-                             showMoreBadgesHome ? badges[home.id]?.length : 2
+                             showMoreBadgesHome ? badges[home?.id]?.length : 2
                         )"
                         :key="badge.id"
                         :badge="badge"
                         height="1.9em"
                         iconOnly
                     />
-                    <div v-if="!showMoreBadgesHome && badges[home.id]?.length > 2" class="clickable" @click="showMoreBadges('home')">
-                        +{{ badges[home.id].length - 2 }}
+                    <div v-if="!showMoreBadgesHome && badges[home?.id]?.length > 2" class="clickable" @click="showMoreBadges('home')">
+                        +{{ badges[home?.id].length - 2 }}
                     </div>
                     <div v-if="showMoreBadgesHome" class="text-sm full-width text-center text-underline clickable" @click="showMoreBadges('home')">Show less</div>
                 </div>
             </template>
             <template v-slot:name-append__away>
-                <div class="row badges justify-center items-end">
+                <div class="row badges justify-center items-end" v-if="!isLoadingBadges">
                     <Badge
-                        v-for="badge in [...(badges[away.id] ?? [])].splice(
+                        v-for="badge in [...(badges[away?.id] ?? [])].splice(
                             0,
-                             showMoreBadgesAway ? badges[away.id]?.length : 2
+                             showMoreBadgesAway ? badges[away?.id]?.length : 2
                         )"
                         :key="badge.id"
                         :badge="badge"
@@ -50,7 +50,7 @@
                         class="clickable"
                         iconOnly
                     />
-                    <div v-if="!showMoreBadgesAway && badges[away.id]?.length > 2" class="clickable" @click="showMoreBadges('away')">
+                    <div v-if="!showMoreBadgesAway && badges[away?.id]?.length > 2" class="clickable" @click="showMoreBadges('away')">
                         +{{ badges[away.id].length - 3 }}
                     </div>
                        <div v-if="showMoreBadgesAway" class="text-sm full-width text-center text-underline clickable" @click="showMoreBadges('away')">Show less</div>

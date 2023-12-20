@@ -50,7 +50,6 @@ export const useBadge = () => {
             .eq("game_id", gameId)
             .eq('earned', true);
         
-            console.log('got badges: ', data)
             const returnVal = {};
             data?.forEach((badge) => {
                 const {team_id} = badge;

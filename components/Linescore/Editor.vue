@@ -340,7 +340,7 @@
                 <div class="row justify-center" v-if="showSheetSelect">
                     <div
                         v-for="number in [
-                            ...Array(selections.rink?.sheets).keys(),
+                            ...Array(selections.rink?.sheets ?? []).keys(),
                         ].map((i) => i + 1)"
                         :key="`sheet-${number}`"
                         class="sheet__number"

@@ -1,6 +1,6 @@
 <template>
-    <div class="popup-container">
-        <div class="popup-container--header">
+    <div class="popup-container" :class="{bottom, right}">
+        <div class="popup-container--header" ref="header">
             <div class="popup-container--header-content">
                 <slot name="header" />
             </div>
@@ -10,7 +10,7 @@
             <slot />
         </div>
     </div>
-    <div class="popup--overlay">
+    <div class="popup--overlay" v-show="!hide-overlay">
 
     </div>
 </template>
@@ -21,16 +21,40 @@
     border-radius: 8px;
     height: calc(100 * var(--vh, 1vh) - 65px);
     width: calc(100vw - (2 * var(--space-xs)));
+    max-height: v-bind(maxHeight);
     max-width: calc(960px - (2 * var(--space-xs)));
     box-sizing: border-box;
     box-shadow: $pretty-shadow;
-    overflow: auto;
     position: fixed;
-    top: 0;
+    max-width: v-bind(maxWidth);
     background-color: white;
+    overflow: hidden;
     z-index: 10;
+    &.bottom {
+        bottom: 50px;
+        @include sm {
+            bottom: 65px;
+        }
+    }
+    &:not(.bottom) {
+        top: 0;
+    }
+
+     &.right{
+        right: 0
+    }
+    &:not(.right) {
+        left: 0;
+    }
+    @include sm {
+         height: calc(100 * var(--vh, 1vh) - 80px);
+    }
     .popup-container--header {
         padding: var(--space-sm);
+    }
+    .popup-container--slot-content {
+        height: v-bind(contentHeight);
+        overflow: auto;
     }
 }
 .popup--overlay {
@@ -47,10 +71,23 @@
 </style>
 <script setup>
 import gsap from "gsap";
-import { useMouse } from "@vueuse/core";
+import { useMouse, useElementBounding } from "@vueuse/core";
 
 const props = defineProps({
+     bottom: Boolean,
+     'hide-overlay': Boolean,
+      maxHeight: {
+        type: String,
+        default: 'unset'
+    },
+      maxWidth: {
+        type: String,
+        default: 'calc(960px - (2 * var(--space-xs)))'
+    },
     open: Boolean,
+    right: Boolean,
+   
+   
 });
 
 const { x: mouseX, y: mouseY } = useMouse();
@@ -121,4 +158,8 @@ onMounted(() => {
         });
     }
 });
+
+const header = ref(null);
+const {height: headerHeight} = useElementBounding(header);
+const contentHeight = computed(() => `calc(100% - ${headerHeight.value}px)`)
 </script>

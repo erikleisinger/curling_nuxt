@@ -1,21 +1,29 @@
 <template>
-    <div>
+    <div ref="historyContainer">
 
-        <div v-for="(a, index) in achievements" :key="a.id">
-            <AchievementHistoryItem
+        <div v-for="(a, index) in achievementsPaginated" :key="a.id">
+            <LazyAchievementHistoryItem
                 :item="a"
                 :unread="index < unreadCountVisible"
             />
 
             <q-separator />
         </div>
+        <div class="row justify-center show-more__container" v-if="achievementsPaginated?.length < achievementCount">
+        <q-btn flat text color="blue" @click="showMore">Show more</q-btn>
+        </div>
     </div>
 </template>
-
+<style lang="scss" scoped>
+    .show-more__container {
+        padding: var(--space-xs);
+    }
+</style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
+import {useParentElement, useScroll} from '@vueuse/core'
 
 const queryClient = useQueryClient();
 
@@ -108,6 +116,20 @@ const { isLoading, data: achievements } = useQuery({
     enabled: !initialized.value || props.open,
 });
 
+const CURSOR_INCREMENT = 10;
+const cursor = ref(CURSOR_INCREMENT)
+
+const achievementsPaginated = computed(() => [...(achievements.value ?? [])].splice(0, cursor.value))
+const achievementCount = computed(() => achievements.value?.length)
+
+const showMore = () => {
+    if (achievementsPaginated.length + CURSOR_INCREMENT > achievementCount.length) {
+        cursor.value = achievementCount.length
+    } else {
+        cursor.value += CURSOR_INCREMENT
+    }
+}
+
 const markUnread = async () => {
     if (unreadCount.value === 0) return;
     const { user: userId } = useUser();
@@ -176,6 +198,18 @@ watch(
         }
     }
 );
+
+const historyContainer = ref(null);
+
+const scrollContainer = useParentElement(historyContainer)
+
+const {arrivedState} = useScroll(scrollContainer)
+
+watch(() => arrivedState.bottom, (val) => {
+    if (!val) return;
+    showMore();
+})
+
 </script>
 <script>
 export default {

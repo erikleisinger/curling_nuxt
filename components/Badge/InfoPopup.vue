@@ -161,7 +161,6 @@ const {isLoading, data: game} = useQuery({
             game_id_param: Number(props.badge.game_id),
         }),
     select: (teams) => {
-        console.log('TEAMS FOR BADGE: ', teams)
         const opposition = teams.find(({team_id}) => team_id !== props.badge.team_id)
         const home = teams.find(({team_id}) => team_id === props.badge.team_id)
         return {
