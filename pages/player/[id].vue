@@ -15,10 +15,13 @@
             <h3 class="text-sm">@{{ player.username }}</h3>
             <h3 class="text-sm">
                 <q-icon name="location_on" color="red" />
-                <span>
-                {{rink?.name || 'No home rink'}}
+                <span v-if="rink?.name">
+                {{rink?.name}}
                 </span>
-                <q-btn icon="edit" flat round dense @click="searchRink" size="xs"/>
+                <span v-else-if="canEdit">
+                    No home rink
+                </span>
+                <q-btn icon="edit" flat round dense @click="searchRink" size="xs" v-if="canEdit"/>
            
             </h3>
         </header>
