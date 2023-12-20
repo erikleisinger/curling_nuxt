@@ -9,9 +9,9 @@
                 <div class="column justify-between no-wrap">
                     <div class="name">
                         <h2 class="text-uppercase text-xl text-bold">
-                            {{ team.name }}
+                            {{ team?.name }}
                         </h2>
-                        <h3 class="text-xs">Royal canadian</h3>
+                        <h3 class="text-xs">Home rink</h3>
                     </div>
                     <div class="row badges">
                         <BadgeIcon
@@ -23,8 +23,8 @@
                     </div>
                 </div>
                 <div class="win-container row items-center">
-                    <div>
-                        <div class="text-xl text-bold">100%</div>
+                    <div v-if="team?.totalStats?.wins_average">
+                        <div class="text-xl text-bold">{{team?.totalStats?.wins_average * 100}}%</div>
                         <div
                             class="text-sm text-right"
                             style="margin-top: -12px"
@@ -94,22 +94,31 @@
 <script setup>
 import Team from "@/store/models/team";
 import { useQuery } from "@tanstack/vue-query";
+import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
 
 const props = defineProps({
     teamId: Number,
 });
 
-const team = computed(() => useRepo(Team).where("id", props.teamId).first());
 
 const { getTeamAvatar } = useAvatar();
 
-const { isLoading, data: avatar } = getTeamAvatar(team.value.id);
+
 
 const { getBadgesForTeam } = useBadge();
 
 const { isLoading: badgesLoading, data: badges } = useQuery({
     queryKey: ["team", "badges", props.teamId],
     queryFn: () => getBadgesForTeam(props.teamId),
+});
+
+const {isLoading: isLoadingTeam, data: team} = useQuery({
+    queryKey: ['team', 'page', props.teamId],
+    queryFn: () => GET_TEAM_WITH_STATS(props.teamId)
+})
+
+const { isLoading, data: avatar } = getTeamAvatar(team.value?.id, {
+    enabled: !!team
 });
 </script>
 <script>
