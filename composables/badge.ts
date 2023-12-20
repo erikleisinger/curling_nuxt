@@ -1,4 +1,4 @@
-import { BADGE_FIELDS, BADGE_THRESHOLDS, BADGE_DESCRIPTIONS } from "@/constants/badges";
+import { BADGE_FIELDS, BADGE_THRESHOLDS, BADGE_DESCRIPTIONS, EPHEMERAL_BADGES } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 export const useBadge = () => {
     const store = useUserTeamStore();
@@ -36,10 +36,11 @@ export const useBadge = () => {
             .eq("team_id", teamId)
             .eq('earned', true);
 
-        return data?.reduce((all, current) => {
+       return data?.reduce((all, current) => {
             if (all.some(({ name }) => name === current.name)) return all;
             return [...all, current];
         }, []);
+    
     };
     
     const getBadgesForGame = async (gameId: number) => {

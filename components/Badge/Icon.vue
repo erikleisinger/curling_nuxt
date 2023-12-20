@@ -581,7 +581,7 @@ $icon-height: 4em;
 }
 </style>
 <script setup>
-import { BADGE_BACKGROUNDS } from "@/constants/badges";
+import { BADGE_BACKGROUNDS, EPHEMERAL_BADGES } from "@/constants/badges";
 const props = defineProps({
     badge: Object,
     height: {
@@ -598,8 +598,6 @@ const extraContent = {
     win_1: 1,
     win_5: 5,
 };
-
-const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];
 
 const additionalNumber = computed(() => {
     return (

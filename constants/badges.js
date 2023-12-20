@@ -105,6 +105,8 @@ export const BADGE_DESCRIPTIONS = {
     first_game: 'Record your very first game.'
 }
 
+export const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];
+
 export const BADGE_ICON_COLORS = {
     win_1: '#ffc107'
 }

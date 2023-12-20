@@ -3,6 +3,6 @@
 </template>
 <script setup>
     import {useUserTeamStore} from '@/store/user-teams';
-
-    const teams = computed(() => useUserTeamStore().userTeams)
+    const {sortAlphabetically} = useSort();
+    const teams = computed(() => useUserTeamStore().userTeams.sort((a,b) => sortAlphabetically(a.name, b.name)))
 </script>   
