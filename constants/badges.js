@@ -154,6 +154,10 @@ export const BADGE_DESCRIPTIONS = {
     first_game: 'Record your very first game.'
 }
 
+export const BADGE_ICON_COLORS = {
+    win_1: '#ffc107'
+}
+
 export const BADGE_COLORS = {
     firstend: 'amber',
     efficiency: 'purple',

@@ -1,6 +1,5 @@
 export const useSort = () => {
     const sortAlphabetically = (a,b, asc = true) => {
-        console.log('sort: ', a,b, asc)
         if (a < b) {
             return asc ? -1 : 1;
           }

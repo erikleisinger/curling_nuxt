@@ -33,7 +33,8 @@ export const useBadge = () => {
         const { data } = await client
             .from("badges")
             .select("*")
-            .eq("team_id", teamId);
+            .eq("team_id", teamId)
+            .eq('earned', true);
 
         return data?.reduce((all, current) => {
             if (all.some(({ name }) => name === current.name)) return all;
@@ -46,7 +47,8 @@ export const useBadge = () => {
         const { data } = await client
             .from("badges")
             .select("*")
-            .eq("game_id", gameId);
+            .eq("game_id", gameId)
+            .eq('earned', true);
         
             console.log('got badges: ', data)
             const returnVal = {};

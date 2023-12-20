@@ -384,7 +384,6 @@ const onClickSort = (type) => {
 
 const badgesSorted = computed(() => [...(badges.value ?? [])].sort((a,b) => {
     if (sortAlphabeticalOrder.value) {
-        console.log('sort alphabetically')
         const {sortAlphabetically} = useSort();
         return sortAlphabetically(BADGE_NAMES[a.name].toLowerCase().replaceAll(' ', ''), BADGE_NAMES[b.name].toLowerCase().replaceAll(' ', ''), sortAlphabeticalOrder.value === 'asc')
     }

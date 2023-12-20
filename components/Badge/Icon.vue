@@ -5,14 +5,18 @@
         </div>
         <div
             class="badge--additional"
-            :class="`${BADGE_BACKGROUNDS[badge]}`"
+            :class="`${BADGE_BACKGROUNDS[badge]} ${
+                EPHEMERAL_BADGES.includes(badge) && 'ephemeral'
+            }`"
             v-if="!!additionalNumber"
         >
             {{ additionalNumber }}
         </div>
         <div
             class="badge-icon__container column no-wrap flex-shrink"
-            :class="`${BADGE_BACKGROUNDS[badge]}`"
+            :class="`${BADGE_BACKGROUNDS[badge]} ${
+                EPHEMERAL_BADGES.includes(badge) && 'ephemeral'
+            }`"
         >
             <div style="height: 100%" class="badge-icon__container--inner">
                 <svg
@@ -236,11 +240,11 @@
                         ></path>
                     </g>
                 </svg>
-                       <svg
-                  v-else-if="badge === 'score_4'"
+                <svg
+                    v-else-if="badge === 'score_4'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                       style="height: 100%; aspect-ratio: 1/1"
+                    style="height: 100%; aspect-ratio: 1/1"
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -495,10 +499,8 @@
                         ></path>
                     </g>
                 </svg>
-         
             </div>
         </div>
-
     </div>
 </template>
 <style lang="scss">
@@ -506,6 +508,7 @@ $icon-height: 4em;
 .badge__content--container {
     position: relative;
     width: min-content;
+
     .badge--additional {
         position: absolute;
         bottom: 0;
@@ -526,6 +529,10 @@ $icon-height: 4em;
         font-weight: bold;
         color: white;
         font-size: v-bind(additionalFontDimension);
+        &.ephemeral {
+            color: rgb(238, 195, 108);
+            border-color:  rgb(238, 195, 108);
+        }
     }
     .badge-overlay--container {
         position: absolute;
@@ -549,11 +556,23 @@ $icon-height: 4em;
             rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
         background-size: cover;
         fill: rgb(0, 24, 49);
+                &.ephemeral {
+
+                    border-color: rgb(238, 195, 108);
+
+        }
+
         path {
             fill: inherit;
         }
         svg {
             fill: white;
+        }
+        &.ephemeral {
+            svg {
+                fill:  rgb(238, 195, 108);
+            }
+            
         }
         .badge-icon__container--inner {
             padding: v-bind(padding);
@@ -603,6 +622,8 @@ const extraContent = {
     win_1: 1,
     win_5: 5,
 };
+
+const EPHEMERAL_BADGES = [];
 
 const additionalNumber = computed(() => {
     return (
