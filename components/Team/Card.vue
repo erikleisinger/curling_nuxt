@@ -22,12 +22,12 @@
                         />
                     </div>
                 </div>
-                <div class="win-container row items-center">
+                <div class="win-container row ">
                     <div v-if="team?.totalStats?.wins_average">
-                        <div class="text-xl text-bold">{{team?.totalStats?.wins_average * 100}}%</div>
+                        <div class="text-xl text-bold wins">{{team?.totalStats?.wins_average * 100}}%</div>
                         <div
                             class="text-sm text-right"
-                            style="margin-top: -12px"
+                            style="margin-top: -8px"
                         >
                             wins
                         </div>
@@ -64,11 +64,16 @@
     position: relative;
     .win-container {
         font-family: $font-family-main;
-        padding: 8px;
-        margin-top: auto;
-        margin-bottom: auto;
+        padding: 0px 8px;
+      
+
         width: min-content;
-        font-size: var(--text-lg)
+        font-size: var(--text-lg);
+        .wins {
+            // margin-top: calc( -1 * var(--space-xxxs));
+            // margin-top: -2px;
+            line-height: 1em;
+        }
     }
     .underlay {
         position: absolute;
