@@ -1,5 +1,5 @@
 <template>
     <NuxtLayout>
-        <AreaTeams/>
+        <AreaSeason/>
     </NuxtLayout>
 </template>
