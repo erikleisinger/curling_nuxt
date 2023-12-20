@@ -102,7 +102,7 @@
                     :canRemove="editing && (player?.pivot?.status === 'pending' || permanentPlayers.length > 1)"
                     :canEditPosition="editing && player?.pivot?.status !== 'pending'"
                 >
-            <div class="player-avatar__container">
+            <div class="player-avatar__container column items-center">
                 <Avataaar
                     v-bind="player.avatar"
                     class="player-avatar"
@@ -110,14 +110,14 @@
                 />
                 <q-badge
                     color="orange"
-                    floating
+                 
                     align="bottom"
                     v-if="player.pivot && player.pivot.status"
                     >Invited</q-badge
                 >
                 <q-badge v-else
                     color="blue"
-                    floating
+                    
                     align="bottom"
                 >
                     {{TEAM_POSITIONS[player?.pivot?.position]?.name ?? 'Member'}}
