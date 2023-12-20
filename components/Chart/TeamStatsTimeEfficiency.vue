@@ -3,7 +3,7 @@
     <ChartLineOverTime v-bind="chartData()"  class="col-12" >
         <template v-slot:annotation>
             <h3>{{cumulativeAvg}}%</h3>
-            <h4>top {{100 - percentile}}% worldwide</h4>
+            <h4>top {{(100 - percentile).toFixed()}}% worldwide</h4>
         </template>
     </ChartLineOverTime>
 
@@ -53,7 +53,7 @@ const t = computed(() => useRepo(Team)
 
 const percentile = computed(() => t.value?.totalStats?.hammer_conversion_percentile * 100)
 
-const cumulativeAvg = computed(() => t.value?.totalStats?.hammer_conversion_average.toFixed(2))
+const cumulativeAvg = computed(() => t.value?.totalStats?.hammer_conversion_average.toFixed(1))
 
 
 const chartData = () => {

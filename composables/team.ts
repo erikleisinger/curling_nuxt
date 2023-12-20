@@ -1,6 +1,7 @@
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
 import Team from "@/store/models/team";
+import TeamStats from '@/store/models/team-stats'
 import Rink from "@/store/models/rink";
 import Badge from "@/store/models/badge";
 
@@ -104,8 +105,8 @@ export const useTeam = () => {
 
             useRepo(TeamPlayer).where("team_id", id).delete();
             const {getBadgesForTeam} = useBadge()
-            const [teamTotalStats, players, badges] = await Promise.all([
-                ...(withStats ? [getCumulativeTeamStats(id)] : []),
+            const [teamTotalStats, stats, players, badges] = await Promise.all([
+                ...(withStats ? [getCumulativeTeamStats(id), getTeamStats(id)] : []),
                 getTeamPlayers(id),
                 ...(withBadges ? [getBadgesForTeam(id)] : [])
             ]);
@@ -125,8 +126,9 @@ export const useTeam = () => {
                 instagram,
                 twitter,
                 featured_badge_id,
-                ...stats
             } = t;
+
+            
 
             players.forEach((p) => {
                 const { player, id, team_id, status, position } = p;
@@ -145,6 +147,11 @@ export const useTeam = () => {
                 useRepo(Badge).save(badge)
             })
 
+            stats?.forEach((stat) => {
+                console.log(stat)
+                useRepo(TeamStats).save({...stat, team_id: id})
+            })
+
             const obj = {
                 avatar_type,
                 avatar_url,
@@ -155,13 +162,13 @@ export const useTeam = () => {
                 twitter,
                 featured_badge_id,
                 name,
-                stats: [
-                    {
-                        ...stats,
-                        team_id,
-                        game_id: 0,
-                    },
-                ],
+                // stats: [
+                //     {
+                //         ...stats,
+                //         team_id,
+                //         game_id: 0,
+                //     },
+                // ],
                 totalStats: {
                     ...totalStats,
                     team_id: totalStats.id,

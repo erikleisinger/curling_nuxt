@@ -49,7 +49,7 @@ const t = computed(() => useRepo(Team)
 
 const percentile = computed(() => t.value?.totalStats?.steal_efficiency_percentile * 100)
 
-const cumulativeAvg = computed(() => (t.value?.totalStats?.steal_efficiency * 100).toFixed(2))
+const cumulativeAvg = computed(() => (t.value?.totalStats?.steal_efficiency * 100).toFixed(1))
 
 const chartData = () => {
     const { format, toTimezone } = useTime();
@@ -61,10 +61,10 @@ const chartData = () => {
         return data;
     };
 
-    const team = useRepo(TeamStats)
-        .where("team_id", props.teamId)
-        .where("game_id", 0)
-        .first();
+    const team = useRepo(Team)
+        .where("id", props.teamId)
+        .with('totalStats')
+        .first()
 
     const hammerConversionAvg =
         (team.non_hammer_steal_count / team.non_hammer_end_count) * 100;
