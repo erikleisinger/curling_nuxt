@@ -20,16 +20,15 @@
         >
             <template v-slot:name-append__home>
                 <div class="row badges justify-center items-end">
-                    <BadgeIcon
+                    <Badge
                         v-for="badge in [...(badges[home.id] ?? [])].splice(
                             0,
                              showMoreBadgesHome ? badges[home.id]?.length : 2
                         )"
                         :key="badge.id"
-                        :badge="badge.name"
+                        :badge="badge"
                         height="1.9em"
-                        @click="viewBadge(badge)"
-                        class="clickable"
+                        iconOnly
                     />
                     <div v-if="!showMoreBadgesHome && badges[home.id]?.length > 2" class="clickable" @click="showMoreBadges('home')">
                         +{{ badges[home.id].length - 2 }}
@@ -39,16 +38,17 @@
             </template>
             <template v-slot:name-append__away>
                 <div class="row badges justify-center items-end">
-                    <BadgeIcon
+                    <Badge
                         v-for="badge in [...(badges[away.id] ?? [])].splice(
                             0,
                              showMoreBadgesAway ? badges[away.id]?.length : 2
                         )"
                         :key="badge.id"
-                        :badge="badge.name"
+                        :badge="badge"
                         height="1.9em"
-                        @click="viewBadge(badge)"
+                      
                         class="clickable"
+                        iconOnly
                     />
                     <div v-if="!showMoreBadgesAway && badges[away.id]?.length > 2" class="clickable" @click="showMoreBadges('away')">
                         +{{ badges[away.id].length - 3 }}
@@ -65,11 +65,7 @@
             h2h
             :gameId="Number(gameId)"
         />
-        <BadgeInfoPopup
-            v-model="badgeInfoOpen"
-            :badge="badgeToView"
-            v-if="badgeInfoOpen"
-        />
+
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
@@ -129,13 +125,7 @@ const gameRequest = computed(() =>
     )
 );
 
-const badgeInfoOpen = ref(false);
-const badgeToView = ref(null);
 
-const viewBadge = (badge) => {
-    badgeInfoOpen.value = true;
-    badgeToView.value = badge;
-};
 
 const loading = ref(false);
 const result = ref(null);

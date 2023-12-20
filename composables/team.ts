@@ -8,15 +8,13 @@ import Badge from "@/store/models/badge";
 
 const getCumulativeTeamStats = async (id: number) => {
     const client = useSupabaseClient();
-    const { data, error } = await client
+    const { data } = await client
         .from("team_stats_total")
         .select("*")
         .eq("id", id)
-        .limit(1);
+   
 
-    if (error) throw new Error(error);
-
-    const [t] = data;
+    const [t] = data ?? []
     return t;
 };
 
@@ -92,14 +90,17 @@ export const useTeam = () => {
 
     const getFullTeam = async ({id, withBadges = true, withStats = true}) => {
         try {
+
+        
             if (!id || id > 100000000) return null;
             const client = useSupabaseClient();
-            const { data: t, error } = await client
+            const { data, error } = await client
                 .rpc("get_user_teams")
                 .eq("id", id)
-                .single();
+                .limit(1)
 
             if (error) throw new Error(error);
+            const [t] = data ?? []
 
             useRepo(TeamPlayer).where("team_id", id).delete();
             const {getBadgesForTeam} = useBadge()
@@ -111,7 +112,7 @@ export const useTeam = () => {
 
             
 
-            const { name: teamName, ...totalStats } = teamTotalStats;
+            const { name: teamName, ...totalStats } = teamTotalStats ?? {};
             const {
                 avatar_type,
                 avatar_url,
@@ -172,9 +173,10 @@ export const useTeam = () => {
             useRepo(Team).save(obj);
 
             return obj;
-        } catch (e) {
-            throw new Error(e);
+        }catch(e) {
+            throw new Error(e)
         }
+      
     };
 
     const isOnTeam = (teamId: number) => {

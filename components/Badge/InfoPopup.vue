@@ -32,7 +32,7 @@
                          Earned on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
                    </div>
                      <div class="col-12 text-italic row justify-center" style="gap: var(--space-xs)">
-                        <div>vs.</div><div style="width: 1.5em">     <TeamAvatar :teamId="game.opposition.id"/></div><div> {{game.opposition.name}}</div>
+                        <div>vs.</div><div style="width: 1.5em">     <TeamAvatar :teamId="game?.opposition?.id"/></div><div> {{game?.opposition?.name}}</div>
                    </div>
                    <div class="text-underline clickable" @click="navigateTo(`/games/view/${badge.game_id}`)">
                     View game
@@ -161,6 +161,7 @@ const {isLoading, data: game} = useQuery({
             game_id_param: Number(props.badge.game_id),
         }),
     select: (teams) => {
+        console.log('TEAMS FOR BADGE: ', teams)
         const opposition = teams.find(({team_id}) => team_id !== props.badge.team_id)
         const home = teams.find(({team_id}) => team_id === props.badge.team_id)
         return {

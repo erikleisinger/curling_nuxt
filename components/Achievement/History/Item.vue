@@ -9,7 +9,7 @@
         @click="navigateTo(`/teams/${item.team.id}`)"
     >
         <q-item-section avatar class="relative-position">
-            <BadgeIcon :badge="item.name" height="45px" />
+            <Badge :badge="item" height="45px" iconOnly @click.stop />
         </q-item-section>
         <q-item-section>
             <span>

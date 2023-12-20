@@ -33,6 +33,7 @@
                     v-for="(badge, index) in badgesLimited"
                     :key="badge.id"
                     :badge="badge"
+
                 >
                     <template v-slot:underlay>
                         <span v-if="index === 0 && !!team.featured_badge_id">Recent</span>

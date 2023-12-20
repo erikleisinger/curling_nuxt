@@ -20,11 +20,13 @@
                           <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
                     </div>
                     <div class="row badges" v-else>
-                        <BadgeIcon
+                        <Badge
                             v-for="badge in team.badges"
                             :key="badge.id"
-                            :badge="badge.name"
+                            :badge="badge"
                             height="2em"
+                            iconOnly
+                            @click.stop
                         />
                     </div>
                 </div>
