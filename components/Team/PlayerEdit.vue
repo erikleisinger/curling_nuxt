@@ -1,5 +1,39 @@
 <template>
-    <slot v-bind:remove="remove" />
+    <div class="container">
+        <slot/>
+        <div class="overlay clickable" v-if="!disabled" >
+            <q-menu v-model="menuOpen">
+                <q-list>
+                    <q-item clickable v-ripple @click="remove" v-if="canRemove">
+                        <q-item-section avatar>
+                            <q-icon name="person_remove" />
+                        </q-item-section>
+                        <q-item-section label>
+                            Remove from team
+                        </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple v-if="canEditPosition">
+                        <q-item-section avatar>
+                            <q-icon name="groups"/>
+                        </q-item-section>
+                        <q-item-section label>
+                            Edit position
+                        </q-item-section>
+                        <q-menu>
+                            <q-item v-for="position in Object.keys(TEAM_POSITIONS)" :key="position" @click="changePlayerPosition(position)" clickable v-ripple>
+                                <!-- <q-item-section avatar>
+                                    <q-icon :name="TEAM_POSITIONS[position].icon"/>
+                                </q-item-section>        -->
+                                <q-item-section label>
+                                    {{TEAM_POSITIONS[position].name}}
+                                </q-item-section>
+                            </q-item>
+                        </q-menu>
+                    </q-item>
+                </q-list>
+            </q-menu>
+        </div>
+    </div>
     <q-dialog v-model="confirmOpen">
         <q-card
             v-if="removing"
@@ -27,15 +61,33 @@
         </q-card>
     </q-dialog>
 </template>
+<style lang="scss" scoped>
+.container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    .overlay {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+    }
+}
+
+</style>
 <script setup>
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useQueryClient } from "@tanstack/vue-query";
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
+import {TEAM_POSITIONS} from '@/constants/team'
 
 const queryClient = useQueryClient();
 
 const props = defineProps({
+    canEditPosition: Boolean,
+    canRemove: Boolean,
+    disabled: Boolean,
     playerId: String,
     teamId: Number,
 });
@@ -84,10 +136,23 @@ const onRemove = async () => {
     }
 
     queryClient.invalidateQueries({
-        queryKey: ["team", "players", props.teamId],
+        queryKey: ["team", "full", props.teamId],
     });
 
     removing.value = false;
     confirmOpen.value = false;
 };
+
+const menuOpen = ref(false)
+
+const changePlayerPosition = async (position) => {
+    menuOpen.value = false;
+    const client = useSupabaseClient();
+    await client.from('team_profile_junction').update({
+        position
+    }).eq('team_id', props.teamId).eq('profile_id', props.playerId);
+    queryClient.invalidateQueries({
+        queryKey: ["team", "full", props.teamId],
+    });
+}
 </script>

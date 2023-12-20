@@ -93,25 +93,15 @@
             :key="player.id"
             class="column items-center player-avatars__container"
         >
-            <div
-                class="delete-player__overlay row justify-center items-center"
-                v-if="editing && permanentPlayers.length > 1"
-            >
-                <TeamPlayerRemove
-                    v-slot="{ remove }"
+
+            <TeamPlayerEdit
+                   
                     :playerId="player.id"
                     :teamId="props.teamId"
+                    :disabled="!editing"
+                    :canRemove="editing && (player?.pivot?.status === 'pending' || permanentPlayers.length > 1)"
+                    :canEditPosition="editing && player?.pivot?.status !== 'pending'"
                 >
-                    <q-btn
-                        icon="close"
-                        text-color="white"
-                        flat
-                        stretch
-                        class="full-width"
-                        @click="remove"
-                    ></q-btn>
-                </TeamPlayerRemove>
-            </div>
             <div class="player-avatar__container">
                 <Avataaar
                     v-bind="player.avatar"
@@ -123,9 +113,17 @@
                     floating
                     align="bottom"
                     v-if="player.pivot && player.pivot.status"
-                    >Invitation sent</q-badge
+                    >Invited</q-badge
                 >
+                <q-badge v-else
+                    color="blue"
+                    floating
+                    align="bottom"
+                >
+                    {{TEAM_POSITIONS[player?.pivot?.position]?.name ?? 'Member'}}
+                </q-badge>
             </div>
+            
 
             <div class="text-center player-name truncate-text">
                 {{ player.first_name }}
@@ -133,6 +131,7 @@
             <div class="text-center player-name truncate-text">
                 {{ player.last_name }}
             </div>
+               </TeamPlayerEdit>
         </div>
         <div v-if="!team.players?.length">{{ team.name }} has no players.</div>
         <div
@@ -287,6 +286,7 @@ import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
 import { MAX_TEAM_NAME_LENGTH, VALIDATION_RULES } from "@/constants/validation";
+import {TEAM_POSITIONS} from '@/constants/team'
 
 const queryClient = useQueryClient();
 
