@@ -34,6 +34,7 @@ export default async (id) => {
 
         const { avatar_type, avatar_url, team_avatar, id: team_id, name,rink_id,rink, facebook, instagram, twitter, featured_badge_id, ...stats } = t
 
+
        
 
         const obj = {
@@ -61,7 +62,8 @@ export default async (id) => {
             
         };
         if (rink_id) obj.rink_id = rink_id
-        if(rink)useRepo(Rink).save(rink)
+        if(rink)useRepo(Rink).save(rink);
+
         useRepo(TeamModel).save(obj);
         
         

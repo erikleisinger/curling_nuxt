@@ -17,7 +17,7 @@
         <div
             class="team-badges__container"
             :class="$q.screen.xs ? 'col-12' : 'col-6'"
-            v-if="badges && badges.length"
+            v-if="team?.badges?.length"
         >
             <div
                 class="row items-center"
@@ -162,7 +162,7 @@
     </q-dialog>
     <q-dialog
         v-model="badgesOpen"
-        v-if="badges && badges.length"
+        v-if="team.badges?.length"
         :full-width="$q.screen.xs"
         :persistent="$q.screen.xs"
     >
@@ -171,7 +171,7 @@
                 class="text-md text-bold badges-viewer__header justify-between full-width row items-center"
             >
                 <span v-if="!selectingFeatured">
-                    Badges ({{ badges.length }})
+                    Badges ({{ team.badges.length }})
                 </span>
                 <span v-else class="text-sm"> Select featured badge </span>
                 <div class="row">
@@ -335,32 +335,23 @@ const badgesLoaded = ref(false);
 const headerLoaded = ref(false);
 
 const { sortAlphabetically } = useSort();
-const {getBadgesForTeam} = useBadge()
 
 const featuredBadge = computed(() =>
-    [...badges.value].find(({ id }) => id === team.value.featured_badge_id)
+    [...(team.value?.badges ?? [])].find(({ id }) => id === team.value.featured_badge_id)
 );
 const badgesLimited = computed(() =>
-    [...badges.value]
+    [...(team.value?.badges ?? [])]
         .filter(({ id }) => id !== team.value.featured_badge_id)
         .splice(0, $q.screen.xs ? (team.value.featured_badge_id ? 1 : 2) : (team.value.featured_badge_id ? 3 : 4))
 );
 
 const { setLoading } = useLoading();
-const { isLoading, data: badges } = useQuery({
-    queryKey: ["team", "badges", Number(route.params.id)],
-    queryFn: () => getBadgesForTeam(Number(route.params.id)),
-    select: (val) => {
-        badgesLoaded.value = true;
-        return val;
-    },
-});
+
 
 const sortDateOrder = ref(null);
 const sortAlphabeticalOrder = ref('asc');
 
 const onClickSort = (type) => {
-    console.log('click sort: ', type)
     const typeKey = `sort${type}Order`;
     const sortTypes = {
         sortDateOrder: sortDateOrder,
@@ -382,7 +373,7 @@ const onClickSort = (type) => {
     }
 };
 
-const badgesSorted = computed(() => [...(badges.value ?? [])].sort((a,b) => {
+const badgesSorted = computed(() => [...(team.value?.badges ?? [])].sort((a,b) => {
     if (sortAlphabeticalOrder.value) {
         const {sortAlphabetically} = useSort();
         return sortAlphabetically(BADGE_NAMES[a.name].toLowerCase().replaceAll(' ', ''), BADGE_NAMES[b.name].toLowerCase().replaceAll(' ', ''), sortAlphabeticalOrder.value === 'asc')
@@ -397,7 +388,7 @@ const badgesSorted = computed(() => [...(badges.value ?? [])].sort((a,b) => {
     return 1;
 }))
 
-const pageReady = computed(() => badgesLoaded.value && headerLoaded.value);
+const pageReady = computed(() => headerLoaded.value);
 
 watch(pageReady, (val) => {
     if (!val) return;

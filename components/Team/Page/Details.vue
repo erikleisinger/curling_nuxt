@@ -507,7 +507,6 @@ const selectRink = (rink) => {
 };
 
 const openRinkSearch = () => {
-    console.log("rink searh");
     toggleGlobalSearch({
         open: true,
         options: {
@@ -543,7 +542,6 @@ const validateSocial = (input, type) => {
     try {
         const url = new URL(input);
         const { origin } = url;
-        console.log(origin);
         return (
             origin === `https://www.${type}.com` ||
             origin === `https://${type}.com` ||

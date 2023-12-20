@@ -57,8 +57,8 @@ export const useUserTeamStore = defineStore("user-teams", {
                     rink_id
                 )
             `).eq('profile_id', userId.value)
+            
             useRepo(Team).save(data.map(({team: t}) => {
-               
                 return    {
                     id: t.id,
                     name: t.name,

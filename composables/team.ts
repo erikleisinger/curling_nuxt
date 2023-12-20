@@ -1,8 +1,41 @@
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
 import Team from "@/store/models/team";
+import Rink from "@/store/models/rink";
+import Badge from "@/store/models/badge";
+
+
+
+const getCumulativeTeamStats = async (id: number) => {
+    const client = useSupabaseClient();
+    const { data, error } = await client
+        .from("team_stats_total")
+        .select("*")
+        .eq("id", id)
+        .limit(1);
+
+    if (error) throw new Error(error);
+
+    const [t] = data;
+    return t;
+};
+
+const getTeamStats = async (teamId: number) => {
+    const { data } = await useSupabaseClient().rpc("get_team_stats", {
+        team_id_param: teamId,
+        range_start_param: null,
+        range_end_param: null,
+        limit_param: null,
+    });
+
+    return data;
+};
+
 export const useTeam = () => {
-    const getTeamPlayers = async (teamId: number, andRequests: boolean = false) => {
+    const getTeamPlayers = async (
+        teamId: number,
+        andRequests: boolean = false
+    ) => {
         if (!teamId) return [];
         const client = useSupabaseClient();
 
@@ -24,13 +57,10 @@ export const useTeam = () => {
             )
             .eq("team_id", teamId);
 
-            useRepo(TeamPlayer).where('team_id', teamId).delete();
-
-        if (andRequests) {
-            const { data: requests } = await client
-                .from("team_requests")
-                .select(
-                    `
+        const { data: requests } = await client
+            .from("team_requests")
+            .select(
+                `
                 user:requestee_profile_id (
                     id,
                     username,
@@ -41,47 +71,117 @@ export const useTeam = () => {
                 status,
                 id
             `
-                )
-                .eq("team_id", teamId)
-                .eq("status", "pending");
-            const playerRepo = useRepo(Player);
-            const teamPlayerRepo = useRepo(TeamPlayer);
-            [...data, ...requests].forEach((p) => {
-                const status = p.status ?? null;
-                playerRepo.save(p.user);
-                teamPlayerRepo.save({
-                    id: p.id,
-                    player_id: p.user.id,
-                    team_id: teamId,
-                    status,
-                    position: p.position,
-                });
-            });
-        } else {
-            const playerRepo = useRepo(Player);
-            const teamPlayerRepo = useRepo(TeamPlayer);
+            )
+            .eq("team_id", teamId)
+            .eq("status", "pending");
+        return [...(data ?? []), ...(requests ?? [])].map((p) => {
+            const status = p.status ?? null;
 
-            data?.forEach((p) => {
-                playerRepo.save(p.user);
-                teamPlayerRepo.save({
-                    id: p.id,
-                    player_id: p.user.id,
-                    team_id: teamId,
-                    status: null,
-                    position: p.position,
+            const returnObj = {
+                id: Number(p.id),
+                player_id: p.user.id,
+                team_id: teamId,
+                status,
+                position: p.position,
+                player: p.user,
+            };
+
+            return returnObj;
+        });
+    };
+
+    const getFullTeam = async ({id, withBadges = true, withStats = true}) => {
+        try {
+            if (!id || id > 100000000) return null;
+            const client = useSupabaseClient();
+            const { data: t, error } = await client
+                .rpc("get_user_teams")
+                .eq("id", id)
+                .single();
+
+            if (error) throw new Error(error);
+
+            useRepo(TeamPlayer).where("team_id", id).delete();
+            const {getBadgesForTeam} = useBadge()
+            const [teamTotalStats, players, badges] = await Promise.all([
+                ...(withStats ? [getCumulativeTeamStats(id)] : []),
+                getTeamPlayers(id),
+                ...(withBadges ? [getBadgesForTeam(id)] : [])
+            ]);
+
+            
+
+            const { name: teamName, ...totalStats } = teamTotalStats;
+            const {
+                avatar_type,
+                avatar_url,
+                team_avatar,
+                id: team_id,
+                name,
+                rink_id,
+                rink,
+                facebook,
+                instagram,
+                twitter,
+                featured_badge_id,
+                ...stats
+            } = t;
+
+            players.forEach((p) => {
+                const { player, id, team_id, status, position } = p;
+
+                useRepo(Player).save(player);
+                useRepo(TeamPlayer).save({
+                    id,
+                    team_id,
+                    status,
+                    position,
+                    player_id: player?.id,
                 });
             });
             
+            badges?.forEach((badge) => {
+                useRepo(Badge).save(badge)
+            })
+
+            const obj = {
+                avatar_type,
+                avatar_url,
+                team_avatar,
+                id: team_id,
+                facebook,
+                instagram,
+                twitter,
+                featured_badge_id,
+                name,
+                stats: [
+                    {
+                        ...stats,
+                        team_id,
+                        game_id: 0,
+                    },
+                ],
+                totalStats: {
+                    ...totalStats,
+                    team_id: totalStats.id,
+                },
+            };
+            if (rink_id) obj.rink_id = rink_id;
+            if (rink) useRepo(Rink).save(rink);
+
+            useRepo(Team).save(obj);
+
+            return obj;
+        } catch (e) {
+            throw new Error(e);
         }
-        return true;
     };
 
     const isOnTeam = (teamId: number) => {
         const { user: userId } = useUser();
         const team = useRepo(Team).with("players").where("id", teamId).first();
         if (!team) return false;
-       return [...(team.players ?? [])].some(({ id }) => id === userId.value);
-     
+        return [...(team.players ?? [])].some(({ id }) => id === userId.value);
     };
-    return { getTeamPlayers, isOnTeam };
+    return { getTeamPlayers, isOnTeam, getFullTeam };
 };

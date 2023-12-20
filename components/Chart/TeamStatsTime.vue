@@ -1,6 +1,6 @@
 <template>
     <div class="line-chart__container">
-        <q-inner-loading :showing="isLoading" />
+        <!-- <q-inner-loading :showing="isLoading" /> -->
 
         <div class="row tabs__container no-wrap">
             <q-tabs
@@ -59,7 +59,7 @@
             </q-btn>
         </div>
 
-        <div class="row no-wrap" v-if="!isLoading && !refreshingData">
+        <div class="row no-wrap" v-if="!refreshingData">
             <div class="col-12 relative-position">
                 <div class="no-stats__overlay" v-if="!stats">
                     No stats were found.
@@ -228,11 +228,11 @@ const getTeamStats = async (teamId) => {
     return data;
 };
 
-const { isLoading } = useQuery({
-    queryKey: ["team", "stats", props.teamId],
-    queryFn: () => getTeamStats(props.teamId),
-    refetchOnWindowFocus: false,
-});
+// const { isLoading } = useQuery({
+//     queryKey: ["team", "stats", props.teamId],
+//     queryFn: () => getTeamStats(props.teamId),
+//     refetchOnWindowFocus: false,
+// });
 
 const changeStat = (inc) => {
     if (

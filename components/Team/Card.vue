@@ -1,37 +1,54 @@
 <template>
     <div
-        class="team-card__container"
+        class="team-card__container column"
         :style="`background-image: url(${avatar})`"
     >
         <div class="underlay" />
-        <div class="overlay full-height">
-            <div class="row no-wrap justify-between full-width">
+        <div class="overlay" ref="overlay">
+            <div class="row no-wrap justify-between full-width stretch-height">
                 <div class="column justify-between no-wrap">
                     <div class="name">
                         <h2 class="text-uppercase text-xl text-bold">
                             {{ team?.name }}
                         </h2>
-                        <h3 class="text-xs">Home rink</h3>
+
+                        <h3 class="text-xs">{{ rink?.name }}</h3>
                     </div>
-                    <div class="row badges">
+                    <div class="row badges" v-if="isLoadingTeam">
+                        <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
+                         <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
+                          <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
+                    </div>
+                    <div class="row badges" v-else>
                         <BadgeIcon
-                            v-for="badge in badges"
+                            v-for="badge in team.badges"
                             :key="badge.id"
                             :badge="badge.name"
                             height="2em"
                         />
                     </div>
                 </div>
-                <div class="win-container row ">
-                    <div v-if="team?.totalStats?.wins_average">
-                        <div class="text-xl text-bold wins">{{team?.totalStats?.wins_average * 100}}%</div>
+                <div class="win-container column items-end">
+   
+                        <q-skeleton height="2em" width="75px" v-if="isLoadingTeam"/>
+                        <div class="text-xl text-bold wins text-right" v-else>
+                            <span v-if="team?.totalStats?.wins_average">
+                                {{ team?.totalStats?.wins_average * 100 }}%
+                            </span>
+                            <span v-else>0</span>
+                        </div>
+                         <q-skeleton height="1em" width="40px" v-if="isLoadingTeam"/>
                         <div
+                        v-else
                             class="text-sm text-right"
                             style="margin-top: -8px"
                         >
-                            wins
+                            <span v-if="team?.totalStats?.wins_average"
+                                >wins</span
+                            >
+                            <span v-else>games</span>
                         </div>
-                    </div>
+                  
                 </div>
             </div>
         </div>
@@ -40,7 +57,8 @@
 <style lang="scss" scoped>
 .team-card__container {
     color: white;
-    padding: var(--space-sm)  0px;
+
+    min-height: 120px;
     .name {
         letter-spacing: 0.001em;
 
@@ -65,13 +83,10 @@
     .win-container {
         font-family: $font-family-main;
         padding: 0px 8px;
-      
 
         width: min-content;
         font-size: var(--text-lg);
         .wins {
-            // margin-top: calc( -1 * var(--space-xxxs));
-            // margin-top: -2px;
             line-height: 1em;
         }
     }
@@ -88,43 +103,61 @@
 
     .overlay {
         position: relative;
-        z-index: 1;
+        min-height: inherit;
+        margin: var(--space-sm) 0px;
+        display: flex;
+        flex-direction: column;
     }
     .badges {
         padding: 0px var(--space-xs);
         gap: var(--space-xs);
     }
+    .stretch-height {
+        min-height: v-bind(cardHeightPx);
+    }
 }
 </style>
 <script setup>
 import Team from "@/store/models/team";
+import Rink from "@/store/models/rink";
 import { useQuery } from "@tanstack/vue-query";
-import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
+import GET_TEAM_WITH_STATS from "@/queries/get_team_with_stats";
+import { useElementBounding } from "@vueuse/core";
 
 const props = defineProps({
     teamId: Number,
 });
 
-
 const { getTeamAvatar } = useAvatar();
-
-
 
 const { getBadgesForTeam } = useBadge();
 
-const { isLoading: badgesLoading, data: badges } = useQuery({
-    queryKey: ["team", "badges", props.teamId],
-    queryFn: () => getBadgesForTeam(props.teamId),
+const { getFullTeam } = useTeam();
+
+const { isLoading: isLoadingTeam } = useQuery({
+    queryKey: ["team", "page", props.teamId],
+    queryFn: () => getFullTeam({ id: props.teamId }),
 });
 
-const {isLoading: isLoadingTeam, data: team} = useQuery({
-    queryKey: ['team', 'page', props.teamId],
-    queryFn: () => GET_TEAM_WITH_STATS(props.teamId)
-})
+const team = computed(() =>
+    useRepo(Team)
+        .with("badges")
+        .with("totalStats")
+        .where("id", props.teamId)
+        .first()
+);
+
+const rink = computed(() =>
+    useRepo(Rink).where("id", team.value.rink_id).first()
+);
 
 const { isLoading, data: avatar } = getTeamAvatar(team.value?.id, {
-    enabled: !!team
+    enabled: !!team.value?.id,
 });
+const overlay = ref(null);
+const { height: cardHeight } = useElementBounding(overlay);
+
+const cardHeightPx = computed(() => `${cardHeight.value}px`);
 </script>
 <script>
 export default {

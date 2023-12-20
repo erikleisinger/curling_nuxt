@@ -5,15 +5,17 @@
 </template>
 <script setup>
 import { useQuery} from '@tanstack/vue-query'
-import GET_TEAM_WITH_STATS from '@/queries/get_team_with_stats'
+
+const {getFullTeam} = useTeam();
 
 const route = useRoute();
 const {setLoading} = useLoading();
 
 const {isLoading} = useQuery({
-    queryKey: ['team', 'page', Number(route.params.id)],
-    queryFn: () => GET_TEAM_WITH_STATS(Number(route.params.id)),
+    queryKey: ['team', 'full', Number(route.params.id)],
+    queryFn: () => getFullTeam({id: Number(route.params.id)}),
     refetchOnWindowFocus: false,
+    keepPreviousData: true,
 })
 
 </script>

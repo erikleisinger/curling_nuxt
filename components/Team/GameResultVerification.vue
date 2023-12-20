@@ -90,7 +90,7 @@ const props = defineProps({
 
 const emit = defineEmits(['refresh'])
 
-const { getTeamPlayers } = useTeam();
+const { getFullTeam } = useTeam();
 
 
 
@@ -105,11 +105,20 @@ const creatorTeam = computed(() =>
     game.value.teams.find(({ pending }) => !pending)?.team ?? {}
 );
 
+const creatorQueryEnabled = computed(() => !!creatorTeam.value?.id)
 const {isLoading} = useQuery({
-    queryKey: ['game', 'players', props.gameId],
-    queryFn: () => Promise.all([getTeamPlayers(pendingTeam.value.id), getTeamPlayers(creatorTeam.value.id)]),
-   
-    enabled: !!pendingTeam.value?.id
+    queryKey: ['team', 'full', creatorTeam.value.id],
+    queryFn: () => getFullTeam({id: creatorTeam.value.id }),
+    refetchOnWindowFocus: false,
+    enabled: creatorQueryEnabled,
+})
+
+const pendingQueryEnabled = computed(() => !!pendingTeam.value?.id)
+const {isLoading: isLoadingPending} = useQuery({
+    queryKey: ['team', 'full', pendingTeam.value.id],
+    queryFn: () => getFullTeam({id: pendingTeam.value.id }),
+    refetchOnWindowFocus: false,
+    enabled: pendingQueryEnabled,
 })
 
 const { isOnTeam } = useTeam();

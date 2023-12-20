@@ -5,7 +5,7 @@ import Player from '@/store/models/player'
 import GameTeam from '@/store/models/game-team'
 import TeamPlayer from '@/store/models/team-player'
 import TeamStatsTotal from '@/store/models/team-stats-total'
-import Rink from '@/store/models/rink'
+import Badge from '@/store/models/badge'
 
 class FormatAvatar extends CastAttribute {
     get(value) {
@@ -38,6 +38,7 @@ export default class Team extends Model {
             instagram: this.string(),
             twitter: this.string(),
             featured_badge_id: this.number(),
+            badges: this.hasMany(Badge, 'team_id')
         }
        
     }
