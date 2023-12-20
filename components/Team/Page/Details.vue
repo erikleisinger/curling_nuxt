@@ -40,7 +40,7 @@
         </h3>
         <q-input
             dense
-            v-else
+            v-else-if="create"
             readonly
             @click="openRinkSearch"
             :model-value="selectedRink.name"
