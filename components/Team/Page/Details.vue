@@ -101,6 +101,7 @@
                     :disabled="!editing"
                     :canRemove="editing && (player?.pivot?.status === 'pending' || permanentPlayers.length > 1)"
                     :canEditPosition="editing && player?.pivot?.status !== 'pending'"
+                    :pending="player?.pivot?.status === 'pending'"
                 >
             <div class="player-avatar__container column items-center">
                 <Avataaar

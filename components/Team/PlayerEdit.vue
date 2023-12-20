@@ -9,7 +9,7 @@
                             <q-icon name="person_remove" />
                         </q-item-section>
                         <q-item-section label>
-                            Remove from team
+                            {{pending ? 'Cancel invitation' : 'Remove from team'}}
                         </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple v-if="canEditPosition">
@@ -53,7 +53,7 @@
                 </div>
             </q-card-section>
             <q-card-actions class="row justify-between">
-                <q-btn flat @click="confirmOpen = false">Cancel</q-btn>
+                <q-btn flat @click="confirmOpen = false">Back</q-btn>
                 <q-btn flat color="red" @click="onRemove">{{
                     requestStatus ? "Cancel invitation" : "Remove"
                 }}</q-btn>
@@ -88,10 +88,12 @@ const props = defineProps({
     canEditPosition: Boolean,
     canRemove: Boolean,
     disabled: Boolean,
+    pending: Boolean,
     playerId: String,
     teamId: Number,
 });
 const remove = () => {
+    menuOpen.value = false;
     confirmOpen.value = true;
 };
 const confirmOpen = ref(false);
