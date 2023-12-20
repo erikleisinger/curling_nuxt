@@ -193,6 +193,7 @@ watch(
         if (!val) {
             unreadCountVisible.value = 0;
             unreadCount.value = 0;
+            cursor.value = CURSOR_INCREMENT
         } else {
             markUnread();
         }

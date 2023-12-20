@@ -40,7 +40,7 @@
         </h3>
         <q-input
             dense
-            v-else-if="!!editing"
+            v-else
             readonly
             @click="openRinkSearch"
             :model-value="selectedRink.name"
@@ -48,18 +48,12 @@
         />
 
         <div class="row justify-center socials-container" v-if="!editing">
-             <IconFacebook color="rgba(0,0,0,0.3)" v-if="team.facebook" @click="navigateTo(team.facebook, {open: {
-                target: '_blank'
-             }})"/>
-               <IconInstagram color="rgba(0,0,0,0.3)" v-if="team.instagram" @click="navigateTo(team.instagram, {open: {
-                target: '_blank'
-             }})"/>
-                 <IconTwitter color="rgba(0,0,0,0.3)" v-if="team.twitter" @click="navigateTo(team.twitter, {open: {
-                target: '_blank'
-             }})"/>
+             <IconFacebook color="rgba(0,0,0,0.3)" v-if="team.facebook" @click="goSocial(team.facebook)"/>
+               <IconInstagram color="rgba(0,0,0,0.3)" v-if="team.instagram" @click="goSocial(team.instagram)"/>
+                 <IconTwitter color="rgba(0,0,0,0.3)" v-if="team.twitter" @click="goSocial(team.twitter)"/>
         </div>
         <q-input
-            v-if="editing"
+            v-if="editing || create"
             placeholder="Facebook"
             dense
             :rules="[(val) => validateSocial(val, 'facebook')]"
@@ -68,9 +62,10 @@
             <template v-slot:prepend>
                 <IconFacebook color="rgba(0,0,0,0.3)" />
             </template>
+           
         </q-input>
         <q-input
-            v-if="editing"
+           v-if="editing || create"
             placeholder="Instagram"
             dense
             :rules="[(val) => validateSocial(val, 'instagram')]"
@@ -81,7 +76,7 @@
             </template>
         </q-input>
         <q-input
-            v-if="editing"
+            v-if="editing || create"
             placeholder="Twitter"
             dense
             :rules="[(val) => validateSocial(val, 'twitter')]"
@@ -287,6 +282,7 @@ import { useUserTeamStore } from "@/store/user-teams";
 import { useTeamRequestStore } from "@/store/team-requests";
 import Rink from "@/store/models/rink";
 import Team from "@/store/models/team";
+import Player from '@/store/models/player'
 import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
@@ -295,6 +291,7 @@ import { MAX_TEAM_NAME_LENGTH, VALIDATION_RULES } from "@/constants/validation";
 const queryClient = useQueryClient();
 
 const props = defineProps<{
+    create: boolean;
     teamId: number | undefined;
 }>();
 const emit = defineEmits(["back"]);
@@ -399,6 +396,9 @@ const createTeam = async () => {
         .insert({
             name: editedValues.value.name,
             rink_id: editedValues.value.rink_id,
+            instagram: editedValues.value.instagram,
+            twitter: editedValues.value.twitter,
+            facebook: editedValues.value.facebook
         })
         .select("id")
         .single();
@@ -427,19 +427,19 @@ const onClickEdit = async () => {
         if (editedValues.value.facebook !== originalValues.value.facebook) {
             saving.value = true;
             hasChanged = true;
-            updates.facebook = editedValues.value.facebook
+            updates.facebook = cleanUrl(editedValues.value.facebook)
         }
 
         if (editedValues.value.instagram !== originalValues.value.instagram) {
             saving.value = true;
             hasChanged = true;
-            updates.instagram = editedValues.value.instagram;
+            updates.instagram = cleanUrl(editedValues.value.instagram);
         }
 
         if (editedValues.value.twitter !== originalValues.value.twitter) {
             saving.value = true;
             hasChanged = true;
-            updates.twitter = editedValues.value.twitter;
+            updates.twitter = cleanUrl(editedValues.value.twitter);
         }
         if (editedValues.value.rink_id !== originalValues.value.rink_id) {
             saving.value = true;
@@ -460,7 +460,7 @@ const onClickEdit = async () => {
 
         if (hasChanged)
             queryClient.invalidateQueries({
-                queryKey: ["team", "page", props.teamId],
+                queryKey: ["team", "full", props.teamId],
             });
 
         setEditedValues(true);
@@ -540,19 +540,38 @@ const onPlayerClick = ({ id }) => {
 
 const validateSocial = (input, type) => {
     try {
-        const url = new URL(input);
+        const scrubbed = input.replaceAll('http://.', '', 'https://', '')
+        const url = new URL(`https://${scrubbed}`);
+        
         const { origin } = url;
+       
         return (
             origin === `https://www.${type}.com` ||
             origin === `https://${type}.com` ||
+            origin === `${type}.com` ||
             `Must be a valid ${type} url.`
         );
     } catch {
         return "Invalid url";
     }
-
-    return true;
 };
+
+const cleanUrl = (url: string) => {
+     const scrubbed = url?.replaceAll('http://.', '', 'https://', '')
+     return `https://${scrubbed}`
+}
+
+const goSocial = (url: string) => {
+    navigateTo(cleanUrl(url), {open: {
+        target: '_blank'
+    }})
+}
+
+onMounted(() => {
+    if (!props.create) return;
+    const {user: userId} = useUser();
+    editedValues.value.rink_id = useRepo(Player).where('id', userId.value).first()?.rink_id
+})
 </script>
 <script lang="ts">
 export default {

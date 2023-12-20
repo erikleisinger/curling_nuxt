@@ -89,7 +89,7 @@
     </q-layout>
     <q-dialog v-model="newTeamOpen" persistent>
         <q-card class="team-details__viewer">
-            <TeamPageDetails @back="newTeamOpen = false" />
+            <TeamPageDetails @back="newTeamOpen = false" create />
         </q-card>
     </q-dialog>
 </template>
