@@ -74,7 +74,7 @@
             background-color:white;
             z-index: -1;
             border-radius: 50%;
-            clip-path: inset(50% 0 0 0);
+            clip-path: inset(0% 0 0 0);
         }
 
 }
