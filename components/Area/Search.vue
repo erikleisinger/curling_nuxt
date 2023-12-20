@@ -85,12 +85,9 @@
                         <div v-if="result.resourcetype === 'team'">
                             <TeamAvatar :teamId="result.id" />
                         </div>
-                        <div
-                            v-if="result.resourcetype === 'team'"
-                            class="column justify-center"
-                        >
-                            <div class="text-sm">Team</div>
-                            <div class="text-bold">{{ result.name }}</div>
+                         <div class="column justify-center"  v-if="result.resourcetype === 'team'">
+                            <div class="text-bold text-lg name">{{result.name}} </div>
+                            <div class="text-sm" style="margin-top: -4px" v-if="result.rink_name">{{ result.rink_name }}</div>
                         </div>
                         <div v-if="result.resourcetype === 'team'">
                             <slot name="append" v-bind:result="result" />
@@ -129,8 +126,8 @@
                             <Avataaar v-bind="parseAvatar(result.avatar)" />
                         </div>
                         <div class="column justify-center"  v-if="result.resourcetype === 'profile'">
-                            <div class="text-sm">User</div>
-                            <div class="text-bold">{{ result.name }}</div>
+                            <div class="text-bold text-lg name">{{result.first_name}} {{result.last_name}}</div>
+                            <div class="text-sm" style="margin-top: -4px">@{{ result.name }}</div>
                         </div>
                         <div v-if="result.resourcetype === 'profile'">
                             <slot name="append" v-bind:result="result" />
@@ -219,6 +216,9 @@
                 font-weight: bold;
             }
         }
+    }
+    .name {
+        line-height: 1.2em;
     }
 }
 

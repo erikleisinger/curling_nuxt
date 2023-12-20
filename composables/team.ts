@@ -148,7 +148,6 @@ export const useTeam = () => {
             })
 
             stats?.forEach((stat) => {
-                console.log(stat)
                 useRepo(TeamStats).save({...stat, team_id: id})
             })
 

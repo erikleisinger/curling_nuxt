@@ -31,7 +31,7 @@
                     icon="search"
                   
                     :size="$q.screen.xs ? 'md' : 'lg'"
-                    :disable="true"
+                    @click="toggleSearch"
                 >
                 </q-btn>
                 <div class="action-button__container">
@@ -258,7 +258,9 @@ const avatar = computed(
 const toggleSearch = () => {
     toggleGlobalSearch({
         open: true,
+
         options: {
+            resourceTypes: ['team', 'profile'],
             inputLabel: "Search for a team, player, rink, or event",
             callback: onSelect,
         },
@@ -270,8 +272,12 @@ const onSelect = (selection) => {
     toggleGlobalSearch({
         open: false,
     });
+    console.log(selection)
     if (selection.resourcetype === "team") {
         return navigateTo(`/teams/${selection.id}`);
+    }
+    if (selection.resourcetype === "profile") {
+        return navigateTo(`/player/${selection.profile_id}`);
     }
 };
 
