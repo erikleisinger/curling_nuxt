@@ -28,9 +28,10 @@
                 />
                 <q-btn
                     flat
-                    icon="groups_2"
-                    @click="goTo('/teams')"
+                    icon="search"
+                  
                     :size="$q.screen.xs ? 'md' : 'lg'"
+                    :disable="true"
                 >
                 </q-btn>
                 <div class="action-button__container">
