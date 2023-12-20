@@ -15,11 +15,27 @@
                         <h3 class="text-xs">{{ rink?.name }}</h3>
                     </div>
                     <div class="row badges" v-if="isLoadingTeam">
-                        <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
-                         <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
-                          <q-skeleton height="2em" width="2em" type="circle"></q-skeleton>
+                        <q-skeleton
+                            height="2em"
+                            width="2em"
+                            type="circle"
+                        ></q-skeleton>
+                        <q-skeleton
+                            height="2em"
+                            width="2em"
+                            type="circle"
+                        ></q-skeleton>
+                        <q-skeleton
+                            height="2em"
+                            width="2em"
+                            type="circle"
+                        ></q-skeleton>
                     </div>
-                    <div class="row badges" v-else>
+                    <div
+                        class="row badges"
+                        v-if="!isLoadingTeam && team && team?.badges"
+                        ref="badges"
+                    >
                         <Badge
                             v-for="badge in team.badges"
                             :key="badge.id"
@@ -31,26 +47,30 @@
                     </div>
                 </div>
                 <div class="win-container column items-end">
-   
-                        <q-skeleton height="2em" width="75px" v-if="isLoadingTeam"/>
-                        <div class="text-xl text-bold wins text-right" v-else>
-                            <span v-if="team?.totalStats?.wins_average">
-                                {{ team?.totalStats?.wins_average * 100 }}%
-                            </span>
-                            <span v-else>0</span>
-                        </div>
-                         <q-skeleton height="1em" width="40px" v-if="isLoadingTeam"/>
-                        <div
+                    <q-skeleton
+                        height="2em"
+                        width="75px"
+                        v-if="isLoadingTeam"
+                    />
+                    <div class="text-xl text-bold wins text-right" v-else>
+                        <span v-if="team?.totalStats?.wins_average">
+                            {{ team?.totalStats?.wins_average * 100 }}%
+                        </span>
+                        <span v-else>0</span>
+                    </div>
+                    <q-skeleton
+                        height="1em"
+                        width="40px"
+                        v-if="isLoadingTeam"
+                    />
+                    <div
                         v-else
-                            class="text-sm text-right"
-                            style="margin-top: -8px"
-                        >
-                            <span v-if="team?.totalStats?.wins_average"
-                                >wins</span
-                            >
-                            <span v-else>games</span>
-                        </div>
-                  
+                        class="text-sm text-right"
+                        style="margin-top: -8px"
+                    >
+                        <span v-if="team?.totalStats?.wins_average">wins</span>
+                        <span v-else>games</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,8 +169,9 @@ const team = computed(() =>
         .first()
 );
 
+
 const rink = computed(() =>
-    useRepo(Rink).where("id", team.value.rink_id).first()
+    useRepo(Rink).where("id", team.value?.rink_id).first()
 );
 
 const { isLoading, data: avatar } = getTeamAvatar(team.value?.id, {
