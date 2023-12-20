@@ -14,6 +14,7 @@
                     @update:model-value="onSelectDate"
                     v-show="selectDate"
                     class="relative-position"
+                    :options="limitDate"
                 >
     <div class="close-button__container">
 <q-btn  flat round icon="check" color="white"  dense @click="save"/>
@@ -27,6 +28,7 @@
                     :minute-options="[
                         0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55,
                     ]"
+                    :options="limitTime"
                      class="relative-position"
                 >
         <div class="close-button__container">
@@ -52,6 +54,18 @@ const props = defineProps({
     name: String,
     label: String,
 });
+
+const {toTimezone} = useTime();
+
+const limitDate = (val) => {
+    const now =  toTimezone(null, null, false, true).unix()
+    return toTimezone(val, null, false, true).unix() <= now;
+}
+
+const limitTime = (val) => {
+    const now =  Number(toTimezone(null, 'H'))
+    return val <= now;
+}
 
 const date = ref(null);
 
