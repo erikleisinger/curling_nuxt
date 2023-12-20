@@ -2,7 +2,7 @@
      <DialogInfo v-if="!!open" @close="open = false" class="badges-info__popup">
         <div class="column items-center badges-info__popup--inner">
             <div class="badge-icon__container">
-            <BadgeIcon height="7em" class="q-mr-sm" :badge="badge.name" />
+            <BadgeIcon height="7em" class="q-mr-sm" :badge="badge" />
             </div>
             <div class="badge-popup__content column items-center">
                  <div class="cutout"/>
@@ -10,7 +10,7 @@
                 {{ BADGE_NAMES[badge.name] }}
             </h2>
             <p class="text-sm text-italic text-center q-px-md">
-                {{ BADGE_DESCRIPTIONS[badge.name] }}
+                {{ getBadgeDescription(badge) }}
             </p>
              
                 </div>
@@ -133,11 +133,13 @@ background-position: center;
 </style>
 <script setup>
 import {useQuery} from '@tanstack/vue-query'
-import { BADGE_NAMES, BADGE_DESCRIPTIONS, BADGE_BACKGROUNDS } from "@/constants/badges";
+import { BADGE_NAMES, BADGE_BACKGROUNDS } from "@/constants/badges";
 const props = defineProps({
     badge: Object,
     modelValue: Boolean,
 })
+
+const {getBadgeDescription} = useBadge();
 
 const emit = defineEmits(['update:modelValue'])
 

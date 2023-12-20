@@ -11,10 +11,84 @@
         <q-item-section avatar class="relative-position">
             <Badge :badge="item" height="45px" iconOnly @click.stop />
         </q-item-section>
-        <q-item-section>
+           <q-item-section v-if="item.name === 'win_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" /> is
+                <strong>{{ BADGE_NAMES[item.name] }}</strong>!</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+         <q-item-section v-else-if="item.name === 'lose_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" /> has lost <strong>{{item.info.value}} games in a row.</strong>
+                That's... some kind of accomplishment!</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+        <q-item-section v-else>
             <span>
                 <TeamChip :teamId="item.team.id" /> earned the
                 <strong>{{ BADGE_NAMES[item.name] }}</strong> badge!</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+      <q-item
+        v-if="item.type === 'badge_updated'"
+        class="achievement-history__item"
+        :class="{ unread }"
+        v-ripple
+        clickable
+        @click="navigateTo(`/teams/${item.team.id}`)"
+    >
+        <q-item-section avatar class="relative-position">
+            <Badge :badge="item" height="45px" iconOnly @click.stop />
+        </q-item-section>
+        <q-item-section v-if="item.name === 'win_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" />'s winning streak continues!</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+          <q-item-section v-else-if="item.name === 'lose_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" />'s losing streak continues.</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+     <q-item
+        v-if="item.type === 'badge_lost'"
+        class="achievement-history__item"
+        :class="{ unread }"
+        v-ripple
+        clickable
+        @click="navigateTo(`/teams/${item.team.id}`)"
+    >
+        <q-item-section avatar class="relative-position overlay">
+            <Badge :badge="item" height="45px" iconOnly @click.stop />
+        </q-item-section>
+        <q-item-section v-if="item.name === 'win_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" />'s winning streak has ended. All good things...</span
+            >
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+         <q-item-section v-if="item.name === 'lose_streak'">
+            <span>
+                <TeamChip :teamId="item.team.id" />'s {{item.info.value}}-game losing streak has ended! </span
             >
             <q-item-label caption>{{
                 getAchievementDate(item.created_at)
@@ -293,6 +367,9 @@
             // rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
               color: $red;
         }
+    }
+    .overlay {
+       filter: grayscale(100%);
     }
 }
 </style>

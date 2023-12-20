@@ -13,7 +13,8 @@ export default class Badge extends Model {
             game_id: this.number(),
             team_id: this.number(),
             game: this.belongsTo(Game, 'game_id'),
-            team: this.belongsTo(Team, 'team_id')
+            team: this.belongsTo(Team, 'team_id'),
+            info: this.attr()
         };
     }
 }

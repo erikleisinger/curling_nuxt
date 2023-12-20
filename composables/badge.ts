@@ -1,4 +1,4 @@
-import { BADGE_FIELDS, BADGE_THRESHOLDS } from "@/constants/badges";
+import { BADGE_FIELDS, BADGE_THRESHOLDS, BADGE_DESCRIPTIONS } from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 export const useBadge = () => {
     const store = useUserTeamStore();
@@ -59,7 +59,15 @@ export const useBadge = () => {
             })
             return returnVal;
     }
+
+    const getBadgeDescription = (badge) => {
+        const description = BADGE_DESCRIPTIONS[badge.name]
+        if (typeof description === 'function') {
+            return description(badge.info)
+        }
+        return description;
+    }
     
 
-    return { hasBadge, getBadgesForTeam, getBadgesForGame };
+    return { hasBadge, getBadgesForTeam, getBadgesForGame, getBadgeDescription };
 };

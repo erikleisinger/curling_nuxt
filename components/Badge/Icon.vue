@@ -1,12 +1,12 @@
 <template>
-    <div class="badge__content--container">
+    <div class="badge__content--container" >
         <div class="badge-overlay--container">
             <slot />
         </div>
         <div
             class="badge--additional"
-            :class="`${BADGE_BACKGROUNDS[badge]} ${
-                EPHEMERAL_BADGES.includes(badge) && 'ephemeral'
+            :class="`${BADGE_BACKGROUNDS[badge.name]} ${
+                EPHEMERAL_BADGES.includes(badge.name) && 'ephemeral'
             }`"
             v-if="!!additionalNumber"
         >
@@ -14,13 +14,13 @@
         </div>
         <div
             class="badge-icon__container column no-wrap flex-shrink"
-            :class="`${BADGE_BACKGROUNDS[badge]} ${
-                EPHEMERAL_BADGES.includes(badge) && 'ephemeral'
+            :class="`${BADGE_BACKGROUNDS[badge.name]} ${
+                EPHEMERAL_BADGES.includes(badge.name) && 'ephemeral'
             }`"
         >
             <div style="height: 100%" class="badge-icon__container--inner">
                 <svg
-                    v-if="badge === 'bandit'"
+                    v-if="badge.name === 'bandit'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -35,7 +35,7 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'showoff'"
+                    v-else-if="badge.name === 'showoff'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -51,7 +51,7 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'stealdefense'"
+                    v-else-if="badge.name === 'stealdefense'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -66,7 +66,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'singlegame'"
+                    v-else-if="badge.name === 'singlegame'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -82,7 +82,7 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'survivalist'"
+                    v-else-if="badge.name === 'survivalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -97,7 +97,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'strategist'"
+                    v-else-if="badge.name === 'strategist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -112,7 +112,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'efficiency'"
+                    v-else-if="badge.name === 'efficiency'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -127,7 +127,7 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'bulwark'"
+                    v-else-if="badge.name === 'bulwark'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -142,7 +142,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'win_1' || badge === 'win_5'"
+                    v-else-if="badge.name === 'win_1' || badge.name === 'win_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -156,7 +156,9 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'win_10' || badge === 'win_25'"
+                    v-else-if="
+                        badge.name === 'win_10' || badge.name === 'win_25'
+                    "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -171,7 +173,9 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'win_50' || badge === 'win_100'"
+                    v-else-if="
+                        badge.name === 'win_50' || badge.name === 'win_100'
+                    "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -185,7 +189,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'shutout'"
+                    v-else-if="badge.name === 'shutout'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -199,7 +203,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'handshakes'"
+                    v-else-if="badge.name === 'handshakes'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -213,7 +217,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'conversion'"
+                    v-else-if="badge.name === 'conversion'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -227,7 +231,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'force'"
+                    v-else-if="badge.name === 'force'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -241,7 +245,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'score_4'"
+                    v-else-if="badge.name === 'score_4'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -255,7 +259,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'score_5'"
+                    v-else-if="badge.name === 'score_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -269,7 +273,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'score_6'"
+                    v-else-if="badge.name === 'score_6'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -283,7 +287,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'score_7'"
+                    v-else-if="badge.name === 'score_7'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -297,7 +301,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'score_8'"
+                    v-else-if="badge.name === 'score_8'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -311,7 +315,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'ee_win'"
+                    v-else-if="badge.name === 'ee_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -326,7 +330,7 @@
                 </svg>
 
                 <svg
-                    v-else-if="badge === 'stolen_win'"
+                    v-else-if="badge.name === 'stolen_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -340,40 +344,22 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="
-                        badge === 'win_streak_2' ||
-                        badge === 'win_streak_3' ||
-                        badge === 'win_streak_4' ||
-                        badge === 'win_streak_5' ||
-                        badge === 'win_streak_6' ||
-                        badge === 'win_streak_7' ||
-                        badge === 'win_streak_8' ||
-                        badge === 'win_streak_9' ||
-                        badge === 'win_streak_10'
-                    "
+                v-else-if="badge.name === 'win_streak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                   style="height: 100%; aspect-ratio: 1/1"
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
-                            d="M305.975 298.814l22.704 2.383V486l-62.712-66.965V312.499l18.214 8.895zm-99.95 0l-22.716 2.383V486l62.711-66.965V312.499l-18.213 8.895zm171.98-115.78l7.347 25.574-22.055 14.87-1.847 26.571-25.81 6.425-10.803 24.314-26.46-2.795-18.475 19.087L256 285.403l-23.902 11.677-18.475-19.15-26.46 2.795-10.803-24.313-25.81-6.363-1.847-26.534-22.118-14.92 7.348-25.573-15.594-21.544 15.644-21.52-7.398-25.523 22.068-14.87L150.5 73.03l25.86-6.362 10.803-24.313 26.46 2.794L232.098 26 256 37.677 279.902 26l18.475 19.149 26.46-2.794 10.803 24.313 25.81 6.425 1.847 26.534 22.055 14.87-7.347 25.574 15.656 21.407zm-49.214-21.556a72.242 72.242 0 1 0-72.242 72.242 72.355 72.355 0 0 0 72.242-72.242zm-72.242-52.283a52.282 52.282 0 1 0 52.282 52.283 52.395 52.395 0 0 0-52.282-52.245z"
-                            fill="#fff"
+                            d="M158.6 41l34.5 69.1L239.2 41zm114.2 0l46.1 69.1L353.4 41zM256 48.22L208.8 119h94.4zm-113.9.14L83.22 119h94.18zm227.8 0L334.6 119h94.2zM80.82 137L196.8 311H249l-63.4-174zm124.08 0L256 277.7 307.1 137zm121.5 0L263 311h52.2l116-174zM201 329v46h110v-46zm-67.8 64l-53.69 94H432.5l-53.7-94H183zm26.8 46h192v18H160z"
+                         
                             fill-opacity="1"
                         ></path>
                     </g>
                 </svg>
                 <svg
                     v-else-if="
-                        badge === 'lose_streak_2' ||
-                        badge === 'lose_streak_3' ||
-                        badge === 'lose_streak_4' ||
-                        badge === 'lose_streak_5' ||
-                        badge === 'lose_streak_6' ||
-                        badge === 'lose_streak_7' ||
-                        badge === 'lose_streak_8' ||
-                        badge === 'lose_streak_9' ||
-                        badge === 'lose_streak_10'
+                        badge.name === 'lose_streak'
                     "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
@@ -388,7 +374,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'singlemingle'"
+                    v-else-if="badge.name === 'singlemingle'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -402,7 +388,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'minimalist'"
+                    v-else-if="badge.name === 'minimalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -416,7 +402,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'comeback'"
+                    v-else-if="badge.name === 'comeback'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -430,7 +416,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'blewit'"
+                    v-else-if="badge.name === 'blewit'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -444,7 +430,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'controlfreak'"
+                    v-else-if="badge.name === 'controlfreak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -458,7 +444,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'adrenaline'"
+                    v-else-if="badge.name === 'adrenaline'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -472,7 +458,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'barnburner'"
+                    v-else-if="badge.name === 'barnburner'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -486,7 +472,7 @@
                     </g>
                 </svg>
                 <svg
-                    v-else-if="badge === 'first_game'"
+                    v-else-if="badge.name === 'first_game'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
                     style="height: 100%; aspect-ratio: 1/1"
@@ -508,6 +494,7 @@ $icon-height: 4em;
 .badge__content--container {
     position: relative;
     width: min-content;
+
 
     .badge--additional {
         position: absolute;
@@ -531,7 +518,7 @@ $icon-height: 4em;
         font-size: v-bind(additionalFontDimension);
         &.ephemeral {
             color: rgb(238, 195, 108);
-            border-color:  rgb(238, 195, 108);
+            border-color: rgb(238, 195, 108);
         }
     }
     .badge-overlay--container {
@@ -556,10 +543,8 @@ $icon-height: 4em;
             rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
         background-size: cover;
         fill: rgb(0, 24, 49);
-                &.ephemeral {
-
-                    border-color: rgb(238, 195, 108);
-
+        &.ephemeral {
+            border-color: rgb(238, 195, 108);
         }
 
         path {
@@ -570,9 +555,8 @@ $icon-height: 4em;
         }
         &.ephemeral {
             svg {
-                fill:  rgb(238, 195, 108);
+                fill: rgb(238, 195, 108);
             }
-            
         }
         .badge-icon__container--inner {
             padding: v-bind(padding);
@@ -599,10 +583,7 @@ $icon-height: 4em;
 <script setup>
 import { BADGE_BACKGROUNDS } from "@/constants/badges";
 const props = defineProps({
-    badge: {
-        type: String,
-        default: "bandit",
-    },
+    badge: Object,
     height: {
         type: String,
         default: "4em",
@@ -612,18 +593,13 @@ const props = defineProps({
 
 const padding = computed(() => `calc(${props.height} * 0.1)`);
 
-const description = computed(
-    () => BADGE_DESCRIPTIONS[props.badge] ?? LOREM_IPSUM
-);
-
-const badgeTitle = computed(() => `"${props.badge}"`);
 
 const extraContent = {
     win_1: 1,
     win_5: 5,
 };
 
-const EPHEMERAL_BADGES = [];
+const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];
 
 const additionalNumber = computed(() => {
     return (
@@ -633,25 +609,9 @@ const additionalNumber = computed(() => {
             win_10: 10,
             win_25: 25,
             win_50: 50,
-            win_streak_2: 2,
-            win_streak_3: 3,
-            win_streak_4: 4,
-            win_streak_5: 5,
-            win_streak_6: 6,
-            win_streak_7: 7,
-            win_streak_8: 8,
-            win_streak_9: 9,
-            win_streak_10: 10,
-            lose_streak_2: 2,
-            lose_streak_3: 3,
-            lose_streak_4: 4,
-            lose_streak_5: 5,
-            lose_streak_6: 6,
-            lose_streak_7: 7,
-            lose_streak_8: 8,
-            lose_streak_9: 9,
-            lose_streak_10: 10,
-        }[props.badge] ?? 0
+            win_streak: props.badge.info?.value,
+            lose_streak:props.badge.info?.value,
+        }[props.badge.name] ?? 0
     );
 });
 

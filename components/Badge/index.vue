@@ -16,7 +16,7 @@
                 <BadgeIcon
                     height="2em"
                     class="badge-icon"
-                    :badge="badge.name"
+                    :badge="badge"
                 />
             </div>
             <div v-if="!iconOnly">
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="text-sm badge-description" v-if="!iconOnly">
-            {{ BADGE_DESCRIPTIONS[badge.name] }}
+            {{ getBadgeDescription(badge) }}
         </div>
         <div class="row no-wrap justify-end" v-if="!iconOnly">
             <div
@@ -114,7 +114,6 @@
 <script setup>
 import {
     BADGE_NAMES,
-    BADGE_DESCRIPTIONS,
     BADGE_BACKGROUNDS,
     BADGE_COLORS,
 } from "@/constants/badges";
@@ -136,6 +135,8 @@ const props = defineProps({
 });
 const { toTimezone } = useTime();
 const showMore = ref(false);
+
+const {getBadgeDescription} = useBadge();
 
 const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
