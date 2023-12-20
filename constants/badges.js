@@ -35,6 +35,7 @@ export const BADGE_BACKGROUNDS = {
     efficiency: 'bg-badge--purple',
     'ee_win': 'bg-badge--teal',
     singlegame: 'bg-badge--teal',
+    brian_nagle: 'bg-badge--purple'
 }   
 
 export const BADGE_NAMES = {
@@ -68,7 +69,8 @@ export const BADGE_NAMES = {
     controlfreak: 'Never a doubt',
     adrenaline: 'Drama Queens',
     barnburner: 'Barn Burner!',
-    first_game: 'On the board!'
+    first_game: 'On the board!',
+    brian_nagle: 'Beat Brian Nagle'
 }
 
 export const BADGE_DESCRIPTIONS = {
@@ -102,7 +104,8 @@ export const BADGE_DESCRIPTIONS = {
     controlfreak: 'Be in the lead for an entire game.',
     adrenaline: 'Trail your opponent all game... and win.',
     barnburner: '2+ points are scored in at least half the ends played.',
-    first_game: 'Record your very first game.'
+    first_game: 'Record your very first game.',
+    brian_nagle: 'Beat Brian Nagle 12-2 after he upset you in playdowns.'
 }
 
 export const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];
