@@ -51,7 +51,7 @@ export const useBadge = () => {
             .eq('earned', true);
         
             const returnVal = {};
-            data?.forEach((badge) => {
+            data?.forEach((badge) => {  
                 const {team_id} = badge;
                 if (!team_id) return;
                 if (!returnVal[team_id]) returnVal[team_id] = [];
@@ -59,6 +59,7 @@ export const useBadge = () => {
             })
             return returnVal;
     }
+    
 
     return { hasBadge, getBadgesForTeam, getBadgesForGame };
 };

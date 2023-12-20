@@ -36,7 +36,7 @@
                 >
                     <div class="player-team__avatar">
                     
-                        <TeamAvatarBadge :teamId="team.id" />
+                        <LazyTeamAvatarBadge :teamId="team.id" />
                     </div>
                     <h3 class="text-sm text-center truncate-text" style="max-width: 100px">{{ team.name }}</h3>
                 </div>
@@ -46,7 +46,7 @@
                 class="player-badges--section"
                 :class="{ 'col-6': !$q.screen.xs }"
             >
-                <Badge
+                <LazyBadge
                     :badge="badge"
                     v-for="badge in badges"
                     :key="badge.id"
@@ -223,11 +223,12 @@ const getBadges = async () => {
        
         if (duplicate) {
              const {team_id, created_at} = duplicate;
+             const isDuplicateArray = typeof team_id === 'object'           
             return [
                 ...all.filter(({name}) => name !== current.name), 
                 {
                     ...current,
-                    team_id: [...(typeof team_id === 'object' ? team_id : [team_id]), current.team_id],
+                    team_id: [...(isDuplicateArray ? team_id : [team_id]), ...((isDuplicateArray && duplicate.team_id?.includes(current.team_id) || duplicate.team_id === current.team_id) ? [] : [current.team_id])],
                     created_at: toTimezone(current.created_at, null, false, true).unix() > toTimezone(created_at, null, false, true).unix() ? current.created_at : created_at
                 }
             ]

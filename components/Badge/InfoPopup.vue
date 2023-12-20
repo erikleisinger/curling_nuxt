@@ -39,9 +39,9 @@
                     </div>  
             </p>
             <div v-else class="column items-center">
- <q-skeleton type="text" width="185px"/>
-  <q-skeleton  type="text" width="100px"/>
-   <q-skeleton  type="text" width="80px"/>
+                <q-skeleton type="text" width="185px"/>
+                 <q-skeleton  type="text" width="100px"/>
+                <q-skeleton  type="text" width="80px"/>
             </div> 
         
              </div>

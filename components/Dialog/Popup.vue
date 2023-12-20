@@ -10,7 +10,7 @@
             <slot />
         </div>
     </div>
-    <div class="popup--overlay" v-show="!hide-overlay">
+    <div class="popup--overlay" v-show="!hideOverlay">
 
     </div>
 </template>
@@ -75,7 +75,7 @@ import { useMouse, useElementBounding } from "@vueuse/core";
 
 const props = defineProps({
      bottom: Boolean,
-     'hide-overlay': Boolean,
+     hideOverlay: Boolean,
       maxHeight: {
         type: String,
         default: 'unset'
