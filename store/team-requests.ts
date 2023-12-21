@@ -62,9 +62,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 team: team_id (
                     id,
                     name,
-                    team_avatar,
-                    avatar_url,
-                    avatar_type
+                    avatar_url
                 )
             `
                 )

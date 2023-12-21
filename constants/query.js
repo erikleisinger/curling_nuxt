@@ -5,13 +5,11 @@ export const TABLE_QUERIES = {
     start_time,
     home (
       id,
-      name,
-      team_avatar
+      name
     ),
     away (
       id,
-      name,
-      team_avatar
+      name
     ),
     name,
     ends(count),
@@ -88,8 +86,6 @@ export const TABLE_QUERIES = {
         avatar,
         profile_id
     ),
-    team_avatar,
-    avatar_type,
     avatar_url,
     username:profile_id (
         username

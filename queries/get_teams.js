@@ -2,7 +2,6 @@ export default `
     id,
     name,
     created_at,
-    team_avatar,
     owner:profile_id (
         id,
         username

@@ -414,7 +414,7 @@ export const useTeamStore = defineStore("team", {
 
             const { data, errors: errors2 } = await client
                 .from("teams")
-                .update({ avatar_type: "upload", avatar_url: fileName })
+                .update({ avatar_url: fileName })
                 .eq("id", teamId)
                 .select('avatar_url')
 

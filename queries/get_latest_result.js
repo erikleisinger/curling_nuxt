@@ -39,31 +39,6 @@ export default async () => {
             opposition: gameScores[oppositionIndex].team
         }
        
-        // return {
-        //     ...gameScore,
-        //     start_time
-        // }
-
-        // const [t] = data;
-
-        // const { avatar_type, avatar_url, team_avatar, id: team_id, name, ...stats } = t;
-
-        // const obj = {
-        //     avatar_type,
-        //     avatar_url,
-        //     team_avatar,
-        //     id: team_id,
-        //     name,
-        //     stats: [
-        //         {
-        //             ...stats,
-        //             team_id,
-        //             game_id: 0,
-        //         },
-        //     ],
-        // };
-        // useRepo(TeamModel).save(obj);
-        // return obj;
     } catch (e) {
         throw new Error(e);
     }

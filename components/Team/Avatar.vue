@@ -193,7 +193,7 @@ const setPendingAvatar = (event) => {
 const teamAvatarKey = computed(() => team.value.avatar_url);
 
 const enabled = computed(
-    () => team.value.avatar_type === "upload" && !!team.value.avatar_url
+    () => !!team.value.avatar_url
 );
 
 

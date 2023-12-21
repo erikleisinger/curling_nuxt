@@ -299,10 +299,7 @@ const toggleSelect = () => {
             filterIds: props.filterIds,
             callback: (selection) => {
                 customOpposition.value = false;
-                selections.value = {
-                    ...selection,
-                    team_avatar: selection.avatar,
-                };
+                selections.value = selection;
             },
             inputLabel: "Select your team",
         },

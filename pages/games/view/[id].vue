@@ -252,30 +252,6 @@ const getScoreDetails = async () => {
         .eq("game_id", gameId);
     return data;
 };
-const generateFormattedGame = (game) => {
-    const home = {
-        id: game.home_id,
-        team_avatar: game.home_avatar,
-        avatar_type: game.home_avatar_type,
-        avatar_url: game.home_avatar_url,
-    };
-    const away = {
-        id: game.away_id,
-        team_avatar: game.away_avatar,
-        avatar_type: game.away_avatar_type,
-        avatar_url: game.away_avatar_url,
-    };
-    const homeColor = game.home_color;
-    const awayColor = game.away_color;
-
-    return {
-        home,
-        away,
-        homeColor,
-        awayColor,
-        hammerFirstEnd: game.hammer_first_end,
-    };
-};
 
 const generateScore = async (game) => {
     const details = await getScoreDetails(game?.id);
@@ -336,9 +312,7 @@ const getStatsForGame = async (game) => {
             *,
             team:team_id (
                 name,
-                team_avatar,
-                avatar_url,
-                avatar_type
+                avatar_url
             )
             `
         )

@@ -46,8 +46,9 @@ const { setLoading } = useLoading();
 
 const route = useRoute();
 
-const MANUAL_LOAD_ROUTES = ["teams-id", "player-id", "games-view-id"];
+const MANUAL_LOAD_ROUTES = ["teams-id", "player-id", "games-view-id", 'rinks-id'];
 nuxtApp.hook("page:finish", () => {
+    console.log(route.name)
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
     setLoading(false);
 });

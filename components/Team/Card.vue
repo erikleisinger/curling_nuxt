@@ -1,18 +1,20 @@
 <template>
     <div
         class="team-card__container column"
+        ref="container"
+        :class="{dense}"
         :style="`background-image: url(${avatar})`"
     >
         <div class="underlay" />
         <div class="overlay" ref="overlay">
-            <div class="row no-wrap justify-between full-width stretch-height">
-                <div class="column justify-between no-wrap">
-                    <div class="name">
-                        <h2 class="text-uppercase text-xl text-bold">
+            <div class="row no-wrap justify-between full-width " :class="{'stretch-height': !dense}">
+                <div class="column justify-between ">
+                    <div class="name"  :class="{dense}">
+                        <h2 class="text-uppercase text-bold">
                             {{ team?.name }}
                         </h2>
 
-                        <h3 class="text-xs">{{ rink?.name }}</h3>
+                        <h3 class="text-xs" v-if="!dense">{{ rink?.name }}</h3>
                     </div>
                     <div class="row badges" v-if="isLoadingTeam">
                         <q-skeleton
@@ -32,21 +34,25 @@
                         ></q-skeleton>
                     </div>
                     <div
-                        class="row badges"
+                        class="row badges items-center"
+                        :class="{'no-wrap': dense}"
                         v-if="!isLoadingTeam && team && team?.badges"
                         ref="badges"
                     >
                         <Badge
-                            v-for="badge in team.badges.sort(sortBadges)"
+                            v-for="badge in badges"
                             :key="badge.id"
                             :badge="badge"
                             height="2em"
                             iconOnly
                             @click.stop
                         />
+                        <div v-if="dense && badges?.length !== team.badges?.length">
+                            +{{(team.badges?.length ?? 0) - (badges?.length ?? 0) }}
+                        </div>
                     </div>
                 </div>
-                <div class="win-container column items-end">
+                <div class="win-container column items-end" :class="{dense}">
                     <q-skeleton
                         height="2em"
                         width="75px"
@@ -81,6 +87,10 @@
     color: white;
 
     min-height: 120px;
+    &.dense {
+        min-height: unset;
+        max-height: 100px;
+    }
     .name {
         letter-spacing: 0.001em;
 
@@ -94,6 +104,18 @@
         }
         h3 {
             margin-top: -4px;
+        }
+        &.dense {
+            max-width: min(60vw, 400px);
+            white-space: nowrap;
+            
+            h2 {
+                font-size: var(--text-lg);
+                text-overflow: ellipsis;
+            min-width: 0;
+            overflow: hidden;
+            width: 100%;
+            }
         }
     }
     border-radius: 8px;
@@ -110,6 +132,9 @@
         font-size: var(--text-lg);
         .wins {
             line-height: 1em;
+        }
+        &.dense {
+            font-size: var(--text-md)
         }
     }
     .underlay {
@@ -143,10 +168,11 @@
 import Team from "@/store/models/team";
 import Rink from "@/store/models/rink";
 import { useQuery } from "@tanstack/vue-query";
-import GET_TEAM_WITH_STATS from "@/queries/get_team_with_stats";
 import { useElementBounding } from "@vueuse/core";
 
 const props = defineProps({
+
+    dense: Boolean,
     teamId: Number,
 });
 
@@ -158,6 +184,7 @@ const { getFullTeam } = useTeam();
 const { isLoading: isLoadingTeam } = useQuery({
     queryKey: ["team", "page", props.teamId],
     queryFn: () => getFullTeam({ id: props.teamId }),
+    refetchOnWindowFocus: false,
 });
 
 const team = computed(() =>
@@ -180,6 +207,19 @@ const overlay = ref(null);
 const { height: cardHeight } = useElementBounding(overlay);
 
 const cardHeightPx = computed(() => `${cardHeight.value}px`);
+
+const container = ref(null)
+const {width} = useElementBounding(container);
+
+const maxBadges = computed(() => Math.floor((Math.min(width.value, 960) / 2) / 32))
+
+const badges = computed(() => {
+    const b = props.dense ? [...team.value.badges].splice(0, maxBadges.value) : team.badges;
+
+    return b.sort(sortBadges)
+})
+
+
 </script>
 <script>
 export default {

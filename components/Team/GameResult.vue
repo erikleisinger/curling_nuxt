@@ -123,9 +123,7 @@
                                         :viewable="
                                             viewAway && !away.isPlaceholder
                                         "
-                                        :invitable="
-                                            away.isPlaceholder && authorized
-                                        "
+                                 
                                     />
                                 </div>
                             </div>
@@ -355,12 +353,7 @@ const gradient = computed(
 );
 
 const props = defineProps({
-    authorized: Boolean,
     home: Number,
-    notify: {
-        type: Boolean,
-        default: true,
-    },
     gameId: Number,
     search: String,
     viewHome: {
@@ -415,7 +408,7 @@ const sheet = computed(() =>
         : useRepo(Sheet).where("id", game.value.sheet_id).first()
 );
 
-const emit = defineEmits(["expand", "invite"]);
+const emit = defineEmits(["expand"]);
 
 const { format, toTimezone } = useTime();
 

@@ -55,9 +55,7 @@ const handleUpload = async (e) => {
         const file = await createFile(e)
         emit('upload', file)
         files.value = null
-    } else {
-        uploadAvatar(e)
-    }
+    } 
     uploading.value = false;
     emit('loading', false)
 }
@@ -80,24 +78,7 @@ files.value = evt.target.files;
 
 const MAX_AVATAR_FILE_SIZE = 2000000;
 
-const uploadAvatar = async (evt) => {
-    files.value = evt.target.files;
-    if (!files.value || files.value.length === 0) return;
 
-
-    try {
-        const {path, file} = await createFile(evt)
-        if (props.resourceType === "team") {
-            const updates = await useTeamStore().uploadAvatarToTeam(path, file, props.resourceId)
-            useRepo(Team).where('id', props.resourceId).update({...updates, avatar_type: 'upload'})
-        }
-
-    } catch(e)  {
-       console.log('error uploading: ', e)
-    }
-
-    uploading.value = false;
-};
 
 
 

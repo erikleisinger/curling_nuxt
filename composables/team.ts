@@ -116,9 +116,7 @@ export const useTeam = () => {
 
             const { name: teamName, ...totalStats } = teamTotalStats ?? {};
             const {
-                avatar_type,
                 avatar_url,
-                team_avatar,
                 id: team_id,
                 name,
                 rink_id,
@@ -127,6 +125,7 @@ export const useTeam = () => {
                 instagram,
                 twitter,
                 featured_badge_id,
+                text_color
             } = t;
 
             
@@ -156,22 +155,14 @@ export const useTeam = () => {
             })
 
             const obj = {
-                avatar_type,
                 avatar_url,
-                team_avatar,
                 id: team_id,
                 facebook,
                 instagram,
                 twitter,
                 featured_badge_id,
                 name,
-                // stats: [
-                //     {
-                //         ...stats,
-                //         team_id,
-                //         game_id: 0,
-                //     },
-                // ],
+                text_color,
                 totalStats: {
                     ...totalStats,
                     team_id: totalStats.id,

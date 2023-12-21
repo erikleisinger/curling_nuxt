@@ -68,14 +68,10 @@
                                 />
                             </div>
                         </div>
-                        <div
-                            v-if="result.resourcetype === 'rink'"
-                            class="column justify-center"
-                        >
-                            <div class="text-bold">{{ result.name }}</div>
-                            <div class="text-sm">
-                                {{ `${result.city}, ${result.province}` }}
-                            </div>
+                      
+                         <div class="column justify-center"  v-if="result.resourcetype === 'rink'">
+                            <div class="text-bold text-lg name">{{result.name}} </div>
+                            <div class="text-sm" style="margin-top: -4px" > {{ `${result.city}, ${result.province}` }}</div>
                         </div>
                         <div v-if="result.resourcetype === 'rink'">
                             <slot name="append" v-bind:result="result" />

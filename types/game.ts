@@ -35,9 +35,7 @@ export interface GamePlayerJunction {
 
 interface GameScoreTeam {
     id: number;
-    team_avatar: string | null;
     avatar_url: string | null;
-    avatar_type: string | null;
 }
 
 export interface GameScoreInfo {

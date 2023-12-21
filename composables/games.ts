@@ -118,9 +118,7 @@ export const useGame = () => {
             team:team_id (
                 id,
                 name,
-                team_avatar,
-                avatar_url,
-                avatar_type
+                avatar_url
             )
             `
             )
@@ -139,60 +137,7 @@ export const useGame = () => {
 
         useRepo(TeamStats).save(filtered)
     
-        // const [reference] = stats;
-    
-        // const EXCLUDE_STATS_FROM_COMPARISON = [
-        //     "id",
-        //     "created_at",
-        //     "game_id",
-        //     "team_id",
-        //     "team",
-        // ];
-    
-        // const keys = Object.keys(reference).filter(
-        //     (key) => !EXCLUDE_STATS_FROM_COMPARISON.includes(key)
-        // );
-    
-        // const myTeam = {};
-        // const oppTeam = {};
-    
-        // keys.forEach((key) => {
-        //     myTeam[key] = stats.reduce((all, current) => {
-        //         if (current.team_id !== homeTeamId) return all;
-        //         return all + current[key];
-        //     }, 0);
-    
-        //     oppTeam[key] = stats.reduce((all, current) => {
-        //         if (current.team_id !== awayTeamId) return all;
-        //         return all + current[key];
-        //     }, 0);
-        // });
-    
-        // const oneOppositionEntry = stats.find(
-        //     ({ team_id }) => {
-        //         return team_id === awayTeamId
-        //     }
-        // );
 
-        // const oneHomeEntry = stats?.find( ({ team_id }) => team_id === homeTeamId)
-    
-        // const { avatar_type, avatar_url, team_avatar, name } = { ...(oneHomeEntry?.team ?? {}) };
-    
-        // const team1 = {
-        //     ...myTeam,
-        //     games_played: stats?.length / 2,
-        //     avatar_type,
-        //     avatar_url,
-        //     team_avatar,
-        //     name,
-        // };
-        // const team2 = {
-        //     ...oppTeam,
-        //     games_played: stats?.length / 2,
-        //     ...oneOppositionEntry.team,
-        // };
-
-        // return {team1, team2, allGames: stats}
         return {}
     };
 
