@@ -1,37 +1,54 @@
 export const BADGE_BACKGROUNDS = {
-    firstend: 'bg-badge--amber',
-    win_5: 'bg-badge--amber',
-    win_10: 'bg-badge--amber',
-    win_25: 'bg-badge--amber',
-    win_50: 'bg-badge--amber',
-    win_100: 'bg-badge--amber',
-    win_streak: 'bg-badge--black',
-    bulwark: 'bg-badge--blue',
-    'score_4': 'bg-badge--blue',
-    'score_5': 'bg-badge--blue',
-    'score_6': 'bg-badge--blue',
-    'score_7': 'bg-badge--blue',
-    'score_8': 'bg-badge--blue',
-    comeback: 'bg-badge--blue',
-    first_game: 'bg-badge--blue',
-    minimalist: 'bg-badge--blue-grey',
-    lose_streak: 'bg-badge--black',
-    handshakes: 'bg-badge--green',
-    controlfreak: 'bg-badge--green',
-    showoff: 'bg-badge--pale-red',
-    bandit: 'bg-badge--pale-red',
-    barnburner: 'bg-badge--pale-red',
-    shutout: 'bg-badge--pale-red',
-    blewit: 'bg-badge--pale-red',
-    'stolen_win': 'bg-badge--pale-red',
-    strategist: 'bg-badge--pink',
-    force: 'bg-badge--pink',
-    adrenaline: 'bg-badge--pink',
-    singlemingle: 'bg-badge--purple',
+    // WIN
+    'win_1': 'bg-badge--amber',
+    'win_5': 'bg-badge--amber',
+    'win_10': 'bg-badge--amber',
+    'win_25': 'bg-badge--amber',
+    'win_50': 'bg-badge--amber',
+    'win_100': 'bg-badge--amber',
+
+    // SCORE
+    score_4: 'bg-badge--blue',
+    score_5: 'bg-badge--blue',
+    score_6: 'bg-badge--blue',
+    score_7: 'bg-badge--blue',
+    score_8: 'bg-badge--blue',
+
+    // GAME STORY - neither good nor bad
+    singlemingle: 'bg-badge--blue',
+    singlegame: 'bg-badge--blue',
+    minimalist: 'bg-badge--blue',
+    ee_win: 'bg-badge--blue',
+    handshakes: 'bg-badge--blue',
+    barnburner: 'bg-badge--blue',
+
+    // GAME STORY - you did good
+    controlfreak: 'bg-badge--purple',
+    adrenaline: 'bg-badge--purple',
+    comeback: 'bg-badge--purple',
+    showoff: 'bg-badge--purple',
+    strategist: 'bg-badge--purple',
+    stolen_win: 'bg-badge--purple',
     conversion: 'bg-badge--purple',
-    'ee_win': 'bg-badge--teal',
-    singlegame: 'bg-badge--teal',
-    brian_nagle: 'bg-badge--purple'
+    bandit: 'bg-badge--purple',
+    force: 'bg-badge--purple',
+    shutout: 'bg-badge--purple',
+
+    // GAME STORY - you did bad
+    blewit: 'bg-badge--brown',
+
+    // OUTSIDE GAME
+    first_game: 'bg-badge--blue-grey',
+    // have a full team
+    // be on 3+ teams
+    // record 10+ games
+
+    // BLACK BADGES
+    win_streak: 'bg-badge--black',
+    lose_streak: 'bg-badge--black',
+
+    // OTHER
+    brian_nagle: 'bg-badge--pink'
 }   
 
 export const BADGE_NAMES = {
@@ -76,32 +93,32 @@ export const BADGE_DESCRIPTIONS = {
     'win_25': 'Win 25 games',
     'win_50': 'Win 50 games',
     'win_100': 'Win 100 games',
-    shutout: 'Opponent scores no points.',
-    handshakes: 'Win a game by handshakes.',
-    conversion: 'Score 2+ points every time you have hammer.',
-    bandit: 'Steal every end of a game.',
-    force: 'Steal or force in every end without hammer.',
     score_4: 'Score four points in a single end.',
     score_5: 'Score five points in a single end.',
     score_6: 'Score six points in a single end.',
     score_7: 'Score seven points in a single end.',
     score_8: 'Score eight points in a single end.',
-    ee_win: 'Win a game in an extra end.',
-    stolen_win: 'Win a game by stealing points.',
-    strategist: 'Have hammer in both the first and last end.',
-    showoff: 'Score 2+ points three or more times.',
-    win_streak: ({value}) => `Won ${value} games in a row!`,
-    lose_streak: ({value}) => `Lost ${value} games in a row.`,
     singlemingle: 'Win a game scoring only single points.',
     singlegame: 'Play a game in which neither team scores 2+ points.',
     minimalist: 'Blank 3 or more ends in a single game.',
-    comeback: 'Win a game after trailing by 4+ points.',
-    blewit: 'Lose a game after leading by 4+ points.',
+    ee_win: 'Win a game in an extra end.',
+    handshakes: 'Win a game by handshakes.',
+    barnburner: '2+ points are scored in at least half the ends played.',
     controlfreak: 'Be in the lead for an entire game.',
     adrenaline: 'Trail your opponent all game... and win.',
-    barnburner: '2+ points are scored in at least half the ends played.',
+    comeback: 'Win a game after trailing by 4+ points.',
+    showoff: 'Score 2+ points three or more times.',
+    strategist: 'Have hammer in both the first and last end.',
+    stolen_win: 'Win a game by stealing points.',
+    conversion: 'Score 2+ points every time you have hammer.',
+    bandit: 'Steal every end of a game.',
+    force: 'Steal or force in every end without hammer.',
+    shutout: 'Opponent scores no points.',
+    blewit: 'Lose a game after leading by 4+ points.',
     first_game: 'Record your very first game.',
-    brian_nagle: 'Beat Brian Nagle 12-2 after he upset you in playdowns.'
+    win_streak: ({value}) => `Won ${value} games in a row!`,
+    lose_streak: ({value}) => `Lost ${value} games in a row.`,
+    brian_nagle: 'Beat Brian Nagle 12-2 after he upset you in playdowns.' 
 }
 
 export const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];

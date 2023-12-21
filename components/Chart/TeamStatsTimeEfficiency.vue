@@ -2,8 +2,9 @@
 
     <ChartLineOverTime v-bind="chartData()"  class="col-12" >
         <template v-slot:annotation>
-            <h3>{{cumulativeAvg}}%</h3>
-            <h4>top {{(100 - percentile).toFixed()}}% worldwide</h4>
+              <h5 >Score 2+ points with hammer</h5>
+            <h3>{{cumulativeAvg}}%<span style="font-size: 10px; font-weight:normal">of the time</span></h3>
+           <h4>top {{((100 - percentile) || 1).toFixed()}}% worldwide</h4>
         </template>
     </ChartLineOverTime>
 

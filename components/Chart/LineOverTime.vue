@@ -19,7 +19,7 @@
 }
 :deep(.floating) {
     position: absolute;
-    font-size: var(--text-lg);
+    
     margin: var(--space-lg);
      @include sm {
         margin: var(--space-lg)
@@ -28,13 +28,19 @@
     color: v-bind(labelColor);
     width: fit-content;
   
-
+    h5 {
+        font-weight: normal;
+        font-size: var(--text-sm);
+        color: black!important;
+    }
     h3 {
         font-weight: bold;
         line-height: 0.8em;
+        font-size: var(--text-xxxl);
     }
     h4 {
         font-size: var(--text-xs);
+        margin-top: -8px;
         font-style: italic;
         color: black!important;
     }
@@ -63,7 +69,7 @@ const props = defineProps({
 
 const triggerAnnotationAnimation = () => {
     const tl = gsap.timeline();
-    tl.from(document.querySelector('#line-chart-annotation').querySelector('h3'), {
+    tl.from(document.querySelector('#line-chart-annotation').querySelector('h5'), {
         x: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
         y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
         opacity: 0,
@@ -71,10 +77,26 @@ const triggerAnnotationAnimation = () => {
         delay: 0.3,
         ease: 'power2'
     })
+    tl.from(document.querySelector('#line-chart-annotation').querySelector('h3'), {
+        x: -100,
+        // y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
+        opacity: 0,
+        duration: 0.3,
+        // delay: 0.2,
+        ease: 'power2'
+    }, 'start')
+    .add('start')
+    tl.from(document.querySelector('#line-chart-annotation').querySelector('h3 span'), {
+        opacity: 0,
+        duration: 0.3,
+        delay: 0.1,
+        ease: 'power2'
+    })
     tl.from(document.querySelector('#line-chart-annotation').querySelector('h4'), {
         transformOrigin: 'top',
         scaleY: 0,
         duration: 0.1,
+        delay: 0.3,
         ease: 'power2'
     })
 }

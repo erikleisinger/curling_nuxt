@@ -23,11 +23,7 @@
                <div v-if="!!globalCount" style="width: fit-content"> {{globalCount}}% of teams have this badge.</div>
                <q-skeleton v-else type="text" width="185px"/>
       
-            </p>
-                <div class="badge-popup__game-result">
-
-                </div>
-          
+            </p>          
             <p class="text-sm row justify-center text-center other-info" v-if="!!game">
                    <div class="col-12 text-italic">
                          Earned on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
@@ -43,12 +39,18 @@
                    <div class="text-underline clickable" @click="navigateTo(`/games/view/${badge.game_id}`)">
                     View game
                     </div>  
+                    
             </p>
             <div v-else class="column items-center">
                 <q-skeleton type="text" width="185px"/>
                  <q-skeleton  type="text" width="100px"/>
                 <q-skeleton  type="text" width="80px"/>
             </div> 
+
+            <p v-if="isBlackBadge" class="black-badge row items-center full-width justify-center">
+                <q-icon name="auto_awesome" class="q-mr-xs"/>
+                This badge can be lost.
+            </p>
         
              </div>
             </div>
@@ -117,6 +119,10 @@
       transition: all 0.2s;
     }
   }
+  .black-badge {
+    color: rgb(238, 195, 108);
+    font-size: var(--text-sm)
+  }
 }
 </style>
 <style lang="scss">
@@ -159,6 +165,8 @@ const open = computed({
     emit("update:modelValue", val);
   },
 });
+
+const isBlackBadge = computed(() => EPHEMERAL_BADGES.includes(props.badge.name))
 const { toTimezone } = useTime();
 const { getGames } = useGame();
 const isShowing = computed(() => open.value);
