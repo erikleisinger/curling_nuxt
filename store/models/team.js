@@ -7,6 +7,7 @@ import TeamPlayer from '@/store/models/team-player'
 import TeamStatsTotal from '@/store/models/team-stats-total'
 import Badge from '@/store/models/badge'
 
+
 class FormatAvatar extends CastAttribute {
     get(value) {
       if (!value) return {};
@@ -43,14 +44,12 @@ export default class Team extends Model {
        
     }
 
-
-    // get totalStats() {
-    //     return this.stats.find(({game_id}) => game_id === 0)
-    // }
     get winPercent () {
     
         return Number.parseInt((this.totalStats.wins_average * 100).toFixed(2))
     }
+
+
   
 
     static casts() {

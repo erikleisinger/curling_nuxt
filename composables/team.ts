@@ -4,6 +4,7 @@ import Team from "@/store/models/team";
 import TeamStats from '@/store/models/team-stats'
 import Rink from "@/store/models/rink";
 import Badge from "@/store/models/badge";
+import {EPHEMERAL_BADGES} from  '@/constants/badges'
 
 
 
@@ -143,7 +144,10 @@ export const useTeam = () => {
                 });
             });
             
-            badges?.forEach((badge) => {
+            badges?.sort((a,b) => {
+                if (EPHEMERAL_BADGES.includes(a.name)) return 1;
+                return -1;
+            }).forEach((badge) => {
                 useRepo(Badge).save(badge)
             })
 

@@ -51,7 +51,7 @@
             >
                 <LazyBadge
                     :badge="badge"
-                    v-for="badge in badges"
+                    v-for="badge in [...(badges ?? [])].sort(sortBadges)"
                     :key="badge.id"
                     :showTeam="true"
                 />
@@ -133,6 +133,7 @@ import { useQuery } from "@tanstack/vue-query";
 import {useDialogStore} from '@/store/dialog'
 
 const { logout } = useSession();
+const {sortBadges} = useBadge()
 
 const route = useRoute();
 const client = useSupabaseClient();
@@ -218,7 +219,7 @@ const getBadges = async () => {
         .in(
             "team_id",
             teams.value.map(({ id }) => id)
-        );
+        ).eq('earned', true)
     const e = data
  
     .reduce((all, current) => {

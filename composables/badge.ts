@@ -68,7 +68,11 @@ export const useBadge = () => {
         }
         return description;
     }
+
+    const sortBadges = ((a,b) => {
+        return a.isBlackBadge || EPHEMERAL_BADGES.includes(a.name) ? -1 : 1
+    })
     
 
-    return { hasBadge, getBadgesForTeam, getBadgesForGame, getBadgeDescription };
+    return { hasBadge, getBadgesForTeam, getBadgesForGame, getBadgeDescription, sortBadges };
 };

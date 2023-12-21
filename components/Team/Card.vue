@@ -37,7 +37,7 @@
                         ref="badges"
                     >
                         <Badge
-                            v-for="badge in team.badges"
+                            v-for="badge in team.badges.sort(sortBadges)"
                             :key="badge.id"
                             :badge="badge"
                             height="2em"
@@ -150,9 +150,8 @@ const props = defineProps({
     teamId: Number,
 });
 
+const {sortBadges} = useBadge();
 const { getTeamAvatar } = useAvatar();
-
-const { getBadgesForTeam } = useBadge();
 
 const { getFullTeam } = useTeam();
 

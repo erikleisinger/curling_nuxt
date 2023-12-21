@@ -374,6 +374,7 @@ const onClickSort = (type) => {
     }
 };
 
+
 const badgesSorted = computed(() => [...(team.value?.badges ?? [])].sort((a,b) => {
     if (sortAlphabeticalOrder.value) {
         const {sortAlphabetically} = useSort();
@@ -386,7 +387,7 @@ const badgesSorted = computed(() => [...(team.value?.badges ?? [])].sort((a,b) =
         }
         return toTimezone(a.created_at, null, false, true).unix() - toTimezone(b.created_at, null, false, true).unix();
     }
-    return 1;
+    return 1
 }))
 
 const pageReady = computed(() => headerLoaded.value);
