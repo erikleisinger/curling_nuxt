@@ -7,7 +7,11 @@
                 <h4 class="text-sm">Let me know about any bugs, issues, or ideas you might have. I really appreciate it!</h4>
             </q-card-section>
             <q-card-section>
-                <q-input counter type="textarea" v-model="text" outlined placeholder="Type your feedback here" :rules="[(val) => val.length < MAX_LENGTH || `Please limit your feedback to ${MAX_LENGTH} characters.`]" />
+                <q-input counter type="textarea" v-model="text" outlined placeholder="Type your feedback here" :rules="[(val) => val.length < MAX_LENGTH || `Please limit your feedback to ${MAX_LENGTH} characters.`]" >
+                <template v-slot:counter>
+                    {{text?.length ?? 0}}/{{MAX_LENGTH}}
+                </template>
+                </q-input>
             </q-card-section>
             <q-card-actions class="row justify-between">
         <q-btn flat @click="emit('close')">Close</q-btn>
