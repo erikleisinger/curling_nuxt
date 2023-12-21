@@ -58,7 +58,7 @@
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
                         <q-fab-action color="blue" icon="comment"  @click="feedbackOpen = true" >
-                            <span class="action-button__label">Report issue</span>
+                            <span class="action-button__label">Submit feedback</span>
                         </q-fab-action>
                       
                     </q-fab>

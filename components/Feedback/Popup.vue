@@ -3,8 +3,8 @@
         <q-card>
 
             <q-card-section>
-                <h3>Report issue</h3>
-                <h4 class="text-sm">Let me know any bugs, issues, or ideas you have that could make this app even better!</h4>
+                <h3>Submit feedback</h3>
+                <h4 class="text-sm">Let me know about any bugs, issues, or ideas you might have. I really appreciate it!</h4>
             </q-card-section>
             <q-card-section>
                 <q-input counter type="textarea" v-model="text" outlined placeholder="Type your feedback here" :rules="[(val) => val.length < MAX_LENGTH || `Please limit your feedback to ${MAX_LENGTH} characters.`]" />
