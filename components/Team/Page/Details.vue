@@ -48,9 +48,21 @@
         />
 
         <div class="row justify-center socials-container" v-if="!editing">
-             <IconFacebook color="rgba(0,0,0,0.3)" v-if="team.facebook" @click="goSocial(team.facebook)"/>
-               <IconInstagram color="rgba(0,0,0,0.3)" v-if="team.instagram" @click="goSocial(team.instagram)"/>
-                 <IconTwitter color="rgba(0,0,0,0.3)" v-if="team.twitter" @click="goSocial(team.twitter)"/>
+            <IconFacebook
+                color="rgba(0,0,0,0.3)"
+                v-if="team.facebook"
+                @click="goSocial(team.facebook)"
+            />
+            <IconInstagram
+                color="rgba(0,0,0,0.3)"
+                v-if="team.instagram"
+                @click="goSocial(team.instagram)"
+            />
+            <IconTwitter
+                color="rgba(0,0,0,0.3)"
+                v-if="team.twitter"
+                @click="goSocial(team.twitter)"
+            />
         </div>
         <q-input
             v-if="editing || create"
@@ -62,10 +74,9 @@
             <template v-slot:prepend>
                 <IconFacebook color="rgba(0,0,0,0.3)" />
             </template>
-           
         </q-input>
         <q-input
-           v-if="editing || create"
+            v-if="editing || create"
             placeholder="Instagram"
             dense
             :rules="[(val) => validateSocial(val, 'instagram')]"
@@ -93,46 +104,47 @@
             :key="player.id"
             class="column items-center player-avatars__container"
         >
-
             <TeamPlayerEdit
-                   
-                    :playerId="player.id"
-                    :teamId="props.teamId"
-                    :disabled="!editing"
-                    :canRemove="editing && (player?.pivot?.status === 'pending' || permanentPlayers.length > 1)"
-                    :canEditPosition="editing && player?.pivot?.status !== 'pending'"
-                    :pending="player?.pivot?.status === 'pending'"
-                >
-            <div class="player-avatar__container column items-center">
-                <Avataaar
-                    v-bind="player.avatar"
-                    class="player-avatar"
-                    @click="onPlayerClick(player)"
-                />
-                <q-badge
-                    color="orange"
-                 
-                    align="bottom"
-                    v-if="player.pivot && player.pivot.status"
-                    >Invited</q-badge
-                >
-                <q-badge v-else
-                    color="blue"
-                    
-                    align="bottom"
-                >
-                    {{TEAM_POSITIONS[player?.pivot?.position]?.name ?? 'Member'}}
-                </q-badge>
-            </div>
-            
+                :playerId="player.id"
+                :teamId="props.teamId"
+                :disabled="!editing"
+                :canRemove="
+                    editing &&
+                    (player?.pivot?.status === 'pending' ||
+                        permanentPlayers.length > 1)
+                "
+                :canEditPosition="
+                    editing && player?.pivot?.status !== 'pending'
+                "
+                :pending="player?.pivot?.status === 'pending'"
+            >
+                <div class="player-avatar__container column items-center">
+                    <Avataaar
+                        v-bind="player.avatar"
+                        class="player-avatar"
+                        @click="onPlayerClick(player)"
+                    />
+                    <q-badge
+                        color="orange"
+                        align="bottom"
+                        v-if="player.pivot && player.pivot.status"
+                        >Invited</q-badge
+                    >
+                    <q-badge v-else color="blue" align="bottom">
+                        {{
+                            TEAM_POSITIONS[player?.pivot?.position]?.name ??
+                            "Member"
+                        }}
+                    </q-badge>
+                </div>
 
-            <div class="text-center player-name truncate-text">
-                {{ player.first_name }}
-            </div>
-            <div class="text-center player-name truncate-text">
-                {{ player.last_name }}
-            </div>
-               </TeamPlayerEdit>
+                <div class="text-center player-name truncate-text">
+                    {{ player.first_name }}
+                </div>
+                <div class="text-center player-name truncate-text">
+                    {{ player.last_name }}
+                </div>
+            </TeamPlayerEdit>
         </div>
         <div v-if="!team.players?.length">{{ team.name }} has no players.</div>
         <div
@@ -154,6 +166,11 @@
             </div>
         </div>
     </section>
+    <section class="danger__section row justify-center" v-if="editing">
+        <q-btn flat color="red" @click="confirmDelete = true"
+            >Delete team</q-btn
+        >
+    </section>
     <DialogConfirmation
         v-if="!!confirmUnsaved"
         confirmButtonText="Discard"
@@ -164,6 +181,33 @@
         confirmColor="negative"
     >
         Are you sure you want to close? All unsaved changes will be lost.
+    </DialogConfirmation>
+    <DialogConfirmation
+        v-if="!!confirmDelete"
+        confirmButtonText="Delete Team"
+        cancelButtonText="Cancel"
+        @confirm="deleteTeam"
+        @close="closeConfirmDelete"
+        cancelColor=""
+        confirmColor="negative"
+        :disableConfirm="deleting || !teamNameMatch"
+        :disableCancel="deleting"
+    >
+        <h3 class="text-bold text-md">Delete {{ team.name }}?</h3>
+        <p class="text-red q-mt-sm">
+            This action cannot be undone. All games, badges, and stats will be
+            <strong>permanently</strong> removed. Forever!
+        </p>
+        <p>
+            To delete this team, please type the team name into the input below.
+        </p>
+        <q-input
+            outlined
+            dense
+            :placeholder="team.name"
+            v-model="teamDeletionVerification"
+        >
+        </q-input>
     </DialogConfirmation>
 </template>
 <style lang="scss" scoped>
@@ -216,7 +260,7 @@
     }
     .socials-container {
         gap: var(--space-sm);
-        margin-top: var(--space-xs)
+        margin-top: var(--space-xs);
     }
 }
 .team-players__section {
@@ -275,19 +319,23 @@
         }
     }
 }
+.danger__section {
+    margin-bottom: var(--space-sm);
+}
 </style>
 <script setup lang="ts">
 import { useDialogStore } from "@/store/dialog";
 import { useUserTeamStore } from "@/store/user-teams";
+import { useNotificationStore } from "@/store/notification";
 import { useTeamRequestStore } from "@/store/team-requests";
 import Rink from "@/store/models/rink";
 import Team from "@/store/models/team";
-import Player from '@/store/models/player'
+import Player from "@/store/models/player";
 import { useTeamStore } from "@/store/teams";
 import { useQuery } from "@tanstack/vue-query";
 import { useQueryClient } from "@tanstack/vue-query";
 import { MAX_TEAM_NAME_LENGTH, VALIDATION_RULES } from "@/constants/validation";
-import {TEAM_POSITIONS} from '@/constants/team'
+import { TEAM_POSITIONS } from "@/constants/team";
 
 const queryClient = useQueryClient();
 
@@ -399,7 +447,7 @@ const createTeam = async () => {
             rink_id: editedValues.value.rink_id,
             instagram: editedValues.value.instagram,
             twitter: editedValues.value.twitter,
-            facebook: editedValues.value.facebook
+            facebook: editedValues.value.facebook,
         })
         .select("id")
         .single();
@@ -428,7 +476,7 @@ const onClickEdit = async () => {
         if (editedValues.value.facebook !== originalValues.value.facebook) {
             saving.value = true;
             hasChanged = true;
-            updates.facebook = cleanUrl(editedValues.value.facebook)
+            updates.facebook = cleanUrl(editedValues.value.facebook);
         }
 
         if (editedValues.value.instagram !== originalValues.value.instagram) {
@@ -541,11 +589,11 @@ const onPlayerClick = ({ id }) => {
 
 const validateSocial = (input, type) => {
     try {
-        const scrubbed = input.replaceAll('http://.', '', 'https://', '')
+        const scrubbed = input.replaceAll("http://.", "", "https://", "");
         const url = new URL(`https://${scrubbed}`);
-        
+
         const { origin } = url;
-       
+
         return (
             origin === `https://www.${type}.com` ||
             origin === `https://${type}.com` ||
@@ -558,21 +606,75 @@ const validateSocial = (input, type) => {
 };
 
 const cleanUrl = (url: string) => {
-     const scrubbed = url?.replaceAll('http://.', '', 'https://', '')
-     return `https://${scrubbed}`
-}
+    const scrubbed = url?.replaceAll("http://.", "", "https://", "");
+    return `https://${scrubbed}`;
+};
 
 const goSocial = (url: string) => {
-    navigateTo(cleanUrl(url), {open: {
-        target: '_blank'
-    }})
-}
+    navigateTo(cleanUrl(url), {
+        open: {
+            target: "_blank",
+        },
+    });
+};
 
 onMounted(() => {
     if (!props.create) return;
-    const {user: userId} = useUser();
-    editedValues.value.rink_id = useRepo(Player).where('id', userId.value).first()?.rink_id
-})
+    const { user: userId } = useUser();
+    editedValues.value.rink_id = useRepo(Player)
+        .where("id", userId.value)
+        .first()?.rink_id;
+});
+
+// Team deletion
+
+const confirmDelete = ref(false);
+const teamDeletionVerification = ref(null);
+
+const teamNameMatch = computed(
+    () => teamDeletionVerification.value === team.value.name
+);
+
+const closeConfirmDelete = () => {
+    teamDeletionVerification.value = null;
+    confirmDelete.value = false;
+};
+const deleting = ref(false);
+const deleteTeam = async () => {
+    const { setLoading } = useLoading();
+    setLoading(true);
+    const notStore = useNotificationStore();
+    const notId = notStore.addNotification({
+        text: `Deleting ${team.value.name}`,
+        state: "pending",
+    });
+    try {
+        const client = useSupabaseClient();
+
+        const { name } = { ...team.value };
+
+        await client.from("teams").delete().eq("id", team.value.id);
+
+        await useUserTeamStore().fetchUserTeams(true);
+
+        notStore.updateNotification(notId, {
+            state: "completed",
+            text: `${name} was deleted.`,
+        });
+    } catch (error) {
+        notStore.updateNotification(notId, {
+            state: "failed",
+            text: `Error deleting: ${error}`,
+        });
+    }
+
+    navigateTo("/");
+
+    setTimeout(() => {
+        useRepo(Team).where("id", team.value.id).delete();
+        setLoading(false);
+    }, 1000);
+};
 </script>
 <script lang="ts">
 export default {

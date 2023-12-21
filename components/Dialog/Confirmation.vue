@@ -7,8 +7,8 @@
              <slot name="buttons">
             <q-card-actions align="right" class="row justify-between">
                
-          <q-btn flat :label="props.cancelButtonText" :color="cancelColor" @click="emit('close')" v-close-popup ></q-btn>
-          <q-btn flat :label="props.confirmButtonText" :color="confirmColor" @click="emit('confirm')" v-close-popup ></q-btn>
+          <q-btn flat :label="props.cancelButtonText" :color="cancelColor" @click="emit('close')" v-close-popup :disable="disableCancel"></q-btn>
+          <q-btn flat :label="props.confirmButtonText" :color="disableConfirm ? '' : confirmColor" @click="emit('confirm')" :disable="disableConfirm" v-close-popup ></q-btn>
            
         </q-card-actions>
              </slot>
@@ -43,5 +43,7 @@
                 return 'primary'
             }
         },
+        disableConfirm: Boolean,
+        disableCancel: Boolean,
     })
 </script>
