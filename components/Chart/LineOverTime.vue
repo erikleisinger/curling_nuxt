@@ -1,7 +1,12 @@
 <template>
     <div :style="`height: ${height}`">
-        <div class="floating text-bold" :style="titlePosition" id="line-chart-annotation">
-            <slot name="annotation"/>
+        <div
+            class="floating text-bold"
+            :style="titlePosition"
+            id="line-chart-annotation"
+            ref="annotation"
+        >
+            <slot name="annotation" />
         </div>
         <canvas ref="chart" id="canvas" />
     </div>
@@ -19,19 +24,19 @@
 }
 :deep(.floating) {
     position: absolute;
-    
+
     margin: var(--space-lg);
-     @include sm {
-        margin: var(--space-lg)
+    @include sm {
+        margin: var(--space-lg);
     }
     margin-right: var(--space-xl);
     color: v-bind(labelColor);
     width: fit-content;
-  
+
     h5 {
         font-weight: normal;
         font-size: var(--text-sm);
-        color: black!important;
+        color: black !important;
     }
     h3 {
         font-weight: bold;
@@ -42,64 +47,87 @@
         font-size: var(--text-xs);
         margin-top: -8px;
         font-style: italic;
-        color: black!important;
+        color: black !important;
     }
 }
 </style>
 <script setup>
 import Chart from "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
-import gsap from 'gsap'
+import gsap from "gsap";
+import { useElementSize, useElementBounding } from "@vueuse/core";
 
 const $q = useQuasar();
-
 
 Chart.register(annotationPlugin);
 
 const props = defineProps({
     annotations: Object,
+    calculateMinMax: Boolean,
     height: {
         type: String,
         default: "100%",
     },
     data: Object,
+    percent: {
+        type: Boolean,
+        default: true,
+    },
     ticks: Object,
     tooltip: Object,
 });
 
 const triggerAnnotationAnimation = () => {
     const tl = gsap.timeline();
-    tl.from(document.querySelector('#line-chart-annotation').querySelector('h5'), {
-        x: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
-        y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
-        opacity: 0,
-        duration: 0.5,
-        delay: 0.3,
-        ease: 'power2'
-    })
-    tl.from(document.querySelector('#line-chart-annotation').querySelector('h3'), {
-        x: -100,
-        // y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
-        opacity: 0,
-        duration: 0.3,
-        // delay: 0.2,
-        ease: 'power2'
-    }, 'start')
-    .add('start')
-    tl.from(document.querySelector('#line-chart-annotation').querySelector('h3 span'), {
-        opacity: 0,
-        duration: 0.3,
-        delay: 0.1,
-        ease: 'power2'
-    })
-    tl.from(document.querySelector('#line-chart-annotation').querySelector('h4'), {
-        transformOrigin: 'top',
-        scaleY: 0,
-        duration: 0.1,
-        delay: 0.3,
-        ease: 'power2'
-    })
-}
+    tl.from(
+        document.querySelector("#line-chart-annotation").querySelector("h5"),
+        {
+            x:
+                Math.ceil(Math.random() * 99) *
+                (Math.round(Math.random()) ? 1 : -1),
+            y:
+                Math.ceil(Math.random() * 99) *
+                (Math.round(Math.random()) ? 1 : -1),
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.3,
+            ease: "power2",
+        }
+    );
+    tl.from(
+        document.querySelector("#line-chart-annotation").querySelector("h3"),
+        {
+            x: -100,
+            // y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
+            opacity: 0,
+            duration: 0.3,
+            // delay: 0.2,
+            ease: "power2",
+        },
+        "start"
+    ).add("start");
+    tl.from(
+        document
+            .querySelector("#line-chart-annotation")
+            .querySelector("h3 span"),
+        {
+            opacity: 0,
+            duration: 0.3,
+            delay: 0.1,
+            ease: "power2",
+        }
+    );
+    tl.from(
+        document.querySelector("#line-chart-annotation").querySelector("h4"),
+        {
+            transformOrigin: "top",
+            scaleY: 0,
+            duration: 0.1,
+            delay: 0.3,
+            ease: "power2",
+        }
+    );
+};
 
 const chart = ref(null);
 let myChart;
@@ -116,86 +144,172 @@ const cumulativeAvg = computed(() =>
     ]?.y.toFixed(2)
 );
 
+const { width: chartWidth, height: chartHeight } = useElementSize(chart);
+const annotation = ref(null);
+const { width: annotationWidth, height: annotationHeight } =
+    useElementBounding(annotation);
+
 const titlePosition = computed(() => {
-    const obj = {};
+    if (!chartWidth.value) return;
 
-    const firstPoint = props.data.datasets[0].data[0]?.y;
-    const midPoint =
-        props.data.datasets[0].data[
-            Math.ceil(props.data.datasets[0].data.length / 2)
-        ]?.y;
-    const lastPoint =
-        props.data.datasets[0].data[props.data.datasets[0].data.length - 2]?.y;
-    const maxPoint = Math.max(
-        ...[...props.data.datasets[0].data]
-            .splice(0, props.data.datasets[0].data.length - 1)
-            .map(({ y }) => y)
-    );
+    const arr = [];
+    props.data?.datasets?.forEach(({ data }) => {
+        data.forEach(({ y }, index) => {
+            if (!arr[index]) arr[index] = [];
 
-    const threshholdY = 60
-    if (maxPoint < threshholdY) {
-        if (firstPoint < threshholdY && lastPoint < threshholdY && midPoint < threshholdY) {
-            return {
-                top: 0,
-                left: 0,
-                right: 0,
-                margin: "auto",
-                'margin-top': $q.screen.xs ? 'var(--space-md)' : 'var(--space-lg)',
-            }
-        }
-        if (maxPoint < lastPoint) {
-            if (firstPoint < lastPoint) {
-return {
-                left: 0,
-                top: 0,
-            };
-            } else {
-                return {
-                right: 0,
-                top: 0,
-            };
-            }
-            
-        } else {
-            return {
-                right: 0,
-                top: 0,
-            };
-        }
+            arr[index].push(
+                props.percent
+                    ? y
+                    : ((y - min.value) / (max.value - min.value)) * 100
+            );
+        });
+    });
+
+    const requiredVerticalSpacing =
+        (annotationHeight.value / chartHeight.value) * 100;
+    const pointSpacing =
+        chartWidth.value / props.data?.datasets[0]?.data.length;
+    const numSpacesNeeded =
+        Math.ceil(annotationHeight.value / pointSpacing) + 1;
+
+    const topSpaces = arr
+        .reduce((all, current) => {
+            return [
+                ...all,
+                Math.max(...current) < 100 - requiredVerticalSpacing,
+            ];
+        }, [])
+        .reduce(
+            (all, current, index) => {
+                if (all.count >= numSpacesNeeded) return all;
+
+                if (!!current) {
+                    if (all.index === null) {
+                        return { index, count: all.count + 1 };
+                    }
+                    return { index: all.index, count: all.count + 1 };
+                }
+                if (!current) {
+                    return { index: null, count: 0 };
+                }
+            },
+            { index: null, count: 0 }
+        );
+
+    const bottomSpaces = arr
+        .reduce((all, current) => {
+            return [...all, Math.min(...current) > requiredVerticalSpacing];
+        }, [])
+        .reduce(
+            (all, current, index) => {
+                if (all.count >= numSpacesNeeded) return all;
+                if (!!current) {
+                    if (all.index === null) {
+                        return { index, count: all.count + 1 };
+                    }
+                    return { index: all.index, count: all.count + 1 };
+                }
+                if (!current) {
+                    return { index: null, count: 0 };
+                }
+            },
+            { index: null, count: 0 }
+        );
+
+    let middleSpaces;
+    if (props.data?.datasets?.length === 2) {
+        middleSpaces = arr
+            .reduce((all, current) => {
+                return [
+                    ...all,
+                    Math.abs(current[0] - current[1]) >= requiredVerticalSpacing
+                        ? 100 - Math.max(...current)
+                        : false,
+                ];
+            }, [])
+            .reduce(
+                (all, current, index) => {
+                    if (all.count >= numSpacesNeeded) return all;
+                    if (!!current) {
+                        if (all.index === null) {
+                            return { index, count: all.count + 1, y: current };
+                        }
+                        return {
+                            index: all.index,
+                            count: all.count + 1,
+                            y: all.y,
+                        };
+                    }
+                    if (!current) {
+                        return { index: null, count: 0, y: 0 };
+                    }
+                },
+                { index: null, count: 0, y: 0 }
+            );
     }
-    if (maxPoint >= threshholdY) {
-        if (midPoint < threshholdY - 10 && lastPoint < threshholdY - 10) {
-            return {
-                top: 0,
-                right: 0,
-            }
-        }
-        if (firstPoint < lastPoint) {
-return {
-            bottom: 0,
-            right: 0,
+
+    const canBeMiddle = !!middleSpaces?.count;
+    const canBeTop = !!topSpaces.count;
+    const canBeBottom = !!bottomSpaces.count;
+
+    if (canBeTop) {
+        return {
+            top: 0,
+            left: `${topSpaces.index * pointSpacing.value}px`,
+            margin: "auto",
+            "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
+            "margin-right": $q.screen.xs
+                ? "var(--space-sm)"
+                : "var(--space-md)",
+            "margin-top": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
         };
-        }
+    }
+
+    if (canBeBottom) {
         return {
             bottom: 0,
-            left: 0,
+            left: `${bottomSpaces.index * pointSpacing.value}px`,
+            margin: "auto",
+            "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
+            "margin-right": $q.screen.xs
+                ? "var(--space-sm)"
+                : "var(--space-md)",
+            "margin-bottom": $q.screen.xs
+                ? "var(--space-md)"
+                : "var(--space-lg)",
         };
-        
     }
 
-    return obj;
+    if (canBeMiddle) {
+        return {
+            top: `${(middleSpaces.y / 100) * chartHeight.value}px`,
+            left: `${middleSpaces.index * pointSpacing.value}px`,
+            margin: "auto",
+            color: "white",
+            "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
+            "margin-right": $q.screen.xs
+                ? "var(--space-sm)"
+                : "var(--space-md)",
+            "margin-bottom": $q.screen.xs
+                ? "var(--space-md)"
+                : "var(--space-lg)",
+        };
+    }
 });
 
 onMounted(async () => {
     getMinMax();
     const annotations = { ...props.annotations };
-    const data = {...props.data, datasets: props.data.datasets.map((d) => ({
-        ...d,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointHitRadius: 15,
-        pointBackgroundColor: d.borderColor,
-    }))}
+    const data = {
+        ...props.data,
+        datasets: props.data.datasets.map((d) => ({
+            ...d,
+            pointStyle: "circle",
+            pointRadius: 3,
+            pointHitRadius: 15,
+            pointBackgroundColor: d.borderColor,
+        })),
+    };
 
     // const data = {...props.data}
 
@@ -239,29 +353,37 @@ onMounted(async () => {
                 tooltip: {
                     ...tooltip,
                     mode: "nearest",
-                   bodyFont: {
+                    bodyFont: {
                         size: 40,
-                        weight: 'bold',
-                         family: 'Montserrat',
-                         lineHeight: 0.5,
+                        weight: "bold",
+                        family: "Montserrat",
+                        lineHeight: 0.5,
                     },
                     titleFont: {
-                        weight: 'normal',
-                         family: 'Montserrat',
-                        
-                         
+                        weight: "normal",
+                        family: "Montserrat",
                     },
                     footerFont: {
-                        weight: 'normal',
-                        family: 'Montserrat',
-                        style: 'italic'
+                        weight: "normal",
+                        family: "Montserrat",
+                        style: "italic",
                     },
                     titleMarginBottom: 12,
                     footerMarginTop: 10,
-      
+
                     displayColors: false,
-                    bodyColor: `lighten(${labelColor.value}, 10%)`,
-                    borderColor: labelColor.value,
+                    // bodyColor: `lighten(${labelColor.value}, 10%)`,
+                    borderColor: (val) => {
+                        try {
+                            const [context] = val.tooltipItems;
+
+                            const { dataset } = context;
+                            const { pointBackgroundColor } = dataset;
+                            return pointBackgroundColor;
+                        } catch {
+                            return "";
+                        }
+                    },
                     borderWidth: 3,
                 },
             },
@@ -304,15 +426,15 @@ onMounted(async () => {
                     grid: {
                         display: false,
                     },
-                    min: 0,
-                    max: 100,
+                    min: props.calculateMinMax ? min.value : 0,
+                    max: props.calculateMinMax ? max.value : 100,
 
                     position: "right",
 
                     ticks: {
                         //   stepSize: 100 - 0,
                         callback: (e, e2, e3) => {
-                            return `${e}%`;
+                            return `${e}${props.percent ? "%" : ""}`;
                         },
 
                         padding: 0,
@@ -339,10 +461,9 @@ const min = ref(0);
 const max = ref(0);
 
 const getMinMax = () => {
-    const allData = (
-        (props.data?.datasets && props?.data?.datasets[0]?.data) ??
-        []
-    ).map(({ y }) => y);
+    const allData = props.data?.datasets?.reduce((all, { data }) => {
+        return [...all, ...data.map(({ y }) => y)];
+    }, []);
 
     max.value = Number.parseFloat(Math.max(...allData).toFixed());
     min.value = Number.parseFloat(Math.min(...allData).toFixed());

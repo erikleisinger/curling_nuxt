@@ -15,6 +15,7 @@
                 <q-tab label="Steal efficiency" :name="1"  />
                 <q-tab label="Force efficiency" :name="2" />
                 <q-tab label="Steal defense" :name="3" />
+                  <q-tab label="Scoring" :name="4" />
             </q-tabs>
             <q-btn flat icon="filter_list" dense class="q-px-sm">
                 <q-menu v-model="filterMenuOpen" auto-close>
@@ -90,6 +91,13 @@
                     :opponentId="opponentId"
                     :teamId="teamId"
                     v-if="currentIndex === 3"
+                    :height="chartHeight"
+                         :minDate="minDate"
+                />
+                 <ChartTeamStatsTimePoints
+                    :opponentId="opponentId"
+                    :teamId="teamId"
+                    v-if="currentIndex === 4"
                     :height="chartHeight"
                          :minDate="minDate"
                 />
