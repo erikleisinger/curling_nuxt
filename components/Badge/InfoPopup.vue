@@ -203,7 +203,12 @@ const getBadgeCountGlobal = async () => {
 
   const { data: teams } = await client.from("teams").select("id");
 
-  const numTeamsWithBadge = data?.length ?? 0;
+
+
+  const numTeamsWithBadge = [...(data ?? [])].reduce((all, current) => {
+    if (all.includes(current.team_id)) return all;
+    return [...all, current.team_id]
+  }, [])?.length ?? 0;
   const numTeams = teams?.length ?? 0;
   return Number(((numTeamsWithBadge / numTeams) * 100).toFixed(0));
 };
@@ -212,9 +217,6 @@ const { isLoading: isLoadingGlobalCount, data: globalCount } = useQuery({
   queryKey: ["badge", "globalcount", props.badge.name],
   queryFn: getBadgeCountGlobal,
   enabled: isShowing,
-  select: (val) => {
-    return val;
-  },
 });
 
 
