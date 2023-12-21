@@ -48,9 +48,7 @@
                         >
                             <span class="action-button__label">New game</span>
                         </q-fab-action>
-                      <q-fab-action color="blue" icon="insights"  @click="goTo('/games/pregame')" >
-                            <span class="action-button__label">Pre-game</span>
-                        </q-fab-action>
+                     
                        
                         <q-fab-action
                             color="blue"
@@ -59,7 +57,9 @@
                         >
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
-                       
+                        <q-fab-action color="blue" icon="comment"  @click="feedbackOpen = true" >
+                            <span class="action-button__label">Report issue</span>
+                        </q-fab-action>
                       
                     </q-fab>
                 </div>
@@ -92,6 +92,7 @@
             <TeamPageDetails @back="newTeamOpen = false" create />
         </q-card>
     </q-dialog>
+    <FeedbackPopup v-model="feedbackOpen" @close="feedbackOpen = false"/>
 </template>
 <style lang="scss" scoped>
 $footer-height-xs: 3em;
@@ -222,6 +223,7 @@ import { useGameRequestStore } from "@/store/game-requests";
 import Player from "@/store/models/player";
 
 
+const feedbackOpen =  ref(false)
 const leftDrawerOpen = ref(false);
 
 const newTeamOpen = ref(false);
