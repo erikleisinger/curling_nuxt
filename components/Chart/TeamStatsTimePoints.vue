@@ -2,19 +2,14 @@
 
     <ChartLineOverTime v-bind="chartData()"  class="col-12" calculateMinMax :percent="false">
         <template v-slot:annotation>
-              <h5 >Points per end</h5>
-            <h3>{{cumulativeAvg}}<span style="font-size: 10px; font-weight:normal; visibility: hidden">of the time</span></h3>
+              <h5 >Average points per end</h5>
+            <h3 ><span >{{cumulativeAvg > 0 ? '+' : ''}}</span>{{cumulativeAvg}}<span style="font-size: 10px; font-weight:normal; visibility: hidden">of the time</span></h3>
            <h4 class="q-mt-sm">top {{((100 - percentile) || 1).toFixed()}}% worldwide</h4>
         </template>
     </ChartLineOverTime>
 
 </template>
 <script setup>
-import {
-    BADGE_COLORS,
-    BADGE_TITLES_PLAIN,
-    BADGE_TITLE_CONVERT,
-} from "@/constants/badges";
 import { useUserTeamStore } from "@/store/user-teams";
 import Team from "@/store/models/team";
 import TeamStats from "@/store/models/team-stats";
