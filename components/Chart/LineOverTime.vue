@@ -79,33 +79,24 @@ const props = defineProps({
 
 const triggerAnnotationAnimation = () => {
     const tl = gsap.timeline();
-    tl.from(
-        document.querySelector("#line-chart-annotation").querySelector("h5"),
-        {
-            x:
-                Math.ceil(Math.random() * 99) *
-                (Math.round(Math.random()) ? 1 : -1),
-            y:
-                Math.ceil(Math.random() * 99) *
-                (Math.round(Math.random()) ? 1 : -1),
-            opacity: 0,
-            duration: 0.5,
-            delay: 0.3,
-            ease: "power2",
-        }
-    );
+
     tl.from(
         document.querySelector("#line-chart-annotation").querySelector("h3"),
         {
-            x: -100,
-            // y: Math.ceil(Math.random() * 99) * (Math.round(Math.random()) ? 1 : -1),
+                        x:
+                Math.ceil(Math.random() * 50) *
+                (Math.round(Math.random()) ? 1 : -1),
+            y:
+                Math.ceil(Math.random() * 50) *
+                (Math.round(Math.random()) ? 1 : -1),
             opacity: 0,
-            duration: 0.3,
+            duration: 0.5,
             // delay: 0.2,
             ease: "power2",
         },
         "start"
-    ).add("start");
+    )
+
     tl.from(
         document
             .querySelector("#line-chart-annotation")
@@ -117,16 +108,7 @@ const triggerAnnotationAnimation = () => {
             ease: "power2",
         }
     );
-    tl.from(
-        document.querySelector("#line-chart-annotation").querySelector("h4"),
-        {
-            transformOrigin: "top",
-            scaleY: 0,
-            duration: 0.1,
-            delay: 0.3,
-            ease: "power2",
-        }
-    );
+
 };
 
 const chart = ref(null);
