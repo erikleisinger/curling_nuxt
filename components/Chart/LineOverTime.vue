@@ -119,7 +119,7 @@ const loading = ref(true);
 const dayjs = useDayjs();
 
 const label = computed(() => props.data.datasets[0].label);
-const labelColor = computed(() => props.data.datasets[0].borderColor);
+const labelColor = computed(() => props.data.datasets.length > 1 ? '#36454f' : props.data.datasets[0].borderColor);
 const cumulativeAvg = computed(() =>
     props.data.datasets[0].data[
         props.data.datasets[0].data.length - 1
