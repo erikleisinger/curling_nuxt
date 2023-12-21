@@ -1,8 +1,19 @@
 <template>
-    <div class="badge__content--container">
+    <div class="badge__content--container"  >
         <div class="badge-overlay--container">
             <slot />
         </div>
+        <div class="confetti-overlay"  v-if="animated && EPHEMERAL_BADGES.includes(badge.name)">
+             <vue-particles
+            :id="`particles-${badge.id}`"
+            class="particles"
+            :particlesInit="particlesInit"
+            :options="{
+                    id: `particles-${badge.id}`,
+                    ...STAR_ANIMATION
+            }"
+        />
+                </div>
         <div
             class="badge--additional"
             :class="`${BADGE_BACKGROUNDS[badge.name]} ${
@@ -574,6 +585,23 @@ $icon-height: 4em;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
     }
+      .confetti-overlay {
+    top: 0;
+    bottom:0;
+    right: 0;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1000;
+    border-radius: 50%;
+    overflow: hidden;
+    .particles {
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        border-radius: inherit;
+    }
+  }
 }
 .extra__banner {
     position: absolute;
@@ -592,7 +620,11 @@ $icon-height: 4em;
 </style>
 <script setup>
 import { BADGE_BACKGROUNDS, EPHEMERAL_BADGES } from "@/constants/badges";
+import {STAR_ANIMATION} from '@/constants/animation'
+import { loadSlim } from "tsparticles-slim";
+
 const props = defineProps({
+    animated: Boolean,
     badge: Object,
     height: {
         type: String,
@@ -626,4 +658,11 @@ const additionalDimension = computed(() => `50%`);
 const additionalFontDimension = computed(
     () => `min(calc(${props.height} / 2.5), 25px)`
 );
+
+const particlesInit = async (engine) => {
+  await loadSlim(engine);
+};
+
+
+
 </script>

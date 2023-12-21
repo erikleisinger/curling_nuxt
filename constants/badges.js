@@ -1,6 +1,5 @@
 export const BADGE_BACKGROUNDS = {
     firstend: 'bg-badge--amber',
-    win_1: 'bg-badge--amber',
     win_5: 'bg-badge--amber',
     win_10: 'bg-badge--amber',
     win_25: 'bg-badge--amber',
@@ -15,10 +14,8 @@ export const BADGE_BACKGROUNDS = {
     'score_8': 'bg-badge--blue',
     comeback: 'bg-badge--blue',
     first_game: 'bg-badge--blue',
-    stealdefense: 'bg-badge--blue-grey',
     minimalist: 'bg-badge--blue-grey',
     lose_streak: 'bg-badge--black',
-    survivalist: 'bg-badge--green',
     handshakes: 'bg-badge--green',
     controlfreak: 'bg-badge--green',
     showoff: 'bg-badge--pale-red',
@@ -32,7 +29,6 @@ export const BADGE_BACKGROUNDS = {
     adrenaline: 'bg-badge--pink',
     singlemingle: 'bg-badge--purple',
     conversion: 'bg-badge--purple',
-    efficiency: 'bg-badge--purple',
     'ee_win': 'bg-badge--teal',
     singlegame: 'bg-badge--teal',
     brian_nagle: 'bg-badge--purple'

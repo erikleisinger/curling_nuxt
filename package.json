@@ -55,6 +55,8 @@
     "pinia": "^2.1.4",
     "pinia-orm": "^1.6.7",
     "quasar": "^2.12.1",
-    "vue": "^3.0.0"
+    "tsparticles-slim": "^2.12.0",
+    "vue": "^3.0.0",
+    "vue3-particles": "^2.12.0"
   }
 }

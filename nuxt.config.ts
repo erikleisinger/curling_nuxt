@@ -5,6 +5,11 @@ export default defineNuxtConfig({
             link: [
                 { rel: "stylesheet", href: "https://unpkg.com/pattern.css" }
                 ],
+            script: [
+                {
+                    src: "https://cdn.jsdelivr.net/npm/@tsparticles/preset-confetti@2/tsparticles.preset.confetti.bundle.min.js"
+                }
+            ],
             meta: [
                 {
                     name: "viewport",

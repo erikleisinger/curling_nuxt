@@ -1,5 +1,8 @@
 <template>
-    <q-dialog v-model="isOpen" class="z-max" @hide="emit('close')">
+    <q-dialog v-model="isOpen" class="z-max info__dialog" :class="{'hide-overlay': noOverlay}" @hide="emit('close')" >
+           <div class="overlay">
+            <slot name="overlay"/>
+           </div>   
         <q-card style="max-width: 400px; width: 90vw">
             <q-card-section>
                 <slot />
@@ -34,7 +37,25 @@
         </q-card>
     </q-dialog>
 </template>
-<style lang="scss">
+<style lang="scss" >
+.info__dialog {
+    &.hide-overlay {
+        .q-dialog__backdrop {
+            opacity: 0;
+        }
+    }
+    .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        pointer-events: none;
+        overflow: hidden;
+        max-height: unset!important;
+    }
+}
 .close-button__floating {
     position: absolute;
     right: 0;
@@ -68,7 +89,9 @@ const props = defineProps({
             return "primary";
         },
     },
+    noOverlay: Boolean,
     showConfirm: Boolean,
     showCancel: Boolean,
 });
+
 </script>
