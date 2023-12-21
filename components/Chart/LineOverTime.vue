@@ -165,12 +165,14 @@ const titlePosition = computed(() => {
         });
     });
 
+    const numPointsTotal = props.data?.datasets[0]?.data?.length ?? 0
+
     const requiredVerticalSpacing =
         (annotationHeight.value / chartHeight.value) * 100;
     const pointSpacing =
-        chartWidth.value / props.data?.datasets[0]?.data.length;
+        chartWidth.value / numPointsTotal;
     const numSpacesNeeded =
-        Math.ceil(annotationHeight.value / pointSpacing) + 1;
+        Math.ceil(annotationHeight.value / pointSpacing) + (numPointsTotal > 2 ? 1 : 0);
 
     const topSpaces = arr
         .reduce((all, current) => {
