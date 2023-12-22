@@ -14,6 +14,7 @@
                 :loading="loading"
                 bg-color="white"
                 autofocus
+                ref="input"
             >
                 <!-- :hint="global && !hideHint ? 'Searching worldwide' : ''" -->
                 <template v-slot:before v-if="!hideIcons">
@@ -52,7 +53,7 @@
                     :key="result.id"
                     @click="emit('select', {result, event: $event})"
                 >
-                    <div class="result__container">
+                    <div class="result__container clickable">
                         <!-- RINK result -->
                         <div
                             v-if="result.resourcetype === 'rink'"
@@ -252,12 +253,14 @@ const emit = defineEmits(["close", "select"]);
 
 const searchInput = ref(null);
 const results = ref(null);
+const input = ref(null)
 
 const search = () => {
     if (!searchInput.value?.length) {
         results.value = null;
         return;
     }
+    input.value.blur();
     useSearch();
 };
 

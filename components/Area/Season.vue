@@ -1,5 +1,5 @@
 <template>
-    <TeamCard v-for="team in teams" :key="team.id" :teamId="team.id" @click="navigateTo(`/teams/${team.id}`)" class="clickable card"/>
+    <TeamCard v-for="team in teams" :key="team.id" :teamId="team.id" />
 </template>
 <script setup>
     import {useUserTeamStore} from '@/store/user-teams';

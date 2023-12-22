@@ -1,9 +1,10 @@
 <template>
     <div
-        class="team-card__container column"
+        class="team-card__container column clickable"
         ref="container"
         :class="{dense}"
         :style="`background-image: url(${avatar})`"
+        @click="navigateTo(`/teams/${teamId}`)"
     >
         <div class="underlay" />
         <div class="overlay" ref="overlay">
