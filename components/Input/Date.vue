@@ -1,41 +1,52 @@
 <template>
-
-            <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-                ref="popup"
-                @hide="onHide"
-                v-model="open"
-            >
-                <q-date
-                    v-model="date"
-                    mask="YYYY-MM-DD HH:mm"
-                    @update:model-value="onSelectDate"
-                    v-show="selectDate"
-                    class="relative-position"
-                    :options="limitDate"
-                >
-    <div class="close-button__container">
-<q-btn  flat round icon="check" color="white"  dense @click="save"/>
-    </div>  
-                </q-date>
-                <q-time
-                    v-model="date"
-                    mask="YYYY-MM-DD HH:mm"
-                    @update:model-value="onSelectTime"
-                    v-show="!selectDate"
-                    :minute-options="[
-                        0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55,
-                    ]"
-                    :options="limitTime"
-                     class="relative-position"
-                >
-        <div class="close-button__container">
-<q-btn  flat round icon="check" color="white"  dense @click="save"/>
-    </div>  
-                </q-time>
-            </q-popup-proxy>
+    <q-popup-proxy
+        cover
+        transition-show="scale"
+        transition-hide="scale"
+        ref="popup"
+        @hide="onHide"
+        v-model="open"
+    >
+        <q-date
+            v-model="date"
+            mask="YYYY-MM-DD HH:mm"
+            @update:model-value="onSelectDate"
+            v-show="selectDate"
+            class="relative-position"
+            :options="limitDate"
+        >
+            <div class="close-button__container">
+                <q-btn
+                    flat
+                    round
+                    icon="check"
+                    color="white"
+                    dense
+                    @click="save"
+                />
+            </div>
+        </q-date>
+        <q-time
+            v-model="date"
+            mask="YYYY-MM-DD HH:mm"
+            @update:model-value="onSelectTime"
+            v-show="!selectDate"
+            :minute-options="[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"
+            :options="limitTime"
+            class="relative-position"
+        >
+            <div class="close-button__container">
+                <q-btn
+                    flat
+                    round
+                    icon="check"
+                    color="white"
+                    dense
+                    @click="save"
+                />
+            </div>
+        </q-time>
+    </q-popup-proxy>
 </template>
 <style lang="scss" scoped>
 .close-button__container {
@@ -53,25 +64,39 @@ const props = defineProps({
     modelValue: [String, Number],
     name: String,
     label: String,
+    limit: {
+        type: Boolean,
+        default: true,
+    }
 });
 
-const {toTimezone} = useTime();
+const { toTimezone } = useTime();
 
 const limitDate = (val) => {
-    const now =  toTimezone(null, null, false, true).unix()
+    if (!props.limit) return true;
+    const now = toTimezone(null, null, false, true).unix();
     return toTimezone(val, null, false, true).unix() <= now;
-}
+};
+const dayjs = useDayjs();
+const isTodaySelected = computed(() => {
+    if (!date.value) return false;
+    const selected = dayjs(date.value).format('YYYY-MM-DD');
+    const now = dayjs().format('YYYY-MM-DD');
+    return now === selected;
+})
 
 const limitTime = (val) => {
-    const now =  Number(toTimezone(null, 'H'))
+    if (!props.limit) return true;
+    if (!isTodaySelected) return true;
+    const now = Number(toTimezone(null, "H"));
     return val <= now;
-}
+};
 
 const date = ref(null);
 
 const inputText = computed(() => formatted.value || props.label);
 
-const open = ref(false)
+const open = ref(false);
 
 const val = computed({
     get() {
@@ -91,8 +116,8 @@ const formatted = computed(() => {
 
 const save = () => {
     popup.value.hide();
-    emit('update:modelValue', date.value)
-}
+    emit("update:modelValue", date.value);
+};
 
 const selectedMinute = ref(false);
 
@@ -102,14 +127,14 @@ const onSelectTime = (value: string | null, details: object) => {
 };
 
 const onHide = () => {
-        selectDate.value = true;
-        selectedMinute.value = false;
-}
+    selectDate.value = true;
+    selectedMinute.value = false;
+};
 
 const onSelectDate = (val) => {
     date.value = val;
-    selectDate.value = false
-}
+    selectDate.value = false;
+};
 
 const emit = defineEmits(["update:modelValue"]);
 </script>

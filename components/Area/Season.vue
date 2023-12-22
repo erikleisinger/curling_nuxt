@@ -1,4 +1,7 @@
 <template>
+<div class="q-pa-sm">
+<ScheduleCalendar/>
+</div>
     <TeamCard v-for="team in teams" :key="team.id" :teamId="team.id" />
 </template>
 <script setup>
