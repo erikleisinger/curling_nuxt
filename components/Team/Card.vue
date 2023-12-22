@@ -8,8 +8,8 @@
     >
         <div class="underlay" />
         <div class="overlay" ref="overlay">
-            <div class="row no-wrap justify-between full-width " :class="{'stretch-height': !dense}">
-                <div class="column justify-between ">
+            <div class="content-container full-width " :class="{'stretch-height': !dense}">
+                <div class="column justify-between full-width">
                     <div class="name"  :class="{dense}">
                         <h2 class="text-uppercase text-bold">
                             {{ team?.name }}
@@ -88,9 +88,14 @@
     color: white;
 
     min-height: 120px;
+    .content-container {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        max-width: 100%;
+    }
     &.dense {
         min-height: unset;
-        max-height: 100px;
+        min-height: 75px;
     }
     .name {
         letter-spacing: 0.001em;
@@ -107,8 +112,10 @@
             margin-top: -4px;
         }
         &.dense {
-            max-width: min(60vw, 400px);
-            white-space: nowrap;
+            max-width: v-bind(maxNameWidth);
+            // white-space: nowrap;
+            min-width: 0;
+            overflow: hidden;
             
             h2 {
                 font-size: var(--text-lg);
@@ -155,6 +162,7 @@
         margin: var(--space-sm) 0px;
         display: flex;
         flex-direction: column;
+        max-width: 100%;
     }
     .badges {
         padding: 0px var(--space-xs);
@@ -212,13 +220,15 @@ const cardHeightPx = computed(() => `${cardHeight.value}px`);
 const container = ref(null)
 const {width} = useElementBounding(container);
 
-const maxBadges = computed(() => Math.floor((Math.min(width.value, 960) / 2) / 32))
+const maxBadges = computed(() => Math.floor((Math.min(width.value, 960) / 2) / 35))
 
 const badges = computed(() => {
-    const b = props.dense ? [...team.value.badges].splice(0, maxBadges.value) : team.badges;
+    const b = props.dense ? [...team.value.badges].splice(0, maxBadges.value) : team.value.badges;
 
     return b.sort(sortBadges)
 })
+
+const maxNameWidth = computed(() => `calc(${width.value}px - 90px)`)
 
 
 </script>
