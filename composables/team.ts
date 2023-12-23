@@ -133,13 +133,13 @@ export const useTeam = () => {
             players.forEach((p) => {
                 const { player, id, team_id, status, position } = p;
 
-                useRepo(Player).save({...player});
+                useRepo(Player).save(player);
                 useRepo(TeamPlayer).save({
                     id,
                     team_id,
                     status,
                     position,
-                    player_id: {...player}?.id,
+                    player_id: player?.id,
                 });
             });
             

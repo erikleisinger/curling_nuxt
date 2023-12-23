@@ -69,10 +69,58 @@
             <!-- TEAMS -->
 
             <q-card-section>
+                <div class="row justify-between">
                 <h4>Teams</h4>
-                    <q-list separator>
+     <q-btn dense flat :style="{color: league.color}" @click="addPool" v-if="!pools.length">Add pool</q-btn>
+                </div>
+                
+         
+                <div v-if="pools.length">
+                  <transition-group appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutRight">
+                <div class="pool__container" v-for="{id:poolId, pool}, poolIndex in pools" :key="poolIndex">
+                    <h5 class="text-md text-bold text-center">
+                        <q-input dense v-model="pool.name" class="pool-name__input">
+                            <template v-slot:append>
+                                <q-btn flat round icon="delete" dense size="sm" @click="poolToDelete = {index: poolIndex, id: pool?.id, name: pool.name}"/>
+                            </template>
+                             <template v-slot:prepend>
+                                <q-btn flat round disable dense size="sm"/>
+                            </template>
+                        </q-input>
+                    </h5>
+                    <q-separator :style="{backgroundColor: league.color}" size="2px"   />
+                      <q-list separator>
                            <transition-group appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutRight">
                  <q-item
+                        v-for="({id, team}, index) in teams.filter(({league_pool_id}) => league_pool_id === poolIndex || league_pool_id === poolId)"
+                        :key="team.id"
+                    >
+                        <q-item-section avatar>
+                            <div style="width: 25px">
+                                <TeamAvatar :teamId="team.id"/>
+                            </div>
+                        </q-item-section>
+                        <q-item-section>
+                            {{team.name}}
+                        </q-item-section>
+                        <q-item-section avatar>
+                            <q-btn flat round dense icon="close" @click="removeTeam(team.id)"/>
+                        </q-item-section>
+                    </q-item>
+                           </transition-group>
+                    <q-item clickable v-ripple @click="toggleTeamSearch(pool?.id || poolIndex)">
+                        <q-item-section avatar>
+                            <q-icon name="add" flat round />
+                        </q-item-section>
+                        <q-item-section> Add team </q-item-section>
+                    </q-item>
+                </q-list>
+                </div>
+                  </transition-group>
+                  
+                </div>
+                <div v-else>
+                       <q-item
                         v-for="({id, team}, index) in teams"
                         :key="team.id"
                     >
@@ -88,14 +136,18 @@
                             <q-btn flat round dense icon="close" @click="teams.splice(index, 1)"/>
                         </q-item-section>
                     </q-item>
-                           </transition-group>
-                    <q-item clickable v-ripple @click="toggleTeamSearch">
+                      <q-item clickable v-ripple @click="toggleTeamSearch">
                         <q-item-section avatar>
                             <q-icon name="add" flat round />
                         </q-item-section>
                         <q-item-section> Add team </q-item-section>
                     </q-item>
-                </q-list>
+                </div>
+
+                 <div class="full-width row justify-center q-mt-sm" v-if="pools.length">
+                        <q-btn dense flat :style="{color: league.color}" @click="addPool">Add pool</q-btn>
+                  </div>   
+                  
             </q-card-section>
 
             <!-- ADMINS -->
@@ -141,6 +193,17 @@
                 </div>
             </q-card-actions>
         </q-card>
+           <DialogConfirmation
+                v-if="!!poolToDelete"
+                confirmButtonText="Delete pool"
+                cancelButtonText="Cancel"
+                @confirm="deletePool"
+                @close="poolToDelete = null"
+                cancelColor=""
+                confirmColor="negative"
+            >
+                Are you sure you want to delete {{poolToDelete.name}}?
+            </DialogConfirmation>
     </q-dialog>
 </template>
 <style lang="scss" scoped>
@@ -162,6 +225,30 @@
         background-color: white;
         display: block;
         box-shadow: $pretty-shadow;
+    }
+
+    .pool__container {
+        padding: var(--space-xs);
+        border-radius: 8px;
+        box-shadow: $pretty-shadow;
+      
+            margin-top: var(--space-sm);
+     
+        .pool-name__input {
+            :deep(.q-field__native) {
+                text-align: center;
+                font-weight: bold;
+                font-size: var(--text-md)
+            }
+            :deep(.q-field__control) {
+                &:before {
+                    border-bottom: unset!important;
+                }
+                &:after {
+                    height: 0px!important;
+                }
+            }
+        }
     }
 }
 </style>
@@ -207,6 +294,7 @@ const reset = () => {
     teams.value = [];
     admins.value = [];
     rink.value = null;
+    pools.value = [];
 };
 
 const editedItem = computed(() => dialogStore.leagueEditor.editedLeague);
@@ -243,7 +331,7 @@ const addDrawTime = (time: string, id: number) => {
 
 const teams = ref([])
 
-const toggleTeamSearch = () => {
+const toggleTeamSearch = (poolIndex) => {
     toggleGlobalSearch({
         open: true,
         options: {
@@ -252,21 +340,31 @@ const toggleTeamSearch = () => {
             callback: (val) => {
                 teams.value.push({
                     id: null,
+                    league_pool_id: poolIndex,
                     team: val
                 })
             },
-            filterIds: teams.value.map(({ id }) => id),
+            filterIds: teams.value.map(({ team }) => team.id),
         },
     });
 };
 
+const removeTeam = (teamId) => {
+    const index = teams.value.findIndex(({team}) => team.id === teamId)
+    if (index === -1) return;
+    teams.value.splice(index, 1)
+}
+
 // ADMINS
 const userStore = useUserStore()
 const admins = ref([{
-    id: userStore.id,
+    id: null,
+    profile: {
+        id: userStore.id,
     avatar: userStore.avatar,
     first_name: userStore.first_name,
     last_name: userStore.last_name
+    }
 }])
 
 const toggleProfileSearch = () => {
@@ -309,6 +407,47 @@ const toggleRinkSearch = () => {
     });
 }
 
+// POOLS
+
+const pools = ref([])
+
+const addPool = () => {
+    if (pools.value.length > 9) {
+        useNotificationStore().addNotification({
+            state: 'failed',
+            text: 'Maximum 10 pools',
+            timeout: 2000,
+        })
+        return;
+    }
+    pools.value.push({
+        id: null,
+        pool: {
+            created_at: null,
+        name: `Pool ${pools.value.length + 1}`,
+        format: null,
+        }
+    })
+}
+
+const poolToDelete = ref(null)
+
+const deletePool = () => {
+    const {index, id} = poolToDelete.value
+    if (id) {
+        const i = pools.value.findIndex(({id: poolId}) => poolId === id);
+        if (index !== -1) {
+            pools.value.splice(i, 1)
+            teams.value = [...teams.value].filter(({league_pool_id}) => league_pool_id !== id)
+        }
+    }
+    pools.value.splice(index, 1);
+    teams.value = [...teams.value].filter(({league_pool_id}) => league_pool_id !== index)
+    poolToDelete.value = null;
+
+
+}
+
 // VALIDATION
 
 const nameInput = ref(null);
@@ -325,8 +464,13 @@ const validate = () => {
     if (!drawtimes.value?.length) {
         drawError.value = 'League must have at least one draw time.'
     }
+
     return !(nameInput.value.hasError || rinkInput.value.hasError || !!adminError.value || !!drawError.value)
 }
+
+const poolsValid = computed(() => {
+    return pools.value.every(({id}, index) => teams.value.some(({league_pool_id}) => league_pool_id === id || league_pool_id === index))
+})
 
 // SAVE
 
@@ -339,7 +483,7 @@ const createLeague = async () => {
     const {name, color} = league.value;
     const {id:rink_id = null} = rink.value ?? {}  
     const {data, error} = await client.from('leagues').upsert([{
-        id: editedItem.value?.id,
+         ...(editedItem.value?.id ? {id: editedItem.value.id} : {}),
         name, 
         color,
         rink_id
@@ -364,7 +508,6 @@ const createDrawTimes = async (league_id: number) => {
 }
 
 const createLeagueAdmins = async (league_id: number) => {
-    console.log('create league admins: ', `(${admins.value.map(({id}) => id).join(',')})`)
      await client.from('league_admins').delete().eq('league_id', league_id).not('id', 'in', `(${admins.value.map(({id}) => id).join(',')})`)
     const {error} = await client.from('league_admins').upsert(admins.value.map(({id, profile}) => ({
           ...(id ? {id} : {}),
@@ -374,14 +517,38 @@ const createLeagueAdmins = async (league_id: number) => {
       if (error) throw new Error(error)
 }
 
-const createLeagueTeams = async (league_id: number) => {
+const createLeagueTeams = async (league_id: number, poolIds) => {
+    console.log('league teams deletion: ',  `(${teams.value.map(({id}) => id).join(',')})`)
          await client.from('league_teams').delete().eq('league_id', league_id).not('id', 'in', `(${teams.value.map(({id}) => id).join(',')})`)
-    const {error} = await client.from('league_teams').upsert(teams.value.map(({id, team}) => ({
+    const {error} = await client.from('league_teams').upsert(teams.value.map(({id, league_pool_id, team}) => {
+        console.log('team id: ', id)
+        console.log('inserting: ', {
+              ...(id ? {id} : {}),
+        league_id,
+        team_id: team.id,
+        league_pool_id: poolIds.includes(league_pool_id) ? league_pool_id : poolIds[league_pool_id]
+        })
+        return {
+              ...(id ? {id} : {}),
+        league_id,
+        team_id: team.id,
+        league_pool_id: poolIds.includes(league_pool_id) ? league_pool_id : poolIds[league_pool_id]
+        }
+    }), {defaultToNull: false})
+      if (error) throw new Error(error)
+}
+
+const createLeaguePools = async (league_id: number) => {
+         await client.from('league_pools').delete().eq('league_id', league_id).not('id', 'in', `(${pools.value.filter(({id}) => id !== null && id !== undefined).map(({id}) => id).join(',')})`)
+    const {error, data: fetchedPools} = await client.from('league_pools').upsert(pools.value.map(({id, pool}) => ({
           ...(id ? {id} : {}),
         league_id,
-        team_id: team.id
-    })))
+        name: pool.name,
+        format: pool.format,
+    }))).select('id')
       if (error) throw new Error(error)
+
+     return fetchedPools.map(({id}) => id)
 }
 
 
@@ -389,7 +556,10 @@ const createLeagueTeams = async (league_id: number) => {
 const save = async () => {
       saving.value = true;
       const isValid = validate();
-      if (!isValid) return;
+      if (!isValid) {
+        saving.value = false;
+        return;
+      }
     const notId = useNotificationStore().addNotification({
         state: 'pending',
         text: `Creating ${league.value.name}...`
@@ -398,8 +568,9 @@ const save = async () => {
         const league_id = await createLeague();
 
         if (!isEdited.value) await createLeagueAdmins(league_id)
+                const poolIds = await createLeaguePools(league_id)
     
-        await Promise.all([createDrawTimes(league_id), createLeagueTeams(league_id)])
+        await Promise.all([createDrawTimes(league_id), createLeagueTeams(league_id, poolIds)])
 
         if (!!isEdited.value) await createLeagueAdmins(league_id)
 
@@ -416,7 +587,7 @@ const save = async () => {
     } catch(error) {
         useNotificationStore().updateNotification(notId, {
             state: 'failed',
-            text: `Error creating ${league.value.name}: ${error}`,
+            text: `Error creating ${league.value.name}: ${error?.message}`,
             timeout: 5000,
         })
     }
@@ -435,13 +606,19 @@ const initEdit = () => {
         id: time.id ?? null,
         time: time.time,
     }));
-    teams.value = editedItem.value.teams.map(({team, id}) => ({
+    teams.value = editedItem.value.teams.map(({team, id, league_pool_id}) => ({
         id, 
+        league_pool_id,
         team
     }));
     admins.value = editedItem.value.admins.map(({id, profile}) => ({
         id,
         profile
+    }))
+
+    pools.value = editedItem.value.pools.map(({league, id, ...rest}) => ({
+        id,
+        pool: rest
     }))
 
 }

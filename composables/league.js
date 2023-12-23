@@ -1,6 +1,7 @@
 import League from '@/store/models/league'
 import LeagueAdmin from '@/store/models/league-admin'
 import LeagueTeam from '@/store/models/league-team'
+import LeaguePool from '@/store/models/league-pool'
 import LeagueDrawtime from '@/store/models/league-drawtime'
 import Player from '@/store/models/player'
 import Team from '@/store/models/team'
@@ -23,8 +24,6 @@ export const useLeague = () => {
             )
         `).in('league_id', leagueIds)
 
-        console.log('got admins: ', admins)
-
         useRepo(LeagueAdmin).query().whereIn('league_id', leagueIds).where('id', (val) => {
             return !admins.some(({id}) => id === val)
         }).delete();
@@ -40,6 +39,27 @@ export const useLeague = () => {
                 })
             })
     }
+
+    const getLeaguePools = async (leagueIds) => {
+        const {data: pools} = await client.from('league_pools').select(`
+            id,
+            created_at,
+            league_id,
+            name,
+            format
+        `).in('league_id', leagueIds)
+
+        useRepo(LeaguePool).query().whereIn('league_id', leagueIds).where('id', (val) => {
+            return !pools.some(({id}) => id === val)
+        }).delete();
+
+        
+            pools.forEach((pool) => {
+
+                useRepo(LeaguePool).save(pool)
+                
+            })
+    }
     
     const getLeagueTeams = async (leagueIds) => {
         const {data:teams} = await client.from('league_teams').select(`
@@ -50,7 +70,8 @@ export const useLeague = () => {
                 name,
                 avatar_url
             ),
-            league_id
+            league_id,
+            league_pool_id
         `).in('league_id', leagueIds)
 
         useRepo(LeagueTeam).query().whereIn('league_id', leagueIds).where('team_id', (val) => {
@@ -66,7 +87,8 @@ export const useLeague = () => {
                 id: leagueTeam.id,
                 created_at: leagueTeam.created_at,
                 league_id: leagueTeam.league_id,
-                team_id: team?.id
+                team_id: team?.id,
+                league_pool_id: leagueTeam.league_pool_id,
             })
         })
     }
@@ -108,7 +130,7 @@ export const useLeague = () => {
 
         const leagueIds = leagues.map(({id}) => id);
 
-        await Promise.all([getLeagueAdmins(leagueIds), getLeagueTeams(leagueIds), getLeagueDrawTimes(leagueIds)])
+        await Promise.all([getLeagueAdmins(leagueIds), getLeagueTeams(leagueIds), getLeagueDrawTimes(leagueIds), getLeaguePools(leagueIds)])
       
 
         return leagues;

@@ -1,7 +1,8 @@
 import {Model} from 'pinia-orm'
 import LeagueTeam from '@/store/models/league-team'
 import LeagueDrawtime from '@/store/models/league-drawtime'
-import LeagueAdmin from '@/store/models/league-admin'
+import LeagueAdmin from '@/store/models/league-admin';
+import LeaguePool from '@/store/models/league-pool'
 
 export default class League extends Model {
     static entity = 'leagues'
@@ -17,7 +18,8 @@ export default class League extends Model {
             icon: this.string(),
             teams: this.hasMany(LeagueTeam, 'league_id'),
             drawtimes: this.hasMany(LeagueDrawtime, 'league_id'),
-            admins: this.hasMany(LeagueAdmin, 'league_id')
+            admins: this.hasMany(LeagueAdmin, 'league_id'),
+            pools: this.hasMany(LeaguePool, 'league_id')
         }
        
     }

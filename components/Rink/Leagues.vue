@@ -1,15 +1,28 @@
 <template>
+<transition appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutRight">
+<main v-if="!viewingLeague">
     <q-list separator>
-        <RinkLeagueListItem v-for="league in leagues" :key="league.id" :league="league"/>
+        <RinkLeagueListItem v-for="league in leagues" :key="league.id" :league="league" @click="viewingLeague = league.id"/>
+        <q-item clickable v-ripple @click="openLeagueEditor">
+            <q-item-section avatar>
+                <q-btn flat round icon="add"/>
+            </q-item-section>
+            <q-item-section>Add league</q-item-section>
+        </q-item>
     </q-list>
-    <q-btn color="blue" @click="openLeagueEditor">Create league</q-btn>
+</main>
+<main v-else>
+    {{viewingLeague}}
+    <q-btn flat @click="viewingLeague = null">Back</q-btn>
+</main>
+</transition>
 </template>
 <script setup>
 import { useQuery } from "@tanstack/vue-query";
 import League from "@/store/models/league";
 import { useDialogStore } from "@/store/dialog";
 
-
+const viewingLeague = ref(null)
 
 const props = defineProps({
     rinkId: Number,

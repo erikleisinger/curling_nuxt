@@ -1,5 +1,5 @@
 <template>
-    <q-item >
+    <q-item clickable v-ripple>
             <q-item-section>
                 <q-item-label
                     :style="{ color: league.color }"
@@ -14,7 +14,7 @@
                      </q-item-label>
             </q-item-section>
             <q-item-section avatar v-if="canEdit">
-                <q-btn flat round icon="edit" dense size="sm" @click="toggleLeagueEditor({
+                <q-btn flat round icon="edit" dense size="sm"  :style="{ color: league.color }" @click.stop="toggleLeagueEditor({
                     open: true,
                     editedLeague: {...props.league}
                 })"/>
