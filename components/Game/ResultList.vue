@@ -125,13 +125,7 @@
                     :home="teamId"
                     :search="searchInput"
                     :viewHome="false"
-                >
-                    <template v-slot:before>
-                        <div
-                            class="game-request-response__container row items-center no-wrap"
-                        ></div>
-                    </template>
-                </TeamGameResult>
+              />
             </div>
         </div>
         <div

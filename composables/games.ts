@@ -4,21 +4,14 @@ import Team from '@/store/models/team'
 import Game from '@/store/models/game'
 import Rink from '@/store/models/rink'
 import Sheet from '@/store/models/sheet'
+import League from '@/store/models/league'
 
 export const useGame = () => {
-    const getGames = async ({team_id_param, game_id_param} : {team_id_param: number, game_id_param: number}) => {
-        const { data } = await useSupabaseClient().rpc("get_team_record_new", {
-            team_id_param,
-            game_id_param
-        });
 
-    
-        
-        if (!data) return null;
-
+    const insertGames = (data) => {
         const dayjs = useDayjs();
-    
         data.forEach((g, index) => {
+            console.log('got game: ', g)
             if (index === 0) useRepo(GameTeam).where('game_id', g.game_id).delete()
             
             let team;
@@ -33,6 +26,7 @@ export const useGame = () => {
             }
             if (g.rink?.id) useRepo(Rink).save(g.rink)
             if (g.sheet?.id) useRepo(Sheet).save(g.sheet)
+            if (g.league?.id) useRepo(League).save(g.league)
             useRepo(Team).save(team);
             useRepo(Game).save({
                 id: g.game_id,
@@ -40,7 +34,8 @@ export const useGame = () => {
                 start_time: dayjs(g.start_time).unix(),
                 sheet_id: g.sheet?.id,
                 hammer_first_end: g.hammer_first_end,
-                end_count: g.end_count
+                end_count: g.end_count,
+                league_id: g.league?.id
             });
             
             useRepo(GameTeam).save({
@@ -53,6 +48,20 @@ export const useGame = () => {
                 home_team: g.team.home_team,
             });
         });
+    }
+    const getGames = async ({team_id_param, game_id_param} : {team_id_param: number, game_id_param: number}) => {
+        const { data } = await useSupabaseClient().rpc("get_team_record_new", {
+            team_id_param,
+            game_id_param
+        });
+
+    
+        
+        if (!data) return null;
+
+
+        insertGames(data)
+        
         return data;
     
     };
@@ -141,5 +150,21 @@ export const useGame = () => {
         return {}
     };
 
-    return { getGameResult, getHeadToHead, getTeamGames, getGames };
+    const getLeagueGames = async (league_id_param: number) => {
+        const { data } = await useSupabaseClient().rpc("get_league_games", {
+            league_id_param
+        });
+
+        console.log('league games: ', data)
+    
+        
+        if (!data) return null;
+
+
+        insertGames(data)
+        
+        return data;
+    }
+
+    return { getGameResult, getHeadToHead, getTeamGames, getGames, getLeagueGames };
 };

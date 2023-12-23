@@ -2,6 +2,7 @@ import { Model } from "pinia-orm";
 import GameTeam from '@/store/models/game-team'
 import Rink from '@/store/models/rink'
 import Sheet from '@/store/models/sheet'
+import League from '@/store/models/league'
 
 export default class Game extends Model {
     static entity = "games";
@@ -16,7 +17,9 @@ export default class Game extends Model {
             rink_id: this.number(),
             sheet_id: this.number(),
             start_time: this.number(),
-            note: this.string()
+            note: this.string(),
+            league_id: this.number(),
+            league: this.belongsTo(League, 'league_id')
         };
     }
 

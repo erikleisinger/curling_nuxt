@@ -406,14 +406,16 @@ const onUpdate = async (val) => {
         updated.value = false;
         return;
     }
+    console.log('update: ', val)
     updated.value = true;
     const notId = notStore.addNotification({
         text: "Updating game...",
         state: "pending",
     });
-    const { start_time, rink = {}, sheet = {} } = val;
+    const { start_time, rink = {}, sheet = {}, league = {} } = val;
     const { id: rink_id } = rink ?? {};
     const { number: sheet_number } = sheet || {};
+    const {id: league_id} = league || {}
 
     let sheet_id;
     if (sheet_number) sheet_id = await createSheet(rink_id, sheet_number);
@@ -422,6 +424,7 @@ const onUpdate = async (val) => {
     if (sheet_id) updates.sheet_id = sheet_id;
     if (rink_id) updates.rink_id = rink_id;
     if (start_time) updates.start_time = toUTC(start_time, null, true);
+    if (league_id) updates.league_id = league_id
     const client = useSupabaseClient();
     const { error } = await client
         .from("games")

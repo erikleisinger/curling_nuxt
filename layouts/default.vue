@@ -262,7 +262,7 @@ const toggleSearch = () => {
         open: true,
 
         options: {
-            resourceTypes: ['team', 'profile', 'rink'],
+            resourceTypes: ['team', 'profile', 'rink', 'league'],
             inputLabel: "Search for a team, player, rink, or event",
             callback: onSelect,
         },
@@ -281,8 +281,10 @@ const onSelect = (selection) => {
         return navigateTo(`/player/${selection.profile_id}`);
     }
     if (selection.resourcetype === 'rink') {
-        console.log('go rink')
         return navigateTo(`/rinks/${selection.id}`);
+    }
+     if (selection.resourcetype === 'league') {
+        return navigateTo(`/leagues/${selection.id}`);
     }
 };
 

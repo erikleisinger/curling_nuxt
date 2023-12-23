@@ -135,5 +135,28 @@ export const useLeague = () => {
 
         return leagues;
     }
-    return {getRinkLeagues, getLeagueAdmins, getLeagueDrawTimes, getLeagueTeams}
+
+    const getLeague = async (leagueId) => {
+        const {data: leagues, error} = await client.from('leagues').select(`
+            id,
+            created_at,
+            name,
+            color,
+            font_color,
+            icon,
+            rink_id
+        `).eq('id', leagueId)
+
+        leagues.forEach((league) => {        
+            useRepo(League).save({...league})
+        })
+
+        const leagueIds = leagues.map(({id}) => id);
+
+        await Promise.all([getLeagueAdmins(leagueIds), getLeagueTeams(leagueIds), getLeagueDrawTimes(leagueIds), getLeaguePools(leagueIds)])
+      
+
+        return leagues;
+    }
+    return {getRinkLeagues, getLeagueAdmins, getLeagueDrawTimes, getLeagueTeams, getLeague}
 }

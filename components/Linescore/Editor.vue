@@ -275,12 +275,36 @@
             </div>
            
         </div>
-        <div class="full-width row justify-center" v-if="summary">
+        <div class="full-width column items-center" v-if="summary">
              <div class="row full-width justify-center q-mb-md" v-if="showVerified">
            <TeamGameResultVerification  :gameId="selections.id" />
             </div>
+             <div
+                class="info__section relative-position col-12"
+                style="width: fit-content"
+                @click="searchLeague"
+            >
+                <q-icon name="circle" :style="{color: selections?.league?.color}" />
+                <h2
+                    class="text-sm"
+                    :class="{ 'text-bold': selections.league?.name }"
+                >
+                    {{ selections?.league?.name ?? "Unspecified league" }}
+                </h2>
+                <div class="edit--floating text-sm" v-if="canEditDetails">
+                    <q-btn
+                        icon="edit"
+                        flat
+                        round
+                        padding="0px"
+                        color="grey-8"
+                        dense
+                        size="sm"
+                    />
+                </div>
+            </div>
             <div
-                class="info__section relative-position"
+                class="info__section relative-position col-12"
                 style="width: fit-content"
                 @click="searchRink"
             >
@@ -303,6 +327,7 @@
                     />
                 </div>
             </div>
+            
         </div>
         <div
             class="info__section column items-center q-mt-xs"
@@ -786,6 +811,20 @@ const searchRink = () => {
             resourceTypes: ["rink"],
             callback: (selection) => {
                 selections.value.rink = selection;
+            },
+        },
+    });
+};
+
+const searchLeague = () => {
+    if (!props.canEdit) return;
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: "Search for a league",
+            resourceTypes: ["league"],
+            callback: (selection) => {
+                selections.value.league = selection;
             },
         },
     });

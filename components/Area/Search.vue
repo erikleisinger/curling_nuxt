@@ -51,7 +51,7 @@
                 <div
                     v-for="result in results"
                     :key="result.id"
-                    @click="emit('select', {result, event: $event})"
+                    @click="emit('select', { result, event: $event })"
                 >
                     <div class="result__container clickable">
                         <!-- RINK result -->
@@ -69,10 +69,17 @@
                                 />
                             </div>
                         </div>
-                      
-                         <div class="column justify-center"  v-if="result.resourcetype === 'rink'">
-                            <div class="text-bold text-lg name">{{result.name}} </div>
-                            <div class="text-sm" style="margin-top: -4px" > {{ `${result.city}, ${result.province}` }}</div>
+
+                        <div
+                            class="column justify-center"
+                            v-if="result.resourcetype === 'rink'"
+                        >
+                            <div class="text-bold text-lg name">
+                                {{ result.name }}
+                            </div>
+                            <div class="text-sm" style="margin-top: -4px">
+                                {{ `${result.city}, ${result.province}` }}
+                            </div>
                         </div>
                         <div v-if="result.resourcetype === 'rink'">
                             <slot name="append" v-bind:result="result" />
@@ -82,9 +89,20 @@
                         <div v-if="result.resourcetype === 'team'">
                             <TeamAvatar :teamId="result.id" />
                         </div>
-                         <div class="column justify-center"  v-if="result.resourcetype === 'team'">
-                            <div class="text-bold text-lg name">{{result.name}} </div>
-                            <div class="text-sm" style="margin-top: -4px" v-if="result.rink_name">{{ result.rink_name }}</div>
+                        <div
+                            class="column justify-center"
+                            v-if="result.resourcetype === 'team'"
+                        >
+                            <div class="text-bold text-lg name">
+                                {{ result.name }}
+                            </div>
+                            <div
+                                class="text-sm"
+                                style="margin-top: -4px"
+                                v-if="result.rink_name"
+                            >
+                                {{ result.rink_name }}
+                            </div>
                         </div>
                         <div v-if="result.resourcetype === 'team'">
                             <slot name="append" v-bind:result="result" />
@@ -122,12 +140,36 @@
                         <div v-if="result.resourcetype === 'profile'">
                             <Avataaar v-bind="parseAvatar(result.avatar)" />
                         </div>
-                        <div class="column justify-center"  v-if="result.resourcetype === 'profile'">
-                            <div class="text-bold text-lg name">{{result.first_name}} {{result.last_name}}</div>
-                            <div class="text-sm" style="margin-top: -4px">@{{ result.name }}</div>
+                        <div
+                            class="column justify-center"
+                            v-if="result.resourcetype === 'profile'"
+                        >
+                            <div class="text-bold text-lg name">
+                                {{ result.first_name }} {{ result.last_name }}
+                            </div>
+                            <div class="text-sm" style="margin-top: -4px">
+                                @{{ result.name }}
+                            </div>
                         </div>
                         <div v-if="result.resourcetype === 'profile'">
                             <slot name="append" v-bind:result="result" />
+                        </div>
+
+                        <!-- LEAGUE RESULT -->
+                       <div v-if="result.resourcetype === 'league'">
+                           <q-icon name="circle" size="2em" :style="{color: result.color}"/>
+                        </div>
+                        <div
+                            class="column justify-center"
+                            v-if="result.resourcetype === 'league'"
+                        >
+                              <div class="text-bold text-lg name">
+                                {{ result.name }} 
+                            </div>
+                            <div class="text-sm" style="margin-top: -4px">
+                                {{ result.rink_name }}
+                            </div>
+                         
                         </div>
                     </div>
                 </div>
@@ -229,13 +271,17 @@
 }
 </style>
 <script setup>
-import { useElementBounding, useThrottleFn, onClickOutside } from "@vueuse/core";
+import {
+    useElementBounding,
+    useThrottleFn,
+    onClickOutside,
+} from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
 
 const props = defineProps({
     restrictIds: {
         type: Array,
-        default: []
+        default: [],
     },
     filterIds: {
         type: Array,
@@ -253,7 +299,7 @@ const emit = defineEmits(["close", "select"]);
 
 const searchInput = ref(null);
 const results = ref(null);
-const input = ref(null)
+const input = ref(null);
 
 const search = () => {
     if (!searchInput.value?.length) {
@@ -267,7 +313,6 @@ const search = () => {
 const loading = ref(false);
 
 const useSearch = useThrottleFn(async () => {
-
     loading.value = true;
     const formatted = searchInput.value
         .split(" ")
@@ -281,18 +326,23 @@ const useSearch = useThrottleFn(async () => {
         })
         .limit(25);
 
-
-    results.value = data.reduce((all, current) => {       
-        if (!props.resourceTypes?.length) return [...all, current];     
+    results.value = data.reduce((all, current) => {
+        if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
         if (
-            props.filterIds.length && 
+            props.filterIds.length &&
             (props.filterIds.includes(current.id) ||
-            (current.resourcetype === 'profile' && props.filterIds.includes(current.profile_id)))
-        ) return all;
-            
-       
-        if (props.restrictIds?.length && (!props.restrictIds.includes(current.id) && !props.restrictIds.includes(current.profile_id))) return all;
+                (current.resourcetype === "profile" &&
+                    props.filterIds.includes(current.profile_id)))
+        )
+            return all;
+
+        if (
+            props.restrictIds?.length &&
+            !props.restrictIds.includes(current.id) &&
+            !props.restrictIds.includes(current.profile_id)
+        )
+            return all;
         return [...all, current];
     }, []);
     loading.value = false;
@@ -317,8 +367,6 @@ const clearResults = () => {
 const searchBar = ref(null);
 const { height: searchBarHeight, y: searchBarY } =
     useElementBounding(searchBar);
-
-
 </script>
 <script>
 export default {
