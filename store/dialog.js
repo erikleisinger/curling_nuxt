@@ -12,6 +12,11 @@ export const useDialogStore = defineStore("dialog", {
             editedGame: null,
             options: {},
         },
+        leagueEditor: {
+            open: false,
+            editedLeague: null,
+            options: {}
+        },
         teamViewer: {
             open: false,
             team: null,
@@ -27,6 +32,17 @@ export const useDialogStore = defineStore("dialog", {
         } else {
             this.globalSearch.options = {}
         }
+    },
+    toggleLeagueEditor({open, editedLeague = null, options = {}}) {
+        if (!open) {
+            this.leagueEditor.editedLeague = null;
+            this.leagueEditor.options = {}
+        } else {
+            this.leagueEditor.editedLeague = editedLeague
+            this.leagueEditor.options = options
+        }
+
+        this.leagueEditor.open = open;
     },
     toggleLineScore({open, editedGame = null, options = {}}) {
         if (!open) {

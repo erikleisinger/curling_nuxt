@@ -1,7 +1,12 @@
 export const parseAvatar = (avatar) => {
     try {
-        const parsedAvatar = JSON.parse(avatar);
-        return parsedAvatar
+        if (typeof avatar === 'string') {
+            const parsedAvatar = JSON.parse(avatar);
+            return parsedAvatar
+        } else if (typeof avatar === 'object') {
+            return avatar
+        }
+        
         
     } catch  {
         return {}

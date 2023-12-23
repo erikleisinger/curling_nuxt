@@ -67,7 +67,8 @@ const props = defineProps({
     limit: {
         type: Boolean,
         default: true,
-    }
+    },
+    timeOnly: Boolean,
 });
 
 const { toTimezone } = useTime();
@@ -86,6 +87,7 @@ const isTodaySelected = computed(() => {
 })
 
 const limitTime = (val) => {
+    if (props.timeOnly) return true;
     if (!props.limit) return true;
     if (!isTodaySelected) return true;
     const now = Number(toTimezone(null, "H"));
@@ -106,7 +108,7 @@ const val = computed({
         return emit("update:modelValue", val);
     },
 });
-const selectDate = ref(true);
+const selectDate = ref(!props.timeOnly);
 const popup = ref(null);
 const formatted = computed(() => {
     if (!props.modelValue) return "Select a time";
@@ -127,7 +129,7 @@ const onSelectTime = (value: string | null, details: object) => {
 };
 
 const onHide = () => {
-    selectDate.value = true;
+    selectDate.value = !props.timeOnly;
     selectedMinute.value = false;
 };
 

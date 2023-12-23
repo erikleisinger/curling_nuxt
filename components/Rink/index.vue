@@ -30,6 +30,7 @@
         </nav>
         <main class="rink__content--container">
             <RinkTeams v-if="currentIndex === 0" :id="rinkId"/>
+              <RinkLeagues v-if="currentIndex === 1" :rinkId="rinkId"/>
         </main>
 
     </div>

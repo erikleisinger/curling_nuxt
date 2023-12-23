@@ -20,7 +20,7 @@
                         />
                         <div class="color__container clickable">
                             <div class="color-selection__wrap">
-                                <SelectColor
+                                <SelectRockColor
                                     v-model="selections.homeColor"
                                     :prevent="[selections.awayColor]"
                                 />
@@ -67,7 +67,7 @@
                         />
                         <div class="color__container clickable">
                             <div class="color-selection__wrap ">
-                                <SelectColor
+                                <SelectRockColor
                                     v-model="selections.awayColor"
                                     :prevent="[selections.homeColor]"
                                 />

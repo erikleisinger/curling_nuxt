@@ -3,6 +3,7 @@
     <NuxtPage />
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
+    <DialogLeagueEditor v-if="isLeagueEditorOpen" />
 </template>
 <style lang="scss">
 #__nuxt {
@@ -68,6 +69,7 @@ onBeforeMount(async () => {
 });
 
 onBeforeMount(async () => {
+    console.log('app full path: ', route.fullPath)
     const user = useSupabaseUser();
     if (
         !PUBLIC_ROUTES.includes(route.fullPath) &&
@@ -88,4 +90,5 @@ client.auth.onAuthStateChange((_, _session) => {
 });
 const dialogStore = useDialogStore();
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
+const isLeagueEditorOpen = computed(() => dialogStore.leagueEditor.open);
 </script>
