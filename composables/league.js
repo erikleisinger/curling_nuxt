@@ -5,6 +5,7 @@ import LeaguePool from '@/store/models/league-pool'
 import LeagueDrawtime from '@/store/models/league-drawtime'
 import Player from '@/store/models/player'
 import Team from '@/store/models/team'
+import Rink from '@/store/models/rink'
 
 
 export const useLeague = () => {
@@ -126,6 +127,9 @@ export const useLeague = () => {
 
         leagues.forEach((league) => {        
             useRepo(League).save({...league})
+            if (league.rink?.id) {
+                useRepo(Rink).save(league.rink)
+            }
         })
 
         const leagueIds = leagues.map(({id}) => id);
@@ -144,11 +148,20 @@ export const useLeague = () => {
             color,
             font_color,
             icon,
-            rink_id
+            rink:rink_id (
+                id,
+                name,
+                sheets,
+                city,
+                province
+            )
         `).eq('id', leagueId)
 
         leagues.forEach((league) => {        
             useRepo(League).save({...league})
+            if (league.rink?.id) {
+                useRepo(Rink).save(league.rink)
+            }
         })
 
         const leagueIds = leagues.map(({id}) => id);

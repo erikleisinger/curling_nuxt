@@ -182,7 +182,7 @@
                     </q-item>
                 </q-list>
             </q-card-section>
-            <q-card-actions class="actions--bar">
+            <q-card-actions >
                 <div class="full-width row justify-between">
                     <q-btn flat @click="close">Close</q-btn>
                 <q-btn flat :style="{backgroundColor: league.color}" text-color="white" rounded size="md" @click="save" padding="0px 16px" :loading="saving">
@@ -219,13 +219,7 @@
     :deep(.q-field--outlined.q-field--readonly .q-field__control:before) {
         border-style: solid;
     }
-    .actions--bar {
-        position: sticky;
-        bottom: 0;
-        background-color: white;
-        display: block;
-        box-shadow: $pretty-shadow;
-    }
+
 
     .pool__container {
         padding: var(--space-xs);

@@ -119,7 +119,7 @@ const $q = useQuasar();
 
 const mainHeight = computed(() => `calc((100 * var(--vh, 1vh)) - ${headerHeight.value + navHeight.value}px - ${$q.screen.xs ? 50 : 65}px)`)
 
-const leagueColor = computed(() => league.value.color)
+const leagueColor = computed(() => league.value?.color)
 </script>
 <script>
 export default {
