@@ -288,9 +288,9 @@ const useSearch = useThrottleFn(async () => {
         if (
             props.filterIds.length && 
             (props.filterIds.includes(current.id) ||
-            props.filterIds.includes(current.profile_id))
-        )
-            return all;
+            (current.resourcetype === 'profile' && props.filterIds.includes(current.profile_id)))
+        ) return all;
+            
        
         if (props.restrictIds?.length && (!props.restrictIds.includes(current.id) && !props.restrictIds.includes(current.profile_id))) return all;
         return [...all, current];

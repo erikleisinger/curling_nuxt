@@ -74,7 +74,14 @@ const getAchievements = async () => {
         name,
         type,
         info,
-        game_id
+        game_id,
+        schedule:schedule_id (
+            id,
+            name,
+            start_time,
+            end_time,
+            color
+        )
         `
         )
         .or(`team_id.in.(${teamList}),profile_id.eq.${userId.value}`)

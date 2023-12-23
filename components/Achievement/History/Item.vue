@@ -264,6 +264,7 @@
                 <TeamAvatar :teamId="item.info.requester_id" viewable>
                 </TeamAvatar>
             </div>
+            
         </q-item-section>
         <q-item-section>
             <span>
@@ -271,6 +272,40 @@
                     item.info.requester_name
                 }}</strong>
                 asked you to verify a game
+            </span>
+
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+
+      <q-item
+        v-if="item.type === 'schedule_request'"
+        class="achievement-history__item"
+        :class="{ unread }"
+        v-ripple
+        clickable
+    >
+        <q-item-section avatar @click.stop>
+            <div style="width: 42px" class="relative-position" v-if="item.team?.id">
+                <TeamAvatar :teamId="item.team.id" viewable> </TeamAvatar>
+            </div>
+            <div style="width: 42px" class="relative-position" v-else-if="item.profile?.id">
+                <Avataaar v-bind="JSON.parse(item.profile?.avatar)"> </Avataaar>
+            </div>
+             
+        </q-item-section>
+        <q-item-section>
+            <span>
+                
+
+                <span v-if="item.team?.name">
+                    <strong>{{ item.team.name }} </strong>
+                    has
+                    </span>
+                <span v-else-if="item.profile?.id">You have </span>
+                a new event: <strong  :style="{color: item?.schedule?.color}">{{item?.schedule?.name}}</strong> on {{toTimezone(item?.schedule?.start_time, 'MMMM DD')}}.
             </span>
 
             <q-item-label caption>{{

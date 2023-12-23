@@ -133,13 +133,13 @@ export const useTeam = () => {
             players.forEach((p) => {
                 const { player, id, team_id, status, position } = p;
 
-                useRepo(Player).save(player);
+                useRepo(Player).save({...player});
                 useRepo(TeamPlayer).save({
                     id,
                     team_id,
                     status,
                     position,
-                    player_id: player?.id,
+                    player_id: {...player}?.id,
                 });
             });
             
@@ -147,7 +147,7 @@ export const useTeam = () => {
                 if (EPHEMERAL_BADGES.includes(a.name)) return 1;
                 return -1;
             }).forEach((badge) => {
-                useRepo(Badge).save(badge)
+                useRepo(Badge).save({...badge})
             })
 
             stats?.forEach((stat) => {
