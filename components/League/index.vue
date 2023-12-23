@@ -80,7 +80,7 @@
 <script setup>
 import { useQuery } from "@tanstack/vue-query";
 import League from '@/store/models/league';
-import Rink from '@/store/models/Rink'
+import Rink from '@/store/models/rink'
 import {useElementBounding} from '@vueuse/core'
 
 const defaultAvatar = new URL("~/assets/rink.jpg", import.meta.url).href;
