@@ -132,6 +132,10 @@
         </div>
     </div>
 
+    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
+    <q-separator/>
+    <TeamLeagueList :teamId="Number(route.params.id)"/>
+
     <ChartTeamStatsTime
         v-if="hasPlayedGames"
         :teamId="Number(route.params.id)"
