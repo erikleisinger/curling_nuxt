@@ -413,7 +413,6 @@ const onUpdate = async (val) => {
         updated.value = false;
         return;
     }
-    console.log('update: ', val)
     updated.value = true;
     const notId = notStore.addNotification({
         text: "Updating game...",
