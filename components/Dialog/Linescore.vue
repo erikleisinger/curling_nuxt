@@ -445,6 +445,7 @@ const gameParams = ref({
     start_time: dayjs().format("YYYY-MM-DD hh:mm"),
     rink: {},
     sheet: {},
+    league: {},
 });
 
 const score = ref({});
@@ -560,6 +561,7 @@ const save = async () => {
     const scoreCopy = { ...score.value };
     const rinkCopy = gameParams.value.rink;
     const sheetCopy = gameParams.value.sheet;
+    const leagueCopy = gameParams.value.league;
     const editedIdCopy = editedId.value;
 
     let shouldSendInvitation = false;
@@ -590,6 +592,7 @@ const save = async () => {
         ),
         rink_id: rinkCopy?.id,
         sheet_id: sheetId,
+        league_id: leagueCopy?.id
     };
 
     if (!!params?.away?.id) {

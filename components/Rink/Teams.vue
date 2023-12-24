@@ -1,11 +1,21 @@
 <template>
   
-    <div class="relative-position" style="min-height: inherit">
-        <TeamCard v-for="teamId in teams" :key="teamId" :teamId="teamId" dense/>
+    <div class="relative-position card-container" style="min-height: inherit">
+        <TeamCard v-for="teamId in teams" :key="teamId" :teamId="teamId" dense class="card"/>
         <h2 class="full-width text-md text-center q-pa-lg " v-if="!isLoading && !teams.length">Could not find any teams.</h2>
           <q-inner-loading indeterminate color="primary" :showing="isLoading"/>
     </div>
 </template>
+<style lang="scss" scoped>
+$margin: var(--space-xs);
+.card-container {
+     margin-top: $margin;
+    .card {
+        margin-bottom: $margin;
+    }
+}
+
+</style>
 <script setup>
 import {useQuery} from '@tanstack/vue-query'
 const props = defineProps({

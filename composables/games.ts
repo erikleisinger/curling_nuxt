@@ -11,7 +11,6 @@ export const useGame = () => {
     const insertGames = (data) => {
         const dayjs = useDayjs();
         data.forEach((g, index) => {
-            console.log('got game: ', g)
             if (index === 0) useRepo(GameTeam).where('game_id', g.game_id).delete()
             
             let team;

@@ -1,9 +1,8 @@
 <template>
     <div class="league__container" v-if="!isLoading">
-        <header class="column justify-end league--header" ref="header">
-            <div class="league-header__content full-width">
-                <h1 class="text-md text-bold text-center " :style="{color: league.color}">{{ league?.name }}</h1>
-              
+        <header class="column justify-end league--header" ref="header" :style="{backgroundColor: league.color}">
+            <div class="league-header__content full-width text-white">
+                <h1 class="text-md text-bold text-center " >{{ league?.name }}</h1>
                 <h3 class="text-sm text-center" @click="navigateTo(`/rinks/${league?.rink?.id}`)">{{league?.rink?.name}}</h3>
             
     
@@ -42,6 +41,8 @@
     background-color: white;
     .league--header {
         position: relative;
+        border-top-right-radius: 16px;
+        border-top-left-radius: 16px;
         .league-header__content {
             padding: var(--space-sm);
             z-index: 1;

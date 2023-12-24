@@ -280,8 +280,8 @@
            <TeamGameResultVerification  :gameId="selections.id" @refresh="emit('refresh')" />
             </div>
              <div
-                class="info__section relative-position col-12"
-                style="width: fit-content"
+                class="info__section relative-position full-width"
+          
                 @click="searchLeague"
             >
                 <q-icon name="circle" :style="{color: selections?.league?.color}" />
@@ -304,8 +304,8 @@
                 </div>
             </div>
             <div
-                class="info__section relative-position col-12"
-                style="width: fit-content"
+                class="info__section relative-position full-width"
+      
                 @click="searchRink"
             >
                 <q-icon name="location_on" color="red" />
