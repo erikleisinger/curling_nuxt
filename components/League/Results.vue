@@ -24,7 +24,7 @@ const { getLeagueGames } = useGame();
 
 const { isLoading } = useQuery({
     queryKey: ["league", "games", props.leagueId],
-    queryFn: () => getLeagueGames(props.leagueId),
+    queryFn: () => getLeagueGames([props.leagueId]),
     refetchOnWindowFocus: false,
     select: (val) => {
         console.log('got games: ', val);

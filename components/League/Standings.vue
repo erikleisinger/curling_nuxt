@@ -43,6 +43,29 @@
         </q-list>
         </section>
     </div>
+    <div v-else-if="!league?.pools?.length && !isLoading">
+        <q-item v-for="{team}, index in league.teams.sort((a,b) => rankOrder.indexOf(a.team?.id) - rankOrder.indexOf(b.team?.id))" :key="team.id">
+                  <q-item-section avatar style="min-width: 50px">
+                        {{index + 1}}
+                </q-item-section>
+                <q-item-section avatar>
+                    <div style="width: 30px">
+                        <TeamAvatar :teamId="team.id" viewable/>
+                    </div>
+                </q-item-section>
+                <q-item-section>
+                    {{team?.name}}
+                </q-item-section>
+                <q-item-section avatar>
+                   <div class="row" v-if="standings">
+                    {{standings[team.id]?.win}}
+                      {{standings[team.id]?.loss}}
+                        {{standings[team.id]?.tie}}
+                   </div>
+                </q-item-section>
+              
+            </q-item>
+    </div>
 </template>
 <style lang="scss" scoped>
 .pool-section {
@@ -90,7 +113,13 @@ import {useQuery} from '@tanstack/vue-query'
             }
         }, {})
 
-  
+        league.value.teams.forEach(({team_id}) => {
+            if (!formatted[team_id]) formatted[team_id] = {
+                win: 0,
+                loss: 0,
+                tie: 0
+            }
+        })
 
         return formatted;
     }
@@ -100,6 +129,7 @@ import {useQuery} from '@tanstack/vue-query'
         queryKey: ['league', 'standings', props.leagueId],
         queryFn: getLeagueStandings,
         refetchOnWindowFocus: false,
+        enabled: !!league,
     })
 
     const rankOrder = computed(() => {
@@ -110,6 +140,8 @@ import {useQuery} from '@tanstack/vue-query'
                 winlosstieValue: (value.loss * 0) + (value.tie * 1) + (value.win * 3)
             }]
         }, []).sort((a,b) => b.winlosstieValue - a.winlosstieValue).map(({id}) => Number(id))
+
+     
     })
 
 

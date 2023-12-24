@@ -10,13 +10,14 @@
         <div class="overlay" ref="overlay">
             <div class="content-container full-width " :class="{'stretch-height': !dense}">
                 <div class="column justify-between full-width">
-                    <div class="name"  :class="{dense}">
+                    <div class="name"  :class="{dense, 'full-width': width <= 200}">
                         <h2 class="text-uppercase text-bold">
                             {{ team?.name }}
                         </h2>
 
-                        <h3 class="text-xs" v-if="!dense">{{ rink?.name }}</h3>
+                        <h3 class="text-xs" >{{ rink?.name }}</h3>
                     </div>
+                       <div class="row no-wrap justify-between">
                     <div class="row badges" v-if="isLoadingTeam">
                         <q-skeleton
                             height="2em"
@@ -34,6 +35,7 @@
                             type="circle"
                         ></q-skeleton>
                     </div>
+                 
                     <div
                         class="row badges items-center"
                         :class="{'no-wrap': dense}"
@@ -44,22 +46,21 @@
                             v-for="badge in badges"
                             :key="badge.id"
                             :badge="badge"
-                            height="2em"
+                            :iconHeight="iconHeight"
                             iconOnly
                             @click.stop
                         />
-                        <div v-if="dense && badges?.length !== team.badges?.length">
+                        <div v-if="dense && badges?.length !== team.badges?.length" class="showmore-badges__text">
                             +{{(team.badges?.length ?? 0) - (badges?.length ?? 0) }}
                         </div>
                     </div>
-                </div>
-                <div class="win-container column items-end" :class="{dense}">
+                      <div class="win-container column items-end" :class="{dense}" ref="winContainer" v-if="width <= 200" >
                     <q-skeleton
                         height="2em"
                         width="75px"
                         v-if="isLoadingTeam"
                     />
-                    <div class="text-xl text-bold wins text-right" v-else>
+                    <div class=" text-bold wins text-right" v-else>
                         <span v-if="team?.totalStats?.wins_average">
                             {{ (team?.totalStats?.wins_average * 100).toFixed() }}%
                         </span>
@@ -72,7 +73,35 @@
                     />
                     <div
                         v-else
-                        class="text-sm text-right"
+                        class="text-right wins-append"
+                        style="margin-top: -8px"
+                    >
+                        <span v-if="team?.totalStats?.wins_average">wins</span>
+                        <span v-else>games</span>
+                    </div>
+                </div>
+                       </div>
+                </div>
+                <div class="win-container column items-end" :class="{dense}" ref="winContainer" v-if="width > 200" >
+                    <q-skeleton
+                        height="2em"
+                        width="75px"
+                        v-if="isLoadingTeam"
+                    />
+                    <div class=" text-bold wins text-right" v-else>
+                        <span v-if="team?.totalStats?.wins_average">
+                            {{ (team?.totalStats?.wins_average * 100).toFixed() }}%
+                        </span>
+                        <span v-else>0</span>
+                    </div>
+                    <q-skeleton
+                        height="1em"
+                        width="40px"
+                        v-if="isLoadingTeam"
+                    />
+                    <div
+                        v-else
+                        class="text-right wins-append"
                         style="margin-top: -8px"
                     >
                         <span v-if="team?.totalStats?.wins_average">wins</span>
@@ -95,15 +124,24 @@
     }
     &.dense {
         min-height: unset;
-        min-height: 75px;
+        // min-height: 75px;
     }
     .name {
         letter-spacing: 0.001em;
-
+        font-size: v-bind(nameFontSize);
+        line-height: v-bind(nameLineHeight);
         width: auto;
         padding: 8px;
+        &:not(.full-width) {
+         padding-right: 0px;
+        }
+        &.full-width {
+            padding-bottom: 0;
+        }
+       
         overflow: hidden;
         margin-top: calc(-1 * var(--space-sm));
+        // word-break: break-word;
         h2 {
             width: fit-content;
             height: fit-content;
@@ -115,7 +153,7 @@
             max-width: v-bind(maxNameWidth);
             // white-space: nowrap;
             min-width: 0;
-            overflow: hidden;
+            overflow: hidden
             
             h2 {
                 font-size: var(--text-lg);
@@ -127,7 +165,7 @@
         }
     }
     border-radius: 8px;
-    margin: var(--space-sm);
+    // margin: var(--space-sm);
     box-shadow: $pretty-shadow;
     background-size: cover;
     background-position-y: center;
@@ -136,13 +174,22 @@
         font-family: $font-family-main;
         padding: 0px 8px;
 
-        width: min-content;
-        font-size: var(--text-lg);
+    &:not(.full-width) {
+ width: min-content;
+    }
+       
+        // font-size: var(--text-lg);
+        
         .wins {
-            line-height: 1em;
+            line-height: v-bind(winLineHeight);
+            font-size: v-bind(winFontSize);
         }
-        &.dense {
-            font-size: var(--text-md)
+        // &.dense {
+        //     font-size: var(--text-md)
+        // }
+
+        .wins-append {
+            font-size: v-bind(winAppendFontSize)
         }
     }
     .underlay {
@@ -167,6 +214,9 @@
     .badges {
         padding: 0px var(--space-xs);
         gap: var(--space-xs);
+        .showmore-badges__text {
+            font-size: v-bind(nameFontSize)
+        }
     }
     .stretch-height {
         min-height: v-bind(cardHeightPx);
@@ -228,7 +278,23 @@ const badges = computed(() => {
     return b.sort(sortBadges)
 })
 
-const maxNameWidth = computed(() => `calc(${width.value}px - 90px)`)
+const winContainer = ref(null)
+const {width: winWidth} = useElementBounding(container);
+
+const maxNameWidth = computed(() => `calc(${width.value}px - ${winWidth}px)`);
+
+const winFontSize = computed(() => `min(calc(${width.value}px * 0.1), 50px)`)
+const winAppendFontSize = computed(() => `min(calc(${width.value}px * 0.07), 20px)`)
+const winLineHeight = computed(() => `max(calc(${winFontSize.value}), 25px)`);
+const nameFontSize = computed(() => {
+    if (width.value > 300) {
+        return '20px'
+    }
+
+    return `max(calc(${width.value}px * 0.05), 10px)`
+})
+const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.8)`)
+const iconHeight = computed(() => `min(calc(${width.value}px * 0.08), 2em)`)
 
 
 </script>

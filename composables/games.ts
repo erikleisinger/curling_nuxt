@@ -150,10 +150,21 @@ export const useGame = () => {
         return {}
     };
 
-    const getLeagueGames = async (league_id_param: number) => {
-        const { data } = await useSupabaseClient().rpc("get_league_games", {
-            league_id_param
-        });
+    const getLeagueGames = async (league_ids_param: number[], team_ids_param: number[]) => {
+        let data;
+        if (!team_ids_param) {
+            const { data: games } = await useSupabaseClient().rpc("get_league_games", {
+                league_ids_param,
+            })
+
+            data = games;
+        } else {
+            const { data: games } = await useSupabaseClient().rpc("get_league_games", {
+                league_ids_param,
+            }).in('team_id', team_ids_param)
+            data = games;
+        }
+      
 
         console.log('league games: ', data)
     

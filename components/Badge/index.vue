@@ -14,7 +14,7 @@
         <div class="row no-wrap items-center icon-container">
             <div class="relative-position">
                 <BadgeIcon
-                    height="2em"
+                    :height="iconOnly ? iconHeight : '2em'"
                     class="badge-icon"
                     :badge="badge"
                 />
@@ -125,6 +125,10 @@ const props = defineProps({
         default: true,
     },
     highlight: Boolean,
+    iconHeight: {
+        type: String,
+        default: '2em'
+    },
     iconOnly: Boolean,
     showTeam: Boolean,
     showTime: Boolean,

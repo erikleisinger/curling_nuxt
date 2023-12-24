@@ -34,7 +34,7 @@
                     v-if="badge.name === 'bandit'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    style="aspect-ratio: 1/1"
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -49,7 +49,7 @@
                     v-else-if="badge.name === 'showoff'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="showoff"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -65,7 +65,7 @@
                     v-else-if="badge.name === 'stealdefense'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="bulwark"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -80,7 +80,7 @@
                     v-else-if="badge.name === 'singlegame'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="minimalist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -96,7 +96,7 @@
                     v-else-if="badge.name === 'survivalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="survivalist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -111,7 +111,7 @@
                     v-else-if="badge.name === 'strategist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="strategist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -126,7 +126,7 @@
                     v-else-if="badge.name === 'efficiency'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -141,7 +141,7 @@
                     v-else-if="badge.name === 'bulwark'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                     class="bulwark"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -156,7 +156,7 @@
                     v-else-if="badge.name === 'win_1' || badge.name === 'win_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -172,7 +172,7 @@
                     "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -189,7 +189,7 @@
                     "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -203,7 +203,7 @@
                     v-else-if="badge.name === 'shutout'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -217,7 +217,7 @@
                     v-else-if="badge.name === 'handshakes'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -231,7 +231,7 @@
                     v-else-if="badge.name === 'conversion'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -245,7 +245,7 @@
                     v-else-if="badge.name === 'force'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -259,7 +259,7 @@
                     v-else-if="badge.name === 'score_4'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -273,7 +273,7 @@
                     v-else-if="badge.name === 'score_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -287,7 +287,7 @@
                     v-else-if="badge.name === 'score_6'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -301,7 +301,7 @@
                     v-else-if="badge.name === 'score_7'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -315,7 +315,7 @@
                     v-else-if="badge.name === 'score_8'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+            
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -329,7 +329,7 @@
                     v-else-if="badge.name === 'ee_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -344,7 +344,7 @@
                     v-else-if="badge.name === 'stolen_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -358,7 +358,7 @@
                     v-else-if="badge.name === 'win_streak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -371,7 +371,7 @@
                     v-else-if="badge.name === 'lose_streak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -385,7 +385,7 @@
                     v-else-if="badge.name === 'singlemingle'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -399,7 +399,7 @@
                     v-else-if="badge.name === 'minimalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -413,7 +413,7 @@
                     v-else-if="badge.name === 'comeback'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -427,7 +427,7 @@
                     v-else-if="badge.name === 'blewit'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -441,7 +441,7 @@
                     v-else-if="badge.name === 'controlfreak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -455,7 +455,7 @@
                     v-else-if="badge.name === 'adrenaline'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -469,7 +469,7 @@
                     v-else-if="badge.name === 'barnburner'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -483,7 +483,7 @@
                     v-else-if="badge.name === 'first_game'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    style="height: 100%; aspect-ratio: 1/1"
+                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -497,7 +497,7 @@
                  v-else-if="badge.name === 'brian_nagle'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                                style="height: 100%; aspect-ratio: 1/1"
+                                
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -557,13 +557,17 @@ $icon-height: 4em;
     }
     .badge-icon__container {
         height: v-bind(height);
+        min-height: 18px;
         border-radius: 50%;
         aspect-ratio: 1/1;
-        border: 3px solid white;
+        border-style: solid;
+        border-color: white;
+        border-width: v-bind(borderWidth);
         box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
             rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
         background-size: cover;
         fill: rgb(0, 24, 49);
+        position: relative;
         &.ephemeral {
             border-color: rgb(238, 195, 108);
         }
@@ -573,6 +577,11 @@ $icon-height: 4em;
         }
         svg {
             fill: white;
+            position: absolute;
+            top: v-bind(padding);
+            bottom:v-bind(padding);
+            right: v-bind(padding);
+            left: v-bind(padding);
         }
         &.ephemeral {
             svg {
@@ -633,7 +642,9 @@ const props = defineProps({
     raw: Number,
 });
 
-const padding = computed(() => `calc(${props.height} * 0.1)`);
+const padding = computed(() => {
+    return `calc(${props.height} * 0.1)`
+});
 
 const extraContent = {
     win_1: 1,
@@ -662,6 +673,8 @@ const additionalFontDimension = computed(
 const particlesInit = async (engine) => {
   await loadSlim(engine);
 };
+
+const borderWidth = computed(() => `max(calc(${props.height} * 0.1), 2px)`)
 
 
 
