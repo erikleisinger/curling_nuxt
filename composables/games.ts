@@ -164,11 +164,7 @@ export const useGame = () => {
             }).in('team_id', team_ids_param)
             data = games;
         }
-      
-
-        console.log('league games: ', data)
     
-        
         if (!data) return null;
 
 

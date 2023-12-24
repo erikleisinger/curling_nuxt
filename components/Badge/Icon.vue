@@ -537,6 +537,7 @@ $icon-height: 4em;
         font-weight: bold;
         color: white;
         font-size: v-bind(additionalFontDimension);
+        z-index: 1;
         &.ephemeral {
             color: rgb(238, 195, 108);
             border-color: rgb(238, 195, 108);
@@ -674,7 +675,11 @@ const particlesInit = async (engine) => {
   await loadSlim(engine);
 };
 
-const borderWidth = computed(() => `max(calc(${props.height} * 0.1), 2px)`)
+const borderWidth = computed(() => {
+    const height = props.height.split('em')[0];
+   if (Number(height) * 0.1 > 0.5) return '5px';
+   return `max(calc(${props.height} * 0.1), 2px)`
+})
 
 
 

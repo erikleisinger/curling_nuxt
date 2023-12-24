@@ -1,5 +1,5 @@
 <template>
-  <header class="season__header row items-center">
+  <header class="season__header row items-center" v-if="!!user?.id">
             <div class="avatar__container">
                 <Avataaar v-bind="user.avatar"/>
             </div>
