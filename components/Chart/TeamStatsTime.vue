@@ -2,7 +2,7 @@
     <div class="line-chart__container">
         <!-- <q-inner-loading :showing="isLoading" /> -->
 
-        <div class="row tabs__container no-wrap">
+        <div class="row tabs__container no-wrap justify-between">
             <q-tabs
                 v-model="currentIndex"
                 active-bg-color="white"

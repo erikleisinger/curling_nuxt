@@ -4,7 +4,7 @@
             <q-input
                 dense
                 class="col-grow q-pl-sm"
-                label="Search by opposition, rink, or date"
+                label="Search by opponent, rink, or date"
                 v-model="searchInput"
                 clearable
             >

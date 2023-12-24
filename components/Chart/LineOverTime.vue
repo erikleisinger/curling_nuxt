@@ -449,7 +449,7 @@ const getMinMax = () => {
         return [...all, ...data.map(({ y }) => y)];
     }, []);
 
-    max.value = Number.parseFloat(Math.max(...allData).toFixed());
-    min.value = Number.parseFloat(Math.min(...allData).toFixed());
+    max.value = Number.parseFloat(Math.max(...allData).toFixed(2));
+    min.value = Number.parseFloat(Math.min(...allData).toFixed(2));
 };
 </script>

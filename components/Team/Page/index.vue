@@ -131,10 +131,7 @@
             </TeamAttribute>
         </div>
     </div>
-
-    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
-    <q-separator/>
-    <TeamLeagueList :teamId="Number(route.params.id)"/>
+   
 
     <ChartTeamStatsTime
         v-if="hasPlayedGames"
@@ -142,7 +139,13 @@
         :visibleStats="['Hammer efficiency']"
         class="q-mb-md"
     />
-
+     <section name="leagues" v-if="$q.screen.xs">
+    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
+    <q-separator/>
+    <TeamLeagueList :teamId="Number(route.params.id)"/>
+    </section>
+    <div class="row no-wrap">
+    <section name="games" :class="$q.screen.xs ? 'col-12' : 'col-6'">
     <GameResultList :teamId="Number(route.params.id)" />
 
     <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
@@ -155,6 +158,14 @@
             @click="navigateTo('/games/create')"
             >Add game</q-btn
         >
+    </div>
+
+    </section>
+        <section name="leagues" v-if="!$q.screen.xs" class="col-6">
+    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
+    <q-separator/>
+    <TeamLeagueList :teamId="Number(route.params.id)"/>
+    </section>
     </div>
     <q-dialog v-model="viewing" persistent>
         <q-card class="team-details__viewer">

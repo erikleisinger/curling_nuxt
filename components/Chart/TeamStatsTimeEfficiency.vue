@@ -54,7 +54,7 @@ const t = computed(() => useRepo(Team)
 
 const percentile = computed(() => t.value?.totalStats?.hammer_conversion_percentile * 100)
 
-const cumulativeAvg = computed(() => t.value?.totalStats?.hammer_conversion_average.toFixed(1))
+const cumulativeAvg = computed(() => (t.value?.totalStats?.hammer_conversion_average * 100).toFixed(1))
 
 
 const chartData = () => {
