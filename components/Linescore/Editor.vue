@@ -277,7 +277,7 @@
         </div>
         <div class="full-width column items-center" v-if="summary">
              <div class="row full-width justify-center q-mb-md" v-if="showVerified">
-           <TeamGameResultVerification  :gameId="selections.id" />
+           <TeamGameResultVerification  :gameId="selections.id" @refresh="emit('refresh')" />
             </div>
              <div
                 class="info__section relative-position col-12"
@@ -520,6 +520,7 @@ const emit = defineEmits([
     "linescore",
     "scroll",
     "ready",
+    "refresh",
     "update:modelValue",
 ]);
 

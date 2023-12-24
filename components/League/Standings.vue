@@ -25,7 +25,7 @@
                 </q-item-section>
                 <q-item-section avatar>
                     <div style="width: 30px">
-                        <TeamAvatar :teamId="team.id"/>
+                        <TeamAvatar :teamId="team.id" viewable/>
                     </div>
                 </q-item-section>
                 <q-item-section>

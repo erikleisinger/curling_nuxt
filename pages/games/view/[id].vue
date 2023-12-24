@@ -17,6 +17,7 @@
             @update:modelValue="onUpdate"
             canViewTeams
             showVerified
+            @refresh="refreshGame"
         >
             <template v-slot:name-append__home>
                 <div class="row badges justify-center items-end" v-if="!isLoadingBadges">
@@ -399,6 +400,12 @@ const queryClient = useQueryClient();
 
 const notStore = useNotificationStore();
 
+const refreshGame = () => {
+      queryClient.invalidateQueries({
+            queryKey: ["game", Number(gameId)],
+        });
+}
+
 const updated = ref(false);
 
 const onUpdate = async (val) => {
@@ -430,10 +437,7 @@ const onUpdate = async (val) => {
         .from("games")
         .update(updates)
         .eq("id", Number(gameId));
-    if (!error)
-        queryClient.invalidateQueries({
-            queryKey: ["game", Number(gameId)],
-        });
+    if (!error) refreshGame()
 
     if (error) {
         notStore.updateNotification(notId, {

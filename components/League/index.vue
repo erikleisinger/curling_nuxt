@@ -4,7 +4,7 @@
             <div class="league-header__content full-width">
                 <h1 class="text-md text-bold text-center " :style="{color: league.color}">{{ league?.name }}</h1>
               
-                <h3 class="text-sm text-center">{{league?.rink?.name}}</h3>
+                <h3 class="text-sm text-center" @click="navigateTo(`/rinks/${league?.rink?.id}`)">{{league?.rink?.name}}</h3>
             
     
             
