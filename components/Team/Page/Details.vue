@@ -37,6 +37,7 @@
             :rules="[VALIDATION_RULES.REQUIRED]"
             hide-bottom-space
             ref="nameInput"
+            placeholder="Enter a team name"
         />
         <!-- <h3 class="rink-name" v-if="team.rink_id && !editing">
             {{ selectedRink.name }}
