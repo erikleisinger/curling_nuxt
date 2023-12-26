@@ -5,7 +5,7 @@
             <div class="row justify-between no-wrap items-center stat-header">
                 <label>Hammer efficiency</label>
                 <h4 class="text-bold">
-                    {{ (stats.hammer_conversion_average * 100).toFixed(1) }}%
+                    {{ (stats.hammer_conversion_average * 100).toFixed() }}<span class="text-xs text-regular">%</span>
                 </h4>
             </div>
             <Percentage
@@ -18,7 +18,7 @@
             <div class="row justify-between no-wrap items-center stat-header">
                 <label>Force efficiency</label>
                 <h4 class="text-bold">
-                    {{ (stats.force_efficiency * 100).toFixed(1) }}%
+                    {{ (stats.force_efficiency * 100).toFixed() }}<span class="text-xs text-regular">%</span>
                 </h4>
             </div>
             <Percentage
@@ -31,7 +31,7 @@
              <div class="row justify-between no-wrap items-center stat-header">
                 <label>Steal efficiency</label>
                 <h4 class="text-bold">
-                    {{ (stats.steal_efficiency * 100).toFixed(1) }}%
+                    {{ (stats.steal_efficiency * 100).toFixed() }}<span class="text-xs text-regular">%</span>
                 </h4>
             </div>
             <Percentage
@@ -44,7 +44,7 @@
              <div class="row justify-between no-wrap items-center stat-header">
                 <label>Steal defense </label>
                 <h4 class="text-bold">
-                    {{ (stats.steal_defense * 100).toFixed(1) }}%
+                    {{ (stats.steal_defense * 100).toFixed() }}<span class="text-xs text-regular">%</span>
                 </h4>
             </div>
             <Percentage
@@ -96,10 +96,10 @@
         margin-top: var(--space-xs);
     }
     label {
-        font-size: var(--text-xs);
+        font-size: calc(var(--text-xs) * 1.1);
     }
     h4 {
-        font-size: var(--text-sm);
+        font-size: calc(var(--text-sm) * 1.2) ;
     }
     @include sm {
         font-size: var(--text-lg);

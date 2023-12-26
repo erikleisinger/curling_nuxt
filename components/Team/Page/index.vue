@@ -270,7 +270,7 @@
 .stats__overview {
     margin: 0px calc(var(--space-md) + var(--space-xs));
     margin-right: -12px;
-    margin-bottom: var(--space-sm);
+    // margin-bottom: var(--space-sm);
     @include sm {
    
           margin: unset;
