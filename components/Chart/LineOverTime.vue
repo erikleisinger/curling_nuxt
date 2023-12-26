@@ -8,7 +8,7 @@
         >
             <slot name="annotation" />
         </div>
-        <canvas ref="chart" id="canvas" />
+        <canvas ref="chart" id="canvas" style="z-index: 1" />
     </div>
 </template>
 <style lang="scss" scoped>
@@ -19,11 +19,13 @@
     right: 2vw;
     top: 0;
     border-right: 1px solid rgba(0, 0, 0, 0.5);
+ 
 
     mix-blend-mode: multiply;
 }
 :deep(.floating) {
     position: absolute;
+    pointer-events: none;
     height: 76px;
     margin: var(--space-lg);
     @include sm {
@@ -32,6 +34,7 @@
     margin-right: var(--space-xl);
     color: v-bind(labelColor);
     width: fit-content;
+       z-index: 0;
 
     h5 {
         font-weight: normal;
@@ -315,7 +318,7 @@ onMounted(async () => {
             elements: {
                 line: {
                     tension: 0,
-                    borderWidth: 5,
+                    borderWidth: 0,
                 },
             },
             layout: {
@@ -359,6 +362,7 @@ onMounted(async () => {
                         family: "Montserrat",
                         style: "italic",
                     },
+                    
                     titleMarginBottom: 12,
                     footerMarginTop: 10,
 

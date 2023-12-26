@@ -1,10 +1,10 @@
 <template>
     <ChartLineOverTime v-bind="chartData()" class="col-12">
         <template v-slot:annotation>
-            <h5>{{ title[props.type] }}</h5>
-            <h3>
+            <h5 style="pointer-events:none; z-index: -1">{{ title[props.type] }}</h5>
+            <h3 style="pointer-events:none; z-index: -1">
                 {{ cumulativeAvg
-                }}<span
+                }}{{isPercent ? '%' : ''}}<span
                     :style="`font-size: 10px; font-weight:normal; visibility: ${
                         showAppend ? 'visible' : 'hidden'
                     }`"
@@ -30,8 +30,8 @@ const title = {
     steal_efficiency: "Score points without hammer",
     force_efficiency: "Force opposition to 1 point",
     steal_defense: "Stolen on with hammer",
-    points: "Average points per end",
-    hammer_fe: 'Hammer in first end',
+    points: "Average points per game",
+    hammer_fe: "Hammer in first end",
     hammer_le: "Hammer in last end",
 };
 
@@ -43,8 +43,9 @@ const datasetParams = {
             numerator: "hammer_conversion_count",
             denominator: "hammer_end_count",
             label: "Hammer efficiency",
-            borderColor: "rgba(156, 39, 176, 1)",
+            borderColor: "156, 39, 176",
             backgroundColor: (context) => setBgGradient(context, "#9c27b0"),
+              isPercent: true,
         },
     ],
     steal_efficiency: [
@@ -52,9 +53,10 @@ const datasetParams = {
             numerator: "non_hammer_steal_count",
             denominator: "non_hammer_end_count",
             label: "Steal efficiency",
-            borderColor: "rgba(244, 67, 54, 1)",
+            borderColor: "244, 67, 54",
 
             backgroundColor: (context) => setBgGradient(context, "#f44336"),
+              isPercent: true,
         },
     ],
     force_efficiency: [
@@ -62,8 +64,10 @@ const datasetParams = {
             numerator: "non_hammer_force_count",
             denominator: "non_hammer_end_count",
             label: "Force efficiency",
-            borderColor: "rgba(33, 150, 243, 1)",
+            borderColor: "33, 150, 243",
             backgroundColor: (context) => setBgGradient(context, "#2196f3"),
+              isPercent: true,
+              isPercent: true,
         },
     ],
     steal_defense: [
@@ -71,8 +75,9 @@ const datasetParams = {
             numerator: "hammer_steal_count",
             denominator: "hammer_end_count",
             label: "Steal defense",
-            borderColor: "rgba(96, 125, 139, 1)",
+            borderColor: "96, 125, 139",
             backgroundColor: (context) => setBgGradient(context, "#607d8b"),
+            isPercent: true,
         },
     ],
     points: [
@@ -80,25 +85,28 @@ const datasetParams = {
             numerator: "points_for",
             denominator: null,
             label: "Points for",
-            borderColor: "rgba(33, 150, 243, 1)",
+            borderColor: "33, 150, 243",
             backgroundColor: (context) => setBgGradient(context, "#2196f3"),
+              isPercent: false
         },
         {
             numerator: "points_against",
             denominator: null,
             label: "Points against",
-            borderColor: "rgba(244, 67, 54, 1)",
+            borderColor: "244, 67, 54",
 
             backgroundColor: (context) => setBgGradient(context, "#f44336"),
+              isPercent: false
         },
     ],
-     hammer_fe: [
+    hammer_fe: [
         {
             numerator: "hammer_first_end_count",
             denominator: null,
             label: "Hammer in last end",
-            borderColor: "rgba(255, 193, 7, 1)",
+            borderColor: "255, 193, 7",
             backgroundColor: (context) => setBgGradient(context, "#ffc107"),
+              isPercent: true,
         },
     ],
     hammer_le: [
@@ -106,8 +114,9 @@ const datasetParams = {
             numerator: "hammer_last_end_count",
             denominator: null,
             label: "Hammer in last end",
-            borderColor: "rgba(20, 90, 50, 1)",
+            borderColor: "20, 90, 50",
             backgroundColor: (context) => setBgGradient(context, "#145a32"),
+              isPercent: true,
         },
     ],
 };
@@ -175,16 +184,18 @@ const percentile = computed(
     () => t.value?.totalStats[avgParams[props.type]?.percentile] * 100
 );
 
+const { isPercent } = avgParams[props.type];
+
 const cumulativeAvg = computed(() => {
     const params = avgParams[props.type];
-    const { average, isPercent } = params;
+    const { average } = params;
     let val = "";
     if (isPercent) {
         val = (t.value?.totalStats[average] * 100).toFixed(1);
     } else {
         val = t.value?.totalStats[average].toFixed(1);
     }
-    return `${val}${isPercent ? "%" : ""}`;
+    return Number(val)
 });
 
 const chartData = () => {
@@ -205,9 +216,6 @@ const chartData = () => {
     const datasets = datasetParams[props.type].map(
         ({ numerator, denominator, backgroundColor, borderColor, label }) => {
             const { isPercent } = avgParams[props.type];
-            const average = denominator
-                ? (team[numerator] / team[denominator]) * 100
-                : team.totalStats[numerator];
             return {
                 data: stats.value.map((d, index) => {
                     const previous = [...stats.value].splice(0, index);
@@ -231,19 +239,17 @@ const chartData = () => {
                         }
                     );
 
-                    const y =
+                    const average =
                         (sums[numerator] /
                             (denominator ? sums[denominator] : index + 1)) *
                         (isPercent ? 100 : 1);
+                        console.log('avg: ', average, numerator, sums[numerator])
+                        
 
-                    const all = previous.map(
-                        (i, index) =>
-                            (i[numerator] /
-                                (denominator ? i[denominator] : index + 1)) *
-                            (isPercent ? 100 : 1)
-                    );
-
-                    const max = Math.max(...all);
+                    const y = isPercent ? 
+                        (d[numerator] /
+                            (denominator ? d[denominator] : index + 1)) * 100 : d[numerator]
+    
 
                     return {
                         x: index,
@@ -253,11 +259,11 @@ const chartData = () => {
                             [numerator]: d[numerator],
                             [denominator]: d[denominator],
                             average,
-                            max,
                         },
                     };
                 }),
-                borderColor,
+                borderColor: `rgba(${borderColor}, 1)`,
+                borderWidth: 2,
                 backgroundColor,
                 tension: 0.4,
                 fill: true,
@@ -266,7 +272,24 @@ const chartData = () => {
             };
         }
     );
+    const generateAnnotations = () => {
+        const obj = {}
+        datasetParams[props.type].forEach((dataset, index) => {
+            if (index > 0)return;
+            const yVal = Number(dataset.isPercent ? (t.value?.totalStats[avgParams[props.type].average] * 100).toFixed() : t.value?.totalStats[avgParams[props.type].average].toFixed())
+            obj[index] = {
+                borderColor: `rgba(${dataset.borderColor}, 0.4)`,
+                borderWidth: 2,
+                borderDash: [5],
+                type: "line",
+                yMin: yVal,
+                yMax: yVal,
+            }
+        })
+        return obj;
+    }
     return {
+        annotations: generateAnnotations(),
         data: {
             labels: stats.value.map(({ start_time }) =>
                 format(toTimezone(start_time))
@@ -291,22 +314,26 @@ const chartData = () => {
                 },
                 footer: ([d]) => {
                     const data = getPointData([d]);
-                    const { datasetIndex } = d;
-
-                    return `This game: ${(
-                        (data[
-                            datasetParams[props.type][datasetIndex]?.numerator
-                        ] /
-                            data[
-                                datasetParams[props.type][datasetIndex]
-                                    ?.denominator
-                            ]) *
-                        100
-                    ).toFixed(1)}%`;
+                    const { average } = data;
+                    return `Running avg: ${average.toFixed(1)}${
+                        isPercent ? "%" : ""
+                    }`;
+                    // const { datasetIndex } = d;
+                    // console.log('footer: ', d, data)
+                    // return `This game: ${(
+                    //     (data[
+                    //         datasetParams[props.type][datasetIndex]?.numerator
+                    //     ] /
+                    //         data[
+                    //             datasetParams[props.type][datasetIndex]
+                    //                 ?.denominator
+                    //         ]) *
+                    //     100
+                    // ).toFixed(1)}%`;
                 },
                 label: (d) => {
                     const { y } = d.raw;
-                    return `${y.toFixed(1)}%`;
+                    return `${isPercent ? '' : y < 0 ? '-' : ''}${y.toFixed(1)}${isPercent ? "%" : ""}`;
                 },
                 title: (d) => {
                     const data = getPointData(d);
