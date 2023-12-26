@@ -61,13 +61,14 @@
             <div class="full-width row justify-center q-mt-sm">
             <q-knob
                 show-value
-                class="text-light-blue q-ma-md"
+                class="text-blue-10 q-ma-md"
                 :model-value="stats.winPercent"
                 :size="$q.screen.xs ? '100px' : '150px'"
-                color="light-blue"
+                color="blue-10"
                 :angle="45"
                 track-color="grey-3"
                 style="margin: auto"
+                readonly
             >
                 <div class="knob--text">
                     <h2>{{ stats.winPercent }}%</h2>
