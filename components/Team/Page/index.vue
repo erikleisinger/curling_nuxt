@@ -5,7 +5,7 @@
         </div>
     </div>
     <TeamPageHeader
-        :teamId="Number(route.params.id)"
+        :teamId="teamId"
         @click="viewing = true"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
@@ -59,12 +59,9 @@
             </div>
         </div>
 
-        <div
-            class="row attributes justify-around"
-            :class="{ 'col-6 ': !$q.screen.xs }"
-            v-if="hasPlayedGames"
-        >
-            <TeamAttribute title="Games played" color="amber" class="col-5">
+
+        <TeamPageStatsOverview :teamId="teamId" :class="{ 'col-6 ': !$q.screen.xs }" class="stats__overview" v-if="hasPlayedGames"/>
+            <!-- <TeamAttribute title="Games played" color="amber" class="col-5">
                 <span>
                     {{ stats.games_played ?? 0 }}
                 </span>
@@ -88,8 +85,8 @@
                         >{{ stats.winPercentile }}%</span
                     >
                 </template>
-            </TeamAttribute>
-            <TeamAttribute
+            </TeamAttribute> -->
+            <!-- <TeamAttribute
                 title="Hammer first end"
                 color="amber"
                 class="col-5"
@@ -108,8 +105,8 @@
                         >{{ stats.HFEPercentile }}%</span
                     >
                 </template>
-            </TeamAttribute>
-            <TeamAttribute
+            </TeamAttribute> -->
+            <!-- <TeamAttribute
                 title="Hammer last end"
                 color="amber"
                 class="col-5"
@@ -128,25 +125,25 @@
                         >{{ stats.HLEPercentile }}%</span
                     >
                 </template>
-            </TeamAttribute>
+            </TeamAttribute> -->
         </div>
-    </div>
+
    
 
     <ChartTeamStatsTime
         v-if="hasPlayedGames"
-        :teamId="Number(route.params.id)"
+        :teamId="teamId"
         :visibleStats="['Hammer efficiency']"
         class="q-mb-md"
     />
      <section name="leagues" v-if="$q.screen.xs">
     <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
     <q-separator/>
-    <TeamLeagueList :teamId="Number(route.params.id)"/>
+    <TeamLeagueList :teamId="teamId"/>
     </section>
     <div class="row no-wrap">
     <section name="games" :class="$q.screen.xs ? 'col-12' : 'col-6'">
-    <GameResultList :teamId="Number(route.params.id)" />
+    <GameResultList :teamId="teamId" />
 
     <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
         <div>{{ team.name }} hasn't played any games!</div>
@@ -164,7 +161,7 @@
         <section name="leagues" v-if="!$q.screen.xs" class="col-6">
     <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
     <q-separator/>
-    <TeamLeagueList :teamId="Number(route.params.id)"/>
+    <TeamLeagueList :teamId="teamId"/>
     </section>
     </div>
     <q-dialog
@@ -264,12 +261,22 @@
             <TeamPageDetails
                 @back="viewing = false"
                 v-if="viewing"
-                :teamId="Number(route.params.id)"
+                :teamId="teamId"
             />
         </q-card>
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+.stats__overview {
+    margin: 0px calc(var(--space-md) + var(--space-xs));
+    margin-right: -12px;
+    margin-bottom: var(--space-sm);
+    @include sm {
+   
+          margin: unset;
+            margin-right: -12px;
+    }
+}
 .team-info {
     @include sm {
         margin-top: var(--space-xl);
@@ -292,14 +299,6 @@
         gap: 6px 0px;
     }
 }
-.attributes {
-    margin: 0px var(--space-md);
-}
-@include sm {
-    .attributes {
-        margin: unset;
-    }
-}
 
 .team-badges__container {
     padding: 0px calc(var(--space-md) + var(--space-xs));
@@ -318,16 +317,19 @@ import { useElementSize, useDebounceFn } from "@vueuse/core";
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
 
+
+
 const viewing = ref(false)
 
 const $q = useQuasar();
 
 const route = useRoute();
+const teamId = Number(route.params.id)
 
 const hasPlayedGames = computed(() => !!team.value?.games?.length);
 
 const team = computed(() =>
-    useRepo(Team).withAll().where("id", route.params.id).first()
+    useRepo(Team).withAll().where("id", teamId).first()
 );
 
 const stats = computed(() => team.value?.totalStats ?? {});
@@ -346,7 +348,7 @@ const badgesOpen = ref(false);
 
 const teamRequests = computed(() =>
     useTeamRequestStore().requests?.filter(
-        ({ team_id }) => team_id === Number(route.params.id) ?? []
+        ({ team_id }) => team_id === teamId ?? []
     )
 );
 
@@ -437,7 +439,7 @@ const beginSelectFeatured = () => {
 
 const selectFeaturedBadge = async (event, featured_badge_id) => {
     if (!selectingFeatured.value) return;
-    useRepo(Team).where("id", Number(route.params.id)).update({
+    useRepo(Team).where("id", teamId).update({
         featured_badge_id,
     });
     saveFeaturedBadge(featured_badge_id);
@@ -450,9 +452,9 @@ const saveFeaturedBadge = useDebounceFn(async (featured_badge_id) => {
         .update({
             featured_badge_id,
         })
-        .eq("id", route.params.id);
+        .eq("id", teamId);
     queryClient.invalidateQueries({
-        queryKey: ["team", "page", Number(route.params.id)],
+        queryKey: ["team", "page", teamId],
     });
 }, 2000);
 
@@ -463,7 +465,7 @@ watch(badgesOpen, (val) => {
 
 const {isOnTeam} = useTeam()
 
-const canEdit = computed (() => isOnTeam(Number(route.params.id)))
+const canEdit = computed (() => isOnTeam(teamId))
 </script>
 <script lang="ts">
 export default {

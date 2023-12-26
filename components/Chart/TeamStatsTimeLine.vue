@@ -16,15 +16,8 @@
     </ChartLineOverTime>
 </template>
 <script setup>
-import {
-    BADGE_COLORS,
-    BADGE_TITLES_PLAIN,
-    BADGE_TITLE_CONVERT,
-} from "@/constants/badges";
-import { useUserTeamStore } from "@/store/user-teams";
 import Team from "@/store/models/team";
 import TeamStats from "@/store/models/team-stats";
-import Game from "@/store/models/game";
 
 const props = defineProps({
     minDate: String,
@@ -38,6 +31,8 @@ const title = {
     force_efficiency: "Force opposition to 1 point",
     steal_defense: "Stolen on with hammer",
     points: "Average points per end",
+    hammer_fe: 'Hammer in first end',
+    hammer_le: "Hammer in last end",
 };
 
 const showAppend = computed(() => props.type !== "points");
@@ -97,6 +92,24 @@ const datasetParams = {
             backgroundColor: (context) => setBgGradient(context, "#f44336"),
         },
     ],
+     hammer_fe: [
+        {
+            numerator: "hammer_first_end_count",
+            denominator: null,
+            label: "Hammer in last end",
+            borderColor: "rgba(255, 193, 7, 1)",
+            backgroundColor: (context) => setBgGradient(context, "#ffc107"),
+        },
+    ],
+    hammer_le: [
+        {
+            numerator: "hammer_last_end_count",
+            denominator: null,
+            label: "Hammer in last end",
+            borderColor: "rgba(20, 90, 50, 1)",
+            backgroundColor: (context) => setBgGradient(context, "#145a32"),
+        },
+    ],
 };
 
 const avgParams = {
@@ -106,24 +119,34 @@ const avgParams = {
         isPercent: true,
     },
     steal_efficiency: {
-        percentile: 'steal_efficiency_percentile',
-        average: 'steal_efficiency',
+        percentile: "steal_efficiency_percentile",
+        average: "steal_efficiency",
         isPercent: true,
     },
     force_efficiency: {
-        percentile: 'force_efficiency_percentile',
-        average: 'force_efficiency',
+        percentile: "force_efficiency_percentile",
+        average: "force_efficiency",
         isPercent: true,
     },
     steal_defense: {
-        percentile: 'steal_defense_percentile',
-        average: 'steal_defense',
-        isPercent: true
+        percentile: "steal_defense_percentile",
+        average: "steal_defense",
+        isPercent: true,
     },
     points: {
         percentile: "points_for_percentile",
         average: "points_for",
         isPercent: false,
+    },
+    hammer_fe: {
+        percentile: "hammer_first_end_percentile",
+        average: "hammer_first_end",
+        isPercent: true,
+    },
+    hammer_le: {
+        percentile: "hammer_last_end_percentile",
+        average: "hammer_last_end",
+        isPercent: true,
     },
 };
 
@@ -181,6 +204,7 @@ const chartData = () => {
 
     const datasets = datasetParams[props.type].map(
         ({ numerator, denominator, backgroundColor, borderColor, label }) => {
+            const { isPercent } = avgParams[props.type];
             const average = denominator
                 ? (team[numerator] / team[denominator]) * 100
                 : team.totalStats[numerator];
@@ -207,14 +231,16 @@ const chartData = () => {
                         }
                     );
 
-                    const y = denominator
-                        ? (sums[numerator] / sums[denominator]) * 100
-                        : sums[numerator] / (index + 1);
+                    const y =
+                        (sums[numerator] /
+                            (denominator ? sums[denominator] : index + 1)) *
+                        (isPercent ? 100 : 1);
 
-                    const all = previous.map((i, index) =>
-                        denominator
-                            ? (i[numerator] / i[denominator]) * 100
-                            : i[numerator] / (index + 1)
+                    const all = previous.map(
+                        (i, index) =>
+                            (i[numerator] /
+                                (denominator ? i[denominator] : index + 1)) *
+                            (isPercent ? 100 : 1)
                     );
 
                     const max = Math.max(...all);
@@ -240,7 +266,6 @@ const chartData = () => {
             };
         }
     );
-
     return {
         data: {
             labels: stats.value.map(({ start_time }) =>

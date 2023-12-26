@@ -24,7 +24,7 @@
 }
 :deep(.floating) {
     position: absolute;
-
+    height: 76px;
     margin: var(--space-lg);
     @include sm {
         margin: var(--space-lg);
@@ -151,10 +151,12 @@ const titlePosition = computed(() => {
 
     const requiredVerticalSpacing =
         (annotationHeight.value / chartHeight.value) * 100;
+
+
     const pointSpacing =
         chartWidth.value / numPointsTotal;
-    const numSpacesNeeded =
-        Math.ceil(annotationHeight.value / pointSpacing) + (numPointsTotal > 2 ? 1 : 0);
+            const numSpacesNeeded = Math.ceil(annotationWidth.value / pointSpacing);
+
 
     const topSpaces = arr
         .reduce((all, current) => {
@@ -182,6 +184,7 @@ const titlePosition = computed(() => {
 
     const bottomSpaces = arr
         .reduce((all, current) => {
+
             return [...all, Math.min(...current) > requiredVerticalSpacing];
         }, [])
         .reduce(
@@ -210,11 +213,10 @@ const titlePosition = computed(() => {
                         ? 100 - Math.max(...current)
                         : false,
                 ];
-            }, [])
-            .reduce(
+            }, []).reduce(
                 (all, current, index) => {
                     if (all.count >= numSpacesNeeded) return all;
-                    if (!!current) {
+                    if (current !== null && current !== undefined) {
                         if (all.index === null) {
                             return { index, count: all.count + 1, y: current };
                         }
@@ -232,14 +234,16 @@ const titlePosition = computed(() => {
             );
     }
 
-    const canBeMiddle = !!middleSpaces?.count;
-    const canBeTop = !!topSpaces.count;
-    const canBeBottom = !!bottomSpaces.count;
+
+
+    const canBeMiddle = middleSpaces?.count >= numSpacesNeeded;
+    const canBeTop = topSpaces.count >= numSpacesNeeded;
+    const canBeBottom = bottomSpaces.count >= numSpacesNeeded;
 
     if (canBeTop) {
-        return {
+     return {
             top: 0,
-            left: `${topSpaces.index * pointSpacing.value}px`,
+            left: `${topSpaces.index * pointSpacing}px`,
             margin: "auto",
             "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
             "margin-right": $q.screen.xs
@@ -252,14 +256,14 @@ const titlePosition = computed(() => {
     if (canBeBottom) {
         return {
             bottom: 0,
-            left: `${bottomSpaces.index * pointSpacing.value}px`,
+            left: `${bottomSpaces.index * pointSpacing}px`,
             margin: "auto",
             "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
             "margin-right": $q.screen.xs
                 ? "var(--space-sm)"
                 : "var(--space-md)",
             "margin-bottom": $q.screen.xs
-                ? "var(--space-md)"
+                ? "var(--space-xs)"
                 : "var(--space-lg)",
         };
     }
@@ -267,7 +271,7 @@ const titlePosition = computed(() => {
     if (canBeMiddle) {
         return {
             top: `${(middleSpaces.y / 100) * chartHeight.value}px`,
-            left: `${middleSpaces.index * pointSpacing.value}px`,
+            left: `${middleSpaces.index * pointSpacing}px`,
             margin: "auto",
             color: "white",
             "margin-left": $q.screen.xs ? "var(--space-sm)" : "var(--space-md)",
@@ -275,6 +279,9 @@ const titlePosition = computed(() => {
                 ? "var(--space-sm)"
                 : "var(--space-md)",
             "margin-bottom": $q.screen.xs
+                ? "var(--space-md)"
+                : "var(--space-lg)",
+                  "margin-top": $q.screen.xs
                 ? "var(--space-md)"
                 : "var(--space-lg)",
         };

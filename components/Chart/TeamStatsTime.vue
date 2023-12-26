@@ -15,6 +15,9 @@
                 <q-tab label="Force efficiency" :name="2" />
                 <q-tab label="Steal defense" :name="3" />
                 <q-tab label="Scoring" :name="4" />
+                       <q-tab label="Hammer FE" :name="5" />
+                   <q-tab label="Hammer LE" :name="6" />
+                   
             </q-tabs>
             <q-btn flat icon="filter_list" dense class="q-px-sm">
                 <q-menu v-model="filterMenuOpen" auto-close>
@@ -88,6 +91,20 @@
                     calculateMinMax
                     :percent="false"
                 />
+                  <ChartTeamStatsTimeLine
+                    :teamId="teamId"
+                    v-if="currentIndex === 5"
+                    :height="chartHeight"
+                    :minDate="minDate"
+                    type="hammer_fe"
+                />
+                 <ChartTeamStatsTimeLine
+                    :teamId="teamId"
+                    v-if="currentIndex === 6"
+                    :height="chartHeight"
+                    :minDate="minDate"
+                    type="hammer_le"
+                />
             </div>
         </div>
     </div>
@@ -150,7 +167,7 @@ import { useQuery } from "@tanstack/vue-query";
 import TeamStats from "@/store/models/team-stats";
 
 const tabColor = computed(() => {
-    return ["purple", "red", "blue", "blue-grey"][currentIndex.value];
+    return ["purple", "red", "blue", "blue-grey", '', 'amber', 'green-10', ][currentIndex.value];
 });
 
 const $q = useQuasar();
