@@ -25,9 +25,10 @@
                         flat
                         round
                         icon="search"
-                        @click="emit('close')"
+                        @click="search"
                         v-if="!hideIcons"
                         color="white"
+                    
                     />
                 </template>
             </q-input>
