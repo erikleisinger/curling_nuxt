@@ -48,7 +48,8 @@ export const BADGE_BACKGROUNDS = {
     lose_streak: 'bg-badge--black',
 
     // OTHER
-    brian_nagle: 'bg-badge--pink'
+    brian_nagle: 'bg-badge--pink',
+    queen_father: 'bg-badge--black',
 }   
 
 export const BADGE_NAMES = {
@@ -83,7 +84,8 @@ export const BADGE_NAMES = {
     adrenaline: 'Drama Queens',
     barnburner: 'Barn Burner!',
     first_game: 'On the board!',
-    brian_nagle: 'Beat Brian Nagle'
+    brian_nagle: 'Beat Brian Nagle',
+    queen_father: 'Queen Father',
 }
 
 export const BADGE_DESCRIPTIONS = {
@@ -118,7 +120,8 @@ export const BADGE_DESCRIPTIONS = {
     first_game: 'Record your very first game.',
     win_streak: ({value}) => `Won ${value} games in a row!`,
     lose_streak: ({value}) => `Lost ${value} games in a row.`,
-    brian_nagle: 'Beat Brian Nagle 12-2 after he upset you in playdowns.' 
+    brian_nagle: 'Beat Brian Nagle 12-2 after he upset you in playdowns.' ,
+    queen_father: 'Father of the Queen (app developer).',
 }
 
 export const EPHEMERAL_BADGES = ['win_streak', 'lose_streak'];

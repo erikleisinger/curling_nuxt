@@ -41,7 +41,7 @@
                     </div>  
                     
             </p>
-            <div v-else class="column items-center">
+            <div v-else-if="isLoading" class="column items-center">
                 <q-skeleton type="text" width="185px"/>
                  <q-skeleton  type="text" width="100px"/>
                 <q-skeleton  type="text" width="80px"/>
@@ -106,7 +106,7 @@
     width: 100%;
     position: relative;
     padding-top: 2.9em;
-    min-height: 178px;
+    min-height: 130px;
     @include sm {
       padding-top: 2.9em;
     }
@@ -179,6 +179,7 @@ const { isLoading, data: game } = useQuery({
       game_id_param: Number(props.badge.game_id),
     }),
   select: (teams) => {
+    if (!teams?.length) return null;
     const opposition = teams.find(
       ({ team_id }) => team_id !== props.badge.team_id
     );

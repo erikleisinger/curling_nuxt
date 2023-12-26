@@ -212,14 +212,13 @@ const { isLoading: isLoadingTeams } = useQuery({
 
 const dayjs = useDayjs();
 const {toTimezone} = useTime()
+const {user: userId} = useUser();
 const getBadges = async () => {
     const { data } = await client
         .from("badges")
         .select("*")
-        .in(
-            "team_id",
-            teams.value.map(({ id }) => id)
-        ).eq('earned', true)
+         .or(`team_id.in.(${teams.value.map(({ id }) => id).join(',')}),profile_id.eq.${userId.value}`)
+        .eq('earned', true)
     const e = data
  
     .reduce((all, current) => {
@@ -254,7 +253,8 @@ const { isLoading: isLoadingBadges, data: badges } = useQuery({
     select: (val) => {
          badgesDone.value = true;
         return val;
-    }
+    },
+    refetchOnWindowFocus: false,
   
 });
 

@@ -6,7 +6,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/teams/${item.team.id}`)"
+        @click="!!item.team ? navigateTo(`/teams/${item.team.id}`) : navigateTo(`/player/${item.profile.id}`)"
     >
         <q-item-section avatar class="relative-position">
             <Badge :badge="item" height="45px" iconOnly @click.stop />
@@ -31,7 +31,7 @@
         </q-item-section>
         <q-item-section v-else>
             <span>
-                <TeamChip :teamId="item.team.id" /> earned the
+                <TeamChip :teamId="item.team.id" v-if="item.team" /> You earned the
                 <strong>{{ BADGE_NAMES[item.name] }}</strong> badge!</span
             >
             <q-item-label caption>{{

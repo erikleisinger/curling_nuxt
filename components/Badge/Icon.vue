@@ -1,19 +1,22 @@
 <template>
-    <div class="badge__content--container"  >
+    <div class="badge__content--container">
         <div class="badge-overlay--container">
             <slot />
         </div>
-        <div class="confetti-overlay"  v-if="animated && EPHEMERAL_BADGES.includes(badge.name)">
-             <vue-particles
-            :id="`particles-${badge.id}`"
-            class="particles"
-            :particlesInit="particlesInit"
-            :options="{
+        <div
+            class="confetti-overlay"
+            v-if="animated && isBlack"
+        >
+            <vue-particles
+                :id="`particles-${badge.id}`"
+                class="particles"
+                :particlesInit="particlesInit"
+                :options="{
                     id: `particles-${badge.id}`,
-                    ...STAR_ANIMATION
-            }"
-        />
-                </div>
+                    ...STAR_ANIMATION,
+                }"
+            />
+        </div>
         <div
             class="badge--additional"
             :class="`${BADGE_BACKGROUNDS[badge.name]} ${
@@ -26,7 +29,7 @@
         <div
             class="badge-icon__container column no-wrap flex-shrink"
             :class="`${BADGE_BACKGROUNDS[badge.name]} ${
-                EPHEMERAL_BADGES.includes(badge.name) && 'ephemeral'
+                isBlack && 'ephemeral'
             }`"
         >
             <div style="height: 100%" class="badge-icon__container--inner">
@@ -49,7 +52,6 @@
                     v-else-if="badge.name === 'showoff'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="showoff"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -65,7 +67,6 @@
                     v-else-if="badge.name === 'stealdefense'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="bulwark"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -80,7 +81,6 @@
                     v-else-if="badge.name === 'singlegame'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="minimalist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -96,7 +96,6 @@
                     v-else-if="badge.name === 'survivalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="survivalist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -111,7 +110,6 @@
                     v-else-if="badge.name === 'strategist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="strategist"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -126,7 +124,6 @@
                     v-else-if="badge.name === 'efficiency'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -141,7 +138,6 @@
                     v-else-if="badge.name === 'bulwark'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                     class="bulwark"
                 >
                     <g class="" transform="translate(0,0)" style="">
@@ -156,7 +152,6 @@
                     v-else-if="badge.name === 'win_1' || badge.name === 'win_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -172,7 +167,6 @@
                     "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -189,7 +183,6 @@
                     "
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -203,7 +196,6 @@
                     v-else-if="badge.name === 'shutout'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -217,7 +209,6 @@
                     v-else-if="badge.name === 'handshakes'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -231,7 +222,6 @@
                     v-else-if="badge.name === 'conversion'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -245,7 +235,6 @@
                     v-else-if="badge.name === 'force'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -259,7 +248,6 @@
                     v-else-if="badge.name === 'score_4'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -273,7 +261,6 @@
                     v-else-if="badge.name === 'score_5'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -287,7 +274,6 @@
                     v-else-if="badge.name === 'score_6'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -301,7 +287,6 @@
                     v-else-if="badge.name === 'score_7'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -315,7 +300,6 @@
                     v-else-if="badge.name === 'score_8'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-            
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -329,7 +313,6 @@
                     v-else-if="badge.name === 'ee_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -344,7 +327,6 @@
                     v-else-if="badge.name === 'stolen_win'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -358,7 +340,6 @@
                     v-else-if="badge.name === 'win_streak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -371,7 +352,6 @@
                     v-else-if="badge.name === 'lose_streak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -385,7 +365,6 @@
                     v-else-if="badge.name === 'singlemingle'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -399,7 +378,6 @@
                     v-else-if="badge.name === 'minimalist'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -413,7 +391,6 @@
                     v-else-if="badge.name === 'comeback'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -427,7 +404,6 @@
                     v-else-if="badge.name === 'blewit'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -441,7 +417,6 @@
                     v-else-if="badge.name === 'controlfreak'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -455,7 +430,6 @@
                     v-else-if="badge.name === 'adrenaline'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -469,7 +443,6 @@
                     v-else-if="badge.name === 'barnburner'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -483,7 +456,6 @@
                     v-else-if="badge.name === 'first_game'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                    
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
@@ -494,14 +466,27 @@
                     </g>
                 </svg>
                 <svg
-                 v-else-if="badge.name === 'brian_nagle'"
+                    v-else-if="badge.name === 'brian_nagle'"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
-                                
                 >
                     <g class="" transform="translate(0,0)" style="">
                         <path
                             d="M249.22 20.688c-42.737 0-83.466 33.6-113.69 85.593-30.22 51.995-49.186 121.333-49.186 187.626 0 66.294 18.728 116.544 48.156 150.188 29.428 33.644 69.626 51.094 114.72 51.094 45.09 0 85.32-17.45 114.75-51.094 29.426-33.644 48.155-83.894 48.155-150.188 0-66.294-18.996-135.63-49.22-187.625-30.22-51.993-70.95-85.593-113.686-85.593zm.624 138.843c47.212-.188 94.522 14.425 122.187 44.407-73.1-38.23-167.19-37.75-243.75 0 27.234-29.23 74.352-44.217 121.564-44.406zm-4.25 60.814c4.714-.017 9.42.03 14.094.156 49.863 1.33 96.673 10.52 125.437 28.063l-9.72 15.968c-12.062-7.355-30.064-13.554-51.25-18-9.755 39.85-42.47 33.866-41.405-6-7.727-.67-15.606-1.13-23.563-1.343-14.584-.388-29.44 0-44.03 1.188 1.156 40.128-31.814 46.093-41.47 5.78-17.625 3.593-33.968 8.563-47.843 14.97L118 244.155c34.337-15.855 78.872-23.11 122.875-23.78 1.572-.024 3.147-.025 4.72-.03zm4.156 51.344c.533-.022 1.08-.027 1.625 0 8.74.425 15.003 6.474 19.875 13.875 4.872 7.4 8.99 17.176 12.844 29.562l-17.844 5.563c-3.54-11.373-7.338-19.85-10.625-24.844-2.876-4.37-4.886-5.285-5.156-5.438-.232.077-1.725.596-4.47 4.625-3.25 4.77-7.132 13.392-10.813 25.564l-17.906-5.406c4.003-13.235 8.228-23.238 13.282-30.657 4.74-6.954 11.197-12.523 19.188-12.842zm52.156 31.937c36.06 16.695 61.968 53.982 52.03 105.375 2.384 1.498 4.685 3.06 6.908 4.688l-11.03 15.062c-23.702-17.36-63.367-27.507-102.408-28-39.04-.493-77.314 8.803-98.375 25.78l-11.75-14.56c2.278-1.837 4.674-3.566 7.157-5.22-6.94-49.057 15.778-84.185 48.22-101.156l8.687 16.53c-25.165 13.166-42.41 36.606-39.188 75 24.58-10.84 54.94-15.448 85.5-15.062 31.358.397 63.007 6.13 88.97 17.75 5.932-40.864-13.804-65.904-42.563-79.218l7.843-16.97z"
+                            fill="#fff"
+                            fill-opacity="1"
+                        ></path>
+                    </g>
+                </svg>
+                <svg
+                  v-else-if="badge.name === 'queen_father'"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+             
+                >
+                    <g class="" transform="translate(0,0)" style="">
+                        <path
+                            d="M256 17.492l20.912 34.856L306 34.895 296.973 71h-81.946L206 34.896l29.088 17.452zm64.3 34.414C334.08 62.311 343 77 343 96v64.648c-10.638-7.27-22.444-13.917-34.984-18.63C311.239 132.817 313 122.663 313 112c0-8.018-1.005-15.744-1.489-19.372zm-128.6 0l8.789 40.722C200.005 96.256 199 103.982 199 112c0 10.663 1.76 20.817 4.984 30.018-12.54 4.713-24.346 11.36-34.984 18.63V96c0-19.001 8.92-33.689 22.7-44.094zM291.356 89c2.31 6.965 3.643 14.753 3.643 23 0 15.85-4.892 30.032-12.26 39.855C275.372 161.68 266.012 167 256 167c-10.012 0-19.372-5.32-26.74-15.145C221.892 142.032 217 127.85 217 112c0-8.247 1.334-16.035 3.643-23zm8.541 69.67c25.391 9.618 49.716 29.5 65.356 43.92-3.358 1.38-6.477 3.137-9.281 5.24-4.585 3.438-8.377 7.98-10.655 13.223l-23.134-5.783-4.368 17.46 6.9 1.725c2.53 16.035 3.235 31.57 3.249 43.781-5.706-6.514-12.54-12.787-21.897-14.996-3.203-.756-6.388-.989-9.529-.838-9.422.453-18.448 4.359-26.393 7.94A163.812 163.812 0 0 0 256 277.566a163.812 163.812 0 0 0-14.146-7.224c-10.593-4.775-23.11-10.126-35.922-7.102-9.358 2.21-16.19 8.482-21.897 14.996.014-12.212.72-27.746 3.248-43.78l6.9-1.726-4.367-17.46-23.134 5.783c-2.278-5.244-6.07-9.785-10.655-13.223-2.804-2.103-5.923-3.86-9.28-5.24 15.639-14.42 39.964-34.302 65.355-43.92a71.055 71.055 0 0 0 2.757 3.984c6.988 9.318 16.241 16.507 26.805 20.004L256 240l14.336-57.342c10.564-3.497 19.817-10.686 26.805-20.004a71.06 71.06 0 0 0 2.757-3.984zM384 217c7.013 0 13.194 2.204 17.227 5.229 3.974 2.98 5.704 6.29 5.753 9.625-.292.051-.395.103-.884.132-3.949.234-12.367-.986-22.096-.986s-18.147 1.22-22.096.986c-.49-.029-.592-.081-.884-.132.05-3.336 1.779-6.645 5.753-9.625C370.806 219.204 376.987 217 384 217zm-256 0c7.013 0 13.194 2.204 17.227 5.229 3.974 2.98 5.704 6.29 5.753 9.625-.292.051-.395.103-.884.132-3.949.234-12.367-.986-22.096-.986s-18.147 1.22-22.096.986c-.49-.029-.592-.081-.884-.132.05-3.336 1.779-6.645 5.753-9.625C114.806 219.204 120.987 217 128 217zm279 32v174h-46V249zm-256 0v174h-46V249zm149.23 31.6c.677 0 1.251.054 1.702.16 2.735.646 10.877 7.205 16.595 14.224 4.698 5.766 7.671 10.392 8.8 12.182l11.118 88.953c-3.57-4.158-7.477-8.167-11.738-11.615C320.277 379.3 312.839 375 304 375c-20.5 0-34.72 14.856-43.488 28.008a111.855 111.855 0 0 0-4.512 7.39 111.855 111.855 0 0 0-4.512-7.39C242.72 389.856 228.5 375 208 375c-8.839 0-16.276 4.3-22.707 9.504-4.26 3.448-8.169 7.457-11.738 11.615l11.119-88.953c1.128-1.79 4.101-6.416 8.799-12.182 5.718-7.019 13.86-13.578 16.595-14.224 3.603-.85 15.085 1.798 24.389 5.992 2.106.95 4.095 1.919 5.945 2.857L256 352l15.598-62.39c1.85-.939 3.84-1.909 5.945-2.858 6.978-3.146 15.182-5.423 20.367-6.006a20.831 20.831 0 0 1 2.32-.146zM304 393c2.475 0 6.694 1.7 11.385 5.496 4.69 3.796 9.634 9.323 13.949 14.969 2.518 3.294 4.72 6.502 6.717 9.535h-66.31c1.592-3.153 3.419-6.515 5.747-10.008C282.72 402.144 292.5 393 304 393zm-96 0c11.5 0 21.28 9.144 28.512 19.992 2.328 3.493 4.155 6.855 5.748 10.008h-66.31c1.995-3.033 4.198-6.24 6.716-9.535 4.315-5.646 9.259-11.173 13.95-14.969C201.305 394.7 205.525 393 208 393zm231 48v14H73v-14zm48 32v14H25v-14z"
                             fill="#fff"
                             fill-opacity="1"
                         ></path>
@@ -580,7 +565,7 @@ $icon-height: 4em;
             fill: white;
             position: absolute;
             top: v-bind(padding);
-            bottom:v-bind(padding);
+            bottom: v-bind(padding);
             right: v-bind(padding);
             left: v-bind(padding);
         }
@@ -595,23 +580,23 @@ $icon-height: 4em;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
     }
-      .confetti-overlay {
-    top: 0;
-    bottom:0;
-    right: 0;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1000;
-    border-radius: 50%;
-    overflow: hidden;
-    .particles {
-        width: 100%;
-        height: 100%;
+    .confetti-overlay {
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
         z-index: 1000;
-        border-radius: inherit;
+        border-radius: 50%;
+        overflow: hidden;
+        .particles {
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            border-radius: inherit;
+        }
     }
-  }
 }
 .extra__banner {
     position: absolute;
@@ -630,7 +615,7 @@ $icon-height: 4em;
 </style>
 <script setup>
 import { BADGE_BACKGROUNDS, EPHEMERAL_BADGES } from "@/constants/badges";
-import {STAR_ANIMATION} from '@/constants/animation'
+import { STAR_ANIMATION } from "@/constants/animation";
 import { loadSlim } from "tsparticles-slim";
 
 const props = defineProps({
@@ -643,8 +628,10 @@ const props = defineProps({
     raw: Number,
 });
 
+const isBlack = computed(() => BADGE_BACKGROUNDS[props.badge.name] === 'bg-badge--black')
+
 const padding = computed(() => {
-    return `calc(${props.height} * 0.1)`
+    return `calc(${props.height} * 0.1)`;
 });
 
 const extraContent = {
@@ -672,15 +659,12 @@ const additionalFontDimension = computed(
 );
 
 const particlesInit = async (engine) => {
-  await loadSlim(engine);
+    await loadSlim(engine);
 };
 
 const borderWidth = computed(() => {
-    const height = props.height.split('em')[0];
-   if (Number(height) * 0.1 > 0.5) return '5px';
-   return `max(calc(${props.height} * 0.1), 2px)`
-})
-
-
-
+    const height = props.height.split("em")[0];
+    if (Number(height) * 0.1 > 0.5) return "5px";
+    return `max(calc(${props.height} * 0.1), 2px)`;
+});
 </script>
