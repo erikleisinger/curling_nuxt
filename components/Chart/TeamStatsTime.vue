@@ -9,53 +9,39 @@
                 :active-color="tabColor"
                 :color="tabColor"
                 shrink
-            
             >
-                <q-tab label="Hammer efficiency" :name="0"  />
-                <q-tab label="Steal efficiency" :name="1"  />
+                <q-tab label="Hammer efficiency" :name="0" />
+                <q-tab label="Steal efficiency" :name="1" />
                 <q-tab label="Force efficiency" :name="2" />
                 <q-tab label="Steal defense" :name="3" />
-                  <q-tab label="Scoring" :name="4" />
+                <q-tab label="Scoring" :name="4" />
             </q-tabs>
             <q-btn flat icon="filter_list" dense class="q-px-sm">
                 <q-menu v-model="filterMenuOpen" auto-close>
-                    
-                   
-                     <q-item
+                    <q-item
                         clickable
                         v-ripple
                         @click="setMinMax('week')"
                         :active="timeframe === 'week'"
-                       
-                        
                     >
                         <q-item-section no-wrap>Past week</q-item-section>
-                        
                     </q-item>
                     <q-item
                         clickable
                         v-ripple
                         @click="setMinMax('month')"
-                         :active="timeframe === 'month'"
-                       
-                        
+                        :active="timeframe === 'month'"
                     >
                         <q-item-section no-wrap>Past month</q-item-section>
-                        
                     </q-item>
                     <q-item
                         clickable
                         v-ripple
                         @click="setMinMax(null)"
                         :active="!timeframe"
-                       
-                        
                     >
                         <q-item-section no-wrap>All time</q-item-section>
-                        
                     </q-item>
-                  
-                
                 </q-menu>
             </q-btn>
         </div>
@@ -65,41 +51,42 @@
                 <div class="no-stats__overlay" v-if="!stats">
                     No stats were found.
                 </div>
-                <ChartTeamStatsTimeEfficiency
-                    :opponentId="opponentId"
+                <ChartTeamStatsTimeLine
                     :teamId="teamId"
                     v-if="currentIndex === 0"
                     :height="chartHeight"
                     :minDate="minDate"
-           
+                    type="efficiency"
                 />
-                <ChartTeamStatsTimeSteal
-                    :opponentId="opponentId"
+                <ChartTeamStatsTimeLine
                     :teamId="teamId"
                     v-if="currentIndex === 1"
-                   :height="chartHeight"
-                       :minDate="minDate"
+                    :height="chartHeight"
+                    :minDate="minDate"
+                    type="steal_efficiency"
                 />
-                <ChartTeamStatsTimeForce
-                    :opponentId="opponentId"
+                <ChartTeamStatsTimeLine
                     :teamId="teamId"
                     v-if="currentIndex === 2"
                     :height="chartHeight"
-                         :minDate="minDate"
+                    :minDate="minDate"
+                    type="force_efficiency"
                 />
-                <ChartTeamStatsTimeStealDefense
-                    :opponentId="opponentId"
+                <ChartTeamStatsTimeLine
                     :teamId="teamId"
                     v-if="currentIndex === 3"
                     :height="chartHeight"
-                         :minDate="minDate"
+                    :minDate="minDate"
+                    type="steal_defense"
                 />
-                 <ChartTeamStatsTimePoints
-                    :opponentId="opponentId"
+                <ChartTeamStatsTimeLine
                     :teamId="teamId"
                     v-if="currentIndex === 4"
                     :height="chartHeight"
-                         :minDate="minDate"
+                    :minDate="minDate"
+                    type="points"
+                    calculateMinMax
+                    :percent="false"
                 />
             </div>
         </div>
@@ -113,7 +100,7 @@
     left: 0;
     right: 0;
     margin: auto;
-    
+
     z-index: 1;
     display: flex;
     justify-content: center;
@@ -137,14 +124,14 @@
         margin-right: auto;
         margin-left: auto;
         padding-left: var(--space-xs);
-        
+
         max-width: 100vw;
         .q-tabs {
             flex-grow: 0;
             flex-shrink: 1;
             .q-tab {
                 &.red {
-                    color: red!important;
+                    color: red !important;
                 }
             }
         }
@@ -163,13 +150,12 @@ import { useQuery } from "@tanstack/vue-query";
 import TeamStats from "@/store/models/team-stats";
 
 const tabColor = computed(() => {
-    return ['purple', 'red', 'blue', 'blue-grey'][currentIndex.value]
-})
+    return ["purple", "red", "blue", "blue-grey"][currentIndex.value];
+});
 
 const $q = useQuasar();
 
-const chartHeight = computed(() => $q.screen.xs ? '250px' : '400px')
-
+const chartHeight = computed(() => ($q.screen.xs ? "250px" : "400px"));
 
 const props = defineProps({
     opponentId: Number,
@@ -177,44 +163,45 @@ const props = defineProps({
     visibleStats: Array,
 });
 
-
 const stats = computed(() => {
-    return useRepo(TeamStats)
-        .where("team_id", props.teamId)
-         .where('start_time', (val) => {
-            if (!val) return false;
-            if (!minDate.value) return true;
-            return toUTC(val, null, false, true).unix() > toUTC(minDate.value, null, false, true).unix()
-        })    
-        .get()?.length ?? 0;
-}
-    
-);
+    return (
+        useRepo(TeamStats)
+            .where("team_id", props.teamId)
+            .where("start_time", (val) => {
+                if (!val) return false;
+                if (!minDate.value) return true;
+                return (
+                    toUTC(val, null, false, true).unix() >
+                    toUTC(minDate.value, null, false, true).unix()
+                );
+            })
+            .get()?.length ?? 0
+    );
+});
 
-
-const refreshingData = ref(false)
-const filterMenuOpen = ref(false)
+const refreshingData = ref(false);
+const filterMenuOpen = ref(false);
 
 const { toUTC } = useTime();
 
-const timeframe = ref(null)
+const timeframe = ref(null);
 
 const setMinMax = (tf) => {
     timeframe.value = tf;
-}
+};
 
 const minDate = computed(() => {
     if (!timeframe.value) return null;
-     const now = toUTC(null, null, false, true);
+    const now = toUTC(null, null, false, true);
     return now.subtract(1, timeframe.value).toISOString();
-})
+});
 
 watch(minDate, () => {
     refreshingData.value = true;
     nextTick(() => {
         refreshingData.value = false;
-    })
-})
+    });
+});
 
 const currentIndex = ref(0);
 
