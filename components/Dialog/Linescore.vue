@@ -105,7 +105,11 @@
                     v-if="view === views.LINESCORE || view === views.DETAILS"
                     @endcount="view = views.END_COUNT_SELECT"
                     style="padding-top: 58px; height: 100%"
+                    :inverted="inverted"
                 >
+                <template v-slot:scorePrepend>
+                    <q-btn flat round icon="change_circle" dense @click="inverted = !inverted"/>
+                </template>
                     <div class="scoreboard--wrap full-height">
                         <div
                             class="scoreboard__container full-height"
@@ -154,6 +158,7 @@
                                                 score[end + 1].home !== 'X'
                                             "
                                             @shake="concede(end)"
+                                            :inverted="inverted"
                                         />
                                     </div>
                                 </LinescoreScrollerSection>
@@ -409,6 +414,8 @@ const dayjs = useDayjs();
 const $q = useQuasar();
 const dialogStore = useDialogStore();
 const { toggleLineScore, toggleGlobalSearch } = dialogStore;
+
+const inverted = ref(false)
 
 const viewOrder = {
     [views.END_COUNT_SELECT]: 0,

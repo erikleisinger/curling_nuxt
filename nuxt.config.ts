@@ -7,7 +7,10 @@ export default defineNuxtConfig({
                 ],
             script: [
                 {
-                    src: "https://cdn.jsdelivr.net/npm/@tsparticles/preset-confetti@2/tsparticles.preset.confetti.bundle.min.js"
+                    src: "https://cdn.jsdelivr.net/npm/@tsparticles/preset-confetti@2/tsparticles.preset.confetti.bundle.min.js",
+                },
+                {
+                    src: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'
                 }
             ],
             meta: [

@@ -224,15 +224,12 @@
             width: min-content;
         }
 
-        // font-size: var(--text-lg);
 
         .wins {
             line-height: v-bind(winLineHeight);
             font-size: v-bind(winFontSize);
         }
-        // &.dense {
-        //     font-size: var(--text-md)
-        // }
+
 
         .wins-append {
             font-size: v-bind(winAppendFontSize);
@@ -341,11 +338,15 @@ const winAppendFontSize = computed(
 );
 const winLineHeight = computed(() => `max(calc(${winFontSize.value}), 25px)`);
 const nameFontSize = computed(() => {
-    if (width.value > 300) {
-        return "20px";
+     if (width.value > 600) {
+        return '20px'
     }
+    if (width.value > 300) {
+        return "15px";
+    }
+   
 
-    return `max(calc(${width.value}px * 0.05), 10px)`;
+    return `max(calc(${width.value}px * 0.04), 10px)`;
 });
 const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.8)`);
 const iconHeight = computed(() => `min(calc(${width.value}px * 0.08), 2em)`);

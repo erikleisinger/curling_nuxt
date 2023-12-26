@@ -36,7 +36,27 @@
             <h3 > Leagues</h3>
             </div>
             <!-- <q-separator /> -->
-            <q-list separator v-if="leagues?.length">
+            <q-list v-if="loadingLeagues">
+                <q-item>
+                    <q-item-section avatar>
+                        <q-skeleton type="circle" width="30px" height="30px"/>
+                    </q-item-section>
+                    <q-item-section>
+                        <q-skeleton width="80%" height="1em"/>
+                          <q-skeleton width="60%" height="0.9em" type="QChip" style="margin-top: 4px"/>
+                    </q-item-section>
+                </q-item>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-skeleton type="circle" width="30px" height="30px"/>
+                    </q-item-section>
+                    <q-item-section>
+                        <q-skeleton width="80%" height="1em"/>
+                          <q-skeleton width="60%" height="0.9em" type="QChip" style="margin-top: 4px"/>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+            <q-list separator v-else-if="leagues?.length">
                 <q-item
                     v-for="league in leagues"
                     :key="league.id"

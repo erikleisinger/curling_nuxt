@@ -1,13 +1,20 @@
 <template>
-
     <div
-        class="scoreboard__end-row justify-end items-end q-mb-md"
+        class="scoreboard__end-row items-end top"
         @click.prevent.stop="setTop"
-        v-memo="[score.home]"
-      
-      
+         :class="isInverted ? 'justify-start' : 'justify-end'"
+         :style="{order: isInverted ? '1' : '0'}"
+         v-memo="[score.home, isInverted]"
+         :id="`endcol-${endno}-home`"
+        
+
     >
-        <div class="inner row items-center justify-center q-pt-sm"   :class="{highlight: !!score.home}"   ref="top">
+        <div
+            class="inner row items-center justify-center q-pt-sm"
+            :class="{ highlight: !!score.home }"
+              
+            ref="top"
+        >
             <div class="inner-scorecard text-center">
                 {{ score.home }}
             </div>
@@ -15,13 +22,18 @@
     </div>
 
     <div
-        class="scoreboard__end-row justify-start items-center q-mt-md"
+        class="scoreboard__end-row  items-center bottom"
+      :class="isInverted ? 'justify-end' : 'justify-start'"
+             :style="{order: isInverted ? '0' : '1'}"
         @click.prevent.stop="setBottom"
-        v-memo="[score.away]"
-       
-      
+          v-memo="[score.away, isInverted]"
+             :id="`endcol-${endno}-away`"
     >
-        <div class="inner row items-center justify-center q-pt-sm"   ref="bottom"   :class="{highlight: !!score.away}">
+        <div
+            class="inner row items-center justify-center q-pt-sm"
+            ref="bottom"
+            :class="{ highlight: !!score.away }"
+        >
             <div class="inner-scorecard text-center">
                 {{ score.away }}
             </div>
@@ -30,9 +42,14 @@
     <div class="extra__container" v-if="extra">
         <q-btn icon="remove" round @click="emit('remove')"></q-btn>
     </div>
-    <div class="shake__container" v-if="shakeable || canExtra" ref="shaker" :style="shakeStyle">
+    <div
+        class="shake__container"
+        v-if="shakeable || canExtra"
+        ref="shaker"
+        :style="shakeStyle"
+    >
         <q-btn
-        v-if="shakeable"
+            v-if="shakeable"
             :round="!isRevealed"
             rounded
             :color="isRevealed ? 'primary' : 'white'"
@@ -43,26 +60,15 @@
                 :color="isRevealed ? 'white' : 'primary'"
             />
 
-            <span class="shake-hands__text" :class="{isRevealed}">Shake hands?</span>
-              <q-tooltip v-if="$q.platform.is.desktop">
-                        Shake hands
-                    </q-tooltip>
-            </q-btn
-        >
-           <q-btn
-           v-if="canExtra"
-            round
-            no-wrap
-            icon="add"
+            <span class="shake-hands__text" :class="{ isRevealed }"
+                >Shake hands?</span
             >
-
-         <q-tooltip >
-                        Extra end
-                    </q-tooltip>
-            </q-btn
-        >
+            <q-tooltip v-if="$q.platform.is.desktop"> Shake hands </q-tooltip>
+        </q-btn>
+        <q-btn v-if="canExtra" round no-wrap icon="add">
+            <q-tooltip> Extra end </q-tooltip>
+        </q-btn>
     </div>
-
 </template>
 <style lang="scss" scoped>
 .shake-hands__text {
@@ -79,7 +85,6 @@
     // justify-content: center;
     align-items: center;
     overflow: hidden;
- 
 
     transform-origin: bottom;
     &:nth-child(2) {
@@ -98,10 +103,10 @@
         font-size: 12vh;
         padding-top: 0.1em;
         transition: border 0.2s;
-           &.highlight {
-        border-color: #00cd93;
-        border-width: 4px;
-    }
+        &.highlight {
+            border-color: #00cd93;
+            border-width: 4px;
+        }
     }
 }
 .extra__container {
@@ -122,7 +127,7 @@
     top: 0;
     bottom: 0;
     height: 40px;
-    
+
     margin: auto;
     display: flex;
     justify-content: center;
@@ -131,11 +136,15 @@
 </style>
 <script setup>
 import { onClickOutside, useConfirmDialog } from "@vueuse/core";
-import {triggerClickAnimation} from '@/utils/gsap'
+import { triggerClickAnimation } from "@/utils/gsap";
+import gsap from 'gsap';
+import Flip from 'gsap/Flip'
+gsap.registerPlugin(Flip)
 
 const props = defineProps({
     canExtra: Boolean,
     endno: Number,
+    inverted: Boolean,
     extra: Boolean,
     modelValue: Object,
     shakeable: Boolean,
@@ -158,13 +167,15 @@ const reset = () => {
     score.value.away = 0;
 };
 
+const isInverted = ref(props.inverted)
+
 const top = ref(null);
-const bottom = ref(null)
+const bottom = ref(null);
 
 const setTop = () => {
-    emit('click')
+    emit("click");
     if (!props.visible) return;
-    triggerClickAnimation(top.value)
+    triggerClickAnimation(top.value);
 
     if (score.value.away) {
         reset();
@@ -173,9 +184,9 @@ const setTop = () => {
     }
 };
 const setBottom = () => {
-    emit('click')
+    emit("click");
     if (!props.visible) return;
-    triggerClickAnimation(bottom.value)
+    triggerClickAnimation(bottom.value);
     if (score.value.home) {
         reset();
     } else if (score.value.away + 1 < 9) {
@@ -194,13 +205,11 @@ const handleShake = () => {
 };
 
 onConfirm(() => {
-    emit('shake')
-})
-
-
+    emit("shake");
+});
 
 const shaker = ref(null);
-onClickOutside(shaker, cancel)
+onClickOutside(shaker, cancel);
 
 const $q = useQuasar();
 
@@ -209,12 +218,25 @@ const shakeStyle = computed(() => {
         return {
             left: 0,
             right: 0,
-        }
+        };
     } else {
         return {
-            right: `-1em`
-        }
+            right: `-1em`,
+        };
     }
-})
+});
 
+watch(() => props.inverted, (val) => {
+    const state = Flip.getState(`#endcol-${props.endno}-home, #endcol-${props.endno}-away`)
+    isInverted.value = val
+
+    nextTick(() => {
+    Flip.from(state, {
+        duration: 0.2,
+        nested: true
+    })
+    })
+
+
+})
 </script>

@@ -61,24 +61,11 @@
             }"
             ref="linescoreContainer"
             @select="onGridSelect"
+            :inverted="inverted"
         >
-            <!-- <template v-slot:headerPrepend>
-                <div
-                    class="row items-center full-height full-width justify-center"
-                    v-if="!summary"
-                >
-                    <q-btn
-                        flat
-                        round
-                        dense
-                        icon="edit"
-                        padding="0px"
-                        color="grey-7"
-                        class="text-sm"
-                        @click="emit('endcount')"
-                    />
-                </div>
-            </template> -->
+            <template v-slot:headerPrepend>
+               <slot name="scorePrepend"/>
+            </template>
             <template v-slot:avatarHome>
                 <div class="nested-avatar__container">
                     <LinescoreAvatar
@@ -503,6 +490,7 @@ const props = defineProps({
     canEditDetails: Boolean,
     canViewTeams: Boolean,
     compact: Boolean,
+    inverted: Boolean,
     modelValue: Object,
     score: Object,
     selected: Number,

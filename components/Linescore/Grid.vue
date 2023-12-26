@@ -1,6 +1,6 @@
 <template>
     <div class="linescore-container" ref="container" >
-        <div class="linescore-row">
+        <div class="linescore-row" style="order: 0">
             <div>
                 <slot name="headerPrepend" />
             </div>
@@ -25,7 +25,7 @@
                 <div class="linescore-column--item">T</div>
             </div>
         </div>
-        <div class="linescore-row">
+        <div class="linescore-row" :style="{order: inverted ? '2' : '1'}">
             <div>
                 <slot name="avatarHome" />
             </div>
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="linescore-row">
+        <div class="linescore-row" :style="{order: inverted ? '1' : '2'}">
             <div>
                 <slot name="avatarAway" />
             </div>
@@ -83,6 +83,8 @@
     padding: 0px var(--space-sm);
     border-bottom: 1px solid rgba(0,0,0,0.2);
      border-top: 1px solid rgba(0,0,0,0.2);
+     display: flex;
+     flex-direction: column;
     .linescore-row {
         display: grid;
         grid-template-columns: 10% 1fr;
@@ -128,6 +130,7 @@
 <script setup>
 import { useElementBounding } from "@vueuse/core";
 const props = defineProps({
+    inverted: Boolean,
     score: Object,
     selected: Number,
 });
