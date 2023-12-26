@@ -42,7 +42,8 @@
                     :key="league.id"
                     clickable
                     v-ripple
-                    @click="navigateTo(`/leagues/${league.id}`)"
+                        @click="navigateTo(`/leagues/${league.id}`)"
+                     
                 >
                     <q-item-section avatar>
                         <div style="width: 30px">
@@ -53,11 +54,13 @@
                         <q-item-label
                             class="text-bold"
                             :style="{ color: league.color }"
+                          
+                         
                         >
                             {{ league.name }}
                         </q-item-label>
-                        <q-item-label caption>
-                            {{ league.rink?.name }}
+                        <q-item-label caption style="margin:0" >
+                            <RinkChip :rinkId="league?.rink?.id"  />
                         </q-item-label>
                     </q-item-section>
                     <q-item-section avatar>
@@ -177,6 +180,7 @@ const getUserLeagues = async () => {
                 font_color,
                 icon,
                 rink:rink_id (
+                    id,
                     name,
                     city,
                     province,

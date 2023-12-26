@@ -1,6 +1,8 @@
 <template>
-     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content" :color="!!rink ? 'blue' : ''" :text-color="!!rink ? 'white' : 'black'" :outline="!!rink" :clickable="canEdit"  @click="searchRink">
-        <q-icon flat round dense name="location_on" :color="!!rink ? 'blue' : 'red'" style="padding-bottom: 1px"/>
+     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content"   clickable  @click.stop="onClick">
+        <q-icon flat round dense name="location_on" color="red" style="padding-bottom: 1px"/>
+        <!-- :outline="!!rink" -->
+        <!-- :color="!!rink ? 'blue' : ''" :text-color="!!rink ? 'white' : 'black'" -->
         <span v-if="!!rink">{{rink?.name}}</span>
         <span v-else-if="!canEdit">{{noRinkText}}</span>
         <span v-else>{{noRinkEditText}}</span>
@@ -28,6 +30,16 @@
     const {toggleGlobalSearch} = useDialogStore();
 
     const emit = defineEmits(['update'])
+
+    const onClick = () => {
+        console.log('on click')
+        if (props.canEdit) {
+            searchRink();
+        } else {
+            console.log('navigate')
+            navigateTo(`/rinks/${props.rinkId}`)
+        }
+    }
 
     const searchRink = () => {
     if (!props.canEdit) return;
