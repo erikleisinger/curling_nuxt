@@ -71,6 +71,7 @@
                             :numerator="
                                 stats.team[BADGE_FIELDS[badge].numerator]
                             "
+                            :inverted="badge === 'stealdefense'"
                             :denominator="
                                 stats.team[BADGE_FIELDS[badge].denominator]
                             "

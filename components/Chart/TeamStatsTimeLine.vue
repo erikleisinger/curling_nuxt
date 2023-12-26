@@ -29,7 +29,7 @@ const title = {
     efficiency: "Score 2+ points with hammer",
     steal_efficiency: "Score points without hammer",
     force_efficiency: "Force opposition to 1 point",
-    steal_defense: "Stolen on with hammer",
+    steal_defense: "Does not concede a steal",
     points: "Average points per game",
     hammer_fe: "Hammer in first end",
     hammer_le: "Hammer in last end",
@@ -126,36 +126,43 @@ const avgParams = {
         percentile: "hammer_conversion_percentile",
         average: "hammer_conversion_average",
         isPercent: true,
+        isInverted: false,
     },
     steal_efficiency: {
         percentile: "steal_efficiency_percentile",
         average: "steal_efficiency",
         isPercent: true,
+        isInverted: false,
     },
     force_efficiency: {
         percentile: "force_efficiency_percentile",
         average: "force_efficiency",
         isPercent: true,
+        isInverted: false,
     },
     steal_defense: {
         percentile: "steal_defense_percentile",
         average: "steal_defense",
         isPercent: true,
+        isInverted: true,
     },
     points: {
         percentile: "points_for_percentile",
         average: "points_for",
         isPercent: false,
+        isInverted: false,
     },
     hammer_fe: {
         percentile: "hammer_first_end_percentile",
         average: "hammer_first_end",
         isPercent: true,
+        isInverted: false,
     },
     hammer_le: {
         percentile: "hammer_last_end_percentile",
         average: "hammer_last_end",
         isPercent: true,
+        isInverted: false,
     },
 };
 
@@ -184,7 +191,7 @@ const percentile = computed(
     () => t.value?.totalStats[avgParams[props.type]?.percentile] * 100
 );
 
-const { isPercent } = avgParams[props.type];
+const { isPercent, isInverted } = avgParams[props.type];
 
 const cumulativeAvg = computed(() => {
     const params = avgParams[props.type];
@@ -245,9 +252,11 @@ const chartData = () => {
                         (isPercent ? 100 : 1);
                         
 
-                    const y = isPercent ? 
+                    const yVal = isPercent ? 
                         (d[numerator] /
                             (denominator ? d[denominator] || 1 : index + 1)) * 100 : d[numerator]
+
+                    const y = isInverted ? 100 - yVal : yVal
     
 
                     return {
@@ -314,7 +323,8 @@ const chartData = () => {
                 footer: ([d]) => {
                     const data = getPointData([d]);
                     const { average } = data;
-                    return `Running avg: ${average.toFixed(1)}${
+                    const avg = isInverted ? 100 - average : average
+                    return `Running avg: ${avg.toFixed(1)}${
                         isPercent ? "%" : ""
                     }`;
                     // const { datasetIndex } = d;

@@ -150,6 +150,7 @@ const props = defineProps({
     gameStat: Boolean,
     noDetails: Boolean,
     numerator: Number,
+    inverted: Boolean,
     prependPercent: Boolean,
     denominator: Number,
     reverse: Boolean,
@@ -166,7 +167,10 @@ const { getStatPercent } = useConvert();
 
 const rendered = ref(true)
 
-const percent = computed(() => getStatPercent(props.numerator, props.denominator, 0)) ;
+const percent = computed(() => {
+    const p = getStatPercent(props.numerator, props.denominator, 0)
+    return props.inverted ? 100 - p : p;
+}) ;
 
 watch(percent, () => {
     rendered.value = false;
