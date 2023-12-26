@@ -196,7 +196,7 @@ const onSubmit = async (e) => {
             email: email.value,
             password: password.value,
             options: {
-                emailRedirectTo: "https://erikleisinger.com?newuser=true",
+                emailRedirectTo: "https://erikleisinger.com/?newuser=true",
                 data: {
                     username: username.value,
                     first_name: firstName.value,

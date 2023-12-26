@@ -1,19 +1,32 @@
 <template>
     <NuxtLayout>
-        
-           <div class="logout-container--floating" v-if="canEdit">
-            <q-btn flat round icon="logout" @click="logout"/>
+        <div class="logout-container--floating" v-if="canEdit">
+            <q-btn flat round icon="logout" @click="logout" />
         </div>
         <header class="player-page__header column justify-center items-center">
-            <div class="player-avatar__wrap " :class="{clickable: canEdit}" @click="onClickAvatar">
+            <div
+                class="player-avatar__wrap"
+                :class="{ clickable: canEdit }"
+                @click="onClickAvatar"
+            >
                 <Avataaar v-bind="player.avatar" v-if="!isLoading" />
-                
+                <div class="avatar-edit__helper" v-if="!Object.keys(player?.avatar ?? {})?.length">
+                    <q-chip color="white" >
+                        Click to set avatar
+                    </q-chip>
+                </div>  
             </div>
             <h2 class="text-lg text-bold text-center">
-                {{ player.first_name }} {{ player.last_name }}
+                {{ player?.first_name }} {{ player?.last_name }}
             </h2>
             <h3 class="text-sm">@{{ player.username }}</h3>
-            <h3 class="text-sm">
+            <RinkChip
+                :rinkId="rink?.id"
+                :canEdit="canEdit"
+                noRinkEditText="Click to select home rink"
+                @update="updateHomeRink"
+            />
+            <!-- <h3 class="text-sm">
                 <q-icon name="location_on" color="red" />
                 <span v-if="rink?.name">
                 {{rink?.name}}
@@ -23,10 +36,9 @@
                 </span>
                 <q-btn icon="edit" flat round dense @click="searchRink" size="xs" v-if="canEdit"/>
            
-            </h3>
+            </h3> -->
         </header>
         <main class="player--info">
-
             <section
                 class="player-teams--section hide-scroll"
                 :class="{ 'col-6': !$q.screen.xs }"
@@ -38,10 +50,14 @@
                     @click="navigateTo(`/teams/${team.id}`)"
                 >
                     <div class="player-team__avatar">
-                    
                         <LazyTeamAvatarBadge :teamId="team.id" />
                     </div>
-                    <h3 class="text-sm text-center truncate-text" style="max-width: 100px">{{ team.name }}</h3>
+                    <h3
+                        class="text-sm text-center truncate-text"
+                        style="max-width: 100px"
+                    >
+                        {{ team.name }}
+                    </h3>
                 </div>
             </section>
 
@@ -57,11 +73,15 @@
                 />
             </section>
         </main>
-         <q-dialog v-model="editing" persistent  >
-        <q-card >
-          <AvataaarGenerator role="main" v-model="player.avatar"  @close="editing = false"/>
-        </q-card>
-    </q-dialog>
+        <q-dialog v-model="editing" persistent>
+            <q-card>
+                <AvataaarGenerator
+                    role="main"
+                    v-model="player.avatar"
+                    @close="editing = false"
+                />
+            </q-card>
+        </q-dialog>
     </NuxtLayout>
 </template>
 <style lang="scss" scoped>
@@ -75,6 +95,17 @@
     .player-avatar__wrap {
         width: min(250px, 50vw);
         margin-bottom: var(--space-sm);
+        position: relative;
+        .avatar-edit__helper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            left: 0;
+            right: 0;
+            height:fit-content;
+            width: fit-content
+        }
     }
 }
 .player--info {
@@ -113,7 +144,6 @@
         }
     }
     :deep(.player-badges--section) {
-        
         @include sm {
             margin-right: var(--space-sm);
         }
@@ -127,13 +157,13 @@
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
 import Team from "@/store/models/team";
-import Rink from '@/store/models/rink'
-import {useUserStore} from '@/store/user'
+import Rink from "@/store/models/rink";
+import { useUserStore } from "@/store/user";
 import { useQuery } from "@tanstack/vue-query";
-import {useDialogStore} from '@/store/dialog'
+import { useDialogStore } from "@/store/dialog";
 
 const { logout } = useSession();
-const {sortBadges} = useBadge()
+const { sortBadges } = useBadge();
 
 const route = useRoute();
 const client = useSupabaseClient();
@@ -166,10 +196,11 @@ const teams = computed(() =>
         .with("team")
         .where("player_id", route.params.id)
         .get()
-        .map(({ team }) => team).sort((a,b) => sortAlphabetically(a.name, b.name))
+        .map(({ team }) => team)
+        .sort((a, b) => sortAlphabetically(a.name, b.name))
 );
 
-const {sortAlphabetically} = useSort()
+const { sortAlphabetically } = useSort();
 
 const getPlayerTeams = async () => {
     const { data } = await client
@@ -194,112 +225,131 @@ const getPlayerTeams = async () => {
             player_id: route.params.id,
         }))
     );
-    return teams
+    return teams;
 };
 
-const teamsDone = ref(false)
+const teamsDone = ref(false);
 
 const { isLoading: isLoadingTeams } = useQuery({
     queryKey: ["player", "teams", route.params.id],
     queryFn: getPlayerTeams,
     select: (val) => {
         teamsDone.value = true;
-        return val
-    }
+        return val;
+    },
 });
 
 //BADGES
 
 const dayjs = useDayjs();
-const {toTimezone} = useTime()
-const {user: userId} = useUser();
+const { toTimezone } = useTime();
+const { user: userId } = useUser();
 const getBadges = async () => {
     const { data } = await client
         .from("badges")
         .select("*")
-         .or(`team_id.in.(${teams.value.map(({ id }) => id).join(',')}),profile_id.eq.${userId.value}`)
-        .eq('earned', true)
+        .or(
+            `team_id.in.(${teams.value
+                .map(({ id }) => id)
+                .join(",")}),profile_id.eq.${userId.value}`
+        )
+        .eq("earned", true);
     const e = data
- 
-    .reduce((all, current) => {
-        const duplicate = all.find(({name}) => name === current.name)
-       
-        if (duplicate) {
-             const {team_id, created_at} = duplicate;
-             const isDuplicateArray = typeof team_id === 'object'           
-            return [
-                ...all.filter(({name}) => name !== current.name), 
-                {
-                    ...current,
-                    team_id: [...(isDuplicateArray ? team_id : [team_id]), ...((isDuplicateArray && duplicate.team_id?.includes(current.team_id) || duplicate.team_id === current.team_id) ? [] : [current.team_id])],
-                    created_at: toTimezone(current.created_at, null, false, true).unix() > toTimezone(created_at, null, false, true).unix() ? current.created_at : created_at
-                }
-            ]
 
-        }
-        return [...all, current];
-    }, [])
-    .sort((a,b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
+        .reduce((all, current) => {
+            const duplicate = all.find(({ name }) => name === current.name);
+
+            if (duplicate) {
+                const { team_id, created_at } = duplicate;
+                const isDuplicateArray = typeof team_id === "object";
+                return [
+                    ...all.filter(({ name }) => name !== current.name),
+                    {
+                        ...current,
+                        team_id: [
+                            ...(isDuplicateArray ? team_id : [team_id]),
+                            ...((isDuplicateArray &&
+                                duplicate.team_id?.includes(current.team_id)) ||
+                            duplicate.team_id === current.team_id
+                                ? []
+                                : [current.team_id]),
+                        ],
+                        created_at:
+                            toTimezone(
+                                current.created_at,
+                                null,
+                                false,
+                                true
+                            ).unix() >
+                            toTimezone(created_at, null, false, true).unix()
+                                ? current.created_at
+                                : created_at,
+                    },
+                ];
+            }
+            return [...all, current];
+        }, [])
+        .sort(
+            (a, b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix()
+        );
     return e;
 };
 
-const badgesEnabled = computed(() => !!teamsDone.value)
-const badgesDone = ref(false)
+const badgesEnabled = computed(() => !!teamsDone.value);
+const badgesDone = ref(false);
 
 const { isLoading: isLoadingBadges, data: badges } = useQuery({
     queryKey: ["player", "team", "badges", route.params.id],
     queryFn: getBadges,
     enabled: badgesEnabled,
     select: (val) => {
-         badgesDone.value = true;
+        badgesDone.value = true;
         return val;
     },
     refetchOnWindowFocus: false,
-  
 });
 
-const pageLoaded = computed(() => (!badgesEnabled.value || !!badgesDone.value) && !!teamsDone.value)
+const pageLoaded = computed(
+    () => (!badgesEnabled.value || !!badgesDone.value) && !!teamsDone.value
+);
 
-watch(pageLoaded, (val) => {
-    if (!val) return;
-    const {setLoading} = useLoading();
-    setTimeout(() => {
-    setLoading(false)
-    }, 50)
+watch(
+    pageLoaded,
+    (val) => {
+        if (!val) return;
+        const { setLoading } = useLoading();
+        setTimeout(() => {
+            setLoading(false);
+        }, 50);
+    },
+    { immediate: true }
+);
 
-}, {immediate: true})
-
-
-
-const canEdit = computed(() => useUserStore().id === route.params.id)
+const canEdit = computed(() => useUserStore().id === route.params.id);
 const editing = ref(false);
 
-const rink = computed(() => useRepo(Rink).where('id', player.value.rink_id).first())
+const rink = computed(() =>
+    useRepo(Rink).where("id", player.value.rink_id).first()
+);
 
-const {toggleGlobalSearch} = useDialogStore();
+const { toggleGlobalSearch } = useDialogStore();
 
-const searchRink = () => {
+const updateHomeRink = async (selection) => {
     if (!canEdit.value) return;
-    toggleGlobalSearch({
-        open: true,
-        options: {
-            inputLabel: "Search for a rink",
-            resourceTypes: ["rink"],
-            callback: async (selection) => {
-                const client = useSupabaseClient();
-                await client.from('profiles').update({
-                    rink_id: selection.id
-                }).eq('id', player.value.id)
-                await useUserStore().getCurrentUser();
-            },
-        },
-    });
+    const client = useSupabaseClient();
+    await client
+        .from("profiles")
+        .update({
+            rink_id: selection.id,
+        })
+        .eq("id", player.value.id);
+    await useUserStore().getCurrentUser();
 };
 
 const onClickAvatar = () => {
     if (!canEdit.value) return;
     editing.value = true;
-}
+};
 </script>
 <script>
 export default {

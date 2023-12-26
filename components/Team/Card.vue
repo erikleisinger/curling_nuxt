@@ -19,21 +19,14 @@
                     </div>
                        <div class="row no-wrap justify-between">
                     <div class="row badges" v-if="isLoadingTeam">
-                        <q-skeleton
-                            height="2em"
-                            width="2em"
+                           <q-skeleton
+                            :height="dense ? '1em' : '2em'"
+                            :width="dense ? '1em' : '2em'"
                             type="circle"
+                            v-for="i in Array.from(Array(3).keys())"
+                            :key="i"
                         ></q-skeleton>
-                        <q-skeleton
-                            height="2em"
-                            width="2em"
-                            type="circle"
-                        ></q-skeleton>
-                        <q-skeleton
-                            height="2em"
-                            width="2em"
-                            type="circle"
-                        ></q-skeleton>
+                        
                     </div>
                  
                     <div
@@ -56,8 +49,8 @@
                     </div>
                       <div class="win-container column items-end" :class="{dense}" ref="winContainer" v-if="width <= 200" >
                     <q-skeleton
-                        height="2em"
-                        width="75px"
+                        :height="dense ? '1em' : '2em'"
+                        :width="dense ? '40px' : '75px'"
                         v-if="isLoadingTeam"
                     />
                     <div class=" text-bold wins text-right" v-else>
@@ -67,8 +60,8 @@
                         <span v-else>0</span>
                     </div>
                     <q-skeleton
-                        height="1em"
-                        width="40px"
+                        :height="dense ? '0.7em' : '1em'"
+                        :width="dense ? '30px' : '40px'"
                         v-if="isLoadingTeam"
                     />
                     <div

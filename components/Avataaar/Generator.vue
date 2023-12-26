@@ -1,39 +1,31 @@
 <template>
-<div class="profile__generator--wrap row ">
+    <div class="profile__generator--wrap row">
         <div
             class="row justify-center items-center avatar__container col-12 col-sm-6"
             ref="avatarContainer"
         >
-         <div class="col-12 row justify-between toolbar">
-               <q-btn
-              
+            <div class="col-12 row justify-between toolbar">
+                <q-btn
                     @click="emit('close')"
                     :disable="readOnly || saving"
                     flat
                     round
                     icon="west"
-                    />
-          <q-btn
+                />
+                <q-btn
                     @click="randomize"
                     :disable="readOnly || saving"
                     icon="casino"
-                    flat 
+                    flat
                     round
-                    />
-                
-         </div>
-            <div class="avatar__wrap">
-                <Avataaar
-                    v-if="!loading"
-                    v-bind="avatar"
                 />
             </div>
+            <div class="avatar__wrap">
+                <Avataaar v-if="!loading" v-bind="avatar" />
+            </div>
         </div>
-        <div
-            class="row q-py-md  col-12 col-sm-6 features__container"
-        >
-    
-                      <AvataaarFeatureSelector
+        <div class="row q-py-md col-12 col-sm-6 features__container">
+            <AvataaarFeatureSelector
                 :features="skinColors"
                 v-model="avatar.skinColor"
                 title="Skin color"
@@ -41,7 +33,7 @@
                 :disabled="readOnly"
                 label="Skin color"
             />
-             <AvataaarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="topTypes"
                 v-model="avatar.topType"
                 title="Hair / Hats"
@@ -49,9 +41,6 @@
                 :disabled="readOnly"
                 label="Hair & Hats"
             />
-
-
-
 
             <AvataaarFeatureSelector
                 :features="hairColors"
@@ -61,15 +50,15 @@
                 :disabled="readOnly"
                 label="Hair color"
             />
-               <AvataaarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="hatAndShirtColors"
                 v-model="avatar.topColor"
                 title="Hat color"
-                class="col-12 "
+                class="col-12"
                 :disabled="readOnly"
                 label="Hat color"
             />
-              <AvataaarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="clothesType"
                 v-model="avatar.clotheType"
                 title="Clothing"
@@ -77,7 +66,7 @@
                 :disabled="readOnly"
                 label="Clothes"
             />
-                <AvataaarFeatureSelector
+            <AvataaarFeatureSelector
                 :features="GraphicShirtTypes"
                 v-model="avatar.graphicType"
                 title="Logo"
@@ -105,7 +94,7 @@
                 :disabled="readOnly"
                 label="Accessories"
             />
-          
+
             <AvataaarFeatureSelector
                 :features="eyebrowTypes"
                 v-model="avatar.eyebrowType"
@@ -122,8 +111,8 @@
                 :disabled="readOnly"
                 label="Eyes"
             />
-           
-             <AvataaarFeatureSelector
+
+            <AvataaarFeatureSelector
                 :features="facialHairTypes"
                 v-model="avatar.facialHairType"
                 title="Facial hair"
@@ -139,8 +128,7 @@
                 :disabled="readOnly"
                 label="Facial hair color"
             />
-           
-        
+
             <AvataaarFeatureSelector
                 :features="mouthTypes"
                 v-model="avatar.mouthType"
@@ -150,28 +138,20 @@
                 label="Mouth"
             />
 
-
             <div class="col-12 row justify-between q-my-lg">
-             
-                  <q-btn
-               
+                <q-btn
                     @click="handleSave"
                     :disable="readOnly || saving"
                     color="positive"
                     :loading="saving"
                     block
                     class="col-grow"
-                    >
-    Save
-                  </q-btn>
-                
-       </div>
-          
+                >
+                    Save
+                </q-btn>
+            </div>
         </div>
-        
-        
-
-</div>
+    </div>
 </template>
 <style lang="scss" scoped>
 .profile__generator--wrap {
@@ -189,26 +169,25 @@
         margin: auto;
         position: sticky;
         top: 0;
-        background-color:white;
+        background-color: white;
 
         z-index: 1;
 
-.avatar__wrap {
-    width: min(275px, 50vw);
-}
+        .avatar__wrap {
+            width: min(275px, 50vw);
+        }
     }
     .toolbar {
         position: absolute;
         top: 0;
         z-index: 1;
-        padding: var(--space-sm)
+        padding: var(--space-sm);
     }
 
     .features__container {
         padding: 0px var(--space-lg);
     }
 }
-
 </style>
 <script setup lang="ts">
 import { useUserStore } from "@/store/user";
@@ -230,24 +209,24 @@ import Json from "@/types/json";
 
 import { usePlayerStore } from "@/store/players";
 
-import { useElementSize, useDebounceFn } from "@vueuse/core";
+import { useElementSize, useDebounceFn, rand } from "@vueuse/core";
 
 const props = defineProps<{
-    modelValue: Object | String,
-    readOnly?: boolean
+    modelValue: Object | String;
+    readOnly?: boolean;
 }>();
 
-const saving = ref(false)
+const saving = ref(false);
 const handleSave = async () => {
     saving.value = true;
-   await useUserStore().updateUserAvatar(avatar.value)
-   saving.value = false;
-   emit('close')
-}
+    await useUserStore().updateUserAvatar(avatar.value);
+    saving.value = false;
+    emit("close");
+};
 
-const emit = defineEmits(['update:modelValue', 'close'])
+const emit = defineEmits(["update:modelValue", "close"]);
 
-const avatar = ref({...props.modelValue});
+const avatar = ref({ ...props.modelValue });
 
 function getRandomChoice(items: object) {
     const itemsLength = Object.entries(items).length;
@@ -270,6 +249,10 @@ const randomize = useDebounceFn(() => {
     avatar.value.topType = getRandomChoice(topTypes);
 }, 100);
 
+
+onMounted(() => {
+    if (!Object.keys(props.modelValue)?.length) randomize();
+})
 
 const avatarContainer = ref(null);
 
