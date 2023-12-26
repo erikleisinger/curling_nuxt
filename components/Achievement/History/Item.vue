@@ -31,7 +31,7 @@
         </q-item-section>
         <q-item-section v-else>
             <span>
-                <TeamChip :teamId="item.team.id" v-if="item.team" /> You earned the
+                <TeamChip :teamId="item.team.id" v-if="item.team" /> <span v-else>You</span> earned the
                 <strong>{{ BADGE_NAMES[item.name] }}</strong> badge!</span
             >
             <q-item-label caption>{{
