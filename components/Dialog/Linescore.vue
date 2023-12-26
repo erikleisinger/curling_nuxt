@@ -73,6 +73,7 @@
                     v-if="view === views.AWAY_SELECT"
                     v-model="gameParams.away"
                     @select="view = views.GAME_PARAMS"
+                    :filterIds="[gameParams.home?.id]"
                 >
                     <h2 class="text-xl text-bold title text-center">
                         Select opposition

@@ -49,7 +49,7 @@
                         v-if="showAvatar"
                     />
                 </div>
-                <div class="text-center" v-if="!customOpposition">
+                <div class="text-center text-bold" v-if="!customOpposition">
                     {{ selections.name }}
                 </div>
                 <q-input
