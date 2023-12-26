@@ -53,7 +53,7 @@
                         <q-fab-action
                             color="blue"
                             icon="group_add"
-                            @click="newTeamOpen = true"
+                           @click="dialogStore.toggleTeamCreator({open: true})"
                         >
                             <span class="action-button__label">New team</span>
                         </q-fab-action>
@@ -87,11 +87,7 @@
             </q-toolbar>
         </q-footer>
     </q-layout>
-    <q-dialog v-model="newTeamOpen" persistent>
-        <q-card class="team-details__viewer">
-            <TeamPageDetails @back="newTeamOpen = false" create />
-        </q-card>
-    </q-dialog>
+
     <FeedbackPopup v-model="feedbackOpen" @close="feedbackOpen = false"/>
 </template>
 <style lang="scss" scoped>
@@ -226,7 +222,7 @@ import Player from "@/store/models/player";
 const feedbackOpen =  ref(false)
 const leftDrawerOpen = ref(false);
 
-const newTeamOpen = ref(false);
+
 const notificationsOpen = ref(false);
 
 const { logout } = useSession();

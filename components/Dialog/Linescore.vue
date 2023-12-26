@@ -39,7 +39,7 @@
                             <q-btn
                                 rounded
                                 color="primary"
-                                @click="newTeamOpen = true"
+                                @click="dialogStore.toggleTeamCreator({open: true})"
                                 >Create new team</q-btn
                             >
                         </div>
@@ -52,11 +52,7 @@
                             >
                         </div>
                     </div>
-                    <q-dialog v-model="newTeamOpen" persistent>
-                        <q-card class="team-details__viewer">
-                            <TeamPageDetails @back="newTeamOpen = false" create />
-                        </q-card>
-                    </q-dialog>
+                  
                 </div>
                 <LinescoreEndCountSelect
                     v-if="view === views.END_COUNT_SELECT"
@@ -412,7 +408,7 @@ import team from "tests/__mock__/team";
 const dayjs = useDayjs();
 const $q = useQuasar();
 const dialogStore = useDialogStore();
-const { toggleLineScore, toggleTeamViewer, toggleGlobalSearch } = dialogStore;
+const { toggleLineScore, toggleGlobalSearch } = dialogStore;
 
 const viewOrder = {
     [views.END_COUNT_SELECT]: 0,
@@ -841,12 +837,6 @@ const userTeams = computed(() => userTeamStore.userTeams);
 
 const userStore = useUserStore();
 
-const createTeam = () => {
-    toggleLineScore({ open: false });
-    nextTick(() => {
-        toggleTeamViewer({ open: true });
-    });
-};
 
 /**
  * Desktop linescore input sizing
@@ -880,5 +870,4 @@ const goLinescore = () => {
     view.value = views.LINESCORE;
 };
 
-const newTeamOpen = ref(false);
 </script>

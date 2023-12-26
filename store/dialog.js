@@ -17,10 +17,8 @@ export const useDialogStore = defineStore("dialog", {
             editedLeague: null,
             options: {}
         },
-        teamViewer: {
-            open: false,
-            team: null,
-            options: {}
+        teamCreator: {
+            open: false
         }
         
     }),
@@ -55,16 +53,8 @@ export const useDialogStore = defineStore("dialog", {
 
         this.linescore.open = open;
     },
-    toggleTeamViewer({team, open, options = {}}) {
-        if (open === false) {
-            this.teamViewer.open = false;
-            this.teamViewer.team = null
-            this.teamViewer.options = {};
-        } else {
-            this.teamViewer.open = true;
-            this.teamViewer.team = team
-            this.teamViewer.options = options;
-        }
+    toggleTeamCreator({open}) {
+        this.teamCreator.open = open;
     }
   },
 });

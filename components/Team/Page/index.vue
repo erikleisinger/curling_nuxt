@@ -6,7 +6,7 @@
     </div>
     <TeamPageHeader
         :teamId="Number(route.params.id)"
-        @click="viewing = true"
+        @click="dialogStore.toggleTeamCreator({open: true})"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
     />
@@ -167,15 +167,6 @@
     <TeamLeagueList :teamId="Number(route.params.id)"/>
     </section>
     </div>
-    <q-dialog v-model="viewing" persistent>
-        <q-card class="team-details__viewer">
-            <TeamPageDetails
-                @back="viewing = false"
-                v-if="viewing"
-                :teamId="Number(route.params.id)"
-            />
-        </q-card>
-    </q-dialog>
     <q-dialog
         v-model="badgesOpen"
         v-if="team.badges?.length"
@@ -309,12 +300,14 @@
 <script setup lang="ts">
 import Team from "@/store/models/team";
 import { useTeamRequestStore } from "@/store/team-requests";
+import {useDialogStore} from '@/store/dialog'
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useEventListener } from "@vueuse/core";
 import { BADGE_NAMES } from "@/constants/badges";
 import { useElementSize, useDebounceFn } from "@vueuse/core";
 
 const queryClient = useQueryClient();
+const dialogStore = useDialogStore();
 
 const $q = useQuasar();
 
@@ -338,7 +331,6 @@ const getIcon = (val: number) => {
 const getPercentileColor = (val: number) => {
     return val > 50 ? "green" : "red";
 };
-const viewing = ref(false);
 const badgesOpen = ref(false);
 
 const teamRequests = computed(() =>
@@ -418,10 +410,6 @@ useEventListener(window, "popstate", () => {
     if (badgesOpen.value) {
         history.go(1);
         badgesOpen.value = false;
-    }
-    if (viewing.value) {
-        history.go(1);
-        viewing.value = false;
     }
 });
 

@@ -4,6 +4,15 @@
     <NotificationHandler />
     <DialogGlobalSearch v-if="isGlobalSearchOpen" />
     <DialogLeagueEditor v-if="isLeagueEditorOpen" />
+    <q-dialog v-model="isTeamCreatorOpen" @hide="dialogStore.toggleTeamCreator({
+        open: false,
+     })">
+     <q-card class="teamcreator__card">
+     <TeamPageDetails v-if="isTeamCreatorOpen" @back="dialogStore.toggleTeamCreator({
+        open: false,
+     })" create />
+     </q-card>
+    </q-dialog>
 </template>
 <style lang="scss">
 #__nuxt {
@@ -27,6 +36,9 @@
     background-color: rgba(0, 0, 0, 0.5);
     top: 0;
     z-index: 3000;
+}
+.teamcreator__card {
+    width: min(90vw, 600px);
 }
 </style>
 <script setup lang="ts">
@@ -89,4 +101,5 @@ client.auth.onAuthStateChange((_, _session) => {
 const dialogStore = useDialogStore();
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 const isLeagueEditorOpen = computed(() => dialogStore.leagueEditor.open);
+const isTeamCreatorOpen = computed(() => dialogStore.teamCreator.open)
 </script>

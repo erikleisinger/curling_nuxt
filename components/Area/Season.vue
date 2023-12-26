@@ -1,7 +1,7 @@
 <template>
   <header class="season__header row items-center" v-if="!!user?.id">
             <div class="avatar__container">
-                <Avataaar v-bind="user.avatar"/>
+                <Avataaar v-bind="user.avatar" @click="navigateTo(`/player/${user.id}`)"/>
             </div>
             <div>
             <h1 class="text-bold text-center">
@@ -14,7 +14,10 @@
     <main class="row">
       
         <section name="teams" :class="$q.screen.xs ? 'col-12' : 'col-6'">
-            <h3 class="header-text"> Teams</h3>
+            <div class="row justify-between items-center header-text">
+            <h3 > Teams</h3>
+                <q-btn flat  @click="toggleTeamCreator({open: true})" round icon="add" dense/>
+            </div>  
             <!-- <q-separator /> -->
             <div class="row cards__container" ref="container" >
                 <TeamCard
@@ -29,7 +32,9 @@
             </div>
         </section>
         <section name="leagues" :class="$q.screen.xs ? 'col-12' : 'col-6'">
-            <h3 class="header-text"> Leagues</h3>
+            <div class="header-text">
+            <h3 > Leagues</h3>
+            </div>
             <!-- <q-separator /> -->
             <q-list separator v-if="leagues?.length">
                 <q-item
@@ -73,10 +78,14 @@ $gap: 6px;
 .header-text {
     padding: var(--space-xs);
     padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
     padding-bottom: 0;
+    
+    h3 {
     text-transform: uppercase;
     font-size: var(--text-md);
     font-weight: bold;
+    }
 }
 .cards__container {
     margin-top: var(--space-sm);
@@ -117,9 +126,12 @@ $gap: 6px;
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
+import {useDialogStore} from '@/store/dialog'
 import { useQuery } from "@tanstack/vue-query";
 import { useElementBounding } from "@vueuse/core";
-import Player from '@/store/models/player'
+import Player from '@/store/models/player';
+
+const {toggleTeamCreator} = useDialogStore();
 
 
 const $q = useQuasar();

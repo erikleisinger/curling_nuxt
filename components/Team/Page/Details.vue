@@ -341,7 +341,7 @@ const queryClient = useQueryClient();
 
 const props = defineProps<{
     create: boolean;
-    teamId: number | undefined;
+    teamId?: number | undefined;
 }>();
 const emit = defineEmits(["back"]);
 
