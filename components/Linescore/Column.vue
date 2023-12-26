@@ -1,8 +1,8 @@
 <template>
     <div
         class="scoreboard__end-row items-end top"
-        @click.prevent.stop="setTop"
-         :class="isInverted ? 'justify-start' : 'justify-end'"
+   
+         :class="isInverted ? 'justify-start ' : 'justify-end '"
          :style="{order: isInverted ? '1' : '0'}"
          v-memo="[score.home, isInverted]"
          :id="`endcol-${endno}-home`"
@@ -12,7 +12,7 @@
         <div
             class="inner row items-center justify-center q-pt-sm"
             :class="{ highlight: !!score.home }"
-              
+                   @click.prevent.stop="setTop"
             ref="top"
         >
             <div class="inner-scorecard text-center">
@@ -23,9 +23,9 @@
 
     <div
         class="scoreboard__end-row  items-center bottom"
-      :class="isInverted ? 'justify-end' : 'justify-start'"
+      :class="isInverted ? 'justify-end ' : 'justify-start'"
              :style="{order: isInverted ? '0' : '1'}"
-        @click.prevent.stop="setBottom"
+     
           v-memo="[score.away, isInverted]"
              :id="`endcol-${endno}-away`"
     >
@@ -33,6 +33,7 @@
             class="inner row items-center justify-center q-pt-sm"
             ref="bottom"
             :class="{ highlight: !!score.away }"
+               @click.prevent.stop="setBottom"
         >
             <div class="inner-scorecard text-center">
                 {{ score.away }}
@@ -55,6 +56,7 @@
             :color="isRevealed ? 'primary' : 'white'"
             @click="handleShake"
             no-wrap
+            class="shake-button"
             ><q-icon
                 name="handshake"
                 :color="isRevealed ? 'white' : 'primary'"
@@ -127,11 +129,13 @@
     top: 0;
     bottom: 0;
     height: 40px;
-
+   
+    z-index: 1;
     margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
+   
 }
 </style>
 <script setup>
