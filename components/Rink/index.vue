@@ -8,10 +8,10 @@
                 height="100%"
             ></q-img>
             <div class="rink-header__content">
-                <h1 class="text-md text-bold ">{{ rink.name }}</h1>
+                <h1 class="text-md text-bold ">{{ rink?.name }}</h1>
                 <div class="row justify-between">
-                <h3 class="text-sm">{{rink.city}}, {{rink.province}}</h3>
-                <h3 class="text-sm">{{rink.sheets}} sheets</h3>
+                <h3 class="text-sm">{{rink?.city}}, {{rink?.province}}</h3>
+                <h3 class="text-sm">{{rink?.sheets}} sheets</h3>
                 </div>
             
             </div>
@@ -95,22 +95,14 @@ const defaultAvatar = new URL("~/assets/rink.jpg", import.meta.url).href;
 const route = useRoute();
 const rinkId = Number(route.params.id);
 
-const getRink = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("rinks")
-        .select("*")
-        .eq("id", rinkId)
-        .single();
-        useRepo(Rink).save(data)
-    return data;
-};
 
-const { isLoading, data: rink } = useQuery({
-    queryKey: ["rink", rinkId],
-    queryFn: getRink,
-    refetchOnWindowFocus: false,
+
+const {getRink} = useRink();
+
+
+const { isLoading, data: rink} = getRink(rinkId, {
     select: (val) => {
+        console.log('got rink on select: ', val)
         const { setLoading } = useLoading();
         setLoading(false);
         return val;

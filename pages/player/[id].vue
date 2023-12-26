@@ -9,40 +9,37 @@
                 :class="{ clickable: canEdit }"
                 @click="onClickAvatar"
             >
-                <Avataaar v-bind="player.avatar" v-if="!isLoading" />
+                <Avataaar v-bind="parseAvatar(player?.avatar ?? {})" v-if="!isLoading || !player" />
+                <q-skeleton type="circle" height="inherit" width="inherit" style="aspect-ratio: 1/1; margin-top: 18%" v-else/>
                 <div class="avatar-edit__helper" v-if="!Object.keys(player?.avatar ?? {})?.length">
                     <q-chip color="white" >
                         Click to set avatar
                     </q-chip>
                 </div>  
             </div>
-            <h2 class="text-lg text-bold text-center">
+            <h2 class="text-lg text-bold text-center" v-if="!isLoading && !!player">
                 {{ player?.first_name }} {{ player?.last_name }}
             </h2>
-            <h3 class="text-sm">@{{ player.username }}</h3>
+            <q-skeleton v-else height="1.5em" width="200px"/>
+            <h3 class="text-sm" v-if="!isLoading && !!player">@{{ player?.username }}</h3>
+             <q-skeleton v-else height="1em" width="100px" style="margin-top: 4px"/>
             <RinkChip
                 :rinkId="rink?.id"
                 :canEdit="canEdit"
                 noRinkEditText="Click to select home rink"
                 @update="updateHomeRink"
+                v-if="!isLoading"
             />
-            <!-- <h3 class="text-sm">
-                <q-icon name="location_on" color="red" />
-                <span v-if="rink?.name">
-                {{rink?.name}}
-                </span>
-                <span v-else-if="canEdit">
-                    No home rink
-                </span>
-                <q-btn icon="edit" flat round dense @click="searchRink" size="xs" v-if="canEdit"/>
-           
-            </h3> -->
+              <q-skeleton v-else height="1em" width="100px" style="margin-top: 4px" type="QChip"/>
         </header>
         <main class="player--info">
             <section
                 class="player-teams--section hide-scroll"
                 :class="{ 'col-6': !$q.screen.xs }"
+                v-if="!isLoading"
+             
             >
+          
                 <div
                     v-for="team in teams"
                     :key="team.id"
@@ -59,11 +56,29 @@
                         {{ team.name }}
                     </h3>
                 </div>
+             
+            
             </section>
+                <section
+                class="player-teams--section hide-scroll justify-center"
+                :class="{ 'col-6': !$q.screen.xs }"
+                v-else
+                 style="gap: 4px"
+                
+            >
+            <div class="column items-center"  v-for="i in Array.from(Array(3).keys())" :key="i">
+                <q-skeleton type="rect" width="100px" height="50px"/>
+                   <q-skeleton height="1em" width="75px" style="margin-top: 4px"/>
+    
+            </div>
+            </section>
+
+
 
             <section
                 class="player-badges--section"
                 :class="{ 'col-6': !$q.screen.xs }"
+                v-if="!isLoading"
             >
                 <LazyBadge
                     :badge="badge"
@@ -72,8 +87,17 @@
                     :showTeam="true"
                 />
             </section>
+              <section
+                class="player-badges--section justify-center"
+                :class="{ 'col-6': !$q.screen.xs }"
+                v-else
+                  style="gap: 4px"
+            >
+                    <q-skeleton type="rect" width="150px" height="100px"/>
+                     <q-skeleton type="rect" width="150px" height="100px"/>
+            </section>
         </main>
-        <q-dialog v-model="editing" persistent>
+        <q-dialog v-model="editing" persistent v-if="!isLoading">
             <q-card>
                 <AvataaarGenerator
                     role="main"
@@ -161,6 +185,7 @@ import Rink from "@/store/models/rink";
 import { useUserStore } from "@/store/user";
 import { useQuery } from "@tanstack/vue-query";
 import { useDialogStore } from "@/store/dialog";
+import {parseAvatar} from '@/utils/avatar'
 
 const { logout } = useSession();
 const { sortBadges } = useBadge();
@@ -184,7 +209,8 @@ const getPlayer = async () => {
     return data;
 };
 
-const { isLoading } = useQuery({
+
+const {isLoading} = useQuery({
     queryKey: ["player", route.params.id],
     queryFn: getPlayer,
 });
@@ -325,11 +351,15 @@ watch(
     { immediate: true }
 );
 
-const canEdit = computed(() => useUserStore().id === route.params.id);
+const canEdit = computed(() => {
+    console.log('current user id: ', useUserStore().id)
+    console.log('player id: ', route.params.id)
+    return useUserStore().id === route.params.id
+});
 const editing = ref(false);
 
 const rink = computed(() =>
-    useRepo(Rink).where("id", player.value.rink_id).first()
+    useRepo(Rink).where("id", player.value?.rink_id).first()
 );
 
 const { toggleGlobalSearch } = useDialogStore();

@@ -67,7 +67,9 @@
         transition: transform 0.2s;
         position: relative;
         padding-top: 16%;
-
+    .inner-wrap {
+        position: relative;
+    }
         @include sm {
             &.viewable {
                 &:hover {

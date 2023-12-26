@@ -6,7 +6,7 @@
     </div>
     <TeamPageHeader
         :teamId="Number(route.params.id)"
-        @click="dialogStore.toggleTeamCreator({open: true})"
+        @click="viewing = true"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
     />
@@ -259,6 +259,15 @@
             </div>
         </q-card>
     </q-dialog>
+      <q-dialog v-model="viewing" persistent>
+        <q-card class="team-details__viewer">
+            <TeamPageDetails
+                @back="viewing = false"
+                v-if="viewing"
+                :teamId="Number(route.params.id)"
+            />
+        </q-card>
+    </q-dialog>
 </template>
 <style lang="scss" scoped>
 .team-info {
@@ -308,6 +317,8 @@ import { useElementSize, useDebounceFn } from "@vueuse/core";
 
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
+
+const viewing = ref(false)
 
 const $q = useQuasar();
 

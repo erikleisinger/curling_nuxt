@@ -31,21 +31,25 @@
             dense
             v-else
             v-model="editedValues.name"
-            label="Team name"
+            class="name-input"
+            :class="{error: isNameError}"
             :maxlength="MAX_TEAM_NAME_LENGTH"
             :rules="[VALIDATION_RULES.REQUIRED]"
+            hide-bottom-space
+            ref="nameInput"
         />
-        <h3 class="rink-name" v-if="team.rink_id && !editing">
+        <!-- <h3 class="rink-name" v-if="team.rink_id && !editing">
             {{ selectedRink.name }}
-        </h3>
-        <q-input
+        </h3> -->
+        <RinkChip :rinkId="team.rink_id" :canEdit="editing" style="margin:auto" />
+        <!-- <q-input
             dense
             v-else-if="create || editing"
             readonly
             @click="openRinkSearch"
             :model-value="selectedRink.name"
             label="Home rink"
-        />
+        /> -->
 
         <div class="row justify-center socials-container" v-if="!editing">
             <IconFacebook
@@ -70,6 +74,7 @@
             dense
             :rules="[(val) => validateSocial(val, 'facebook')]"
             v-model="editedValues.facebook"
+            hide-bottom-space
         >
             <template v-slot:prepend>
                 <IconFacebook color="rgba(0,0,0,0.3)" />
@@ -81,6 +86,7 @@
             dense
             :rules="[(val) => validateSocial(val, 'instagram')]"
             v-model="editedValues.instagram"
+            hide-bottom-space
         >
             <template v-slot:prepend>
                 <IconInstagram color="rgba(0,0,0,0.3)" />
@@ -92,6 +98,7 @@
             dense
             :rules="[(val) => validateSocial(val, 'twitter')]"
             v-model="editedValues.twitter"
+            hide-bottom-space
         >
             <template v-slot:prepend>
                 <IconTwitter color="rgba(0,0,0,0.3)" />
@@ -221,6 +228,23 @@
         rgba(94, 94, 255, 0.65) 0%,
         rgba(255, 255, 255, 1) 100%
     );
+
+    .name-input {
+        // text-transform: uppercase;
+        text-align: center;
+        font-size: var(--text-lg);
+        :deep(.q-field__control) {
+            &:before {
+                border-bottom: 0px !important;
+            }
+        }
+        :deep(.q-field__native) {
+            text-align: center;
+            font-weight: bold;
+        }
+        margin-bottom: var(--space-xxxs)
+        
+    }
     .avatar-container {
         width: min(50vw, 175px);
         margin-right: auto;
@@ -239,6 +263,8 @@
     .team-name {
         font-weight: bold;
         text-transform: uppercase;
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-xxxs);
     }
     .rink-name {
         text-align: center;
@@ -421,6 +447,8 @@ const setOriginalValues = () => {
     };
 };
 
+// VALIDATION
+
 const { objTheSame } = useValidation();
 
 const confirmUnsaved = ref(false);
@@ -428,6 +456,11 @@ const confirmUnsaved = ref(false);
 const areUnsavedChanges = () => {
     return objTheSame(editedValues.value, originalValues.value);
 };
+
+const nameInput = ref(null);
+const isNameError = computed(() => nameInput.value?.hasError)
+
+//
 
 const onBackClick = () => {
     if (editing.value && !areUnsavedChanges()) {

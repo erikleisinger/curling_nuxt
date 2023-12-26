@@ -1,5 +1,5 @@
 <template>
-     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content" :color="!!rink ? 'blue' : ''" :text-color="!!rink ? 'white' : 'black'" :outline="!!rink" clickable  @click="searchRink">
+     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content" :color="!!rink ? 'blue' : ''" :text-color="!!rink ? 'white' : 'black'" :outline="!!rink" :clickable="canEdit"  @click="searchRink">
         <q-icon flat round dense name="location_on" :color="!!rink ? 'blue' : 'red'" style="padding-bottom: 1px"/>
         <span v-if="!!rink">{{rink?.name}}</span>
         <span v-else-if="!canEdit">{{noRinkText}}</span>
