@@ -13,15 +13,12 @@
                     round
                     icon="west"
                     />
-         <q-btn
-               
-                    @click="handleSave"
+          <q-btn
+                    @click="randomize"
                     :disable="readOnly || saving"
-                    color="positive"
-                    :loading="saving"
-                    flat
+                    icon="casino"
+                    flat 
                     round
-                    icon="check"
                     />
                 
          </div>
@@ -33,55 +30,24 @@
             </div>
         </div>
         <div
-            class="row q-py-md  col-12 col-sm-6"
+            class="row q-py-md  col-12 col-sm-6 features__container"
         >
     
-          
-            <AvataaarFeatureSelector
-                :features="accessoriesTypes"
-                v-model="avatar.accessoriesType"
-                title="Accessory"
+                      <AvataaarFeatureSelector
+                :features="skinColors"
+                v-model="avatar.skinColor"
+                title="Skin color"
                 class="col-12"
                 :disabled="readOnly"
+                label="Skin color"
             />
-            <AvataaarFeatureSelector
-                :features="clothesType"
-                v-model="avatar.clotheType"
-                title="Clothing"
-                class="col-12"
-                :disabled="readOnly"
-            />
-            <AvataaarFeatureSelector
-                :features="hatAndShirtColors"
-                v-model="avatar.clotheColor"
-                title="Shirt color"
-                class="col-12"
-                :disabled="
-                    readOnly ||
-                    avatar.clotheType === 'BlazerSweater' ||
-                    avatar.clotheType === 'BlazerShirt'
-                "
-            />
-            <AvataaarFeatureSelector
-                :features="eyebrowTypes"
-                v-model="avatar.eyebrowType"
-                title="Eyebrows"
-                class="col-12"
-                :disabled="readOnly"
-            />
-            <AvataaarFeatureSelector
-                :features="eyeTypes"
-                v-model="avatar.eyeType"
-                title="Eyes"
-                class="col-12"
-                :disabled="readOnly"
-            />
-            <AvataaarFeatureSelector
+             <AvataaarFeatureSelector
                 :features="topTypes"
                 v-model="avatar.topType"
                 title="Hair / Hats"
                 class="col-12"
                 :disabled="readOnly"
+                label="Hair & Hats"
             />
 
 
@@ -93,6 +59,77 @@
                 title="Hair color"
                 class="col-12"
                 :disabled="readOnly"
+                label="Hair color"
+            />
+               <AvataaarFeatureSelector
+                :features="hatAndShirtColors"
+                v-model="avatar.topColor"
+                title="Hat color"
+                class="col-12 "
+                :disabled="readOnly"
+                label="Hat color"
+            />
+              <AvataaarFeatureSelector
+                :features="clothesType"
+                v-model="avatar.clotheType"
+                title="Clothing"
+                class="col-12"
+                :disabled="readOnly"
+                label="Clothes"
+            />
+                <AvataaarFeatureSelector
+                :features="GraphicShirtTypes"
+                v-model="avatar.graphicType"
+                title="Logo"
+                class="col-12"
+                v-if="avatar.clotheType === 'GraphicShirt'"
+                label="Shirt logo"
+            />
+            <AvataaarFeatureSelector
+                :features="hatAndShirtColors"
+                v-model="avatar.clotheColor"
+                title="Shirt color"
+                class="col-12"
+                :disabled="
+                    readOnly ||
+                    avatar.clotheType === 'BlazerSweater' ||
+                    avatar.clotheType === 'BlazerShirt'
+                "
+                label="Clothes Color"
+            />
+            <AvataaarFeatureSelector
+                :features="accessoriesTypes"
+                v-model="avatar.accessoriesType"
+                title="Accessory"
+                class="col-12"
+                :disabled="readOnly"
+                label="Accessories"
+            />
+          
+            <AvataaarFeatureSelector
+                :features="eyebrowTypes"
+                v-model="avatar.eyebrowType"
+                title="Eyebrows"
+                class="col-12"
+                :disabled="readOnly"
+                label="Eyebrows"
+            />
+            <AvataaarFeatureSelector
+                :features="eyeTypes"
+                v-model="avatar.eyeType"
+                title="Eyes"
+                class="col-12"
+                :disabled="readOnly"
+                label="Eyes"
+            />
+           
+             <AvataaarFeatureSelector
+                :features="facialHairTypes"
+                v-model="avatar.facialHairType"
+                title="Facial hair"
+                class="col-12"
+                :disabled="readOnly"
+                label="Facial hair"
             />
             <AvataaarFeatureSelector
                 :features="hairColors"
@@ -100,55 +137,38 @@
                 title="Facial hair color"
                 class="col-12"
                 :disabled="readOnly"
+                label="Facial hair color"
             />
-            <AvataaarFeatureSelector
-                :features="facialHairTypes"
-                v-model="avatar.facialHairType"
-                title="Facial hair"
-                class="col-12"
-                :disabled="readOnly"
-            />
-            <AvataaarFeatureSelector
-                :features="GraphicShirtTypes"
-                v-model="avatar.graphicType"
-                title="Logo"
-                class="col-12"
-                :disabled="readOnly || avatar.clotheType !== 'GraphicShirt'"
-            />
+           
+        
             <AvataaarFeatureSelector
                 :features="mouthTypes"
                 v-model="avatar.mouthType"
                 title="Mouth"
                 class="col-12"
                 :disabled="readOnly"
-            />
-            <AvataaarFeatureSelector
-                :features="skinColors"
-                v-model="avatar.skinColor"
-                title="Skin color"
-                class="col-12"
-                :disabled="readOnly"
+                label="Mouth"
             />
 
-            <AvataaarFeatureSelector
-                :features="hatAndShirtColors"
-                v-model="avatar.topColor"
-                title="Hat color"
-                class="col-12 "
-                :disabled="readOnly"
-            />
-          
-        </div>
-           <div class="col-12 row justify-between">
-                <q-btn
-                class="q-ma-sm col-grow q-mb-md"
-                    @click="randomize"
+
+            <div class="col-12 row justify-between q-my-lg">
+             
+                  <q-btn
+               
+                    @click="handleSave"
                     :disable="readOnly || saving"
-                    color="deep-purple"
-                    >Random</q-btn
-                >
+                    color="positive"
+                    :loading="saving"
+                    block
+                    class="col-grow"
+                    >
+    Save
+                  </q-btn>
                 
        </div>
+          
+        </div>
+        
         
 
 </div>
@@ -182,6 +202,10 @@
         top: 0;
         z-index: 1;
         padding: var(--space-sm)
+    }
+
+    .features__container {
+        padding: 0px var(--space-lg);
     }
 }
 
