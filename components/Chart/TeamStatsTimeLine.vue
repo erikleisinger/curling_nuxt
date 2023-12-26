@@ -241,14 +241,13 @@ const chartData = () => {
 
                     const average =
                         (sums[numerator] /
-                            (denominator ? sums[denominator] : index + 1)) *
+                            (denominator ? sums[denominator]  || 1 : index + 1)) *
                         (isPercent ? 100 : 1);
-                        console.log('avg: ', average, numerator, sums[numerator])
                         
 
                     const y = isPercent ? 
                         (d[numerator] /
-                            (denominator ? d[denominator] : index + 1)) * 100 : d[numerator]
+                            (denominator ? d[denominator] || 1 : index + 1)) * 100 : d[numerator]
     
 
                     return {
