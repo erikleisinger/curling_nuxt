@@ -42,7 +42,7 @@
         <!-- <h3 class="rink-name" v-if="team.rink_id && !editing">
             {{ selectedRink.name }}
         </h3> -->
-        <RinkChip :rinkId="team.rink_id" :canEdit="editing" style="margin:auto" />
+        <RinkChip :rinkId="team.rink_id" :canEdit="editing" style="margin:auto" editText="Select home rink" />
         <!-- <q-input
             dense
             v-else-if="create || editing"

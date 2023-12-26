@@ -29,6 +29,7 @@
                 noRinkEditText="Click to select home rink"
                 @update="updateHomeRink"
                 v-if="!isLoading"
+                editText="Select home rink"
             />
               <q-skeleton v-else height="1em" width="100px" style="margin-top: 4px" type="QChip"/>
         </header>

@@ -1,11 +1,27 @@
 <template>
-     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content"   clickable  @click.stop="onClick">
+     <q-chip dense class="text-sm q-mx-none text-bold" style="width: min-content"   clickable  @click.stop>
         <q-icon flat round dense name="location_on" color="red" style="padding-bottom: 1px"/>
         <!-- :outline="!!rink" -->
         <!-- :color="!!rink ? 'blue' : ''" :text-color="!!rink ? 'white' : 'black'" -->
         <span v-if="!!rink">{{rink?.name}}</span>
         <span v-else-if="!canEdit">{{noRinkText}}</span>
         <span v-else>{{noRinkEditText}}</span>
+        <q-menu v-model="menuOpen">
+            <q-list>
+                <q-item clickable v-ripple @click="viewRink">
+                    <q-item-section avatar>
+                        <q-icon name="visibility" dense size="1.2em"/>
+                    </q-item-section>
+                    <q-item-section>View rink</q-item-section>
+                </q-item>
+                <q-item v-if="canEdit" clickable v-ripple @click="searchRink">
+                    <q-item-section avatar>
+                        <q-icon name="search" dense size="1.2em"/>
+                    </q-item-section>
+                    <q-item-section>{{editText}}</q-item-section>
+                </q-item>
+            </q-list>   
+        </q-menu>
       </q-chip>
 </template>
 <script setup>
@@ -14,6 +30,10 @@
 
     const props = defineProps({
         canEdit: Boolean,
+        editText: {
+            type: String,
+            default: 'Edit rink'
+        },
         noRinkText: {
             type: String,
             default: 'No rink'
@@ -30,19 +50,15 @@
     const {toggleGlobalSearch} = useDialogStore();
 
     const emit = defineEmits(['update'])
-
-    const onClick = () => {
-        console.log('on click')
-        if (props.canEdit) {
-            searchRink();
-        } else {
-            console.log('navigate')
-            navigateTo(`/rinks/${props.rinkId}`)
-        }
-    }
+    const menuOpen = ref(false)
+   const viewRink = () => {
+    menuOpen.value = false;
+    navigateTo(`/rinks/${props.rinkId}`)
+   }
 
     const searchRink = () => {
     if (!props.canEdit) return;
+    menuOpen.value = false;
     toggleGlobalSearch({
         open: true,
         options: {
