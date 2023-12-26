@@ -54,7 +54,7 @@
                 style="width: 100%"
             />
         </div>
-        <div class="col-6">
+        <div class="col-6 knob-container">
             <h2 class="text-center text-sm " style="height: fit-content">
                 Win percent
             </h2>
@@ -104,6 +104,15 @@
     }
     @include sm {
         font-size: var(--text-lg);
+    }
+}
+.knob-container {
+     margin-right: -20px;
+    // margin-bottom: var(--space-sm);
+    @include sm {
+   
+          margin: unset;
+            margin-right: 0px;
     }
 }
 }

@@ -269,13 +269,7 @@
 <style lang="scss" scoped>
 .stats__overview {
     margin: 0px calc(var(--space-md) + var(--space-xs));
-    margin-right: -12px;
-    // margin-bottom: var(--space-sm);
-    @include sm {
    
-          margin: unset;
-            margin-right: -12px;
-    }
 }
 .team-info {
     @include sm {
