@@ -22,9 +22,7 @@
                                 <h2
                                     class="text-sm text-center col-grow full-width highlightable"
                                     v-html="truncateWords(home.name)"
-                                >
-                                 
-                                </h2>
+                                ></h2>
                                 <div
                                     class="placeholder--floating right"
                                     v-if="home.isPlaceholder"
@@ -34,24 +32,17 @@
                             </div>
                         </div>
 
-                        <div
-                            class="column full-width game-info__container"
-                   
-                        >
-                            <div
-                                class="game-showmore__container row justify-center items-center clickable"
-                                @click="navigateTo(`/games/view/${game.id}`)"
-                            >
-                               
-                            </div>
+                        <div class="column full-width game-info__container">
+            
 
                             <div
-                                class="row justify-center full-width no-wrap"
-                                @click="reveal"
+                                class="row justify-center full-width no-wrap clickable"
+                                @click="navigateTo(`/games/view/${game.id}`)"
                             >
                                 <div
                                     class="column no-wrap"
                                     style="height: min-content"
+                                    
                                 >
                                     <div
                                         class="score"
@@ -91,7 +82,7 @@
                                 class="row justify-center full-width game-info__text highlightable"
                                 v-if="sheet && sheet.number"
                             >
-                                Sheet {{sheet.number }}/{{
+                                Sheet {{ sheet.number }}/{{
                                     numberToLetter(sheet.number)
                                 }}
                             </div>
@@ -103,16 +94,12 @@
                                     toTimezone(game.start_time, "MMMM D, YYYY")
                                 }}
                             </div>
-                            <div
-                                class="row full-width justify-center"
-                                
-                            >
+                            <div class="row full-width justify-center">
                                 <TeamGameResultVerification
                                     :gameId="props.gameId"
                                     @refresh="refreshQuery"
                                 />
                             </div>
-
                         </div>
 
                         <div class="team__profile--container column no-wrap">
@@ -124,7 +111,6 @@
                                         :viewable="
                                             viewAway && !away.isPlaceholder
                                         "
-                                 
                                     />
                                 </div>
                             </div>
@@ -136,9 +122,8 @@
                                         width: fit-content;
                                         position: relative;
                                     "
-                                v-html="truncateWords(away.name)">
-                                 
-                                </h2>
+                                    v-html="truncateWords(away.name)"
+                                ></h2>
                                 <div
                                     class="placeholder--floating"
                                     v-if="away.isPlaceholder"
@@ -246,23 +231,6 @@ $container-padding-top: 10px;
             font-size: 0.7em;
             text-align: center;
         }
-        .game-showmore__container {
-            transition: all 0.4s;
-            position: absolute;
-            height: $result-height;
-            width: 100%;
-
-            margin-top: -12px;
-            z-index: 2;
-            color: white;
-
-            font-weight: bold;
-            .game-showmore__button {
-                border-radius: 8px;
-                background-color: rgba(0, 0, 0, 0.7);
-                padding: var(--space-sm);
-            }
-        }
     }
 
     .notify-badge {
@@ -290,7 +258,7 @@ import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";
 import Rink from "@/store/models/rink";
-import Sheet from '@/store/models/sheet'
+import Sheet from "@/store/models/sheet";
 
 import { useQueryClient } from "@tanstack/vue-query";
 
@@ -339,7 +307,7 @@ watch(
     { immediate: true }
 );
 
-const {truncateWords} = useText();
+const { truncateWords } = useText();
 
 const $q = useQuasar();
 
@@ -414,10 +382,6 @@ const sheet = computed(() =>
 const emit = defineEmits(["expand"]);
 
 const { format, toTimezone } = useTime();
-
-
-
-
 
 const { isOnTeam } = useTeam();
 </script>

@@ -1,7 +1,7 @@
 <template>
     <q-badge
         :color="isVerified ? 'primary' : 'red'"
-        @click="
+        @click.stop="
             () => {
                 verifiedPopup = true;
             }
