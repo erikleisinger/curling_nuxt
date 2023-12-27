@@ -94,6 +94,7 @@
                             :numerator="
                                 stats.opposition[BADGE_FIELDS[badge].numerator]
                             "
+                            :inverted="badge === 'stealdefense'"
                             :denominator="
                                 stats.opposition[
                                     BADGE_FIELDS[badge].denominator
