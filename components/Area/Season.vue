@@ -1,11 +1,11 @@
 <template>
-  <header class="season__header row items-center" v-if="!!user?.id">
+  <header class="season__header row items-center no-wrap" v-if="!!user?.id">
             <div class="avatar__container">
                 <Avataaar v-bind="user.avatar" @click="navigateTo(`/player/${user.id}`)"/>
             </div>
             <div>
             <h1 class="text-bold text-center">
-                {{user.first_name}}'s Season
+                My Season
             </h1>
             <h2 class="text-italic" style="margin-top: -6px">2023-2024</h2>
             </div>
