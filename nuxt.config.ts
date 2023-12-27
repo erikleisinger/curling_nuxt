@@ -5,28 +5,13 @@ export default defineNuxtConfig({
             link: [
                 { rel: "stylesheet", href: "https://unpkg.com/pattern.css" }
                 ],
-            script: [
-                {
-                    src: "https://cdn.jsdelivr.net/npm/@tsparticles/preset-confetti@2/tsparticles.preset.confetti.bundle.min.js",
-                },
-                {
-                    src: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'
-                }
-            ],
             meta: [
                 {
                     name: "viewport",
                     content:
-                        "width=device-width, height=device-height, initial-scale=1, maximum-scale=1.0, user-scalable=yes",
-                },
-                {
-                    "http-equiv": "ScreenOrientation",
-                    content: "autoRotate:disabled",
+                        "width=device-width, height=device-height, initial-scale=1, minimum-scale=0.5, user-scalable=yes",
                 },
             ],
-            // script: [
-            //     {src: "https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.14.2/matter.js"}
-            // ]
         },
     },
     meta: {

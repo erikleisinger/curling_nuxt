@@ -8,7 +8,7 @@
         >
             <slot name="annotation" />
         </div>
-        <canvas ref="chart" id="canvas" style="z-index: 1" />
+        <canvas ref="chart" id="canvas" style="z-index: 100" />
     </div>
 </template>
 <style lang="scss" scoped>
@@ -38,13 +38,13 @@
 
     h5 {
         font-weight: normal;
-        font-size: var(--text-sm);
+        font-size: calc(var(--text-xs) * 1.1);
         color: black !important;
     }
     h3 {
         font-weight: bold;
         line-height: 0.8em;
-        font-size: var(--text-xxxl);
+        font-size: var(--text-xxl);
     }
     h4 {
         font-size: var(--text-xs);
@@ -132,7 +132,7 @@ const cumulativeAvg = computed(() =>
 const { width: chartWidth, height: chartHeight } = useElementSize(chart);
 const annotation = ref(null);
 const { width: annotationWidth, height: annotationHeight } =
-    useElementBounding(annotation);
+    useElementSize(annotation);
 
 const titlePosition = computed(() => {
     if (!chartWidth.value) return;
@@ -153,12 +153,12 @@ const titlePosition = computed(() => {
     const numPointsTotal = props.data?.datasets[0]?.data?.length ?? 0
 
     const requiredVerticalSpacing =
-        (annotationHeight.value / chartHeight.value) * 100;
+        ((annotationHeight.value / chartHeight.value) * 100);
 
 
     const pointSpacing =
         chartWidth.value / numPointsTotal;
-            const numSpacesNeeded = Math.ceil(annotationWidth.value / pointSpacing);
+            const numSpacesNeeded = Math.ceil((annotationWidth.value / pointSpacing));
 
 
     const topSpaces = arr
