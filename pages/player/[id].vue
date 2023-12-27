@@ -99,7 +99,7 @@
             </section>
         </main>
         <q-dialog v-model="editing" persistent v-if="!isLoading">
-            <q-card>
+            <q-card style="width: 100%">
                 <AvataaarGenerator
                     role="main"
                     v-model="player.avatar"

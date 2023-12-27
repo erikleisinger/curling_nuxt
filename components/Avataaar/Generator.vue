@@ -1,5 +1,5 @@
 <template>
-    <div class="profile__generator--wrap row">
+    <div class="profile__generator--wrap row" ref="container">
         <div
             class="row justify-center items-center avatar__container col-12 col-sm-6"
             ref="avatarContainer"
@@ -204,11 +204,13 @@
 .profile__generator--wrap {
     height: inherit;
     position: relative;
+    max-width: v-bind(maxWidth);
     .avatar__container {
-        padding: var(--space-xl);
+        // padding: var(--space-xl);
         padding-bottom: var(--space-xs);
         padding-top: 0px;
         height: max-content;
+        max-width: inherit;
         @include sm {
             margin-top: 20vh;
             background-color: unset;
@@ -229,10 +231,14 @@
         top: 0;
         z-index: 1;
         padding: var(--space-sm);
+        // max-width: inherit;
+        box-sizing: border-box;
     }
 
     .features__container {
         padding: 0px var(--space-lg);
+        box-sizing: border-box;
+        max-width: inherit;
     }
 }
 </style>
@@ -256,7 +262,7 @@ import Json from "@/types/json";
 
 import { usePlayerStore } from "@/store/players";
 
-import { useElementSize, useDebounceFn, rand } from "@vueuse/core";
+import { useElementSize, useDebounceFn, rand, useParentElement } from "@vueuse/core";
 
 const props = defineProps<{
     modelValue: Object | String;
@@ -335,4 +341,8 @@ const { height } = useElementSize(avatarContainer);
 const loading = ref(false);
 
 const userStore = useUserStore();
+const container = ref(null)
+const {width:parentWidth} = useElementSize(useParentElement(container))
+
+const maxWidth = computed(() => `${parentWidth.value}px`)
 </script>
