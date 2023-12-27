@@ -352,11 +352,7 @@ watch(
     { immediate: true }
 );
 
-const canEdit = computed(() => {
-    console.log('current user id: ', useUserStore().id)
-    console.log('player id: ', route.params.id)
-    return useUserStore().id === route.params.id
-});
+const canEdit = computed(() => useUserStore().id === route.params.id);
 const editing = ref(false);
 
 const rink = computed(() =>

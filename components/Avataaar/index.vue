@@ -358,7 +358,7 @@ watch(
             setTimeout(() => {
                 updatePrimaryFillColor();
                 updateSecondaryFillColor();
-            }, 400);
+            }, 1000);
         } else {
             background.value = props.bgColorPrimary;
         }

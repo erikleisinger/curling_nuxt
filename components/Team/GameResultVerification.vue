@@ -27,7 +27,7 @@
 
     <!-- CREATOR VIEW -->
         <span v-if="!isVerified && isOnTeam(pendingTeam?.id)">
-            <strong>{{ creatorTeam.name }}</strong> added this game result and
+            <TeamChip :teamId="creatorTeam.id"/> added this game result and
             has invited you to verify that it is real.
             <br />
             <br />
@@ -37,16 +37,14 @@
 
         </span>
         <span v-else-if="!isVerified">
-            This game was created by <strong>{{ creatorTeam.name }}</strong
-            >.
+            This game was created by <TeamChip :teamId="creatorTeam.id"/>.
             <span v-if="pendingTeam?.id < 100000000">
                 <br />
                 <br />
 
                 It will only contribute to
-                <strong>{{ pendingTeam.name }}'s</strong> statistics once it is
-                verified by a member of <strong>{{ pendingTeam.name }}</strong
-                >.
+                <TeamChip :teamId="pendingTeam.id"/>'s statistics once it is
+                verified by a member of <TeamChip :teamId="pendingTeam.id"/>.
             </span>
             <span v-else>
                 <br />
@@ -66,13 +64,11 @@
             </span>
         </span>
         <span v-else>
-              This game was created by <strong>{{ creatorTeam.name }}</strong
-            >.
+              This game was created by <TeamChip :teamId="creatorTeam.id"/>.
             <br/>
 
         <br/>
-        It has been verified by <strong>{{ pendingTeam.name }}</strong
-                > and contributes towards their season stats.
+        It has been verified by <TeamChip :teamId="pendingTeam.id"/> and contributes towards their season stats.
         </span>
     </DialogInfo>
 </template>
