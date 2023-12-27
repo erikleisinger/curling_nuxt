@@ -278,7 +278,7 @@ const getBadges = async () => {
         .or(
             `team_id.in.(${teams.value
                 .map(({ id }) => id)
-                .join(",")}),profile_id.eq.${userId.value}`
+                .join(",")}),profile_id.eq.${Number(route.params.id)}`
         )
         .eq("earned", true);
     const e = data
