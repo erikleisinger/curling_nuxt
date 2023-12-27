@@ -353,7 +353,6 @@ watch(
     () => props.circleBg,
     (val) => {
         const id = extractId(val);
-        console.log('id: ', id)
         if (id) {
             background.value = `url(#${id}-${uniqueId})`;
             setTimeout(() => {
