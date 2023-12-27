@@ -122,7 +122,8 @@ export const useLeague = () => {
             color,
             font_color,
             icon,
-            rink_id
+            rink_id,
+            public
         `).eq('rink_id', rinkId)
 
         leagues.forEach((league) => {        

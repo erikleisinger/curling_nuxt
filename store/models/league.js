@@ -22,7 +22,8 @@ export default class League extends Model {
             admins: this.hasMany(LeagueAdmin, 'league_id'),
             pools: this.hasMany(LeaguePool, 'league_id'),
             rink_id: this.number(),
-            rink: this.belongsTo(Rink, 'rink_id')
+            rink: this.belongsTo(Rink, 'rink_id'),
+            public: this.boolean(),
         }
        
     }

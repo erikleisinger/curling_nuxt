@@ -182,6 +182,26 @@
                     </q-item>
                 </q-list>
             </q-card-section>
+              <q-card-section >
+                <h4>Options</h4>
+                 <q-list separator>
+      <q-item tag="label" v-ripple style="padding-right: 4px; padding-left: 4px">
+        <q-item-section>
+               <q-item-label >Public</q-item-label>
+          <q-item-label caption>Anyone can join this league.</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-toggle
+        v-model="league.public"
+        :style="{color: league.color}"
+        class="toggle"
+
+      ></q-toggle>
+        </q-item-section>
+      </q-item>
+                 </q-list>
+                 
+              </q-card-section>
             <q-card-actions >
                 <div class="full-width row justify-between">
                     <q-btn flat @click="close">Close</q-btn>
@@ -220,7 +240,15 @@
         border-style: solid;
     }
 
+    .toggle {
 
+        :deep(.q-toggle__inner--truthy) {
+            color: inherit!important;
+        }
+        :deep(.q-toggle__label) {
+            color: black!important;
+        }
+    }
     .pool__container {
         padding: var(--space-xs);
         border-radius: 8px;
@@ -278,6 +306,7 @@ const defaultLeague = {
     color: "#3f51b5",
     font_color: null,
     icon: null,
+    public: false,
 };
 
 const league = ref(defaultLeague);
@@ -474,13 +503,14 @@ const client = useSupabaseClient();
 
 const createLeague = async () => {
   
-    const {name, color} = league.value;
+    const {name, color, public: isPublic} = league.value;
     const {id:rink_id = null} = rink.value ?? {}  
     const {data, error} = await client.from('leagues').upsert([{
          ...(editedItem.value?.id ? {id: editedItem.value.id} : {}),
         name, 
         color,
-        rink_id
+        rink_id,
+        public: isPublic
     }]).select('id').single()
 
     if (error) throw new Error(error)
@@ -556,7 +586,7 @@ const save = async () => {
       }
     const notId = useNotificationStore().addNotification({
         state: 'pending',
-        text: `Creating ${league.value.name}...`
+        text: `${isEdited.value ? 'Updating' : 'Creating'} ${league.value.name}...`
     })
     try {
         const league_id = await createLeague();
@@ -570,7 +600,7 @@ const save = async () => {
 
          useNotificationStore().updateNotification(notId, {
             state: 'completed',
-            text: `${league.value.name} was created!`,
+            text: `${league.value.name} was ${isEdited.value ? 'updated' : 'created'}!`,
             timeout: 2000,
         })
         queryClient.invalidateQueries({
@@ -581,7 +611,7 @@ const save = async () => {
     } catch(error) {
         useNotificationStore().updateNotification(notId, {
             state: 'failed',
-            text: `Error creating ${league.value.name}: ${error?.message}`,
+            text: `Error ${isEdited.value ? 'updating' : 'creating'} ${league.value.name}: ${error?.message}`,
             timeout: 5000,
         })
     }
@@ -595,6 +625,7 @@ const saveDisabled = computed(() => !league.value?.name || !league.value?.color 
 const initEdit = () => {
     league.value.name = editedItem.value?.name ?? null;
     league.value.color = editedItem.value?.color ?? null;
+    league.value.public = editedItem?.value?.public ?? false;
     rink.value = useRepo(Rink).where('id', editedItem.value.rink_id).first()
     drawtimes.value = editedItem.value.drawtimes.map((time) => ({
         id: time.id ?? null,
