@@ -9,7 +9,7 @@
         <div class="underlay" />
         <div class="overlay" ref="overlay">
             <div
-                class="content-container"
+                class="content-container full-height"
                 :class="{ 'stretch-height': !dense }"
             >
                 <div class="column justify-between" style="max-width: inherit">
@@ -253,6 +253,7 @@
         display: flex;
         flex-direction: column;
         max-width: 100%;
+        flex-grow: 1;
     }
     .badges {
         padding: 0px var(--space-xs);

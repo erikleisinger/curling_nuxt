@@ -301,6 +301,7 @@ onMounted(() => {
 });
 
 const extractId = (str: string) => {
+    if (!str) return null;
     const regex = /#([^)]+)\)/;
     const match = str.match(regex) ?? [];
     return match[1];
