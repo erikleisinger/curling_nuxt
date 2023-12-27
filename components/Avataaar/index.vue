@@ -305,7 +305,7 @@ const avatar = ref(null);
 const updatePrimaryFillColor = () => {
     const newColor = props.bgColorPrimary;
     const id = extractId(props.circleBg);
-    const pattern = avatar.value.querySelector(`#${id}-${uniqueId}`);
+    const pattern = avatar.value?.querySelector(`#${id}-${uniqueId}`);
     if (pattern) {
         Array.from(pattern.querySelectorAll(".primarybg")).forEach((el) => {
             el.setAttribute("fill", newColor);
@@ -316,7 +316,7 @@ const updatePrimaryFillColor = () => {
 const updateSecondaryFillColor = () => {
     const newColor = props.bgColorSecondary;
     const id = extractId(props.circleBg);
-    const pattern = avatar.value.querySelector(`#${id}-${uniqueId}`);
+    const pattern = avatar.value?.querySelector(`#${id}-${uniqueId}`);
     if (pattern) {
         Array.from(pattern.querySelectorAll(".secondarybg")).forEach((el) => {
             el.setAttribute("fill", newColor);

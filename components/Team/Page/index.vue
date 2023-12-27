@@ -311,7 +311,7 @@ import { useElementSize, useDebounceFn } from "@vueuse/core";
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
 
-
+        const {toTimezone} = useTime();
 
 const viewing = ref(false)
 
@@ -357,6 +357,7 @@ const featuredBadge = computed(() =>
 const badgesLimited = computed(() =>
     [...(team.value?.badges ?? [])]
         .filter(({ id }) => id !== team.value.featured_badge_id)
+        .sort((a,b) =>  toTimezone(b.created_at, null, false, true).unix() - toTimezone(a.created_at, null, false, true).unix())
         .splice(0, $q.screen.xs ? (team.value.featured_badge_id ? 1 : 2) : (team.value.featured_badge_id ? 3 : 4))
 );
 
@@ -395,7 +396,7 @@ const badgesSorted = computed(() => [...(team.value?.badges ?? [])].sort((a,b) =
         return sortAlphabetically(BADGE_NAMES[a.name].toLowerCase().replaceAll(' ', ''), BADGE_NAMES[b.name].toLowerCase().replaceAll(' ', ''), sortAlphabeticalOrder.value === 'asc')
     }
     if (sortDateOrder.value) {
-        const {toTimezone} = useTime();
+
         if (sortDateOrder.value === 'asc') {
             return toTimezone(b.created_at, null, false, true).unix() - toTimezone(a.created_at, null, false, true).unix();
         }
