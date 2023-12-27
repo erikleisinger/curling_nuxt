@@ -76,7 +76,7 @@
             </q-knob>
             </div>
               <h2 class="text-center text-sm " style="height: fit-content">
-               {{stats.games_played}} games pplayed
+               {{stats.games_played}} games played
             </h2>
         </div>
     </div>
