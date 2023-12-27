@@ -19,8 +19,8 @@
                 v-if="avatar"
               
             ></q-img>
-            <h1 class="team-name">
-                <span>{{ team.name }}</span>
+            <h1 class="team-name" v-html="truncateWords(team.name, 12)">
+                
             </h1>
         </div>
 
@@ -122,7 +122,7 @@ const emit = defineEmits(['loaded'])
 
 const $q = useQuasar();
 
-
+const {truncateWords} = useText();
 
 const team = computed(() => {
     const t = useRepo(Team).with("players").where("id", props.teamId).first()

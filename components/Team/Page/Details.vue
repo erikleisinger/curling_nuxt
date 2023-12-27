@@ -25,7 +25,9 @@
             />
         </div>
         <h2 class="team-name text-center" v-if="!editing && props.teamId">
-            {{ team.name }}
+            <span v-for="word,i in team.name.split(' ')" :key="i" :style="{'word-break': word.length > 15 ? 'break-word' : ''}">
+            {{ `${word} ` }}
+            </span>
         </h2>
         <q-input
             dense
@@ -34,7 +36,7 @@
             class="name-input"
             :class="{error: isNameError}"
             :maxlength="MAX_TEAM_NAME_LENGTH"
-            :rules="[VALIDATION_RULES.REQUIRED]"
+            :rules="[VALIDATION_RULES.REQUIRED, VALIDATION_RULES.MAX_LENGTH(MAX_TEAM_NAME_LENGTH)]"
             hide-bottom-space
             ref="nameInput"
             placeholder="Enter a team name"
@@ -266,6 +268,10 @@
         text-transform: uppercase;
         font-size: var(--text-lg);
         margin-bottom: var(--space-xxxs);
+        max-width: 100%;
+        span {
+            max-width: inherit;
+        }
     }
     .rink-name {
         text-align: center;

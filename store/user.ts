@@ -102,6 +102,7 @@ export const useUserStore = defineStore("user", {
                 state: 'pending',
                 text: `Updating avatar...`,
             })
+            console.log('UPDATE AVATAR: ', newAvatar)
 
             const client = useSupabaseClient();
             const {errors} = await client.from('profiles').update({avatar}).eq('id', this.id)

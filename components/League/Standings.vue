@@ -28,8 +28,8 @@
                         <TeamAvatar :teamId="team.id" viewable/>
                     </div>
                 </q-item-section>
-                <q-item-section>
-                    {{team?.name}}
+                <q-item-section v-html="truncateWords(team.name)" style="display: block">
+            
                 </q-item-section>
                 <q-item-section avatar>
                    <div class="row" v-if="standings">
@@ -86,6 +86,8 @@ import {useQuery} from '@tanstack/vue-query'
     const props = defineProps({
         leagueId: Number,
     })
+
+    const {truncateWords} = useText()
 
     const league = computed(() => useRepo(League).withAllRecursive().where('id', props.leagueId).first())
 

@@ -21,8 +21,9 @@
                             <div class="team-name__container">
                                 <h2
                                     class="text-sm text-center col-grow full-width highlightable"
+                                    v-html="truncateWords(home.name)"
                                 >
-                                    {{ home.name }}
+                                 
                                 </h2>
                                 <div
                                     class="placeholder--floating right"
@@ -135,8 +136,8 @@
                                         width: fit-content;
                                         position: relative;
                                     "
-                                >
-                                    {{ away.name }}
+                                v-html="truncateWords(away.name)">
+                                 
                                 </h2>
                                 <div
                                     class="placeholder--floating"
@@ -337,6 +338,8 @@ watch(
     },
     { immediate: true }
 );
+
+const {truncateWords} = useText();
 
 const $q = useQuasar();
 

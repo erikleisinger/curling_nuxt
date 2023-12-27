@@ -25,6 +25,7 @@
             </div>
         </div>
         <div class="row q-py-md col-12 col-sm-6 features__container">
+
             <AvataaarFeatureSelector
                 :features="skinColors"
                 v-model="avatar.skinColor"
@@ -137,6 +138,52 @@
                 :disabled="readOnly"
                 label="Mouth"
             />
+                        <q-select
+                :options="backgrounds"
+                v-model="avatar.circleBg"
+                emit-value
+                map-options
+                class="col-12"
+                label="Background"
+                dense
+            >
+     
+                <template v-slot:after>
+                    <q-btn
+                        flat
+                        round
+                        icon="circle"
+                        dense
+                        :style="{ color: avatar.bgColorPrimary }"
+                    >
+                        <q-popup-proxy
+                       
+                            transition-show="scale"
+                            transition-hide="scale"
+                         
+                         
+                        >
+                            <q-color v-model="avatar.bgColorPrimary"></q-color>
+                        </q-popup-proxy>
+                    </q-btn>
+                     <q-btn
+                        flat
+                        round
+                        icon="circle"
+                        dense
+                        :style="{ color: avatar.bgColorSecondary }"
+                            v-if="isBackgroundPattern"
+                    >
+                        <q-popup-proxy
+                           
+                            transition-show="scale"
+                            transition-hide="scale"
+                        >
+                            <q-color v-model="avatar.bgColorSecondary"></q-color>
+                        </q-popup-proxy>
+                    </q-btn>
+                </template>
+            </q-select>
 
             <div class="col-12 row justify-between q-my-lg">
                 <q-btn
@@ -249,10 +296,36 @@ const randomize = useDebounceFn(() => {
     avatar.value.topType = getRandomChoice(topTypes);
 }, 100);
 
-
 onMounted(() => {
     if (!Object.keys(props.modelValue)?.length) randomize();
-})
+});
+
+const extractId = (str: string) => {
+    const regex = /#([^)]+)\)/;
+    const match = str.match(regex) ?? [];
+    return match[1];
+};
+
+const isBackgroundPattern = computed(() => !!extractId(avatar.value?.circleBg));
+
+const backgrounds = [
+    {
+        label: "Default",
+        value: "#6fb8e0",
+    },
+    // {
+    //     label: "Diagonal",
+    //     value: `url(#circles-1)`,
+    // },
+    // {
+    //     label: "Honeycomb",
+    //     value: `url(#hex-1)`,
+    // },
+    //  {
+    //     label: "Carbon Fibre",
+    //     value: `url(#carbon-fibre-1)`,
+    // },
+];
 
 const avatarContainer = ref(null);
 

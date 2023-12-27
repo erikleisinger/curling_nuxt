@@ -1,5 +1,22 @@
 <template>
-      <q-select :options="options" behavior="menu" v-model="feature" />
+      <q-select :options="options" behavior="menu" v-model="feature" >
+       
+        <template v-slot:selected-item="{opt}">
+          
+            {{labels[opt] ?? opt}}
+              
+        </template>
+        <template v-slot:option="{opt, itemProps}">
+            <q-item clickable v-ripple v-bind="itemProps">
+                <q-item-section avatar v-if="opt.icon">
+                    <q-icon :name="opt.icon" :style="{color: opt.color}" dense />
+                </q-item-section>
+                <q-item-section>
+                    {{opt.label}}
+                </q-item-section>
+            </q-item>
+        </template>
+      </q-select>
 </template>
 <script setup>
 const props = defineProps({
@@ -16,22 +33,24 @@ const feature = computed({
         return props.modelValue;
     },
     set(val) {
-        emit("update:modelValue", val.label);
+        emit("update:modelValue", val.value);
     },
 });
 
-// const featureOptions = { ...props.features, null: null };
 
-// const options = Object.keys(featureOptions);
-// const goToFeature = (inc) => {
-//     const currentIndex = options.findIndex((o) => o === feature.value);
-//     if (currentIndex + inc < 0 || currentIndex + inc > options.length - 1)
-//         return;
-//     feature.value = options[currentIndex + inc];
-// };
+const labels = {
+    
+}
 
+const isColorOpt = (str) => {
+    return str.charAt(0) === '#'
+}
+
+const {sortAlphabetically} = useSort();
 const options = Object.entries(props.features).map(([label, value]) => ({
-    label,
-    value
-}))
+    label: labels[label] ?? label,
+    value: label,
+    icon: isColorOpt(value) ? 'circle' : '',
+    color: value,
+})).sort((a,b) => sortAlphabetically(a.label, b.label))
 </script>
