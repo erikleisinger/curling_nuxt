@@ -4,7 +4,7 @@
         ref="container"
         :class="{ dense }"
         :style="`background-image: url(${avatar})`"
-        @click="navigateTo(`/teams/${teamId}`)"
+        
     >
         <div class="underlay" />
         <div class="overlay" ref="overlay">
@@ -14,12 +14,13 @@
             >
                 <div class="column justify-between" style="max-width: inherit">
                     <div
-                        class="name"
+                        class="name "
                         :class="{ dense, 'full-width': width <= 200 }"
+                       
                     >
-                        <h2 class="text-uppercase text-bold">
+                        <h2 class="text-uppercase text-bold " style="width: fit-content" >
                             <!-- {{ team?.name }} -->
-                            <span v-for="word, i in team?.name?.split(' ')" :class="{'truncate': word.length > 10}" :key="i">{{`${word} `}} </span>
+                            <span class="clickable" v-for="word, i in team?.name?.split(' ')" :class="{'truncate': word.length > 10}" :key="i"  @click="navigateTo(`/teams/${teamId}`)">{{`${word} `}} </span>
                         </h2>
 
                         <h3 class="text-xs">{{ rink?.name }}</h3>

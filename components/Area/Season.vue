@@ -60,9 +60,7 @@
                 <q-item
                     v-for="league in leagues"
                     :key="league.id"
-                    clickable
-                    v-ripple
-                        @click="navigateTo(`/leagues/${league.id}`)"
+                     
                      
                 >
                     <q-item-section avatar>
@@ -74,10 +72,12 @@
                         <q-item-label
                             class="text-bold"
                             :style="{ color: league.color }"
-                          
+                             
                          
                         >
+                        <span style="width:fit-content" class="clickable" @click="navigateTo(`/leagues/${league.id}`)">
                             {{ league.name }}
+                        </span>
                         </q-item-label>
                         <q-item-label caption style="margin:0" >
                             <RinkChip :rinkId="league?.rink?.id"  />
