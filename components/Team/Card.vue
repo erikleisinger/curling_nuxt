@@ -10,7 +10,7 @@
         <div class="overlay" ref="overlay">
             <div
                 class="content-container full-height"
-                :class="{ 'stretch-height': !dense }"
+              
             >
                 <div class="column justify-between" style="max-width: inherit">
                     <div
@@ -152,6 +152,9 @@
     }
     &.dense {
         min-height: unset;
+        .overlay {
+            flex-grow: 1
+        }
     }
     .name {
         letter-spacing: 0.001em;
@@ -253,7 +256,8 @@
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        flex-grow: 1;
+        flex-grow: 1
+        
     }
     .badges {
         padding: 0px var(--space-xs);
@@ -261,9 +265,6 @@
         .showmore-badges__text {
             font-size: v-bind(nameFontSize);
         }
-    }
-    .stretch-height {
-        min-height: v-bind(cardHeightPx);
     }
 }
 </style>
