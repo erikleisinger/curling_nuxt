@@ -270,7 +270,6 @@ const { isLoading: isLoadingTeams } = useQuery({
 
 const dayjs = useDayjs();
 const { toTimezone } = useTime();
-const { user: userId } = useUser();
 const getBadges = async () => {
     const { data } = await client
         .from("badges")
@@ -278,7 +277,7 @@ const getBadges = async () => {
         .or(
             `team_id.in.(${teams.value
                 .map(({ id }) => id)
-                .join(",")}),profile_id.eq.${Number(route.params.id)}`
+                .join(",")}),profile_id.eq.${route.params.id}`
         )
         .eq("earned", true);
     const e = data
