@@ -1,5 +1,5 @@
 <template>
-    <q-dialog v-model="isOpen" @hide="close" persistent>
+    <q-dialog v-model="isOpen" @hide="close" persistent class="dialog">
         <q-card class="league-editor__wrap">
             <!-- Header -->
 
@@ -227,9 +227,12 @@
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+.dialog {
+    background-color: red;
+}
 .league-editor__wrap {
     min-width: min(90vw, 600px);
-    min-height: min(90vh, 800px);
+    min-height: min(80vh, 800px);
     .q-card__section {
         h4 {
             font-size: 1em;
