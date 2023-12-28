@@ -33,7 +33,6 @@
             if (!item.team?.id) return;
             useRepo(Team).save(item.team)
         })
-        useRepo()
         return data;
     }
 

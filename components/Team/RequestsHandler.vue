@@ -10,8 +10,8 @@
                 <q-btn color="green" @click="respondToRequest('accepted')" :disable="responding">Accept</q-btn>
             </div>
         </div>
-        <div v-else-if="isRequested && !isOnTeam">
-            You have requested to join this team.
+        <div v-else-if="isRequested && !isOnTeam" class="q-pa-sm bg-primary">
+           <div class="full-width text-center text-bold text-white"> You have requested to join this team.</div>
         </div>
         <q-btn v-else-if="!isOnTeam && !isLoading" class="full-width" color="primary" @click="requestToJoin">Request to join team</q-btn>
     </div>
