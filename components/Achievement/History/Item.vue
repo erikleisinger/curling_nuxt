@@ -172,7 +172,7 @@
         <q-item-section v-if="item.name === 'game_win'">
             <span
                 ><TeamChip :teamId="item.team.id" /> won
-                {{ item.info.points_for }}-{{
+                {{ item.info.points_for ?? 0 }}-{{
                     item.info.points_against ?? 0
                 }}
                 against
@@ -188,7 +188,7 @@
         <q-item-section v-if="item.name === 'game_loss'">
             <span
                 ><TeamChip :teamId="item.team.id" /> lost
-                {{ item.info.points_for }}-{{
+                {{ item.info.points_for ?? 0 }}-{{
                     item.info.points_against ?? 0
                 }}
                 to
@@ -205,7 +205,7 @@
         <q-item-section v-if="item.name === 'game_tie'">
             <span
                 ><TeamChip :teamId="item.team.id" /> tied
-                {{ item.info.points_for }}-{{
+                {{ item.info.points_for ?? 0 }}-{{
                     item.info.points_against ?? 0
                 }}
                 against

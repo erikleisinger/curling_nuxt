@@ -4,6 +4,9 @@
             <TeamRequest :request="request"> </TeamRequest>
         </div>
     </div>
+    <!-- <div v-if="route.query.request" class="outbound-request__prompt row justify-center">
+       <q-btn square stretch color="primary" class="full-width">Request to join team</q-btn>
+    </div> -->
     <TeamPageHeader
         :teamId="teamId"
         @click="viewing = true"
@@ -267,6 +270,13 @@
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+.outbound-request__prompt {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+    height: 50px;
+}
 .stats__overview {
     margin: 0px calc(var(--space-md) + var(--space-xs));
    
