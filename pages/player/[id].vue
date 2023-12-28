@@ -27,7 +27,7 @@
                 :rinkId="rink?.id"
                 :canEdit="canEdit"
                 noRinkEditText="Click to select home rink"
-                @update="updateHomeRink"
+                @update="updateHomeRink($event?.id)"
                 v-if="!isLoading"
                 editText="Select home rink"
             />
@@ -360,17 +360,9 @@ const rink = computed(() =>
 
 const { toggleGlobalSearch } = useDialogStore();
 
-const updateHomeRink = async (selection) => {
-    if (!canEdit.value) return;
-    const client = useSupabaseClient();
-    await client
-        .from("profiles")
-        .update({
-            rink_id: selection.id,
-        })
-        .eq("id", player.value.id);
-    await useUserStore().getCurrentUser();
-};
+const {updateHomeRink} = useUserStore();
+
+
 
 const onClickAvatar = () => {
     if (!canEdit.value) return;

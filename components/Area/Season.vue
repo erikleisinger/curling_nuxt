@@ -52,9 +52,23 @@
          <section name="home rink" :class="$q.screen.xs ? 'col-12' : 'col-6'">
              <div class="header-text">
             <h3 >Club news <div class="underline"/></h3>
-            <h4 v-if="homeRink?.name">{{homeRink.name}}</h4>
+            <h4 >{{homeRink?.name ?? "Unknown rink"}}</h4>
              </div>
              <RinkNews v-if="homeRink?.id" :rinkId="homeRink.id"/>
+              <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm" >
+                     <q-btn rounded color="primary" @click="toggleGlobalSearch({
+                    open: true,
+                    options: {
+                        inputLabel: 'Search for your home rink',
+                        resourceTypes: ['rink'],
+                        callback: ({id}) => {
+                            updateHomeRink(id)
+                        }
+                    }
+                    
+
+                })">Select a home rink</q-btn>
+                </div>
          </section>
 
 
@@ -226,6 +240,7 @@ main {
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
+import {useUserStore} from '@/store/user'
 import {useDialogStore} from '@/store/dialog'
 import { useQuery } from "@tanstack/vue-query";
 import { useElementBounding } from "@vueuse/core";
@@ -233,8 +248,12 @@ import Player from '@/store/models/player';
 import Rink from '@/store/models/rink'
 import gsap from 'gsap';
 
+const {getCurrentUser, updateHomeRink} = useUserStore();
+
 
 const {toggleTeamCreator, toggleGlobalSearch} = useDialogStore();
+
+
 
 
 const $q = useQuasar();

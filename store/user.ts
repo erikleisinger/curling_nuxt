@@ -51,11 +51,13 @@ export const useUserStore = defineStore("user", {
                
             );
             const [user] = data;
+            console.log('got user: ', user)
             if (!user) return;
             Object.assign(this, user);
             useRepo(Player).save(user)
             if (user.rink_id) {
                 const {data:rink} = await client.from('rinks').select('*').eq('id', user.rink_id).single();
+                console.log('got rink: ', rink)
                 useRepo(Rink).save(rink)
             }
         },
@@ -94,6 +96,36 @@ export const useUserStore = defineStore("user", {
         toggleShowNumbers() {
             this.showNumbers = !this.showNumbers;
         },
+        async updateHomeRink(rink_id: number) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: 'pending',
+                text: `Updating home rink...`,
+            })
+
+            const client = useSupabaseClient();
+        const {errors} = await client
+        .from("profiles")
+        .update({
+            rink_id,
+        })
+        .eq("id", this.id);
+
+        if (errors) {
+            notStore.updateNotification(notId, {
+                state: 'failed',
+                text: `Error updating home rink (code: ${errors.code})`
+            })
+        } else {
+            await  this.getCurrentUser();
+            notStore.updateNotification(notId, {
+                state: 'completed',
+                text: `Home rink updated!`
+            })
+        
+        }
+
+        },
         async updateUserAvatar(newAvatar) {
             const avatar = typeof newAvatar === 'object' ? JSON.stringify(newAvatar) : newAvatar;
 
@@ -102,7 +134,6 @@ export const useUserStore = defineStore("user", {
                 state: 'pending',
                 text: `Updating avatar...`,
             })
-            console.log('UPDATE AVATAR: ', newAvatar)
 
             const client = useSupabaseClient();
             const {errors} = await client.from('profiles').update({avatar}).eq('id', this.id)
