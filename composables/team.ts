@@ -61,7 +61,14 @@ export const useTeam = () => {
             .from("team_requests")
             .select(
                 `
-                user:requestee_profile_id (
+                requestee:requestee_profile_id (
+                    id,
+                    username,
+                    first_name,
+                    last_name,
+                    avatar
+                ),
+                requester:requester_profile_id (
                     id,
                     username,
                     first_name,
@@ -73,17 +80,19 @@ export const useTeam = () => {
             `
             )
             .eq("team_id", teamId)
-            .eq("status", "pending");
+            .eq('status', 'pending')
+
+
         return [...(data ?? []), ...(requests ?? [])].map((p) => {
             const status = p.status ?? null;
-
             const returnObj = {
                 id: Number(p.id),
-                player_id: p.user.id,
+                player_id: p.user?.id || p.requester?.id || p.requestee?.id,
                 team_id: teamId,
-                status,
+                status: status === 'pending' ? (p.requester?.id ? 'requested' : 'invited') : status,
                 position: p.position,
-                player: p.user,
+                player: p.user || p.requester || p.requestee,
+                request_id: p.status ? p.id : null,
             };
 
             return returnObj;
@@ -129,10 +138,9 @@ export const useTeam = () => {
                 public: isPublic
             } = t;
 
-            
 
             players.forEach((p) => {
-                const { player, id, team_id, status, position } = p;
+                const { player, id, team_id, status, position, request_id } = p;
 
                 useRepo(Player).save(player);
                 useRepo(TeamPlayer).save({
@@ -141,6 +149,7 @@ export const useTeam = () => {
                     status,
                     position,
                     player_id: player?.id,
+                    request_id
                 });
             });
             

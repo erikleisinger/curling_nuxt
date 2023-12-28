@@ -12,6 +12,7 @@
 <script setup>
     import {useQuery} from '@tanstack/vue-query';
     import {useUserStore} from '@/store/user'
+    import Team from '@/store/models/team'
 
     const props = defineProps({
         limit: {
@@ -27,6 +28,12 @@
         const {data} = await client.rpc('get_rink_news', {
             rink_id_param: props.rinkId
         }).limit(props.limit)
+
+        data.forEach((item) => {
+            if (!item.team?.id) return;
+            useRepo(Team).save(item.team)
+        })
+        useRepo()
         return data;
     }
 

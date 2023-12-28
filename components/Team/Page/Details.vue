@@ -109,13 +109,14 @@
                 :disabled="!editing"
                 :canRemove="
                     editing &&
-                    (player?.pivot?.status === 'pending' ||
+                    ((player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested') ||
                         permanentPlayers.length > 1)
                 "
                 :canEditPosition="
-                    editing && player?.pivot?.status !== 'pending'
+                    editing && (player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested')
                 "
-                :pending="player?.pivot?.status === 'pending'"
+                :invited="player?.pivot?.status === 'invited'"
+                :requested="player?.pivot?.status === 'requested'"
             >
                 <div class="player-avatar__container column items-center">
                     <Avataaar
@@ -126,8 +127,14 @@
                     <q-badge
                         color="orange"
                         align="bottom"
-                        v-if="player.pivot && player.pivot.status"
+                        v-if="player.pivot && player.pivot.status === 'invited'"
                         >Invited</q-badge
+                    >
+                     <q-badge
+                        color="orange"
+                        align="bottom"
+                        v-else-if="player.pivot && player.pivot.status === 'requested'"
+                        >Requested</q-badge
                     >
                     <q-badge v-else color="blue" align="bottom">
                         {{
@@ -637,7 +644,7 @@ const openRinkSearch = () => {
 };
 
 const inviteUser = async (e) => {
-    await useTeamRequestStore().sendTeamRequest({
+    await useTeamRequestStore().sendTeamInvitation({
         requestee_profile_id: e.profile_id,
         team_id: props.teamId,
     });

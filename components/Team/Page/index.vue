@@ -1,10 +1,11 @@
 <template>
-    <div v-if="teamRequests && teamRequests.length">
+<TeamRequestsHandler :teamId="teamId"/>
+    <!-- <div v-if="teamRequests && teamRequests.length">
         <div v-for="request in teamRequests" :key="request.id">
             <TeamRequest :request="request"> </TeamRequest>
         </div>
     </div>
-    <!-- <div v-if="route.query.request" class="outbound-request__prompt row justify-center">
+    <div v-if="route.query.request" class="outbound-request__prompt row justify-center">
        <q-btn square stretch color="primary" class="full-width">Request to join team</q-btn>
     </div> -->
     <TeamPageHeader

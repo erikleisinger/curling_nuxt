@@ -106,12 +106,11 @@ export const useTeamRequestStore = defineStore("team-requests", {
             return data;
         },
 
-        async sendTeamRequest({
+        async sendTeamInvitation({
             requestee_profile_id,
             team_id,
         }: {
             requestee_profile_id?: string;
-            requester_profile_id?: string;
             team_id: number;
         }) {
 
@@ -151,7 +150,57 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 useRepo(TeamPlayer).save({
                     team_id,
                     player_id: requestee_profile_id,
-                    status: "pending",
+                    status: "invited",
+                    position: null,
+                });
+                return id;
+            }
+        },
+        async sendTeamRequest({
+            requester_profile_id,
+            team_id,
+        }: {
+            requester_profile_id?: string;
+            team_id: number;
+        }) {
+
+
+            const { client, fetchHandler } = useSupabaseFetch();
+
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Requesting to join team...`,
+                timeout: 10000,
+            });
+
+            const { error, data } = await fetchHandler(() =>
+                client.from(TABLE_NAMES.TEAM_REQUESTS).upsert({
+                    team_id,
+                    requester_profile_id,
+                }).select('id')
+            );
+
+            if (error) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `Error sending request: ${error.message} (code ${error?.code ?? "X"})`,
+                    timeout: 10000,
+                });
+
+                return false;
+            } else {
+                const [user] = data || {}
+                const {id} = user || {}
+                notStore.updateNotification(notId, {
+                    state: "completed",
+                    text: `Request sent!`,
+                    timeout: 4000,
+                });
+                useRepo(TeamPlayer).save({
+                    team_id,
+                    player_id: requester_profile_id,
+                    status: "requested",
                     position: null,
                 });
                 return id;

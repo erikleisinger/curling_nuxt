@@ -16,7 +16,8 @@ export default class TeamPlayer extends Model {
             team: this.belongsTo(Team, 'team_id'),
             player: this.belongsTo(Player, 'player_id'),
             status: this.string(),
-            position: this.string()
+            position: this.string(),
+            request_id: this.number()
         };
     }
 }

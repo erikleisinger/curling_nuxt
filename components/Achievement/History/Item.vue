@@ -223,7 +223,7 @@
     <!-- TEAM REQUESTS -->
 
     <q-item
-        v-if="item.type === 'team_request'"
+        v-if="item.type === 'team_request' && item.name === 'pending_request'"
         class="achievement-history__item"
         :class="{ unread }"
         v-ripple
@@ -232,12 +232,12 @@
     >
         <q-item-section avatar @click.stop>
             <div style="width: 42px" class="relative-position">
-                <TeamAvatar :teamId="item.team.id" viewable> </TeamAvatar>
+                <Avataaar v-bind="item.info.avatar"/>
             </div>
         </q-item-section>
         <q-item-section>
             <span>
-                You were invited to join
+                {{item.info.first_name}} {{item.info.last_name}} requested to join
 
                 <strong>{{ item.team.name }}</strong>
             </span>
@@ -423,6 +423,7 @@ const getAchievementDate = (d) => {
 const { user: userId } = useUser();
 
 const getProfileName = (profile) => {
+    if (!profile) return ''
     if (profile.id === userId.value) return "You";
     return `${profile.first_name} ${profile.last_name}`;
 };

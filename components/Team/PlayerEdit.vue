@@ -9,7 +9,7 @@
                             <q-icon name="person_remove" />
                         </q-item-section>
                         <q-item-section label>
-                            {{pending ? 'Cancel invitation' : 'Remove from team'}}
+                            {{invited ? 'Cancel invitation' : requested ? 'Respond to request' : 'Remove from team'}}
                         </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple v-if="canEditPosition">
@@ -48,13 +48,18 @@
                 <div class="text-h6" v-if="!requestStatus">
                     Remove {{ playerName }} from team?
                 </div>
-                <div class="text-h6" v-else>
+                <div class="text-h6" v-else-if="requestStatus === 'invited'">
                     Cancel invitation to {{ playerName }}?
+                </div>
+                  <div class="text-h6" v-else-if="requestStatus === 'requested'">
+                   {{ playerName }} has requested to join the team.
                 </div>
             </q-card-section>
             <q-card-actions class="row justify-between">
-                <q-btn flat @click="confirmOpen = false">Back</q-btn>
-                <q-btn flat color="red" @click="onRemove">{{
+                <q-btn v-if="requestStatus === 'requested'" flat color="red" @click="decline">Decline request</q-btn>
+                <q-btn flat @click="confirmOpen = false" v-else>Back</q-btn>
+                <q-btn flat color="green" v-if="requestStatus === 'requested'" @click="approve">Approve request</q-btn>
+                <q-btn flat color="red" @click="onRemove" v-else>{{
                     requestStatus ? "Cancel invitation" : "Remove"
                 }}</q-btn>
             </q-card-actions>
@@ -88,8 +93,9 @@ const props = defineProps({
     canEditPosition: Boolean,
     canRemove: Boolean,
     disabled: Boolean,
-    pending: Boolean,
+    invited: Boolean,
     playerId: String,
+    requested: Boolean,
     teamId: Number,
 });
 const remove = () => {
@@ -98,15 +104,18 @@ const remove = () => {
 };
 const confirmOpen = ref(false);
 
-const player = computed(() =>
-    useRepo(Player).where("id", props.playerId).first()
+const player = computed(() => {
+    const p = useRepo(TeamPlayer).with('player').where("player_id", props.playerId).first()
+    return {
+        ...p,
+        ...p.player
+    }
+}
+
 );
 const requestStatus = computed(
     () =>
-        useRepo(TeamPlayer)
-            .where("team_id", props.teamId)
-            .where("player_id", props.playerId)
-            .first()?.status ?? null
+        player.value?.status
 );
 const playerName = computed(
     () => `${player.value.first_name} ${player.value.last_name}`
@@ -144,6 +153,41 @@ const onRemove = async () => {
     removing.value = false;
     confirmOpen.value = false;
 };
+
+const decline = async () => {
+     removing.value = true;
+    const client = useSupabaseClient();
+    await client
+                .from("team_requests")
+                .delete()
+                .eq("team_id", props.teamId)
+                .eq('requester_profile_id', props.playerId)
+
+   useRepo(TeamPlayer).where('team_id', props.teamId).where('player_id', props.playerId).delete();
+    queryClient.invalidateQueries({
+        queryKey: ["team", "full", props.teamId],
+    });
+    removing.value = false;
+        confirmOpen.value = false;
+}
+
+const approve = async () => {
+     removing.value = true;
+    const client = useSupabaseClient();
+    await client
+                .from("team_requests")
+                .update({
+                    status: 'accepted'
+                })
+                .eq("team_id", props.teamId)
+                .eq('requester_profile_id', props.playerId)
+
+    queryClient.invalidateQueries({
+        queryKey: ["team", "full", props.teamId],
+    });
+    removing.value = false;
+        confirmOpen.value = false;
+}
 
 const menuOpen = ref(false)
 
