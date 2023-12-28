@@ -102,7 +102,6 @@ const {getRink} = useRink();
 
 const { isLoading, data: rink} = getRink(rinkId, {
     select: (val) => {
-        console.log('got rink on select: ', val)
         const { setLoading } = useLoading();
         setLoading(false);
         return val;

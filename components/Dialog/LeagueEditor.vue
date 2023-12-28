@@ -717,10 +717,6 @@ const createLeagueAdmins = async (league_id: number) => {
 };
 
 const createLeagueTeams = async (league_id: number, poolIds) => {
-    console.log(
-        "league teams deletion: ",
-        `(${teams.value.map(({ id }) => id).join(",")})`
-    );
     await client
         .from("league_teams")
         .delete()
@@ -728,15 +724,6 @@ const createLeagueTeams = async (league_id: number, poolIds) => {
         .not("id", "in", `(${teams.value.map(({ id }) => id).join(",")})`);
     const { error } = await client.from("league_teams").upsert(
         teams.value.map(({ id, league_pool_id, team }) => {
-            console.log("team id: ", id);
-            console.log("inserting: ", {
-                ...(id ? { id } : {}),
-                league_id,
-                team_id: team.id,
-                league_pool_id: poolIds.includes(league_pool_id)
-                    ? league_pool_id
-                    : poolIds[league_pool_id],
-            });
             return {
                 ...(id ? { id } : {}),
                 league_id,

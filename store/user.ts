@@ -51,13 +51,11 @@ export const useUserStore = defineStore("user", {
                
             );
             const [user] = data;
-            console.log('got user: ', user)
             if (!user) return;
             Object.assign(this, user);
             useRepo(Player).save(user)
             if (user.rink_id) {
                 const {data:rink} = await client.from('rinks').select('*').eq('id', user.rink_id).single();
-                console.log('got rink: ', rink)
                 useRepo(Rink).save(rink)
             }
         },
