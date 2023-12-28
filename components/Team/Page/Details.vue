@@ -41,18 +41,7 @@
             ref="nameInput"
             placeholder="Enter a team name"
         />
-        <!-- <h3 class="rink-name" v-if="team.rink_id && !editing">
-            {{ selectedRink.name }}
-        </h3> -->
         <RinkChip :rinkId="team.rink_id" :canEdit="editing" style="margin:auto" editText="Select home rink" />
-        <!-- <q-input
-            dense
-            v-else-if="create || editing"
-            readonly
-            @click="openRinkSearch"
-            :model-value="selectedRink.name"
-            label="Home rink"
-        /> -->
 
         <div class="row justify-center socials-container" v-if="!editing">
             <IconFacebook
@@ -176,10 +165,42 @@
             </div>
         </div>
     </section>
-    <section class="danger__section row justify-center" v-if="editing">
+    <section name="options" class="q-pa-sm" v-if="editing">
+        <h3 class="text-sm text-bold ">Options</h3>
+        <q-item
+                        tag="label"
+                        v-ripple
+                        style="padding-right: 4px; padding-left: 4px"
+                    >
+                        <q-item-section>
+                            <q-item-label>Public</q-item-label>
+                            <q-item-label caption
+                                >
+                                <span v-if="editedValues.public">
+                                     Anyone can request to join this team.
+                                </span>
+                                 <span v-else>
+                                     Players must be invited to join this team.
+                                </span>
+                               
+                                </q-item-label
+                            >
+                        </q-item-section>
+                        <q-item-section avatar>
+                            <q-toggle
+                                v-model="editedValues.public"
+                                class="toggle"
+                            ></q-toggle>
+                        </q-item-section>
+                    </q-item>
+    </section>
+    <section class="danger__section q-pa-sm" v-if="editing">
+           <h3 class="text-sm text-bold ">Danger zone</h3>
+           <div class="row full-width justify-center q-mt-sm">
         <q-btn flat color="red" @click="confirmDelete = true"
             >Delete team</q-btn
         >
+           </div>
     </section>
     <DialogConfirmation
         v-if="!!confirmUnsaved"
@@ -412,6 +433,7 @@ const setEditedValues = (wipe = false) => {
             facebook: null,
             instagram: null,
             twitter: null,
+            public: false,
         };
     } else {
         editedValues.value = {
@@ -422,6 +444,7 @@ const setEditedValues = (wipe = false) => {
             facebook: team.value?.facebook,
             instagram: team.value?.instagram,
             twitter: team.value?.twitter,
+            public: team.value?.public
         };
     }
 };
@@ -451,6 +474,7 @@ const setOriginalValues = () => {
         facebook: team.value?.facebook,
         instagram: team.value?.instagram,
         twitter: team.value?.twitter,
+        public: team.value?.public,
     };
 };
 
@@ -534,6 +558,12 @@ const onClickEdit = async () => {
             saving.value = true;
             hasChanged = true;
             updates.rink_id = editedValues.value.rink_id;
+        }
+
+         if (editedValues.value.public !== originalValues.value.public) {
+            saving.value = true;
+            hasChanged = true;
+            updates.public = editedValues.value.public;
         }
 
         if (hasChanged) {

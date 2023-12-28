@@ -25,7 +25,8 @@ export default class Team extends Model {
             twitter: this.string(),
             featured_badge_id: this.number(),
             badges: this.hasMany(Badge, 'team_id'),
-            text_color: this.string()
+            text_color: this.string(),
+            public: this.boolean()
         }
        
     }

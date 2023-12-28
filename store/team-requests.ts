@@ -135,7 +135,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
             if (error) {
                 notStore.updateNotification(notId, {
                     state: "failed",
-                    text: `Error sending  invitation: ${error.message} (code ${error?.code ?? "X"})`,
+                    text: `Error sending invitation: ${error.message} (code ${error?.code ?? "X"})`,
                     timeout: 10000,
                 });
 

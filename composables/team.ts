@@ -125,7 +125,8 @@ export const useTeam = () => {
                 instagram,
                 twitter,
                 featured_badge_id,
-                text_color
+                text_color,
+                public: isPublic
             } = t;
 
             
@@ -163,6 +164,7 @@ export const useTeam = () => {
                 featured_badge_id,
                 name,
                 text_color,
+                public: isPublic,
                 totalStats: {
                     ...totalStats,
                     team_id: totalStats.id,
