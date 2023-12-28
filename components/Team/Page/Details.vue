@@ -106,14 +106,14 @@
             <TeamPlayerEdit
                 :playerId="player.id"
                 :teamId="props.teamId"
-                :disabled="!editing"
+                :editing="!editing"
                 :canRemove="
                     editing &&
                     ((player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested') ||
                         permanentPlayers.length > 1)
                 "
                 :canEditPosition="
-                    editing && (player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested')
+                    editing && !(player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested')
                 "
                 :invited="player?.pivot?.status === 'invited'"
                 :requested="player?.pivot?.status === 'requested'"
@@ -122,7 +122,6 @@
                     <Avataaar
                         v-bind="player.avatar"
                         class="player-avatar"
-                        @click="onPlayerClick(player)"
                     />
                     <q-badge
                         color="orange"

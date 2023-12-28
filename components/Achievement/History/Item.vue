@@ -232,7 +232,7 @@
     >
         <q-item-section avatar @click.stop>
             <div style="width: 42px" class="relative-position">
-                <Avataaar v-bind="item.info.avatar"/>
+                <Avataaar v-bind="parseAvatar(item.info.avatar)"/>
             </div>
         </q-item-section>
         <q-item-section>
@@ -240,6 +240,53 @@
                 {{item.info.first_name}} {{item.info.last_name}} requested to join
 
                 <strong>{{ item.team.name }}</strong>
+            </span>
+
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+
+    
+    <q-item
+        v-if="item.type === 'team_request' && item.name === 'rejected_request'"
+        class="achievement-history__item"
+        :class="{ unread }"
+        v-ripple
+        clickable
+    >
+        <q-item-section avatar @click.stop>
+            <div style="width: 42px" class="relative-position">
+                <TeamAvatar :teamId="item.info.id"/>
+            </div>
+        </q-item-section>
+        <q-item-section>
+            <span>
+                Your request to join <TeamChip :teamId="item.info.id" :teamName="item.info.name" :teamAvatar="item.info.avatar_url"/> was rejected.
+            </span>
+
+            <q-item-label caption>{{
+                getAchievementDate(item.created_at)
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
+    <q-item
+        v-if="item.type === 'team_invitation' && item.name === 'pending_request'"
+        class="achievement-history__item"
+        :class="{ unread }"
+        v-ripple
+        clickable
+         @click="navigateTo(`/teams/${item.info.id}?request=true`)"
+    >
+        <q-item-section avatar @click.stop>
+            <div style="width: 42px" class="relative-position">
+                <TeamAvatar :teamId="item.info.id"/>
+            </div>
+        </q-item-section>
+        <q-item-section>
+            <span>
+                 You were invited to join <TeamChip :teamId="item.info.id" :teamName="item.info.name" :teamAvatar="item.info.avatar_url"/>.
             </span>
 
             <q-item-label caption>{{

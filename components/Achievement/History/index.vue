@@ -167,6 +167,7 @@ const startWebsockets = () => {
                 queryClient.invalidateQueries({
                     queryKey: ["achievements", userId.value],
                 });
+               
             }
         )
         .on(
@@ -181,6 +182,7 @@ const startWebsockets = () => {
                 queryClient.invalidateQueries({
                     queryKey: ["achievements", userId.value],
                 });
+              
             }
         )
         .subscribe();

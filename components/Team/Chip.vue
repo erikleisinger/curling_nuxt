@@ -1,6 +1,6 @@
 <template>
         <TeamAvatar :teamId="teamId" class="team-chip__avatar" style="width: 18px" />
-       <strong>{{ team.name }}</strong>
+       <strong>{{ team?.name ?? teamName }}</strong>
 </template>
 <style lang="scss" scoped>
  .team-chip__avatar {

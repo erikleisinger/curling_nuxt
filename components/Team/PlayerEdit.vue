@@ -1,12 +1,20 @@
 <template>
     <div class="container">
         <slot/>
-        <div class="overlay clickable" v-if="!disabled" >
+        <div class="overlay clickable"  >
             <q-menu v-model="menuOpen">
                 <q-list>
+                     <q-item clickable v-ripple @click="navigateTo(`/player/${player.player_id}`)">
+                        <q-item-section avatar>
+                            <q-icon name="visibility" />
+                        </q-item-section>
+                        <q-item-section label>
+                            View player
+                        </q-item-section>
+                    </q-item>
                     <q-item clickable v-ripple @click="remove" v-if="canRemove">
                         <q-item-section avatar>
-                            <q-icon name="person_remove" />
+                            <q-icon :name="requested ? 'question_answer' : 'person_remove'" />
                         </q-item-section>
                         <q-item-section label>
                             {{invited ? 'Cancel invitation' : requested ? 'Respond to request' : 'Remove from team'}}
@@ -92,7 +100,7 @@ const queryClient = useQueryClient();
 const props = defineProps({
     canEditPosition: Boolean,
     canRemove: Boolean,
-    disabled: Boolean,
+    editing: Boolean,
     invited: Boolean,
     playerId: String,
     requested: Boolean,
@@ -159,7 +167,9 @@ const decline = async () => {
     const client = useSupabaseClient();
     await client
                 .from("team_requests")
-                .delete()
+                .update({
+                    status: 'rejected'
+                })
                 .eq("team_id", props.teamId)
                 .eq('requester_profile_id', props.playerId)
 

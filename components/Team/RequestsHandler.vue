@@ -1,20 +1,26 @@
 <template>
     <div>
 
-        <div v-if="isInvited">
+        <div v-if="isInvited" class="q-pa-sm">
+            <div class="full-width text-center">
             You have been invited to join this team.
-        <q-btn >Respond</q-btn>
+            </div>
+            <div class="full-width row justify-around">
+                <q-btn color="red" @click="respondToRequest('rejected')" :disable="responding">Decline</q-btn>
+                <q-btn color="green" @click="respondToRequest('accepted')" :disable="responding">Accept</q-btn>
+            </div>
         </div>
         <div v-else-if="isRequested && !isOnTeam">
             You have requested to join this team.
         </div>
-        <q-btn v-else-if="!isOnTeam" class="full-width" color="primary" @click="requestToJoin">Request to join team</q-btn>
+        <q-btn v-else-if="!isOnTeam && !isLoading" class="full-width" color="primary" @click="requestToJoin">Request to join team</q-btn>
     </div>
 </template>
 <script setup>
     import {useQuery, useQueryClient} from '@tanstack/vue-query';
     import Team from '@/store/models/team'
     import {useTeamRequestStore} from '@/store/team-requests'
+    import {useUserTeamStore} from '@/store/user-teams'
 
     const queryClient = useQueryClient()
 
@@ -59,4 +65,19 @@ const {isLoading} = useQuery({
         })
 
     }
+
+    // Accept team request 
+
+    const responding = ref(false)
+    const respondToRequest = async (status) => {
+        responding.value = true;
+        const {request_id} = requests.value?.find(({player_id}) => userId.value === player_id)
+    await useTeamRequestStore().updateTeamRequestStatus({ id: request_id, status });
+    await useUserTeamStore().fetchUserTeams(true);
+    queryClient.invalidateQueries({
+        queryKey: ['team', 'full', props.teamId]
+    })
+    responding.value = false;
+
+};
 </script>
