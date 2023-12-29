@@ -1,7 +1,9 @@
 <template>
+ 
     <GlobalLoading v-if="globalLoading" infinite />
-    <NuxtLayout>
+   <NuxtLayout>
         <NuxtPage />
+           </NuxtLayout>
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
@@ -25,7 +27,7 @@
                 />
             </q-card>
         </q-dialog>
-    </NuxtLayout>
+ 
 </template>
 <style lang="scss">
 #__nuxt {
@@ -102,8 +104,9 @@ onBeforeMount(async () => {
         !PUBLIC_ROUTES.includes(route.fullPath) &&
         user.value &&
         route.name !== "gateway"
-    )
-        navigateTo(`/gateway?redirect=${route.fullPath}`);
+    ) navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true});
+    
+        
 });
 
 const client = useSupabaseClient();

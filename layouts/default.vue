@@ -308,7 +308,7 @@ const toggleNotifications = () => {
 watch(
     () => route.path,
     (val, oldVal) => {
-        if (val !== oldVal && val !== '/gateway') {
+        if (val !== oldVal && val !== '/gateway' && oldVal !== '/gateway') {
             ready.value = false;
             navigateTo(val, {replace: true})
             setTimeout(() => {

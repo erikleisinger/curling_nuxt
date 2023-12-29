@@ -14,11 +14,13 @@ onMounted(async () => {
     await initData();
     await verifyData();
      const {hash} = route;
-    if (!!nextPage?.value) {
-       
+    setTimeout(() => {
+  if (!!nextPage?.value) {
         navigateTo(`${nextPage.value}${hash}`)
     } else {
         navigateTo(`${hash}`, {replace: true})
 }
+    }, 1)
+  
 });
 </script>

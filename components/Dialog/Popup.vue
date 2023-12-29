@@ -125,6 +125,7 @@ timeline.value = tl
 
 };
 const onClose = () => {
+    timeline.value.pause();
     gsap.to(".popup-container", {
         scale: 0,
         transformOrigin: `${percentX.value}% bottom`,
