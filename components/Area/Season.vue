@@ -55,7 +55,7 @@
             <h3 >Club news <div class="underline"/></h3>
             <h4 >{{homeRink?.name ?? "Unknown rink"}}</h4>
                 </div>
-                <div>
+                <div v-if="homeRink?.id">
                 <q-btn flat round icon="exit_to_app"  @click="navigateTo(`/rinks/${homeRink.id}`)"/>
                 </div>
              </div>

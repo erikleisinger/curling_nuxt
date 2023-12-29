@@ -75,6 +75,8 @@ export const useLeague = () => {
             league_pool_id
         `).in('league_id', leagueIds)
 
+        useRepo(LeagueTeam).query().whereIn("league_id", leagueIds).delete();
+
         useRepo(LeagueTeam).query().whereIn('league_id', leagueIds).where('team_id', (val) => {
             return !teams.some(({team}) => team?.id === val)
         }).delete();
@@ -155,7 +157,8 @@ export const useLeague = () => {
                 sheets,
                 city,
                 province
-            )
+            ),
+            public
         `).eq('id', leagueId)
 
         leagues.forEach((league) => {        

@@ -382,10 +382,7 @@
         :deep(.q-toggle__inner--truthy) {
             color: inherit !important;
         }
-         :deep(.q-toggle__inner) {
-            width: 0.8em;
-            min-width: 0.8em;
-        }
+      
         :deep(.q-toggle__label) {
             color: black !important;
         }

@@ -5,7 +5,13 @@
             :key="pool.id"
             class="pool-section"
         >
-            <h2 class="text-md text-bold pool-header">{{ pool?.name }}</h2>
+        <div class="row justify-between  pool-header">
+            <h2 class="text-md text-bold">{{ pool?.name }}</h2>
+            <q-btn  flat dense @click="addTeamToLeague(pool?.id)" v-if="league.public">
+                Join pool
+            </q-btn>
+    
+        </div>
             <q-separator
                 :style="{ backgroundColor: league.color }"
                 size="2px"
@@ -16,7 +22,7 @@
                     <th style="width: 50px"></th>
                     <th class="text-left">Team</th>
                     <th style="width: 60px" class="text-left">W L T</th>
-                    <th style="width: 20px"></th>
+                    <th style="width: 40px"></th>
                 </thead>
                 <tbody>
                     <tr
@@ -27,7 +33,7 @@
                         )"
                         :key="team.id"
                     >
-                        <td class="text-lg text-bold q-pl-md">
+                        <td class="text-lg text-bold q-pl-md text-center">
                             <span>
                                 {{ index + 1 }}
                             </span>
@@ -48,13 +54,7 @@
                             </div>
                         </td>
                         <td>
-                            <q-btn
-                                flat
-                                round
-                                icon="more_vert"
-                                dense
-                                size="0.7em"
-                            />
+                                <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
                         </td>
                     </tr>
                 </tbody>
@@ -62,7 +62,13 @@
         </section>
     </div>
     <div v-else-if="!league?.pools?.length && !isLoading" class="pool-section">
-        <h2 class="text-md text-bold pool-header">Standings</h2>
+        <div class="row justify-between  pool-header">
+            <h2 class="text-md text-bold">Standings</h2>
+            <q-btn  flat dense @click="addTeamToLeague" v-if="league.public">
+                Join league
+            </q-btn>
+           
+        </div>
         <q-separator :style="{ backgroundColor: league.color }" size="2px" />
         <table class="full-width standings__table">
             <thead>
@@ -70,7 +76,7 @@
                 <th style="width: 50px"></th>
                 <th class="text-left">Team</th>
                 <th style="width: 60px" class="text-left">W L T</th>
-                <th style="width: 20px"></th>
+                <th style="width: 40px"></th>
             </thead>
             <tbody>
                 <tr
@@ -81,7 +87,7 @@
                     )"
                     :key="team.id"
                 >
-                    <td class="text-lg text-bold q-pl-md">
+                    <td class="text-lg text-bold q-pl-md text-center">
                         <span>
                             {{ index + 1 }}
                         </span>
@@ -102,7 +108,7 @@
                         </div>
                     </td>
                     <td>
-                        <q-btn flat round icon="more_vert" dense size="0.7em" />
+                      <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
                     </td>
                 </tr>
             </tbody>
@@ -113,24 +119,27 @@
 .pool-section {
     margin: var(--space-xs);
     box-shadow: $pretty-shadow;
-    padding: var(--space-xs);
     border-radius: 16px;
     .pool-header {
-        padding: var(--space-xs);
-        padding-top: 0px;
+        padding: var(--space-sm);
     }
 }
 
 .standings__table {
     table-layout: fixed;
         border-collapse: collapse;
+      
   
     td {
         vertical-align: middle;
+        
+    }
+
+    td, th {
+        padding: var(--space-xxxs) var(--space-xs)!important;
     }
     tr {
-        
-        &:nth-child(even) {
+        &:nth-child(odd) {
             background-color: rgba(0,0,0,0.05);
         }
     }
@@ -138,7 +147,12 @@
 </style>
 <script setup>
 import League from "@/store/models/league";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import {useDialogStore} from '@/store/dialog'
+import {useUserTeamStore} from '@/store/user-teams'
+
+const queryClient = useQueryClient()
+
 const props = defineProps({
     leagueId: Number,
 });
@@ -154,7 +168,7 @@ const getLeagueStandings = async () => {
     const { data } = await client
         .from("games")
         .select("id")
-        .eq("league_id", props.leagueId);
+        .eq("league_id", props.leagueId)
     const gameIds = data.map(({ id }) => id);
 
     const { data: stats } = await client
@@ -180,7 +194,7 @@ const getLeagueStandings = async () => {
             },
         };
     }, {});
-
+    console.log(league.value.teams)
     league.value.teams.forEach(({ team_id }) => {
         if (!formatted[team_id])
             formatted[team_id] = {
@@ -216,4 +230,41 @@ const rankOrder = computed(() => {
         .sort((a, b) => b.winlosstieValue - a.winlosstieValue)
         .map(({ id }) => Number(id));
 });
+
+const {isOnTeam} = useTeam();
+
+const joinLeague = async (e, league_pool_id) => {
+    const {id: team_id} = e;
+    const client = useSupabaseClient();
+    await client.from('league_teams').insert({
+        team_id,
+        league_id: league.value?.id,
+        league_pool_id
+    })
+    queryClient.invalidateQueries({
+        queryKey: ['league', props.leagueId]
+    })
+    setTimeout(() => {
+        queryClient.invalidateQueries({
+        queryKey: ['league', 'standings', props.leagueId]
+    })
+    }, 3000)
+   
+}
+
+const {toggleGlobalSearch} = useDialogStore();
+
+const addTeamToLeague = (poolId) => {
+    const userTeams = useUserTeamStore().userTeams.map(({id}) => id)
+    toggleGlobalSearch({
+        open: true,
+        options: {
+            inputLabel: `Which team would like to join ${league.value.name}?`,
+            resourceTypes: ['team'],
+            restrictIds: userTeams,
+            filterIds: userTeams.filter((id) => league.value.teams.some(({team_id}) => team_id === id)),
+            callback: (e) => joinLeague(e, poolId)
+        }
+    })
+}
 </script>
