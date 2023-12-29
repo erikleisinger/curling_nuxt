@@ -1,5 +1,4 @@
 <template>
-    <NuxtLayout>
         <div
             style="z-index: 1; transform: translateX(0); position: relative"
             class="full-height"
@@ -310,7 +309,6 @@
                 <DialogLinescoreBlobs :step="currentStep" />
             </div>
         </div>
-    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 $column-width: 26vh;

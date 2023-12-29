@@ -49,10 +49,15 @@
 
         <!-- HOME RINK -->
 
-         <section name="home rink" :class="$q.screen.xs ? 'col-12' : 'col-6'">
-             <div class="header-text">
+         <section name="home rink" :class="$q.screen.xs ? 'col-12' : 'col-6'" style="margin-bottom: 0px">
+             <div class="header-text row justify-between items-center" style="margin-bottom: 0px">
+                <div>
             <h3 >Club news <div class="underline"/></h3>
             <h4 >{{homeRink?.name ?? "Unknown rink"}}</h4>
+                </div>
+                <div>
+                <q-btn flat round icon="exit_to_app"  @click="navigateTo(`/rinks/${homeRink.id}`)"/>
+                </div>
              </div>
              <RinkNews v-if="homeRink?.id" :rinkId="homeRink.id"/>
               <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm" >

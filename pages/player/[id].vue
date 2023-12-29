@@ -1,5 +1,4 @@
 <template>
-    <NuxtLayout>
         <div class="logout-container--floating" v-if="canEdit">
             <q-btn flat round icon="logout" @click="logout" />
         </div>
@@ -107,7 +106,6 @@
                 />
             </q-card>
         </q-dialog>
-    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .logout-container--floating {

@@ -10,7 +10,7 @@
         @click="!!item.team ? navigateTo(`/teams/${item.team.id}`) : navigateTo(`/player/${item.profile.id}`)"
     >
         <q-item-section avatar class="relative-position">
-            <Badge :badge="item" height="45px" iconOnly @click.stop />
+            <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
         </q-item-section>
            <q-item-section v-if="item.name === 'win_streak'">
             <span>
@@ -48,7 +48,7 @@
         @click="navigateTo(`/teams/${item.team.id}`)"
     >
         <q-item-section avatar class="relative-position">
-            <Badge :badge="item" height="45px" iconOnly @click.stop />
+            <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
         </q-item-section>
         <q-item-section v-if="item.name === 'win_streak'">
             <span>
@@ -76,7 +76,7 @@
         @click="navigateTo(`/teams/${item.team.id}`)"
     >
         <q-item-section avatar class="relative-position overlay">
-            <Badge :badge="item" height="45px" iconOnly @click.stop />
+            <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
         </q-item-section>
         <q-item-section v-if="item.name === 'win_streak'">
             <span>
@@ -117,7 +117,7 @@
                     v-if="item.name === 'left_team'"
                 >
                     <div class="circle-bg">
-                        <q-icon color="red" name="person_remove" size="xs" />
+                        <q-icon color="red" name="person_remove"  />
                     </div>
                 </q-badge>
                 <!-- JOINED TEAM BADGE -->
@@ -128,7 +128,7 @@
                     v-else-if="item.name === 'joined_team'"
                 >
                     <div class="circle-bg">
-                        <q-icon color="green" name="person_add_alt" size="xs" />
+                        <q-icon color="green" name="person_add_alt"  />
                     </div>
                 </q-badge>
             </div>
@@ -161,12 +161,13 @@
         <q-item-section avatar class="relative-position">
             
             <div
-                class="row no-wrap justify-center  game-result__icon text-underline"
-                :class="{win: item.name === 'game_win', loss: item.name === 'game_loss', tie: item.name === 'game_tie'}"
+                class="row no-wrap justify-center  game-result__icon"
+               
             >
-          <div v-if="item.name === 'game_win'">WIN</div>
-           <div v-if="item.name === 'game_loss'">LOSS</div>
-             <div v-if="item.name === 'game_tie'">TIE</div>
+            <div class="game-result--border"  :class="{win: item.name === 'game_win', loss: item.name === 'game_loss', tie: item.name === 'game_tie'}"/>
+          <div v-if="item.name === 'game_win'" class="result-text">W</div>
+           <div v-if="item.name === 'game_loss'" class="result-text">L</div>
+             <div v-if="item.name === 'game_tie'" class="result-text">T</div>
                
             </div>
         </q-item-section>
@@ -179,6 +180,7 @@
                 against
                 <TeamChip
                     :teamId="item.info.opponent_id"
+                    :teamName="item.info.opponent_name"
                 />
             </span>
             <q-item-label caption>{{
@@ -195,6 +197,7 @@
 
                 <TeamChip
                     :teamId="item.info.opponent_id"
+                    :teamName="item.info.opponent_name"
                 />
             </span>
             <q-item-label caption>{{
@@ -361,7 +364,11 @@
 </template>
 <style lang="scss" scoped>
 
+$append-icon-size: 1.7em;
 .achievement-history__item {
+    .q-item__section--avatar {
+        align-items: center;
+    }
      &:before {
         content: '';
         bottom:0;
@@ -396,9 +403,22 @@
 
         background: transparent !important;
         .circle-bg {
-            padding: 0px 2px;
+            position: relative;
+            padding: 4px;
             background-color: white;
             border-radius: 50%;
+            height: $append-icon-size;
+            width: $append-icon-size;
+            border: 1px solid rgba(0,0,0,0.1);
+            .q-icon {
+                position: absolute;
+                font-size: calc($append-icon-size - 4px);
+                top: 0;
+                left: 1px;
+                right: 0;
+                bottom: 0;
+                margin: auto;
+            }
         }
     }
     .game-avatar--home,
@@ -427,45 +447,103 @@
     }
     .game-result__icon {
         border: 1px solid black;
-        color: white;
+        // clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        border-radius: 50%;
+        color: green;
         font-size: calc(var(--text-md) - 0.1em);
-        width: 45px;
+        width: 40px;
         aspect-ratio: 1/1;
         font-weight: bold;
         margin-left: auto;
         margin-right: auto;
-         padding-top: 6px;
+        //  padding-top: 6px;
+         position: relative;
+         box-shadow: $pretty-shadow;
+          box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+            rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+         .game-result--border {
+            position: absolute;
+            // margin: auto;
+            height: calc(100% + 4px);
+            width: calc(100% + 4px);
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background-color: white;
+            border-radius: inherit;
+            //  clip-path: polygon(50% 10%, 100% 50%, 50% 90%, 0% 50%);
+             z-index: 0;
+             &:before {
+                content: '';
+                position: absolute;
+            // margin: auto;
+            border-radius: inherit;
+            height: calc(100% - 5px);
+            width: calc(100% - 5px);
+            top: 0px;
+            left: 0px;
+            right:0px;
+            bottom: 0px;
+            margin: auto;
+            background-color: white;
+            border: 1px solid rgba(0,0,0,0.05);
+            //  clip-path: polygon(50% 10%, 100% 50%, 50% 90%, 0% 50%);
+             z-index: 0;
+             }
+              &.tie {
+                // box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+                // rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+                &:before {
+                    background: $bg-badge--baby-blue;
+                }
+            }
+            &.win {
+                // box-shadow: rgba(0, 255, 21, 0.25) 0px 6px 12px -2px,
+                // rgba(2, 69, 0, 0.3) 0px 0px 4px 1px;
+                &:before {
+                    background: $bg-badge--green;
+                }
+            }
+            &.loss {
+                // box-shadow: rgba(255, 0, 0, 0.25) 0px 6px 12px -2px,
+                // rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
+                &:before {
+                    background: $bg-badge--pale-red;
+                }
+            }
+            
+         }
         &.dense {
             padding-top: 0.6em;
             font-size: var(--text-sm);
         }
-        >div:not(.colon) {
-            height: 0px;
-            margin: 2px;;
-        }
-        .colon {
-            margin: 2px 0px;
-        }
+        
+       
      
         
           
            border-radius: 50%;
             border: 3px solid white;
-        &.tie {
-            // box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-            // rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-            $color: $blue-10;
-        }
-        &.win {
-            // box-shadow: rgba(0, 255, 21, 0.25) 0px 6px 12px -2px,
-            // rgba(2, 69, 0, 0.3) 0px 0px 4px 1px;
-            color: $green;
-        }
-          &.loss {
-            // box-shadow: rgba(255, 0, 0, 0.25) 0px 6px 12px -2px,
-            // rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
-              color: $red;
-        }
+            .result-text {
+                // background-color: white;
+                height: fit-content;
+                padding-top: 4px;
+                color: inherit;
+                z-index: 1;
+                color: white;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: fit-content;
+                line-height: 1em;
+          
+            }
+
+       
     }
     .overlay {
        filter: grayscale(100%);
@@ -481,7 +559,7 @@ const props = defineProps({
 });
 const { toTimezone } = useTime();
 
-const unread = computed(() => !props.item.read)
+const unread = computed(() => props.item.read !== null && props.item.read !== undefined && !props.read)
 
 const getAchievementDate = (d) => {
     return toTimezone(d, null, false, true).fromNow();

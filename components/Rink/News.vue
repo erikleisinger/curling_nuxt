@@ -20,7 +20,10 @@
             default: 3
         },
         rinkId: Number,
+        showAll: Boolean,
     })
+
+    const cursor = ref(0);
     const getRinkNews = async () => {
         const client = useSupabaseClient();
 

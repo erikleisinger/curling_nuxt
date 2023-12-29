@@ -1,7 +1,7 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
         <q-page-container class="page__container--global relative-position">
-            <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs">
+            <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" v-if="ready">
                 <template v-slot:header>
                     <h1
                         class="text-md text-bold row justify-between items-center"
@@ -223,11 +223,18 @@ import { useGameRequestStore } from "@/store/game-requests";
 import Player from "@/store/models/player";
 
 
+
+const route = useRoute();
+
 const feedbackOpen =  ref(false)
 const leftDrawerOpen = ref(false);
 
 
-const notificationsOpen = ref(false);
+const notificationsOpen = computed(() => {
+    const {hash} = route;
+    return hash === '#notifications'
+})
+
 
 const { logout } = useSession();
 const { getColor } = useColor();
@@ -290,15 +297,8 @@ const onSelect = (selection) => {
 
 const unreadNotificationCount = ref(0);
 
-useEventListener(window, "popstate", () => {
-    if (notificationsOpen.value) {
-        notificationsOpen.value = false;
-    }
-});
-const route = useRoute();
 const toggleNotifications = () => {
-    notificationsOpen.value = !notificationsOpen.value;
-    if (notificationsOpen.value) {
+    if (!notificationsOpen.value) {
         navigateTo("#notifications");
     } else {
         navigateTo(route.path, { replace: true });
@@ -306,11 +306,27 @@ const toggleNotifications = () => {
 };
 
 watch(
-    () => route.hash,
+    () => route.path,
     (val, oldVal) => {
-        if (!oldVal || oldVal !== "#notifications") return;
-        notificationsOpen.value = false;
+        if (val !== oldVal && val !== '/gateway') {
+            ready.value = false;
+            navigateTo(val, {replace: true})
+            setTimeout(() => {
+            ready.value = true;
+            }, 100)
+            
+        }
+
     },
     { deep: true }
 );
+const ready = ref(false)
+onMounted(() => {
+    setTimeout(() => {
+        ready.value = true
+    }, 1000)
+   
+})
+
+const { globalLoading } = useLoading();
 </script>

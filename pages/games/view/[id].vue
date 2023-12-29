@@ -1,5 +1,5 @@
 <template>
-    <NuxtLayout>
+
         <aside class="game-request__container" v-if="gameRequest">
             <GameRequest :request="gameRequest" />
             <q-separator />
@@ -67,7 +67,6 @@
             :gameId="Number(gameId)"
         />
 
-    </NuxtLayout>
 </template>
 <style lang="scss" scoped>
 .badges {

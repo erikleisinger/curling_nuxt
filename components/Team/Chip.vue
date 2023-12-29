@@ -1,6 +1,6 @@
 <template>
         <TeamAvatar :teamId="teamId" class="team-chip__avatar" style="width: 18px" />
-       <strong>{{ team?.name ?? name }}</strong>
+       <strong>{{ team?.name ?? name ?? teamName }}</strong>
 </template>
 <style lang="scss" scoped>
  .team-chip__avatar {
@@ -15,6 +15,7 @@ import Team from "@/store/models/team";
 import {useQuery} from '@tanstack/vue-query'
 const props = defineProps({
     teamId: Number,
+    teamName: String,
 });
 
 const team = computed(() => useRepo(Team).where("id", props.teamId).first() ?? {
@@ -28,11 +29,13 @@ const getTeamName= async () => {
     const {data} = await client.from('teams').select('name').eq('id', props.teamId).single();
     return data?.name
 }
+const isEnabled = computed(() => !!props.teamId)
 
 const { data: name} = useQuery({
-    queryKey: ['team', 'name-and-avatar', props.teamId],
+    queryKey: ['team', 'name', props.teamId],
     queryFn: getTeamName,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    enabled: isEnabled,
 })
 
 

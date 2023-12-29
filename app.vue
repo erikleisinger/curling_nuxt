@@ -1,18 +1,31 @@
 <template>
     <GlobalLoading v-if="globalLoading" infinite />
-    <NuxtPage />
-    <NotificationHandler />
-    <DialogGlobalSearch v-if="isGlobalSearchOpen" />
-    <DialogLeagueEditor v-if="isLeagueEditorOpen" />
-    <q-dialog v-model="isTeamCreatorOpen" @hide="dialogStore.toggleTeamCreator({
-        open: false,
-     })">
-     <q-card class="teamcreator__card">
-     <TeamPageDetails v-if="isTeamCreatorOpen" @back="dialogStore.toggleTeamCreator({
-        open: false,
-     })" create />
-     </q-card>
-    </q-dialog>
+    <NuxtLayout>
+        <NuxtPage />
+        <NotificationHandler />
+        <DialogGlobalSearch v-if="isGlobalSearchOpen" />
+        <DialogLeagueEditor v-if="isLeagueEditorOpen" />
+        <q-dialog
+            v-model="isTeamCreatorOpen"
+            @hide="
+                dialogStore.toggleTeamCreator({
+                    open: false,
+                })
+            "
+        >
+            <q-card class="teamcreator__card">
+                <TeamPageDetails
+                    v-if="isTeamCreatorOpen"
+                    @back="
+                        dialogStore.toggleTeamCreator({
+                            open: false,
+                        })
+                    "
+                    create
+                />
+            </q-card>
+        </q-dialog>
+    </NuxtLayout>
 </template>
 <style lang="scss">
 #__nuxt {
@@ -52,16 +65,20 @@ const sessionStore = useSessionStore();
 
 const pageLoading = computed(() => sessionStore.pageLoading);
 
-
 const nuxtApp = useNuxtApp();
 
 const { setLoading } = useLoading();
 
 const route = useRoute();
 
-const MANUAL_LOAD_ROUTES = ["teams-id", "player-id", "games-view-id", 'rinks-id'];
+const MANUAL_LOAD_ROUTES = [
+    "teams-id",
+    "player-id",
+    "games-view-id",
+    "rinks-id",
+];
 nuxtApp.hook("page:finish", () => {
-  if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
+    if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
     setLoading(false);
 });
 
@@ -101,5 +118,5 @@ client.auth.onAuthStateChange((_, _session) => {
 const dialogStore = useDialogStore();
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 const isLeagueEditorOpen = computed(() => dialogStore.leagueEditor.open);
-const isTeamCreatorOpen = computed(() => dialogStore.teamCreator.open)
+const isTeamCreatorOpen = computed(() => dialogStore.teamCreator.open);
 </script>

@@ -5,16 +5,20 @@
 import { useRouteQuery } from "@vueuse/router";
 const nextPage = useRouteQuery("redirect");
 
+const route = useRoute()
+
 const status = ref("");
 
 const { initData, verifyData, progress } = useData();
 onMounted(async () => {
     await initData();
     await verifyData();
+     const {hash} = route;
     if (!!nextPage?.value) {
-        navigateTo(nextPage.value)
+       
+        navigateTo(`${nextPage.value}${hash}`)
     } else {
-        navigateTo('', {replace: true})
+        navigateTo(`${hash}`, {replace: true})
 }
 });
 </script>

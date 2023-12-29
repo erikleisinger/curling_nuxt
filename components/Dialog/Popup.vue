@@ -121,11 +121,10 @@ timeline.value = tl
     });
     tl.to('.popup--overlay', {
         opacity: 1,
-        delay: 0.1,
     })
+
 };
 const onClose = () => {
-    timeline.value.pause();
     gsap.to(".popup-container", {
         scale: 0,
         transformOrigin: `${percentX.value}% bottom`,
@@ -138,8 +137,17 @@ const onClose = () => {
         ease: "sine",
     });
 };
+
+const isOpen = ref(false)
 watch(
     () => props.open,
+    (val) => {
+     
+        isOpen.value = val;
+    }
+);
+watch(
+    isOpen,
     (val) => {
         if (val) {
             onOpen();
@@ -150,6 +158,7 @@ watch(
     }
 );
 onMounted(() => {
+    isOpen.value = props.open
     if (!props.open) {
         gsap.to(".popup-container", {
             scaleY: 0,

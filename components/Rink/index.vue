@@ -22,15 +22,23 @@
                 stretch
             
             >
-                <q-tab label="Teams" :name="0"  />
-                <q-tab label="Leagues" :name="1"/>
-                 <q-tab label="Bonspiels" :name="2" :disable="true"/>
+             <q-route-tab label="News" to="#news" :name="0"  />
+                <q-route-tab label="Teams" to="#teams" :name="1"  />
+                <q-route-tab label="Leagues" to="#leagues" :name="2"/>
+                 <q-route-tab label="Bonspiels" to="#bonspiels" :name="3" :disable="true"/>
             
             </q-tabs>
         </nav>
         <main class="rink__content--container">
-            <RinkTeams v-if="currentIndex === 0" :id="rinkId"/>
-              <RinkLeagues v-if="currentIndex === 1" :rinkId="rinkId"/>
+            <KeepAlive>
+            <RinkNews :rinkId="rinkId" :limit="100" v-if="currentIndex === 0"/>
+               </KeepAlive>
+               <KeepAlive>
+            <RinkTeams v-if="currentIndex === 1" :id="rinkId"/>
+            </KeepAlive>
+            <KeepAlive>
+              <RinkLeagues v-if="currentIndex === 2" :rinkId="rinkId"/>
+          </KeepAlive>
         </main>
 
     </div>
@@ -122,7 +130,14 @@ const {height: navHeight} = useElementBounding(nav);
 
 const $q = useQuasar();
 
-const mainHeight = computed(() => `calc((100 * var(--vh, 1vh)) - ${headerHeight.value + navHeight.value}px - ${$q.screen.xs ? 50 : 65}px)`)
+const mainHeight = computed(() => `calc((100 * var(--vh, 1vh)) - ${headerHeight.value + navHeight.value}px - ${$q.screen.xs ? 50 : 65}px)`);
+
+onMounted(() => {
+    const {hash} = route;
+    if (!hash) navigateTo('#news', {replace: true})
+})
+
+
 </script>
 <script>
 export default {
