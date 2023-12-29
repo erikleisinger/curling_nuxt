@@ -222,7 +222,7 @@ import { useTeamRequestStore } from "@/store/team-requests";
 import { useGameRequestStore } from "@/store/game-requests";
 import Player from "@/store/models/player";
 
-
+const { globalLoading } = useLoading();
 
 const route = useRoute();
 
@@ -231,6 +231,8 @@ const leftDrawerOpen = ref(false);
 
 
 const notificationsOpen = computed(() => {
+    if (globalLoading.value) return false;
+    if (route.name === '/gateway') return false;
     const {hash} = route;
     return hash === '#notifications'
 })
@@ -255,7 +257,6 @@ onClickOutside(fab, () => {
 });
 
 const goTo = (view) => {
-    notificationsOpen.value = false;
     navigateTo(`${view}`);
 };
 const { user: userId } = useUser();
@@ -328,5 +329,5 @@ onMounted(() => {
    
 })
 
-const { globalLoading } = useLoading();
+
 </script>

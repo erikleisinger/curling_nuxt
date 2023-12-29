@@ -274,7 +274,7 @@
                 <q-icon name="circle" :style="{color: selections?.league?.color}" />
                 <h2
                     class="text-sm"
-                    :class="{ 'text-bold': selections.league?.name }"
+                    :class="{ 'text-bold': selections.league?.name, clickable: canEditDetails }"
                 >
                     {{ selections?.league?.name ?? "Unspecified league" }}
                 </h2>
@@ -294,6 +294,7 @@
                 class="info__section relative-position full-width"
       
                 @click="searchRink"
+                :class="{clickable: canEditDetails}"
             >
                 <q-icon name="location_on" color="red" />
                 <h2
