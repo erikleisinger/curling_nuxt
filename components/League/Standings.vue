@@ -1,129 +1,233 @@
 <template>
     <div v-if="league.pools?.length && !isLoading">
         <section
-            v-for="pool, poolIndex in league.pools"
+            v-for="(pool, poolIndex) in league.pools"
             :key="pool.id"
-            class="pool-section"
+            class="pool-section column no-wrap"
         >
-        <div class="row justify-between  pool-header">
-            <h2 class="text-md text-bold">{{ pool?.name }}</h2>
-            <q-btn  flat dense @click="addTeamToLeague(pool?.id)" v-if="league.public">
-                Join pool
-            </q-btn>
-    
-        </div>
+            <div class="row justify-between pool-header">
+                <h2 class="text-md text-bold">{{ pool?.name }}</h2>
+                <q-btn
+                    flat
+                    dense
+                    @click="addTeamToLeague(pool?.id)"
+                    v-if="league.public"
+                >
+                    Join pool
+                </q-btn>
+            </div>
             <q-separator
                 :style="{ backgroundColor: league.color }"
                 size="2px"
             />
-            <table class="full-width standings__table" v-if="!h2h.includes(poolIndex)">
-                <thead>
-                    <th class="text-left" style="width: 50px">Rank</th>
-                    <th style="width: 50px"></th>
-                    <th class="text-left">Team</th>
-                    <th style="width: 60px" class="text-left">W L T</th>
-                    <th style="width: 40px"></th>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="({ team }, index) in pool.teams.sort(
-                            (a, b) =>
-                                rankOrder.indexOf(a.team?.id) -
-                                rankOrder.indexOf(b.team?.id)
-                        )"
-                        :key="team.id"
-                    >
-                        <td class="text-lg text-bold q-pl-md text-center">
-                            <span>
-                                {{ index + 1 }}
-                            </span>
-                        </td>
-                        <td class="relative-position">
-                            <div style="width: 30px">
-                                <TeamAvatar :teamId="team.id" viewable />
+            <KeepAlive>
+                <transition-group name="list">
+                    <div v-if="!h2h.includes(poolIndex)" key="standings" class="q-pa-xs">
+                        <div
+                            :style="{
+                                backgroundColor:
+                                    index === 0 ? league.color : 'white',
+                            }"
+                            class="standing__item"
+                            v-for="({ team }, index) in pool.teams.sort(
+                                (a, b) =>
+                                    rankOrder.indexOf(a.team?.id) -
+                                    rankOrder.indexOf(b.team?.id)
+                            )"
+                            :key="team.id"
+                        >
+                            <div class="row items-center no-wrap">
+                                <div class="text-md text-bold q-mr-md">
+                                    {{ index + 1 }}
+                                </div>
+                                <div
+                                    style="width: 40px; min-width: 40px"
+                                    class="q-mr-md"
+                                >
+                                    <TeamAvatar :teamId="team.id" />
+                                </div>
+                                <div
+                                    class="row no-wrap justify-between items-center"
+                                    style="flex-grow: 1"
+                                >
+                                    <h4
+                                        class="text-md text-bold"
+                                        style="height: fit-content"
+                                    >
+                                        {{ team.name }}
+                                    </h4>
+                                    <div class="row no-wrap items-center">
+                                    <div
+                                        class="text-sm q-ml-md"
+                                        style="
+                                            line-height: 01em;
+                                            min-width: 50px;
+                                        "
+                                    >
+                                        <div>
+                                            {{ standings[team.id]?.win }} wins
+                                        </div>
+                                        <div>
+                                            {{
+                                                standings[team.id]?.loss
+                                            }}
+                                            losses
+                                        </div>
+                                        <div>
+                                            {{ standings[team.id]?.tie }} ties
+                                        </div>
+                                    </div>
+                                    <div style="min-width: 30px">
+                                         <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
+                                    </div>
+                                    </div>
+                                </div>
                             </div>
-                        </td>
-                        <td>
-                            {{ team?.name }}
-                        </td>
-                        <td>
-                            <div class="row" v-if="standings">
-                                {{ standings[team.id]?.win }}
-                                {{ standings[team.id]?.loss }}
-                                {{ standings[team.id]?.tie }}
-                            </div>
-                        </td>
-                        <td>
-                                <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <LeagueResultsGrid v-else :leagueId="league?.id" :poolId="pool?.id" />
+                        </div>
+                    </div>
+
+          
+
+                    <LeagueResultsGrid
+                        v-else
+                        :leagueId="league?.id"
+                        :poolId="pool?.id"
+                        key="grid"
+                    />
+                </transition-group>
+            </KeepAlive>
             <div class="full-width justify-end row" @click="viewH2h(poolIndex)">
-                <div class="clickable text-underline text-sm q-px-md q-py-sm">{{h2h.includes(poolIndex) ? 'View standings' : 'View head-to-head'}}</div>
+                <div class="clickable text-underline text-sm q-px-md q-py-sm">
+                    {{
+                        h2h.includes(poolIndex)
+                            ? "View standings"
+                            : "View head-to-head"
+                    }}
+                </div>
             </div>
         </section>
     </div>
     <div v-else-if="!league?.pools?.length && !isLoading" class="pool-section">
-        <div class="row justify-between  pool-header">
+        <div class="row justify-between pool-header">
             <h2 class="text-md text-bold">Standings</h2>
-            <q-btn  flat dense @click="addTeamToLeague" v-if="league.public">
+            <q-btn flat dense @click="addTeamToLeague" v-if="league.public">
                 Join league
             </q-btn>
-           
         </div>
         <q-separator :style="{ backgroundColor: league.color }" size="2px" />
-        <table class="full-width standings__table" v-if="!h2h.includes(0)">
-            <thead>
-                <th class="text-left" style="width: 50px">Rank</th>
-                <th style="width: 50px"></th>
-                <th class="text-left">Team</th>
-                <th style="width: 60px" class="text-left">W L T</th>
-                <th style="width: 40px"></th>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="({ team }, index) in league.teams.sort(
-                        (a, b) =>
-                            rankOrder.indexOf(a.team?.id) -
-                            rankOrder.indexOf(b.team?.id)
-                    )"
-                    :key="team.id"
-                >
-                    <td class="text-lg text-bold q-pl-md text-center">
-                        <span>
-                            {{ index + 1 }}
-                        </span>
-                    </td>
-                    <td class="relative-position">
-                        <div style="width: 30px">
-                            <TeamAvatar :teamId="team.id" viewable />
+             <KeepAlive>
+              <transition-group name="list">
+   
+               <div v-if="!h2h.includes(0)" key="standings" class="q-pa-xs" >
+                        <div
+                            :style="{
+                                backgroundColor:
+                                    index === 0 ? league.color : 'white',
+                            }"
+                            class="standing__item"
+                            v-for="({ team }, index) in league.teams.sort(
+                                (a, b) =>
+                                    rankOrder.indexOf(a.team?.id) -
+                                    rankOrder.indexOf(b.team?.id)
+                            )"
+                            :key="team.id"
+                        >
+                            <div class="row items-center no-wrap">
+                                <div class="text-md text-bold q-mr-md">
+                                    {{ index + 1 }}
+                                </div>
+                                <div
+                                    style="width: 40px; min-width: 40px"
+                                    class="q-mr-md"
+                                >
+                                    <TeamAvatar :teamId="team.id" />
+                                </div>
+                                <div
+                                    class="row no-wrap justify-between items-center"
+                                    style="flex-grow: 1"
+                                >
+                                    <h4
+                                        class="text-md text-bold"
+                                        style="height: fit-content"
+                                    >
+                                        {{ team.name }}
+                                    </h4>
+                                    <div class="row no-wrap items-center">
+                                    <div
+                                        class="text-sm q-ml-md"
+                                        style="
+                                            line-height: 01em;
+                                            min-width: 50px;
+                                        "
+                                    >
+                                        <div>
+                                            {{ standings[team.id]?.win }} wins
+                                        </div>
+                                        <div>
+                                            {{
+                                                standings[team.id]?.loss
+                                            }}
+                                            losses
+                                        </div>
+                                        <div>
+                                            {{ standings[team.id]?.tie }} ties
+                                        </div>
+                                    </div>
+                                    <div style="min-width: 30px">
+                                         <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </td>
-                    <td>
-                        {{ team?.name }}
-                    </td>
-                    <td>
-                        <div class="row" v-if="standings">
-                            {{ standings[team.id]?.win }}
-                            {{ standings[team.id]?.loss }}
-                            {{ standings[team.id]?.tie }}
-                        </div>
-                    </td>
-                    <td>
-                      <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-           <LeagueResultsGrid v-else :leagueId="league?.id"  />
-         <div class="full-width justify-end row" @click="viewH2h(0)">
-                <div class="clickable text-underline text-sm q-px-md q-py-sm">{{h2h.includes(0) ? 'View standings' : 'View head-to-head'}}</div>
+                    </div>
+  
+  
+
+            <LeagueResultsGrid v-else :leagueId="league?.id" key="grid" />
+  
+              </transition-group>
+                    </KeepAlive>
+        <div class="full-width justify-end row" @click="viewH2h(0)">
+            <div class="clickable text-underline text-sm q-px-md q-py-sm">
+                {{ h2h.includes(0) ? "View standings" : "View head-to-head" }}
             </div>
+        </div>
     </div>
 </template>
 <style lang="scss" scoped>
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.3s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(100px) translateY(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+    position: absolute;
+}
+
+.standing__item {
+    padding: var(--space-xs);
+    background-color: white;
+    &:first-child {
+        transform: scale(1.05);
+        border-radius: 8px;
+        padding: var(--space-sm);
+        color: white;
+    }
+    &:not(:first-child) {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+}
+
 .pool-section {
     margin: var(--space-xs);
     box-shadow: $pretty-shadow;
@@ -135,20 +239,19 @@
 
 .standings__table {
     table-layout: fixed;
-        border-collapse: collapse;
-      
-  
+    border-collapse: collapse;
+
     td {
         vertical-align: middle;
-        
     }
 
-    td, th {
-        padding: var(--space-xxxs) var(--space-xs)!important;
+    td,
+    th {
+        padding: var(--space-xxxs) var(--space-xs) !important;
     }
     tr {
         &:nth-child(odd) {
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(0, 0, 0, 0.05);
         }
     }
 }
@@ -156,21 +259,21 @@
 <script setup>
 import League from "@/store/models/league";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import {useDialogStore} from '@/store/dialog'
-import {useUserTeamStore} from '@/store/user-teams'
+import { useDialogStore } from "@/store/dialog";
+import { useUserTeamStore } from "@/store/user-teams";
 
-const queryClient = useQueryClient()
+const queryClient = useQueryClient();
 
-const h2h = ref([])
+const h2h = ref([]);
 
 const viewH2h = (index) => {
     if (h2h.value.includes(index)) {
-        const i = h2h.value.indexOf(index)
-        h2h.value.splice(i, 1)
+        const i = h2h.value.indexOf(index);
+        h2h.value.splice(i, 1);
     } else {
-        h2h.value.push(index)
+        h2h.value.push(index);
     }
-}
+};
 
 const props = defineProps({
     leagueId: Number,
@@ -187,7 +290,7 @@ const getLeagueStandings = async () => {
     const { data } = await client
         .from("games")
         .select("id")
-        .eq("league_id", props.leagueId)
+        .eq("league_id", props.leagueId);
     const gameIds = data.map(({ id }) => id);
 
     const { data: stats } = await client
@@ -213,7 +316,7 @@ const getLeagueStandings = async () => {
             },
         };
     }, {});
-    console.log(league.value.teams)
+    console.log(league.value.teams);
     league.value.teams.forEach(({ team_id }) => {
         if (!formatted[team_id])
             formatted[team_id] = {
@@ -250,42 +353,43 @@ const rankOrder = computed(() => {
         .map(({ id }) => Number(id));
 });
 
-const {isOnTeam} = useTeam();
+const { isOnTeam } = useTeam();
 
 const joinLeague = async (e, league_pool_id) => {
-    const {id: team_id} = e;
+    const { id: team_id } = e;
     const client = useSupabaseClient();
-    await client.from('league_teams').insert({
+    await client.from("league_teams").insert({
         team_id,
         league_id: league.value?.id,
-        league_pool_id
-    })
+        league_pool_id,
+    });
     queryClient.invalidateQueries({
-        queryKey: ['league', props.leagueId]
-    })
+        queryKey: ["league", props.leagueId],
+    });
     setTimeout(() => {
         queryClient.invalidateQueries({
-        queryKey: ['league', 'standings', props.leagueId]
-    })
-    }, 3000)
-   
-}
+            queryKey: ["league", "standings", props.leagueId],
+        });
+    }, 3000);
+};
 
-const {toggleGlobalSearch} = useDialogStore();
+const { toggleGlobalSearch } = useDialogStore();
 
 const addTeamToLeague = (poolId) => {
-    const userTeams = useUserTeamStore().userTeams.map(({id}) => id)
+    const userTeams = useUserTeamStore().userTeams.map(({ id }) => id);
     toggleGlobalSearch({
         open: true,
         options: {
             inputLabel: `Which team would like to join ${league.value.name}?`,
-            resourceTypes: ['team'],
+            resourceTypes: ["team"],
             restrictIds: userTeams,
-            filterIds: userTeams.filter((id) => league.value.teams.some(({team_id}) => team_id === id)),
-            callback: (e) => joinLeague(e, poolId)
-        }
-    })
-}
+            filterIds: userTeams.filter((id) =>
+                league.value.teams.some(({ team_id }) => team_id === id)
+            ),
+            callback: (e) => joinLeague(e, poolId),
+        },
+    });
+};
 
 const { getLeagueGames } = useGame();
 
