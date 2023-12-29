@@ -77,8 +77,8 @@
                                             {{ standings[team.id]?.tie }} ties
                                         </div>
                                     </div>
-                                    <div style="min-width: 30px">
-                                         <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
+                                    <div style="min-width: 30px" v-if="isOnTeam(team.id)">
+                                         <LeagueStandingsMenu  :teamId="team.id" :leagueId="league?.id" />
                                     </div>
                                     </div>
                                 </div>
@@ -173,8 +173,8 @@
                                             {{ standings[team.id]?.tie }} ties
                                         </div>
                                     </div>
-                                    <div style="min-width: 30px">
-                                         <LeagueStandingsMenu v-if="isOnTeam(team.id)" :teamId="team.id" :leagueId="league?.id" />
+                                    <div style="min-width: 30px" v-if="isOnTeam(team.id)">
+                                         <LeagueStandingsMenu  :teamId="team.id" :leagueId="league?.id" />
                                     </div>
                                     </div>
                                 </div>
