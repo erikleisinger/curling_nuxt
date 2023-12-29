@@ -1,5 +1,6 @@
 <template>
-<TeamRequestsHandler :teamId="teamId" v-if="route.query.request"/>
+    <TeamPlayerChangeListener/>
+    <TeamRequestsHandler :teamId="teamId" onlyInvite/>
     <TeamPageHeader
         :teamId="teamId"
         @click="viewing = true"

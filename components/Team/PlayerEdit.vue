@@ -12,14 +12,27 @@
                             View player
                         </q-item-section>
                     </q-item>
-                    <q-item clickable v-ripple @click="remove" v-if="canRemove">
+                    <q-item clickable v-ripple @click="remove" v-if="canRemove && !invited && !requested">
                         <q-item-section avatar>
                             <q-icon :name="requested ? 'question_answer' : 'person_remove'" />
                         </q-item-section>
                         <q-item-section label>
-                            {{invited ? 'Cancel invitation' : requested ? 'Respond to request' : 'Remove from team'}}
+                            
+                            Remove from team
                         </q-item-section>
                     </q-item>
+ <q-item clickable v-ripple @click="remove" v-if="canRespond && (invited || requested)">
+                        <q-item-section avatar>
+                            <q-icon name="question_answer" />
+                        </q-item-section>
+                        <q-item-section label>
+                            
+                            {{invited ? 'Cancel invitation' : 'Respond to request'}}
+                        </q-item-section>
+                    </q-item>
+
+
+                
                     <q-item clickable v-ripple v-if="canEditPosition">
                         <q-item-section avatar>
                             <q-icon name="groups"/>
@@ -100,6 +113,7 @@ const queryClient = useQueryClient();
 const props = defineProps({
     canEditPosition: Boolean,
     canRemove: Boolean,
+    canRespond: Boolean,
     editing: Boolean,
     invited: Boolean,
     playerId: String,
@@ -113,7 +127,7 @@ const remove = () => {
 const confirmOpen = ref(false);
 
 const player = computed(() => {
-    const p = useRepo(TeamPlayer).with('player').where("player_id", props.playerId).first()
+    const p = useRepo(TeamPlayer).with('player').where("player_id", props.playerId).where('team_id', props.teamId).first()
     return {
         ...p,
         ...p.player
@@ -155,7 +169,7 @@ const onRemove = async () => {
     }
 
     queryClient.invalidateQueries({
-        queryKey: ["team", "full", props.teamId],
+        queryKey: ["team", "players", props.teamId],
     });
 
     removing.value = false;
@@ -173,9 +187,8 @@ const decline = async () => {
                 .eq("team_id", props.teamId)
                 .eq('requester_profile_id', props.playerId)
 
-   useRepo(TeamPlayer).where('team_id', props.teamId).where('player_id', props.playerId).delete();
     queryClient.invalidateQueries({
-        queryKey: ["team", "full", props.teamId],
+        queryKey: ["team", "players", props.teamId],
     });
     removing.value = false;
         confirmOpen.value = false;
@@ -193,7 +206,7 @@ const approve = async () => {
                 .eq('requester_profile_id', props.playerId)
 
     queryClient.invalidateQueries({
-        queryKey: ["team", "full", props.teamId],
+        queryKey: ["team", "players", props.teamId],
     });
     removing.value = false;
         confirmOpen.value = false;

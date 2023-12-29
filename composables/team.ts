@@ -5,6 +5,7 @@ import TeamStats from '@/store/models/team-stats'
 import Rink from "@/store/models/rink";
 import Badge from "@/store/models/badge";
 import {EPHEMERAL_BADGES} from  '@/constants/badges'
+import {useUserTeamStore} from '@/store/user-teams'
 
 
 
@@ -34,7 +35,6 @@ const getTeamStats = async (teamId: number) => {
 export const useTeam = () => {
     const getTeamPlayers = async (
         teamId: number,
-        andRequests: boolean = false
     ) => {
         if (!teamId) return [];
         const client = useSupabaseClient();
@@ -82,21 +82,51 @@ export const useTeam = () => {
             .eq("team_id", teamId)
             .eq('status', 'pending')
 
+            const requestPlayers = [...(requests ?? [])]?.map((p) => {
+                const {status} = p;
 
-        return [...(data ?? []), ...(requests ?? [])].map((p) => {
-            const status = p.status ?? null;
-            const returnObj = {
+                return {
+                    id: p.id,
+                    player_id: p.requester?.id || p.requestee?.id,
+                    team_id: teamId,
+                    status: status === 'pending' ? (p.requester?.id ? 'requested' : 'invited') : status,
+                    position: p.position,
+                    player: p.requester || p.requestee,
+                    request_id: p.id,
+                }
+            })
+
+
+        const teamPlayers = [...(data ?? [])].map((p) => {
+          
+               
+
+            return {
                 id: Number(p.id),
-                player_id: p.user?.id || p.requester?.id || p.requestee?.id,
+                player_id: p.user?.id,
                 team_id: teamId,
-                status: status === 'pending' ? (p.requester?.id ? 'requested' : 'invited') : status,
                 position: p.position,
-                player: p.user || p.requester || p.requestee,
-                request_id: p.status ? p.id : null,
+                player: p.user,
             };
-
-            return returnObj;
         });
+
+        const allPlayers = [...teamPlayers, ...requestPlayers];
+        useRepo(TeamPlayer).where("team_id", teamId).delete();
+        allPlayers.forEach((p) => {
+                const { player, id, team_id, status, position, request_id } = p;
+
+                useRepo(Player).save(player);
+                useRepo(TeamPlayer).save({
+                    id,
+                    team_id,
+                    status,
+                    position,
+                    player_id: player?.id,
+                    request_id
+                });
+        })
+
+        return allPlayers;
     };
 
     const getFullTeam = async ({id, withBadges = true, withStats = true}) => {
@@ -113,11 +143,10 @@ export const useTeam = () => {
             if (error) throw new Error(error);
             const [t] = data ?? []
 
-            useRepo(TeamPlayer).where("team_id", id).delete();
+
             const {getBadgesForTeam} = useBadge()
-            const [teamTotalStats, stats, players, badges] = await Promise.all([
+            const [teamTotalStats, stats, badges] = await Promise.all([
                 ...(withStats ? [getCumulativeTeamStats(id), getTeamStats(id)] : []),
-                getTeamPlayers(id),
                 ...(withBadges ? [getBadgesForTeam(id)] : [])
             ]);
 
@@ -139,19 +168,7 @@ export const useTeam = () => {
             } = t;
 
 
-            players.forEach((p) => {
-                const { player, id, team_id, status, position, request_id } = p;
-
-                useRepo(Player).save(player);
-                useRepo(TeamPlayer).save({
-                    id,
-                    team_id,
-                    status,
-                    position,
-                    player_id: player?.id,
-                    request_id
-                });
-            });
+            
             
             badges?.sort((a,b) => {
                 if (EPHEMERAL_BADGES.includes(a.name)) return 1;
@@ -193,9 +210,7 @@ export const useTeam = () => {
 
     const isOnTeam = (teamId: number) => {
         const { user: userId } = useUser();
-        const team = useRepo(Team).with("players").where("id", teamId).first();
-        if (!team) return false;
-        return [...(team.players ?? [])].some(({ id }) => id === userId.value);
+        return useUserTeamStore().userTeams.some(({id}) => teamId === id)
     };
     return { getTeamPlayers, isOnTeam, getFullTeam };
 };

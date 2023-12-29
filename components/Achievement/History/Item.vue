@@ -178,7 +178,6 @@
                 against
                 <TeamChip
                     :teamId="item.info.opponent_id"
-                    :teamName="item.info.opponent_name"
                 />
             </span>
             <q-item-label caption>{{
@@ -195,7 +194,6 @@
 
                 <TeamChip
                     :teamId="item.info.opponent_id"
-                    :teamName="item.info.opponent_name"
                 />
             </span>
             <q-item-label caption>{{
@@ -211,7 +209,6 @@
                 against
                 <TeamChip
                     :teamId="item.info.opponent_id"
-                    :teamName="item.info.opponent_name"
                 />
             </span>
             <q-item-label caption>{{
@@ -263,7 +260,7 @@
         </q-item-section>
         <q-item-section>
             <span>
-                Your request to join <TeamChip :teamId="item.info.id" :teamName="item.info.name" :teamAvatar="item.info.avatar_url"/> was rejected.
+                Your request to join <TeamChip :teamId="item.info.id"/> was rejected.
             </span>
 
             <q-item-label caption>{{
@@ -286,7 +283,7 @@
         </q-item-section>
         <q-item-section>
             <span>
-                 You were invited to join <TeamChip :teamId="item.info.id" :teamName="item.info.name" :teamAvatar="item.info.avatar_url"/>.
+                 You were invited to join <TeamChip :teamId="item.info.id"/>.
             </span>
 
             <q-item-label caption>{{

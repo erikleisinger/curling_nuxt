@@ -233,7 +233,6 @@ const shakeStyle = computed(() => {
 watch(() => props.inverted, (val) => {
     const state = Flip.getState(`#endcol-${props.endno}-home, #endcol-${props.endno}-away`)
     isInverted.value = val
-
     nextTick(() => {
     Flip.from(state, {
         duration: 0.2,

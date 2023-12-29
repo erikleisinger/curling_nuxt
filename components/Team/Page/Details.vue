@@ -112,6 +112,7 @@
                     ((player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested') ||
                         permanentPlayers.length > 1)
                 "
+                :canRespond="isOnTeam(props.teamId)"
                 :canEditPosition="
                     editing && !(player?.pivot?.status === 'invited' || player?.pivot?.status === 'requested')
                 "
@@ -170,6 +171,9 @@
                 Invite player
             </div>
         </div>
+    </section>
+    <section>
+        <TeamRequestsHandler :teamId="teamId"/>
     </section>
     <section name="options" class="q-pa-sm" v-if="editing">
         <h3 class="text-sm text-bold ">Options</h3>
@@ -421,6 +425,15 @@ const permanentPlayers = computed(() =>
 const visiblePlayers = computed(() =>
     isOnTeam() || editing.value ? team.value.players : permanentPlayers.value
 );
+
+const {getTeamPlayers} = useTeam();
+
+const {isLoading: isLoadingPlayers} = useQuery({
+    queryKey: ['team', 'players', props.teamId],
+    queryFn: () => getTeamPlayers(props.teamId),
+    refetchOnWindowFocus: false
+})
+
 const { getTeamAvatar } = useAvatar();
 
 const { isLoading, data: avatar } = getTeamAvatar(props.teamId);
