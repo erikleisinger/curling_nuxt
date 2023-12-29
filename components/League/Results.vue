@@ -1,5 +1,5 @@
 <template>
-   <LeagueResultsGrid :leagueId="leagueId"/>
+   <!-- <LeagueResultsGrid :leagueId="leagueId"/> -->
      <div v-if="!isLoading && games.length" class="q-mt-lg">
      
         <div

@@ -1,13 +1,11 @@
 <template>
-    <div class="results__scroller" v-for="pool, index in teamsSorted" :key="index">
-        <h2 class="text-md text-bold q-pa-sm">{{teamsSorted?.length > 1 ? league?.pools[index]?.name : 'Head to head'}}</h2>
-        <q-separator :style="{backgroundColor: league.color}" size="2px"/>
-        <div class="results__grid" :style="{'grid-template-rows': `repeat(${pool?.length + 1}, 1fr)`}">
-            <div class="results__teams-x grid-row" :style="{'grid-template-columns': `repeat(${pool?.length + 1}, 1fr)`}">
+    <div class="results__scroller">
+        <div class="results__grid" :style="{'grid-template-rows': `repeat(${teamsSorted?.length + 1}, 1fr)`}">
+            <div class="results__teams-x grid-row" :style="{'grid-template-columns': `repeat(${teamsSorted?.length + 1}, 1fr)`}">
                 <div />
                 <div
                     class="row justify-center full-width full-height items-center grid-column"
-                    v-for="team in pool"
+                    v-for="team in teamsSorted"
                     :key="team.team_id"
                 >
                     <div style="width: 30px">
@@ -16,10 +14,10 @@
                 </div>
             </div>
             <div
-                v-for="(team, xIndex) in pool"
+                v-for="(team, xIndex) in teamsSorted"
                 :key="team.team_id"
                 class="grid-row"
-                :style="{'grid-template-columns': `repeat(${pool?.length + 1}, 1fr)`}"
+                :style="{'grid-template-columns': `repeat(${teamsSorted?.length + 1}, 1fr)`}"
             >
                 <div
                     class="full-height full-width row justify-center items-center grid-column"
@@ -29,7 +27,7 @@
                     </div>
                 </div>
                 <div
-                    v-for="(team, yIndex) in pool"
+                    v-for="(team, yIndex) in teamsSorted"
                     :key="team.team_id"
                     class="text-bold text-lg text-center grid-column"
                 >
@@ -62,6 +60,7 @@ import League from "@/store/models/league";
 import Game from '@/store/models/game'
     const props = defineProps({
         leagueId: Number,
+        poolId: Number,
     })
 
     const league = computed(() =>
@@ -69,12 +68,10 @@ import Game from '@/store/models/game'
 );
 
 const teamsSorted = computed(() => {
-    if (!league.value?.pools?.length) return [
-        league.value.teams
-    ]
-
-    return league.value.pools.map(({id}) => league.value.teams.filter(({league_pool_id}) => league_pool_id === id))
+    if (!props.poolId) return league.value.teams
+    return league.value.teams?.filter(({league_pool_id}) => league_pool_id === props.poolId)
 })
+
 
 const games = computed(() => {
     return useRepo(Game)
@@ -94,10 +91,9 @@ const columns = computed(
 
 const getResult = (x, y) => {
     if (x === y) return null;
-    const { teams } = league.value;
-    const xTeam = teams[x];
-    const yTeam = teams[y];
-    // console.log(xTeam, xTeam.team_id)
+    if (!teamsSorted.value?.length) return null;
+    const xTeam = teamsSorted.value[x];
+    const yTeam = teamsSorted.value[y];
     const allGames = games.value?.filter(
         ({ teams }) =>
             teams.some(({ team_id }) => xTeam.team_id === team_id) &&

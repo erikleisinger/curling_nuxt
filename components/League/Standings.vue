@@ -1,7 +1,7 @@
 <template>
     <div v-if="league.pools?.length && !isLoading">
         <section
-            v-for="pool in league.pools"
+            v-for="pool, poolIndex in league.pools"
             :key="pool.id"
             class="pool-section"
         >
@@ -16,7 +16,7 @@
                 :style="{ backgroundColor: league.color }"
                 size="2px"
             />
-            <table class="full-width standings__table">
+            <table class="full-width standings__table" v-if="!h2h.includes(poolIndex)">
                 <thead>
                     <th class="text-left" style="width: 50px">Rank</th>
                     <th style="width: 50px"></th>
@@ -59,6 +59,10 @@
                     </tr>
                 </tbody>
             </table>
+            <LeagueResultsGrid v-else :leagueId="league?.id" :poolId="pool?.id" />
+            <div class="full-width justify-end row" @click="viewH2h(poolIndex)">
+                <div class="clickable text-underline text-sm q-px-md q-py-sm">{{h2h.includes(poolIndex) ? 'View standings' : 'View head-to-head'}}</div>
+            </div>
         </section>
     </div>
     <div v-else-if="!league?.pools?.length && !isLoading" class="pool-section">
@@ -70,7 +74,7 @@
            
         </div>
         <q-separator :style="{ backgroundColor: league.color }" size="2px" />
-        <table class="full-width standings__table">
+        <table class="full-width standings__table" v-if="!h2h.includes(0)">
             <thead>
                 <th class="text-left" style="width: 50px">Rank</th>
                 <th style="width: 50px"></th>
@@ -113,6 +117,10 @@
                 </tr>
             </tbody>
         </table>
+           <LeagueResultsGrid v-else :leagueId="league?.id"  />
+         <div class="full-width justify-end row" @click="viewH2h(0)">
+                <div class="clickable text-underline text-sm q-px-md q-py-sm">{{h2h.includes(0) ? 'View standings' : 'View head-to-head'}}</div>
+            </div>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -152,6 +160,17 @@ import {useDialogStore} from '@/store/dialog'
 import {useUserTeamStore} from '@/store/user-teams'
 
 const queryClient = useQueryClient()
+
+const h2h = ref([])
+
+const viewH2h = (index) => {
+    if (h2h.value.includes(index)) {
+        const i = h2h.value.indexOf(index)
+        h2h.value.splice(i, 1)
+    } else {
+        h2h.value.push(index)
+    }
+}
 
 const props = defineProps({
     leagueId: Number,
@@ -267,4 +286,12 @@ const addTeamToLeague = (poolId) => {
         }
     })
 }
+
+const { getLeagueGames } = useGame();
+
+const { isLoading: isLoadingGames } = useQuery({
+    queryKey: ["league", "games", props.leagueId],
+    queryFn: () => getLeagueGames([props.leagueId]),
+    refetchOnWindowFocus: false,
+});
 </script>
