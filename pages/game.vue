@@ -51,7 +51,7 @@ onBeforeMount(async () => {
     initialized.value = false;
     const id = gameId.value || store.lastPlayedGame
     if (!id) {
-        navigateTo("/select");
+        return navigateTo("/select");
     } else {
         try {
     await store.initGame(id);

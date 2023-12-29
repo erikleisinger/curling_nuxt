@@ -269,7 +269,7 @@ const select = (num: number, force = false) => {
     } else {
         selected.value = num;
     }
-    if (props.options[num].to) navigateTo(props.options[num].to);
+    if (props.options[num].to) return navigateTo(props.options[num].to);
 };
 
 const dragging = ref(false);

@@ -184,7 +184,7 @@ const onSubmit = async (e) => {
         });
         if (!error) {
             authStore.setLoggedIn(true);
-            navigateTo('/gateway')
+            return navigateTo('/gateway')
         } else if (error && error.message) {
             isError.value = true;
             errorMessage.value = error.message

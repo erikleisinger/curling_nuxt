@@ -514,7 +514,7 @@ const onSelect = async ({ id }) => {
     if (currentRoute.value.query.opponent) {
         loadComparison();
     } else {
-        navigateTo(`?opponent=${id}`);
+       return navigateTo(`?opponent=${id}`);
     }
 };
 
@@ -554,7 +554,7 @@ const headToHead = computed(
 const endComparison = () => {
     const { opponent } = currentRoute.value.query;
     if (!opponent) return;
-    navigateTo(`/teams/${team.value.id}`);
+    return navigateTo(`/teams/${team.value.id}`);
 };
 
 const $q = useQuasar();

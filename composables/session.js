@@ -4,7 +4,7 @@ export const useSession = () => {
     const logout = async () => {
         const client = useSupabaseClient();
         await client.auth.signOut();
-        navigateTo('/login')
+        return navigateTo('/login')
     };
     return { logout };
 };

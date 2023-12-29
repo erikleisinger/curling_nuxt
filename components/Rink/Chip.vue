@@ -53,7 +53,7 @@
     const menuOpen = ref(false)
    const viewRink = () => {
     menuOpen.value = false;
-    navigateTo(`/rinks/${props.rinkId}`)
+    return navigateTo(`/rinks/${props.rinkId}`)
    }
 
     const searchRink = () => {

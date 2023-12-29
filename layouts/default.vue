@@ -257,7 +257,7 @@ onClickOutside(fab, () => {
 });
 
 const goTo = (view) => {
-    navigateTo(`${view}`);
+    return navigateTo(`${view}`);
 };
 const { user: userId } = useUser();
 
@@ -300,9 +300,9 @@ const unreadNotificationCount = ref(0);
 
 const toggleNotifications = () => {
     if (!notificationsOpen.value) {
-        navigateTo("#notifications");
+       return navigateTo({hash: '#notifications'});
     } else {
-        navigateTo(route.path, { replace: true });
+        return navigateTo(route.path, { replace: true });
     }
 };
 

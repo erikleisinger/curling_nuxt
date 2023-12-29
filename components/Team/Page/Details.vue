@@ -611,7 +611,7 @@ const onClickEdit = async () => {
         if (editedValues.value.avatar_url) await updateTeamAvatar(id);
         useUserTeamStore().fetchUserTeams(true);
 
-        navigateTo(`/teams/${id}`);
+        return navigateTo(`/teams/${id}`);
     }
 };
 
@@ -673,7 +673,7 @@ const updateAvatar = (data) => {
 
 const onPlayerClick = ({ id }) => {
     if (editing.value) return;
-    navigateTo(`/player/${id}`);
+    return navigateTo(`/player/${id}`);
 };
 
 const validateSocial = (input, type) => {
@@ -700,7 +700,7 @@ const cleanUrl = (url: string) => {
 };
 
 const goSocial = (url: string) => {
-    navigateTo(cleanUrl(url), {
+    return navigateTo(cleanUrl(url), {
         open: {
             target: "_blank",
         },
@@ -757,7 +757,7 @@ const deleteTeam = async () => {
         });
     }
 
-    navigateTo("/");
+    return navigateTo("/");
 
     setTimeout(() => {
         useRepo(Team).where("id", team.value.id).delete();

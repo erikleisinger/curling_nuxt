@@ -104,7 +104,7 @@ onBeforeMount(async () => {
         !PUBLIC_ROUTES.includes(route.fullPath) &&
         user.value &&
         route.name !== "gateway"
-    ) navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true});
+    ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true});
     
         
 });

@@ -134,7 +134,7 @@ const mainHeight = computed(() => `calc((100 * var(--vh, 1vh)) - ${headerHeight.
 
 onMounted(() => {
     const {hash} = route;
-    if (!hash) navigateTo('#news', {replace: true})
+    if (!hash) return navigateTo('#news', {replace: true})
 })
 
 
