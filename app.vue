@@ -1,6 +1,6 @@
 <template>
  
-    <GlobalLoading v-if="globalLoading" infinite />
+    <GlobalLoading v-show="globalLoading" infinite />
    <NuxtLayout>
         <NuxtPage />
            </NuxtLayout>
