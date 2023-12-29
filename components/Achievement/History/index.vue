@@ -16,7 +16,7 @@
         </div>
         <div
             class="row justify-center show-more__container"
-            v-if="notificationsPaginated?.length < notificationCount"
+            v-if="notificationsPaginated?.length < notificationCount && isOpen"
         >
             <q-btn flat text color="blue" @click="showMore">Show more</q-btn>
         </div>
@@ -68,7 +68,7 @@ const setOpen = (val) => {
     if (val) {
             setTimeout(() => {
                 isOpen.value = val;
-            }, 1);
+            }, 200);
         } else {
             isOpen.value = val;
         }
