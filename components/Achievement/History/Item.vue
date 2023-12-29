@@ -1,4 +1,5 @@
 <template>
+
     <!-- BADGES -->
     <q-item
         v-if="item.type === 'badge_earned'"
@@ -356,12 +357,32 @@
             }}</q-item-label>
         </q-item-section>
     </q-item>
+
 </template>
 <style lang="scss" scoped>
+
 .achievement-history__item {
-    &.unread {
-        background-color: #ecf8fe;
+     &:before {
+        content: '';
+        bottom:0;
+        width: 5px;
+        left: 0;
+        top: 0;
+        position: absolute;
+    background-color: white;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+      
     }
+          &.unread {
+              background-color: #ecf8fe;
+            &:before {
+            background-color: #00a4f6;
+            }
+      
+    }
+   
+
     .modifier_badge {
         top: unset !important;
         bottom: -4px !important;
@@ -455,10 +476,12 @@
 import { parseAvatar } from "@/utils/avatar";
 import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 const props = defineProps({
+    animated: Boolean,
     item: Object,
-    unread: Boolean,
 });
 const { toTimezone } = useTime();
+
+const unread = computed(() => !props.item.read)
 
 const getAchievementDate = (d) => {
     return toTimezone(d, null, false, true).fromNow();
@@ -471,6 +494,7 @@ const getProfileName = (profile) => {
     if (profile.id === userId.value) return "You";
     return `${profile.first_name} ${profile.last_name}`;
 };
+
 </script>
 <script>
 export default {

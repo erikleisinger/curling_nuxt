@@ -70,12 +70,16 @@
                     :size="$q.screen.xs ? 'md' : 'lg'"
                     @click="toggleNotifications"
                 >
+                <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
                     <q-badge
                         color="red"
                         floating
+                        rounded
                         v-if="!!unreadNotificationCount"
-                        >{{ unreadNotificationCount }}</q-badge
-                    >
+                        >
+                        {{unreadNotificationCount}}
+                        </q-badge>
+                </transition>
                 </q-btn>
 
                 <div
