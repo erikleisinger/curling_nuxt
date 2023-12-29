@@ -1,6 +1,8 @@
 <template>
     <TeamPlayerChangeListener/>
-    <TeamRequestsHandler :teamId="teamId" onlyInvite/>
+    <div :class="{'q-mt-lg': route.query.request}">
+    <TeamRequestsHandler :teamId="teamId" :onlyInvite="!route.query.request" />
+    </div>
     <TeamPageHeader
         :teamId="teamId"
         @click="viewing = true"
@@ -322,6 +324,7 @@ const viewing = ref(false)
 const $q = useQuasar();
 
 const route = useRoute();
+console.log(route)
 const teamId = Number(route.params.id)
 
 const hasPlayedGames = computed(() => !!team.value?.games?.length);
