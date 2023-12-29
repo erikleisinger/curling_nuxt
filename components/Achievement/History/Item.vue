@@ -7,7 +7,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="!!item.team ? navigateTo(`/teams/${item.team.id}`) : navigateTo(`/player/${item.profile.id}`)"
+        @click="!!item.team ? navigateTo(`/teams/${item.team.id}`, {replace: true}) : navigateTo(`/player/${item.profile.id}`, {replace: true})"
     >
         <q-item-section avatar class="relative-position">
             <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
@@ -45,7 +45,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/teams/${item.team.id}`)"
+        @click="navigateTo(`/teams/${item.team.id}`, {replace: true})"
     >
         <q-item-section avatar class="relative-position">
             <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
@@ -73,7 +73,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/teams/${item.team.id}`)"
+        @click="navigateTo(`/teams/${item.team.id}`, {replace: true})"
     >
         <q-item-section avatar class="relative-position overlay">
             <Badge :badge="item" iconHeight="40px" iconOnly @click.stop />
@@ -104,7 +104,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/teams/${item.team.id}`)"
+        @click="navigateTo(`/teams/${item.team.id}`, {replace: true})"
     >
         <q-item-section avatar>
             <div style="width: 42px" class="relative-position">
@@ -156,7 +156,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/games/view/${item.game_id}`)"
+        @click="navigateTo(`/games/view/${item.game_id}`, {replace: true})"
     >
         <q-item-section avatar class="relative-position">
             
@@ -229,7 +229,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/teams/${item.team.id}`)"
+        @click="navigateTo(`/teams/${item.team.id}`, {replace: true})"
     >
         <q-item-section avatar @click.stop>
             <div style="width: 42px" class="relative-position">
@@ -278,7 +278,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-         @click="navigateTo(`/teams/${item.info.id}?request=true`)"
+         @click="navigateTo(`/teams/${item.info.id}?request=true`, {replace: true})"
     >
         <q-item-section avatar @click.stop>
             <div style="width: 42px" class="relative-position">
@@ -304,7 +304,7 @@
         :class="{ unread }"
         v-ripple
         clickable
-        @click="navigateTo(`/games/view/${item.game_id}`)"
+        @click="navigateTo(`/games/view/${item.game_id}`, {replace: true})"
     >
         <q-item-section avatar @click.stop>
             <div style="width: 42px" class="relative-position">

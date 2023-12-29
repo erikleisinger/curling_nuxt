@@ -305,21 +305,21 @@ const toggleNotifications = () => {
     }
 };
 
-watch(
-    () => route.path,
-    (val, oldVal) => {
-        if (val !== oldVal && val !== '/gateway' && oldVal !== '/gateway' && route.hash === '#notifications') {
-            ready.value = false;
-            navigateTo(val, {replace: true})
-            setTimeout(() => {
-            ready.value = true;
-            }, 100)
+// watch(
+//     () => route.path,
+//     (val, oldVal) => {
+//         if (val !== oldVal && val !== '/gateway' && oldVal !== '/gateway' && route.hash === '#notifications') {
+//             ready.value = false;
+//             navigateTo(val, {replace: true})
+//             setTimeout(() => {
+//             ready.value = true;
+//             }, 100)
             
-        }
+//         }
 
-    },
-    { deep: true }
-);
+//     },
+//     { deep: true }
+// );
 const ready = ref(false)
 onMounted(() => {
     setTimeout(() => {
