@@ -119,6 +119,7 @@
                 :invited="player?.pivot?.status === 'invited'"
                 :requested="player?.pivot?.status === 'requested'"
                 :canCancel="player?.pivot?.status === 'requested' && player.id === userId"
+                @end="editing = false"
             >
                 <div class="player-avatar__container column items-center">
                     <Avataaar

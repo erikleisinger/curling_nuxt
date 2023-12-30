@@ -147,6 +147,7 @@
 </style>
 <script setup>
 import { useTeamRequestStore } from "@/store/team-requests";
+import {useUserTeamStore} from '@/store/user-teams'
 import { useQueryClient } from "@tanstack/vue-query";
 import Player from "@/store/models/player";
 import TeamPlayer from "@/store/models/team-player";
@@ -165,6 +166,8 @@ const props = defineProps({
     requested: Boolean,
     teamId: Number,
 });
+
+const emit = defineEmits(['end'])
 const remove = () => {
     menuOpen.value = false;
     confirmOpen.value = true;
@@ -194,7 +197,6 @@ const removePlayer = async () => {
         .delete()
         .eq("profile_id", props.playerId)
         .eq("team_id", props.teamId);
-    console.log(errors);
     if (errors) console.error(errors);
 };
 
@@ -216,7 +218,12 @@ const onRemove = async () => {
             });
         }
     } else {
+        const {user:userId} = useUser();
         await removePlayer();
+        if (userId.value === props.playerId) {
+            useUserTeamStore().fetchUserTeams(true)
+            emit('end')
+        }
     }
 
     queryClient.invalidateQueries({
