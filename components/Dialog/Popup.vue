@@ -1,6 +1,5 @@
 <template>
-
-    <div class="popup-container" :id="`container-${uniqueId}`" :class="{bottom, right}">
+    <div class="popup-container" :id="`container-${uniqueId}`" :class="{bottom, right}" :style="{zIndex}">
         <div class="popup-container--header" ref="header" :style="{display: hasHeader ? 'block' : 'none'}">
             <div class="popup-container--header-content">
                 <slot name="header" />
@@ -33,7 +32,6 @@
     max-width: v-bind(maxWidth);
     background-color: white;
     overflow: hidden;
-    z-index: 10;
     &.bottom {
        bottom: 50px;
        @include sm {
@@ -187,6 +185,7 @@ watch(
         if (val) {
             window.noPopState = true;
             onOpen();
+            calculateZIndex()
         }
         if (!val) {
              window.noPopState = false;
@@ -205,6 +204,20 @@ onMounted(() => {
     }
 });
 
+const zIndex = ref(10)
+
+const calculateZIndex = () => {
+    const containers = document.querySelectorAll('.popup-container')
+    const maxZIndex = Array.from(containers).reduce((all, container) => {
+        if (container.id === `container-${uniqueId}`) return all;
+        const {zIndex} = container.style;
+        if (Number(zIndex) > all) return Number(zIndex)
+        return all;
+      
+    }, 0)
+    zIndex.value = maxZIndex + 1;
+}
+
 
 
 const header = ref(null);
@@ -215,6 +228,8 @@ useEventListener(window, 'popstate', (e) => {
     if (!isOpen) return;
     emit('hide')
 })
+
+
 
 
 </script>

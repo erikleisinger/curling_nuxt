@@ -40,7 +40,7 @@
                      :color="searchOpen ? 'blue' : 'grey-9'"
                 >
                 </q-btn>
-                <div class="action-button__container">
+                <div class="action-button__container z-max">
                     <q-fab
                         color="primary"
                         icon="add"
