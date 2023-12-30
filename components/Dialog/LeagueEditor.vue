@@ -3,7 +3,8 @@
         <q-card class="league-editor__wrap">
             <!-- Header -->
 
-            <q-card-section :style="{ backgroundColor: league.color }">
+            <q-card-section :style="{ backgroundColor: league.color }" class="row justify-between items-center no-wrap">
+                <div>
                 <h3
                     class="text-sm text-white"
                     style="margin-bottom: -6px"
@@ -12,11 +13,13 @@
                     {{ isEdited ? "Editing" : "Creating" }}
                 </h3>
                 <h2 class="text-md text-bold text-white">
-                    <span v-if="league.name">{{ league.name }}</span>
+                    <span v-if="league.name">{{ league.name.substr(0, 30) }}</span>
                     <span v-else
                         >{{ isEdited ? "Edit" : "Create" }} League</span
                     >
                 </h2>
+                </div>
+                <q-btn flat round icon="close" color="white" @click="close"/>
             </q-card-section>
 
             <!-- Inputs -->
@@ -28,7 +31,7 @@
                     outlined
                     label="Title"
                     v-model="league.name"
-                    :rules="[VALIDATION_RULES.REQUIRED]"
+                    :rules="[VALIDATION_RULES.REQUIRED, VALIDATION_RULES.MAX_LENGTH(30)]"
                     ref="nameInput"
                 />
 
@@ -305,7 +308,7 @@
                     </q-item>
                 </q-list>
             </q-card-section>
-            <q-card-section>
+            <q-card-section name="options">
                 <h4>Options</h4>
                 <q-list separator>
                     <q-item
@@ -329,6 +332,33 @@
                     </q-item>
                 </q-list>
             </q-card-section>
+               <q-card-section name="danger" v-if="isEdited">
+                <div class="row justify-between items-center">
+                <h4>Danger zone</h4>
+                <q-btn flat @click="showDanger = !showDanger" :style="{color: showDanger ? league.color : ''}">
+                    {{showDanger ? 'Hide' : 'View'}}
+                </q-btn>
+                </div>
+                <transition appear name="expand-shrink" mode="out-in">
+                <q-list separator v-if="showDanger">
+                    <q-item
+                        tag="label"
+                        v-ripple
+                        clickable
+                        style="padding-right: 4px; padding-left: 4px"
+                        @click="deleteConfirmationOpen = true"
+                    >
+                        <q-item-section>
+                            <q-item-label class="text-red">Delete league</q-item-label>
+                            <q-item-label caption
+                                >Permanently delete this league and all its data.</q-item-label
+                            >
+                        </q-item-section>
+                        
+                    </q-item>
+                </q-list>
+                </transition>
+            </q-card-section>
             <q-card-actions>
                 <div class="full-width row justify-between">
                     <q-btn flat @click="close">Close</q-btn>
@@ -341,8 +371,9 @@
                         @click="save"
                         padding="0px 16px"
                         :loading="saving"
+                        :disable="saveDisabled"
                     >
-                        <!-- :disable="saveDisabled"  -->
+                      
                         Save League
                     </q-btn>
                 </div>
@@ -359,9 +390,60 @@
         >
             Are you sure you want to delete {{ poolToDelete.name }}?
         </DialogConfirmation>
+          <DialogConfirmation
+        v-if="!!deleteConfirmationOpen"
+        confirmButtonText="Delete League"
+        cancelButtonText="Cancel"
+        @confirm="deleteLeague"
+        @close="closeConfirmDelete"
+        cancelColor=""
+        confirmColor="negative"
+        :disableConfirm="deleting || !leagueNameMatch"
+        :disableCancel="deleting"
+    >
+        <h3 class="text-bold text-md">Delete {{ league.name }}?</h3>
+        <p class="text-red q-mt-sm">
+            This action cannot be undone. All league pools, drawtimes, and standings will be 
+           
+            <strong>permanently</strong> removed. Forever!
+        </p>
+        <p>
+             Any games and teams associated with this league will <strong>not</strong> be deleted.  
+        </p>
+        <p>
+            To delete this league, please type the league name (case sensitive) into the input below. 
+        </p>
+        <q-input
+            outlined
+            dense
+            :placeholder="league.name"
+            v-model="leagueDeletionVerification"
+        >
+        </q-input>
+    </DialogConfirmation>
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+
+.expand-shrink-enter-active,
+.expand-shrink-leave-active {
+    transition: all 0.3s;
+    transform-origin: top;
+}
+
+.expand-shrink-enter-from {
+    transform-origin: top;
+    transform: scaleY(0);
+}
+.expand-shrink-enter-to {
+    transform: scaleY(1);
+}
+
+.expand-shrink-enter,
+.expand-shrink-leave-to {
+    transform-origin: top;
+    transform: scaleY(0);
+}
 .dialog {
     background-color: red;
 }
@@ -426,6 +508,8 @@ const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
 const { toggleLeagueEditor, toggleGlobalSearch } = dialogStore;
 
+const showDanger = ref(false)
+
 const isOpen = ref(true);
 
 const close = () => {
@@ -458,6 +542,7 @@ const reset = () => {
 };
 
 const editedItem = computed(() => dialogStore.leagueEditor.editedLeague);
+const options = computed(() => dialogStore.leagueEditor.options)
 const isEdited = computed(() => !!editedItem?.value?.id);
 
 // DRAW TIMES
@@ -580,6 +665,12 @@ const toggleRinkSearch = () => {
 const pools = ref([]);
 
 const addPool = () => {
+    if (pools.value?.length === 0) {
+        teams.value = teams.value.map((t) => ({
+            ...t,
+            league_pool_id: 0
+        }))
+    }
     if (pools.value.length > 9) {
         useNotificationStore().addNotification({
             state: "failed",
@@ -814,6 +905,7 @@ const save = async () => {
 };
 const saveDisabled = computed(
     () =>
+         nameInput.value?.hasError ||
         !league.value?.name ||
         !league.value?.color ||
         !rink.value?.id ||
@@ -853,6 +945,62 @@ const initEdit = () => {
 onMounted(() => {
     if (!!editedItem.value) {
         initEdit();
+    } else if (options.value?.rink_id) {
+        rink.value = useRepo(Rink).where('id', options.value.rink_id).first()
     }
 });
+
+// DELETE league
+
+    const deleting = ref(false)
+    const deleteConfirmationOpen = ref(false);
+    const leagueDeletionVerification = ref(null);
+    const leagueNameMatch = computed(
+    () => leagueDeletionVerification.value === league.value?.name
+);
+
+    const closeConfirmDelete = () => {
+        leagueDeletionVerification.value = null;
+        deleteConfirmationOpen.value = false;
+    }
+
+    const deleteLeague = async () => {
+        const notId = useNotificationStore().addNotification({
+        state: "pending",
+        text: `Deleting ${
+            league.value.name
+        }...`,
+    });
+        deleting.value = true;
+        saving.value = true;
+
+        const client = useSupabaseClient();
+        const {errors} = await client.from('leagues').delete().eq('id', editedItem.value.id);
+
+        if (errors) {
+            useNotificationStore().updateNotification(notId, {
+            state: "failed",
+            text: `Error deleting ${
+                league.value.name
+            }: ${errors?.message}`,
+            timeout: 5000,
+        });
+        } else {
+            useNotificationStore().updateNotification(notId, {
+            state: "completed",
+            text: `${
+                league.value.name
+            } was deleted!`,
+            timeout: 5000,
+        });
+        queryClient.invalidateQueries({
+            queryKey: ["rink", "leagues", rink.value?.id],
+        });
+        close();
+        }
+
+
+        saving.value = false;
+        deleting.value = false;
+    }
 </script>

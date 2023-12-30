@@ -127,7 +127,7 @@ export const useLeague = () => {
             rink_id,
             public
         `).eq('rink_id', rinkId)
-
+        useRepo(League).where("rink_id", rinkId).delete();
         leagues.forEach((league) => {        
             useRepo(League).save({...league})
             if (league.rink?.id) {

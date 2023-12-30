@@ -26,7 +26,9 @@ const props = defineProps({
 });
 const dialogStore = useDialogStore();
 const openLeagueEditor = () => {
-    dialogStore.toggleLeagueEditor({ open: true });
+    dialogStore.toggleLeagueEditor({ open: true, options: {
+        rink_id: props.rinkId
+    } });
 };
 
 const { getRinkLeagues } = useLeague();
