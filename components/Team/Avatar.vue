@@ -210,11 +210,9 @@ const {getTeamAvatar} = useAvatar();
 const avatar_url = computed(() => team.value.avatar_url)
 const teamId = computed(() => props.teamId)
 
-const { isLoading,  data: avatarUrl } =  getTeamAvatar(teamId.value, {
-    enabled: !!team.value
+const { isLoading,  data: avatarUrl, refetch } =  getTeamAvatar(teamId.value, {
+    enabled,
 })
-
-
 
 const avatar = ref(null);
 const loaded = ref(true);

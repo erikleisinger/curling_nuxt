@@ -61,6 +61,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 const props = defineProps({
+    dateOnly: Boolean,
     modelValue: [String, Number],
     name: String,
     label: String,
@@ -68,15 +69,22 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    limitPast: Boolean,
     timeOnly: Boolean,
 });
 
 const { toTimezone } = useTime();
 
 const limitDate = (val) => {
-    if (!props.limit) return true;
+    if (!props.limit && !props.limitPast) return true;
     const now = toTimezone(null, null, false, true).unix();
+    if (props.limit) {
+
     return toTimezone(val, null, false, true).unix() <= now;
+    } 
+    return toTimezone(val, null, false, true).unix() >= now;
+
+    
 };
 const dayjs = useDayjs();
 const isTodaySelected = computed(() => {
@@ -135,6 +143,7 @@ const onHide = () => {
 
 const onSelectDate = (val) => {
     date.value = val;
+    if (props.dateOnly) return; 
     selectDate.value = false;
 };
 

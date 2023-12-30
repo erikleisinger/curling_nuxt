@@ -218,7 +218,6 @@ const getLeagueStandings = async () => {
             },
         };
     }, {});
-    console.log(league.value.teams);
     league.value.teams.forEach(({ team_id }) => {
         if (!formatted[team_id])
             formatted[team_id] = {

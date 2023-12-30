@@ -18,7 +18,7 @@
             >
                 <q-tab label="Standings" :name="0"  />
                 <q-tab label="Results" :name="1"/>
-                 <q-tab label="Upcoming" :name="2" :disable="true"/>
+                 <q-tab label="Upcoming" :name="2"/>
             
             </q-tabs>
         </nav>
@@ -28,6 +28,7 @@
             <KeepAlive>
             <LeagueStandings v-if="currentIndex === 0" :leagueId="leagueId"/>
             <LeagueResults v-else-if="currentIndex === 1" :leagueId="leagueId"/>
+            <LeagueUpcoming v-else-if="currentIndex === 2" :leagueId="leagueId"/>
             </KeepAlive>
           
         </main>
