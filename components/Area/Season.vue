@@ -12,7 +12,9 @@
         </header>
         <q-separator/>
     <main class="row">
-      
+
+        <!-- TEAMS -->
+  
         <section name="teams" :class="$q.screen.xs ? 'col-12' : 'col-6'">
             <div class="row justify-between items-center header-text">
                 <div class="">
@@ -46,6 +48,78 @@
                 </div>
             </div>
         </section>
+
+<!-- UPCOMING -->
+
+            <section name="upcoming" :class="$q.screen.xs ? 'col-12' : 'col-6'" >
+         <div class="row justify-between items-center header-text">
+                <div class="">
+            <h3> Upcoming games <div class="underline"/></h3>
+                <h4 v-if="!isLoadingUpcoming">You have {{!upcomingGames?.length ? 'no games' : upcomingGames?.length === 1  ? 'a game' : `${upcomingGames.length} games`}} coming up!</h4>
+                <h4 v-else>...</h4>
+                </div>
+
+            </div> 
+            <div v-if="isLoadingUpcoming">
+             <q-item
+                v-for="i in Array.from(Array(1).keys())"
+                :key="i"
+                class="justify-center"
+            >
+                <q-item-section avatar style="min-width: 100px">
+                    <div class="row no-wrap justify-end items-center">
+                           <q-skeleton width="80px" height="1em" class="q-mr-sm"></q-skeleton>
+                    <q-skeleton type="QAvatar" width="30px" height="30px"></q-skeleton>
+                    </div>
+                </q-item-section>
+
+                <q-item-section style="max-width: 50px">
+                    <q-item-label class="row justify-center">
+                        <q-skeleton type="text" width="40px"></q-skeleton>
+                    </q-item-label>
+                    <q-item-label caption class="row justify-center">
+                        <q-skeleton type="text" width="40px"></q-skeleton>
+                    </q-item-label>
+                </q-item-section>
+                <q-item-section avatar style="min-width: 100px">
+                    <div class="row no-wrap justify-end items-center">
+                             <q-skeleton type="QAvatar" width="30px" height="30px"></q-skeleton>
+                           <q-skeleton width="80px" height="1em" class="q-ml-sm"></q-skeleton>
+               
+                    </div>
+                </q-item-section>
+            </q-item>
+            </div>
+            <q-list separator>
+             <q-item class="upcoming-game__item" v-for="upcomingGame in upcomingGames" :key="upcomingGame?.id">
+        <q-item-section avatar style="min-width: 100px">
+            <div class="row no-wrap items-center justify-end full-width q-pr-sm">
+           <div class="text-sm q-mr-sm text-right"> {{upcomingGame?.team_1.name}}</div>
+            <div style="width: 30px; min-width: 30px">
+                <TeamAvatar :teamId="upcomingGame?.team_1?.id"/>
+            </div>
+            </div>
+        </q-item-section>
+        <q-item-section style="min-width: 50px" class="text-center">
+            <q-item-label caption>
+                {{toTimezone(upcomingGame?.start_time, 'MMM DD')}}
+            </q-item-label>
+              <q-item-label caption>
+                {{toTimezone(upcomingGame?.drawtime ?? upcomingGame?.start_time, 'h:mm a')}}
+            </q-item-label>
+        </q-item-section>
+        <q-item-section avatar style="min-width: 100px">
+           <div class="row no-wrap items-center justify-start full-width q-pl-sm">
+               <div style="width: 30px; min-width: 30px">
+                <TeamAvatar :teamId="upcomingGame?.team_2?.id" />
+            </div>
+           <div class="text-sm q-ml-sm" > {{upcomingGame?.team_2.name}}</div>
+         
+            </div>
+        </q-item-section>
+    </q-item> 
+            </q-list>
+      </section>
 
         <!-- HOME RINK -->
 
@@ -160,6 +234,13 @@
 </template>
 <style lang="scss" scoped>
 $gap: 6px;
+.upcoming-game__item {
+        display: grid!important;
+        grid-template-columns: 1fr 50px 1fr;
+        .q-item__section--avatar {
+            padding: unset;
+        }
+    }
 section {
     margin-bottom: var(--space-sm);
 }
@@ -254,6 +335,8 @@ import Rink from '@/store/models/rink'
 import gsap from 'gsap';
 
 const {getCurrentUser, updateHomeRink} = useUserStore();
+
+const {toTimezone} = useTime()
 
 
 const {toggleTeamCreator, toggleGlobalSearch} = useDialogStore();
@@ -378,5 +461,37 @@ const animate = () => {
 onMounted(() => {
     animate()
     
+})
+
+const dayjs = useDayjs();
+// UPCOMING GAMES
+
+const getUpcomingGames = async () => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('scheduled_games').select(`
+    id, 
+    start_time,
+    league:league_id (
+        id,
+        name,
+        color
+    ),
+    team_1 (
+        id,
+        name
+    ),
+    team_2 (
+        id,
+        name
+    )
+    `).or(`team_1.in.(${teams?.value?.map(({id}) => id)}),team_2.in.(${teams?.value?.map(({id}) => id)})`).gte('start_time', dayjs().toISOString()).order('start_time', {ascending: true}).limit(3)
+
+    return data;
+}
+
+const {isLoading: isLoadingUpcoming, data: upcomingGames} = useQuery({
+    queryKey: ['upcoming', 'games', userId.value],
+    queryFn: getUpcomingGames,
+    refetchOnWindowFocus: false
 })
 </script>
