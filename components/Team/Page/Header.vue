@@ -4,7 +4,12 @@
         <div class="team-profile-picture--shadow" />
         <div class="team-profile-picture">
             
-            <div class="team-players__wrap row justify-end">
+            <div class="team-players__wrap row justify-between">
+            <div class="q-mt-sm">
+                <q-chip color="orange" v-if="requests?.length && isOnTeam(teamId)" text-color="white" class="clickable">
+                    <span class="text-bold">{{requests.length}} {{`request${requests.length > 1 ? 's' : ''}`}}</span>
+                </q-chip>   
+        </div>
                 <Avataaar
                     v-for="player in team.players"
                     :key="player.id"
@@ -162,7 +167,9 @@ const players = computed(() => {
         });
 });
 
-const {getTeamPlayers} = useTeam();
+const requests = computed(() => players.value?.filter(({status}) => status === 'requested'))
+
+const {getTeamPlayers, isOnTeam} = useTeam();
 
 const {isLoading: isLoadingPlayers} = useQuery({
     queryKey: ['team', 'players', props.teamId],
