@@ -9,6 +9,9 @@
                 <q-chip color="orange" v-if="requests?.length && isOnTeam(teamId)" text-color="white" class="clickable">
                     <span class="text-bold">{{requests.length}} {{`request${requests.length > 1 ? 's' : ''}`}}</span>
                 </q-chip>   
+                 <q-chip color="orange" v-else-if="hasRequestedToJoin" text-color="white" class="clickable">
+                    <span class="text-bold">Request pending</span>
+                </q-chip>  
         </div>
                 <Avataaar
                     v-for="player in team.players"
@@ -168,6 +171,10 @@ const players = computed(() => {
 });
 
 const requests = computed(() => players.value?.filter(({status}) => status === 'requested'))
+
+const {user: userId} = useUser();
+
+const hasRequestedToJoin = computed(() => requests.value?.some(({id}) => id === userId.value))
 
 const {getTeamPlayers, isOnTeam} = useTeam();
 
