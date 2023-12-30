@@ -13,12 +13,14 @@
                     <span class="text-bold">Request pending</span>
                 </q-chip>  
         </div>
+        <div class="row justify-end">
                 <Avataaar
                     v-for="player in team.players"
                     :key="player.id"
                     v-bind="player.avatar"
                     class="player-avatar"
                 />
+        </div>
             </div>
             <q-img
                 :src="avatar"
