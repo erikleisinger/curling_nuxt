@@ -15,7 +15,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
         };
     },
     actions: {
-        async deleteTeamRequest({teamId, profileId} : {teamId: number, profileId: string}) {
+        async deleteTeamInvitation({teamId, profileId} : {teamId: number, profileId: string}) {
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({
                 state: "pending",
@@ -49,7 +49,40 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 return true;
             }
         },
-        
+        async deleteTeamRequest({teamId, profileId} : {teamId: number, profileId: string}) {
+            const notStore = useNotificationStore();
+            const notId = notStore.addNotification({
+                state: "pending",
+                text: `Cancelling request...`,
+                timeout: 10000,
+            });
+            const client = useSupabaseClient();
+            const { error } = await client
+                .from("team_requests")
+                .delete()
+                .eq("team_id", teamId)
+                .eq('requester_profile_id', profileId)
+
+
+            if (error) {
+                notStore.updateNotification(notId, {
+                    state: "failed",
+                    text: `Error cancelling request (code ${
+                        error?.code ?? "X"
+                    })`,
+                    timeout: 10000,
+                });
+                return false;
+            } else {
+                notStore.updateNotification(notId, {
+                    state: "completed",
+                    text: `Request cancelled`,
+                    timeout: 10000,
+                });
+                useRepo(TeamPlayer).where('team_id', teamId).where('player_id', profileId).delete();
+                return true;
+            }
+        },
         async getTeamRequestsByUser(profile_id: number) {
             const client = useSupabaseClient();
 

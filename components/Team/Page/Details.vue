@@ -118,6 +118,7 @@
                 "
                 :invited="player?.pivot?.status === 'invited'"
                 :requested="player?.pivot?.status === 'requested'"
+                :canCancel="player?.pivot?.status === 'requested' && player.id === userId"
             >
                 <div class="player-avatar__container column items-center">
                     <Avataaar
@@ -706,10 +707,10 @@ const goSocial = (url: string) => {
         },
     });
 };
-
+const { user: userId } = useUser();
 onMounted(() => {
     if (!props.create) return;
-    const { user: userId } = useUser();
+
     editedValues.value.rink_id = useRepo(Player)
         .where("id", userId.value)
         .first()?.rink_id;
