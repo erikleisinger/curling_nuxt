@@ -1,15 +1,40 @@
 <template>
+ <div v-if="isLoading">
+            <q-item
+                v-for="i in Array.from(Array(5).keys())"
+                :key="i"
+                class="justify-center"
+            >
+                <q-item-section avatar style="min-width: 100px">
+                    <div class="row no-wrap justify-end items-center">
+                           <q-skeleton width="80px" height="1em" class="q-mr-sm"></q-skeleton>
+                    <q-skeleton type="QAvatar" width="30px" height="30px"></q-skeleton>
+                    </div>
+                </q-item-section>
 
-   <q-list separator>
-    <div v-if="isAdmin">
-    <q-item clickable v-ripple @click="toggleEditor">
-        <q-item-section avatar>
-            <q-icon name="add"/>
-        </q-item-section>   
-        <q-item-section>
-            Add game</q-item-section>
-    </q-item>
+                <q-item-section style="max-width: 50px">
+                    <q-item-label class="row justify-center">
+                        <q-skeleton type="text" width="40px"></q-skeleton>
+                    </q-item-label>
+                    <q-item-label caption class="row justify-center">
+                        <q-skeleton type="text" width="40px"></q-skeleton>
+                    </q-item-label>
+                </q-item-section>
+                <q-item-section avatar style="min-width: 100px">
+                    <div class="row no-wrap justify-end items-center">
+                             <q-skeleton type="QAvatar" width="30px" height="30px"></q-skeleton>
+                           <q-skeleton width="80px" height="1em" class="q-ml-sm"></q-skeleton>
+               
+                    </div>
+                </q-item-section>
+            </q-item>
+        </div>
+   <q-list separator v-else>
+    <div v-if="isAdmin" class="row justify-center full-width q-pa-sm">
+    <q-btn flat :style="{color: league.color}"  @click="toggleEditor">Add game</q-btn>
+        
 </div>
+
     <q-item v-for="game in games" :id="game.id" class="upcoming-game__item">
         <q-item-section avatar style="min-width: 100px">
             <div class="row no-wrap items-center justify-end full-width q-pr-sm">
@@ -39,22 +64,29 @@
     </q-item>
    </q-list>
    <DialogPopup :open="editorOpen" maxWidth="500px">
-    <div class="row justify-between items-center editor-header">
-        <h2 class="text-md text-bold">Schedule a game</h2>
-        <q-btn flat round icon="close" @click="closeEditor"/>
+    <div class="row justify-between items-center editor-header" :style="{backgroundColor: league.color}">
+        <div>
+        <h2 class="text-md text-bold text-white" >Schedule a game</h2>
+        <h3 class="text-white text-sm" style="margin-top: -4px">{{league.name}}</h3>
+        </div>
+        <q-btn flat round icon="close" color="white" @click="closeEditor"/>
 
     </div>
-    <q-separator/>
-    <section name="inputs" class="editor-section">
+    <q-separator :style="{backgroundColor: league.color}" size="2px"/>
+    <section name="time" class="editor-section">
         <h3 class="text-bold text-sm">Time</h3>
         <div class="row" v-if="league?.drawtimes?.length">
             <q-chip clickable v-for="drawtime in league?.drawtimes" :key="drawtime.id" :outline="editedGame.selected_time !== drawtime.time" :style="{backgroundColor: league.color}" :text-color="editedGame.selected_time == drawtime.time ? 'white' : league.color" @click="editedGame.selected_time = drawtime.time">{{toTimezone(drawtime.time, 'h:mm a')}}</q-chip>
         </div>  
-          <h3 class="text-bold text-sm">Date</h3>
+    </section>
+    <section name="date" class="editor-section">
+          <h3 class="text-bold text-sm ">Date</h3>
           <q-input dense outlined readonly v-model="editedGame.selected_date">
           <InputDate dateOnly @update:modelValue="onSelectDate" :limit="false" :limitPast="true"/>
           </q-input>
-              <h3 class="text-bold text-sm">Teams</h3>
+    </section>
+    <section name="teams" class="editor-section">
+              <h3 class="text-bold text-sm ">Teams</h3>
               <q-item clickable v-ripple @click="searchTeam('team_1')">
                 <q-item-section avatar>
                     <div style="width: 40px">
@@ -76,10 +108,12 @@
                 </q-item-section>
              
               </q-item>
-               <div class="row justify-end q-pa-sm">
-                        <q-btn rounded :disable="saveDisabled" @click="save" :loading="saving">Save</q-btn>
-                    </div>
+
     </section>
+               <div class="row justify-end q-pa-sm buttons-container">
+                        <q-btn rounded :disable="saveDisabled" @click="save" :loading="saving" :style="{backgroundColor: league.color}" text-color="white">Save</q-btn>
+                    </div>
+
    </DialogPopup>
 </template>
 <style lang="scss" scoped>
@@ -95,6 +129,11 @@
         .q-item__section--avatar {
             padding: unset;
         }
+    }
+    .buttons-container {
+        position: absolute;
+        bottom: 0;
+        right: 0;
     }
 </style>
 <script setup>

@@ -20,7 +20,7 @@
 .popup-container {
     margin: var(--space-xs);
     
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    // border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     height: calc(100 * var(--vh, 1vh) - 65px);
     width: calc(100vw - (2 * var(--space-xs)));
@@ -64,6 +64,7 @@
     .popup-container--slot-content {
         height: v-bind(contentHeight);
         overflow: auto;
+        margin-top: -1px;
     }
 }
 .popup--overlay {
