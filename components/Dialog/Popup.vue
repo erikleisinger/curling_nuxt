@@ -189,6 +189,7 @@ watch(
             onOpen();
         }
         if (!val) {
+             window.noPopState = false;
             onClose();
         }
     }

@@ -4,11 +4,14 @@
         <q-page-container class="page__container--global relative-position">
               <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" @hide="toggleNotifications({open: false})">
                 <template v-slot:header>
+                    <div class="row justify-between items-center">
                     <h1
                         class="text-md text-bold row justify-between items-center"
                     >
                         Notifications
                     </h1>
+                <q-btn flat round icon="close" @click="toggleNotifications({open: false})"/>
+                    </div>
                 </template>
                 <AchievementHistory
                     :open="notificationsOpen"
@@ -25,6 +28,7 @@
                     icon="home"
                     @click="goTo('/')"
                     :size="$q.screen.xs ? 'md' : 'lg'"
+                    :color="route.path === '/' ? 'blue' : 'grey-9'"
              
                 />
                 <q-btn
@@ -33,6 +37,7 @@
                   
                     :size="$q.screen.xs ? 'md' : 'lg'"
                     @click="toggleSearch"
+                     :color="searchOpen ? 'blue' : 'grey-9'"
                 >
                 </q-btn>
                 <div class="action-button__container">
@@ -67,7 +72,7 @@
                 <q-btn
                     flat
                     icon="notifications"
-                    :color="notificationsOpen ? 'blue' : ''"
+                    :color="notificationsOpen ? 'blue' : 'grey-9'"
                     :size="$q.screen.xs ? 'md' : 'lg'"
                     @click="toggleNotifications({open: !notificationsOpen})"
                 >
@@ -143,6 +148,7 @@ $footer-height-sm: 4em;
         > .q-btn {
             width: min-content;
             margin: auto;
+
         }
         .action-button__container {
             position: relative;
@@ -245,6 +251,8 @@ const toggleSearch = () => {
     });
 };
 
+const searchOpen = computed(() => dialogStore.globalSearch.open)
+
 const onSelect = (selection) => {
     toggleGlobalSearch({
         open: false,
@@ -265,7 +273,13 @@ const onSelect = (selection) => {
 // navigation
 
 const goTo = (view) => {
+    const wasNotificationsOpen = dialogStore.notifications.open;
+    toggleGlobalSearch({open: false});
+    toggleNotifications({open: false});
+    setTimeout(() => {
     return navigateTo(`${view}`);
+    }, wasNotificationsOpen ? 100 : 0)
+    
 };
 
 </script>

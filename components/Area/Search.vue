@@ -28,153 +28,95 @@
                         @click="search"
                         v-if="!hideIcons"
                         color="white"
-                    
                     />
                 </template>
             </q-input>
         </div>
         <!-- :style="{height: `calc(100% - ${searchBarHeight}px)`}" -->
         <transition appear name="expand-shrink" mode="out-in">
-            <div
+            <q-list
                 class="search-results__container z-top"
                 :style="{
                     top: `${searchBarY}px + ${searchBarHeight}px`,
                     maxHeight: `calc(100 * var(--vh, 1vh) - (${searchBarY}px + ${searchBarHeight}px + 32px))`,
                 }"
                 v-if="results"
+                separator
             >
                 <div
                     v-if="!results?.length"
-                    class="result__container no-grid row justify-center"
+                    class="no-result__container no-grid row justify-center"
                 >
                     No results.
                 </div>
-                <div
+                <q-item
                     v-for="result in results"
                     :key="result.id"
                     @click="emit('select', { result, event: $event })"
                 >
-                    <div class="result__container clickable">
-                        <!-- RINK result -->
-                        <div
-                            v-if="result.resourcetype === 'rink'"
-                            class="icon__wrap"
-                        >
-                            <div
-                                class="row justify-center items-center icon__container"
-                            >
-                                <q-icon
-                                    size="2em"
-                                    name="location_on"
-                                    color="red"
-                                />
-                            </div>
-                        </div>
 
-                        <div
-                            class="column justify-center"
-                            v-if="result.resourcetype === 'rink'"
-                        >
-                            <div class="text-bold text-lg name">
-                                {{ result.name }}
-                            </div>
-                            <div class="text-sm" style="margin-top: -4px">
-                                {{ `${result.city}, ${result.province}` }}
-                            </div>
-                        </div>
-                        <div v-if="result.resourcetype === 'rink'">
-                            <slot name="append" v-bind:result="result" />
-                        </div>
+                <!-- Avatar -->
 
-                        <!-- TEAM result -->
-                        <div v-if="result.resourcetype === 'team'">
+                    <q-item-section avatar>
+                        <q-icon
+                            v-if="result.resourcetype === 'rink'"
+                            size="2em"
+                            name="location_on"
+                            color="red"
+                        />
+                        <div v-else-if="result.resourcetype === 'team'" style="width: 40px">
                             <TeamAvatar :teamId="result.id" />
                         </div>
-                        <div
-                            class="column justify-center"
-                            v-if="result.resourcetype === 'team'"
-                        >
-                            <div class="text-bold text-lg name">
-                                {{ result.name }}
-                            </div>
-                            <div
-                                class="text-sm"
-                                style="margin-top: -4px"
-                                v-if="result.rink_name"
-                            >
-                                {{ result.rink_name }}
-                            </div>
-                        </div>
-                        <div v-if="result.resourcetype === 'team'">
-                            <slot name="append" v-bind:result="result" />
-                        </div>
-                        <!-- EVENT result -->
-                        <div
-                            v-if="result.resourcetype === 'event'"
-                            class="icon__wrap"
-                        >
-                            <div
-                                class="row justify-center items-center icon__container"
-                            >
-                                <q-icon
+
+                         <q-icon
+                         v-else-if="result.resourcetype === 'event'"
                                     size="2em"
                                     name="emoji_events"
                                     color="yellow"
                                 />
-                            </div>
-                        </div>
-                        <div
-                            v-if="result.resourcetype === 'event'"
-                            class="column justify-center"
-                        >
-                            <div class="text-bold">{{ result.name }}</div>
-                            <div class="text-sm">{{ result.loc }}</div>
-                            <div class="text-sm">
-                                {{ `${result.city}, ${result.province}` }}
-                            </div>
-                        </div>
-                        <div v-if="result.resourcetype === 'event'">
-                            <slot name="append" v-bind:result="result" />
-                        </div>
-                        <!-- USER result -->
 
-                        <div v-if="result.resourcetype === 'profile'">
+                                <div v-else-if="result.resourcetype === 'profile'" style="width: 40px">
                             <Avataaar v-bind="parseAvatar(result.avatar)" />
                         </div>
-                        <div
-                            class="column justify-center"
-                            v-if="result.resourcetype === 'profile'"
-                        >
-                            <div class="text-bold text-lg name">
-                                {{ result.first_name }} {{ result.last_name }}
-                            </div>
-                            <div class="text-sm" style="margin-top: -4px">
-                                @{{ result.name }}
-                            </div>
-                        </div>
-                        <div v-if="result.resourcetype === 'profile'">
-                            <slot name="append" v-bind:result="result" />
-                        </div>
+                         <q-icon  v-else-if="result.resourcetype === 'league'" name="table_view" size="2em" :style="{color: result.color}"/>
 
-                        <!-- LEAGUE RESULT -->
-                       <div v-if="result.resourcetype === 'league'">
-                           <q-icon name="circle" size="2em" :style="{color: result.color}"/>
-                        </div>
-                        <div
-                            class="column justify-center"
-                            v-if="result.resourcetype === 'league'"
-                        >
-                              <div class="text-bold text-lg name">
-                                {{ result.name }} 
-                            </div>
-                            <div class="text-sm" style="margin-top: -4px">
-                                {{ result.rink_name }}
-                            </div>
-                         
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </q-item-section>
+
+                    <!-- Content --> 
+
+                    <q-item-section v-if="result.resourcetype === 'rink'">
+                        
+                        <q-item-label class="text-bold">{{ result.name }}</q-item-label>
+                        <q-item-label caption> {{ `${result.city}, ${result.province}` }}</q-item-label>
+                    </q-item-section>
+
+                      <q-item-section v-if="result.resourcetype === 'team'">
+    
+                        <q-item-label class="text-bold">{{ result.name }}</q-item-label>
+                        <q-item-label caption> {{ result.rink_name }}</q-item-label>
+                    </q-item-section>
+
+                         <q-item-section v-if="result.resourcetype === 'event'">
+                        <q-item-label class="text-bold">{{ result.name }}</q-item-label>
+                        <q-item-label caption> {{ result.loc }}</q-item-label>
+                    </q-item-section>
+
+                          <q-item-section v-if="result.resourcetype === 'profile'">
+                        <q-item-label class="text-bold"> {{ result.first_name }} {{ result.last_name }}</q-item-label>
+                        <q-item-label caption>   @{{ result.name }}</q-item-label>
+                    </q-item-section>
+
+                         <q-item-section v-if="result.resourcetype === 'league'">
+                        <q-item-label class="text-bold"  :style="{color: result.color}"> {{ result.name }} </q-item-label>
+                        <q-item-label caption>   @{{ result.rink_name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side top>
+                        <q-item-label caption>
+                            {{formattedType(result.resourcetype)}}
+                        </q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-list>
         </transition>
     </div>
     <!-- </Teleport> -->
@@ -206,34 +148,18 @@
     .search-results__container {
         position: absolute;
         width: calc(100% - var(--space-md) * 2);
-
+        background-color: white;
         overflow: auto;
         margin: 0px var(--space-md);
+        padding: var(--space-xxxs) 0px;
         border-radius: 16px;
-        .result__container {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: var(--space-sm);
-
-            > div:nth-child(2) {
-                margin-left: 16px;
-            }
-            &:not(.no-grid) {
-                display: grid;
-                grid-template-columns: 50px 1fr auto;
-            }
+        
+        .q-item__label--overline {
+            text-transform: uppercase;
         }
-        .icon__wrap {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            .icon__container {
-                border: 1px solid rgba(0, 0, 0, 0.2);
-                border-radius: 50%;
-                aspect-ratio: 1/1;
-                width: 100%;
-            }
+        .no-result__container {
+            padding: var(--space-md);
+            font-weight: bold;
         }
     }
     .search__container--floating {
@@ -307,7 +233,7 @@ const search = () => {
         results.value = null;
         return;
     }
-    input.value.blur();
+
     useSearch();
 };
 
@@ -346,6 +272,8 @@ const useSearch = useThrottleFn(async () => {
             return all;
         return [...all, current];
     }, []);
+
+    if (!!results.value?.length) input.value.blur();
     loading.value = false;
 }, 100);
 
@@ -368,6 +296,17 @@ const clearResults = () => {
 const searchBar = ref(null);
 const { height: searchBarHeight, y: searchBarY } =
     useElementBounding(searchBar);
+
+
+    const formattedType = (type) => {
+        return {
+            rink: 'Rink',
+            team: 'Team',
+            profile: 'Player',
+            league: 'League',
+            event: 'Event',
+        }[type]
+    }
 </script>
 <script>
 export default {
