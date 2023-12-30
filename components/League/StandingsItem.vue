@@ -15,6 +15,7 @@
                                     class="q-mr-md"
                                 >
                                     <TeamAvatar :teamId="team?.id" />
+                                     <LeagueStandingsMenu  :teamId="teamId" :leagueId="leagueId"  />
                                 </div>
                                 <div
                                     class="row no-wrap justify-between items-center"

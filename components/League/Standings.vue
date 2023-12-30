@@ -54,8 +54,8 @@
                     />
                 </transition-group>
             </KeepAlive>
-            <div class="full-width justify-end row" @click="viewH2h(poolIndex)">
-                <div class="clickable text-underline text-sm q-px-md q-py-sm">
+            <div class="full-width justify-end row" >
+                <div class="clickable text-underline text-sm q-px-md q-py-sm" style="width: fit-content" @click="viewH2h(poolIndex)">
                     {{
                         h2h.includes(poolIndex)
                             ? "View standings"
@@ -104,8 +104,8 @@
                 <LeagueResultsGrid v-else :leagueId="league?.id" key="grid" />
             </transition-group>
         </KeepAlive>
-        <div class="full-width justify-end row" @click="viewH2h(0)">
-            <div class="clickable text-underline text-sm q-px-md q-py-sm">
+        <div class="full-width justify-end row" >
+            <div class="clickable text-underline text-sm q-px-md q-py-sm" style="width: fit-content" @click="viewH2h(0)">
                 {{ h2h.includes(0) ? "View standings" : "View head-to-head" }}
             </div>
         </div>
