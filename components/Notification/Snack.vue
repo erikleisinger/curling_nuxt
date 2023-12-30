@@ -5,7 +5,7 @@
 
 </style>
 <script setup lang="ts">
-import { Notification } from "@/types/notification";
+import type { Notification } from "@/types/notification";
 const props = defineProps<{
     notification: Notification;
 }>();

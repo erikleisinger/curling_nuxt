@@ -173,7 +173,7 @@
         </div>
     </section>
     <section>
-        <TeamRequestsHandler :teamId="teamId"/>
+        <TeamRequestsHandler :teamId="teamId" v-if="!create && !editing"/>
     </section>
     <section name="options" class="q-pa-sm" v-if="editing">
         <h3 class="text-sm text-bold ">Options</h3>
@@ -404,7 +404,7 @@ import { TEAM_POSITIONS } from "@/constants/team";
 const queryClient = useQueryClient();
 
 const props = defineProps<{
-    create: boolean;
+    create?: boolean;
     teamId?: number | undefined;
 }>();
 const emit = defineEmits(["back"]);

@@ -1,25 +1,46 @@
 <template>
     <div ref="historyContainer">
-        <div v-if="isOpen">
-            <transition-group appear tag="div" @enter="onEnter">
-                <div
-                    v-for="(a, i) in notificationsPaginated"
-                    :key="a.id"
-                    :data-index="i"
-                >
-                    <!--  -->
-                    <LazyAchievementHistoryItem :item="a" />
+        <div v-if="isLoading || !isOpen">
+            <q-item
+                style="max-width: 300px"
+                v-for="i in Array.from(Array(5).keys())"
+                :key="i"
+            >
+                <q-item-section avatar>
+                    <q-skeleton type="QAvatar"></q-skeleton>
+                </q-item-section>
 
-                    <q-separator />
-                </div>
+                <q-item-section>
+                    <q-item-label>
+                        <q-skeleton type="text"></q-skeleton>
+                    </q-item-label>
+                    <q-item-label caption>
+                        <q-skeleton type="text" width="65%"></q-skeleton>
+                    </q-item-label>
+                </q-item-section>
+            </q-item>
+        </div>
+        <div v-else-if="!isLoading && isOpen">
+            <transition-group appear tag="div" @enter="onEnter">
+            <div
+                v-for="(a, i) in notificationsPaginated"
+                :key="a.id"
+                :data-index="i"
+            >
+                <!--  -->
+                <LazyAchievementHistoryItem :item="a" />
+
+                <q-separator />
+            </div>
             </transition-group>
         </div>
         <div
             class="row justify-center show-more__container"
-            v-if="notificationsPaginated?.length < notificationCount && isOpen"
+            v-if="!isLoading && notificationsPaginated?.length < notificationCount && isOpen"
         >
             <q-btn flat text color="blue" @click="showMore">Show more</q-btn>
         </div>
+        
     </div>
 </template>
 <style lang="scss" scoped>
@@ -66,13 +87,14 @@ const isOpen = ref(false);
 
 const setOpen = (val) => {
     if (val) {
-            setTimeout(() => {
-                isOpen.value = val;
-            }, 200);
-        } else {
-            isOpen.value = val;
-        }
-}
+        setTimeout(() => {
+isOpen.value = val;
+        }, isSuccess.value ? 0 : 200)
+        
+    } else {
+        isOpen.value = val;
+    }
+};
 
 // FETCH
 
@@ -87,7 +109,7 @@ const getNotifications = async () => {
     return data;
 };
 
-const { isLoading, data: notifications } = useQuery({
+const { isLoading, data: notifications, isSuccess } = useQuery({
     queryKey: ["notifications", userId.value],
     queryFn: getNotifications,
     refetchOnWindowFocus: false,
@@ -216,7 +238,7 @@ const startWebsockets = () => {
 
 onMounted(() => {
     startWebsockets();
-    setOpen(props.open)
+    setOpen(props.open);
 });
 
 const scrollToTop = () => {
@@ -236,9 +258,7 @@ watch(
             }, 1000);
         }
 
-        setOpen(val)
-
-        
+        setOpen(val);
     }
 );
 const historyContainer = ref(null);

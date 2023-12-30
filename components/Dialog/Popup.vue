@@ -1,22 +1,26 @@
 <template>
-    <div class="popup-container" :class="{bottom, right}">
-        <div class="popup-container--header" ref="header">
+
+    <div class="popup-container" :id="`container-${uniqueId}`" :class="{bottom, right}">
+        <div class="popup-container--header" ref="header" :style="{display: hasHeader ? 'block' : 'none'}">
             <div class="popup-container--header-content">
                 <slot name="header" />
             </div>
         </div>
         <q-separator />
-        <div class="popup-container--slot-content">
-            <slot />
+        <div class="popup-container--slot-content"  :id="`content-${uniqueId}`">
+            <slot v-if="ready"/>
         </div>
     </div>
-    <div class="popup--overlay" v-show="!hideOverlay">
+    <div class="popup--overlay" :id="`overlay-${uniqueId}`" v-show="!hideOverlay" :style="{pointerEvents: hideOverlay || !isOpen ? 'none' : 'all'}">
 
     </div>
+
 </template>
 <style lang="scss" scoped>
+
 .popup-container {
     margin: var(--space-xs);
+    
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     height: calc(100 * var(--vh, 1vh) - 65px);
@@ -31,23 +35,30 @@
     overflow: hidden;
     z-index: 10;
     &.bottom {
-        bottom: 50px;
-        @include sm {
-            bottom: 65px;
-        }
+       bottom: 50px;
+       @include sm {
+        bottom: 65px;
+       }
     }
     &:not(.bottom) {
         top: 0;
     }
 
      &.right{
-        right: 0
+        right: 0;
+        @include sm {
+            right: v-bind(desktopRight);
+
+        }
     }
     &:not(.right) {
         left: 0;
+        right: 0;
     }
     @include sm {
          height: calc(100 * var(--vh, 1vh) - 80px);
+         margin-left: auto;
+        margin-right: auto;
     }
     .popup-container--header {
         padding: var(--space-sm);
@@ -66,12 +77,11 @@
     background-color:rgba(0,0,0,0.2);
     opacity: 0;
     z-index:1;
-    pointer-events: none;
 }
 </style>
 <script setup>
 import gsap from "gsap";
-import { useMouse, useElementBounding } from "@vueuse/core";
+import { useMouse, useElementBounding, useEventListener } from "@vueuse/core";
 
 const props = defineProps({
      bottom: Boolean,
@@ -90,18 +100,35 @@ const props = defineProps({
    
 });
 
+const $q = useQuasar();
+
+const slots = useSlots();
+
+const hasHeader = computed(() => !!slots.header)
+
+const emit = defineEmits(['hide'])
+
 const { x: mouseX, y: mouseY } = useMouse();
 
 const percentX = ref(0);
+const percentY = ref(0);
+
+const desktopRight = computed(() => `calc(${window.innerWidth * ((100 - percentX.value) / 100)}px - (${props.maxWidth} / 2))`)
 
 const timeline = ref(null)
 
+const ready = ref(false)
+
+const uniqueId = `id-${(Math.random() * 1000000000000).toFixed()}`;
+
 const onOpen = () => {
+  
     percentX.value = (mouseX.value / window.innerWidth) * 100;
+    percentY.value = (mouseY.value / window.innerHeight) * 100;
 const tl = gsap.timeline();
 timeline.value = tl
     tl.fromTo(
-        ".popup-container",
+        `#container-${uniqueId}`,
         {
             scaleX: 0,
             scaleY: 0.05,
@@ -109,33 +136,40 @@ timeline.value = tl
         {
             scaleX: 1,
             scaleY: 1,
-            transformOrigin: `${percentX.value}% bottom `,
+            transformOrigin: `${percentX.value}% ${percentY.value}%  `,
             duration: 0.2,
             ease: "power",
+            onComplete: () => {
+ready.value = true;
+    }
         }
     );
 
     tl.from(".popup-container--slot-content", {
         opacity: 0,
         duration: 0.1,
+        
     });
-    tl.to('.popup--overlay', {
+    tl.to(`#overlay-${uniqueId}`, {
         opacity: 1,
     })
 
 };
 const onClose = () => {
     timeline.value.pause();
-    gsap.to(".popup-container", {
+    gsap.to(`#container-${uniqueId}`, {
         scale: 0,
-        transformOrigin: `${percentX.value}% bottom`,
+        transformOrigin: `${percentX.value}% ${percentY.value}% `,
         duration: 0.2,
         ease: "sine",
     });
-     gsap.to(".popup--overlay", {
+     gsap.to(`#overlay-${uniqueId}`, {
         opacity: 0,
         duration: 0.2,
         ease: "sine",
+        onComplete: () => {
+            ready.value = false;
+        }
     });
 };
 
@@ -151,6 +185,7 @@ watch(
     isOpen,
     (val) => {
         if (val) {
+            window.noPopState = true;
             onOpen();
         }
         if (!val) {
@@ -169,7 +204,16 @@ onMounted(() => {
     }
 });
 
+
+
 const header = ref(null);
 const {height: headerHeight} = useElementBounding(header);
 const contentHeight = computed(() => `calc(100% - ${headerHeight.value}px)`)
+
+useEventListener(window, 'popstate', (e) => {
+    if (!isOpen) return;
+    emit('hide')
+})
+
+
 </script>

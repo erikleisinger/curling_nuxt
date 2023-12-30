@@ -262,6 +262,20 @@ import Sheet from "@/store/models/sheet";
 
 import { useQueryClient } from "@tanstack/vue-query";
 
+const props = defineProps({
+    home: Number,
+    gameId: Number,
+    search: String,
+    viewHome: {
+        type: Boolean,
+        default: true,
+    },
+    viewAway: {
+        type: Boolean,
+        default: true,
+    },
+});
+
 const queryClient = useQueryClient();
 
 const refreshQuery = () => {
@@ -314,28 +328,9 @@ const $q = useQuasar();
 const dialogStore = useDialogStore();
 
 const { toggleGlobalSearch } = dialogStore;
-const { getColor } = useColor();
 
-const gradient = computed(
-    () =>
-        `linear-gradient(90deg, ${getColor(home.value.color)} 0%, ${getColor(
-            away.value.color
-        )} 100%)`
-);
 
-const props = defineProps({
-    home: Number,
-    gameId: Number,
-    search: String,
-    viewHome: {
-        type: Boolean,
-        default: true,
-    },
-    viewAway: {
-        type: Boolean,
-        default: true,
-    },
-});
+
 
 const away = computed(() => {
     const t = useRepo(GameTeam)
@@ -362,6 +357,15 @@ const home = computed(() => {
         isPlaceholder: t.isPlaceholder,
     };
 });
+
+const { getColor } = useColor();
+
+const gradient = computed(
+    () =>
+        `linear-gradient(90deg, ${getColor(home.value.color)} 0%, ${getColor(
+            away.value.color
+        )} 100%)`
+);
 
 const game = computed(() =>
     useRepo(Game).withAll().where("id", props.gameId).first()

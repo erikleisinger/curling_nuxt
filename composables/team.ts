@@ -170,11 +170,11 @@ export const useTeam = () => {
 
             
             
-            badges?.sort((a,b) => {
+            [...(badges ?? [])]?.sort((a,b) => {
                 if (EPHEMERAL_BADGES.includes(a.name)) return 1;
                 return -1;
             }).forEach((badge) => {
-                useRepo(Badge).save({...badge})
+                useRepo(Badge).save(badge)
             })
 
             stats?.forEach((stat) => {

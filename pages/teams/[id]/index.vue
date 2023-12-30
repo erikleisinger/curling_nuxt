@@ -1,7 +1,6 @@
 <template>
-    <NuxtLayout>
-        <TeamPage v-if="!isLoading" > </TeamPage>
-    </NuxtLayout>
+  <TeamPage v-if="!isLoading" > </TeamPage>
+
 </template>
 <script setup>
 import { useQuery} from '@tanstack/vue-query'

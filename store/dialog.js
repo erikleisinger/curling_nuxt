@@ -17,6 +17,9 @@ export const useDialogStore = defineStore("dialog", {
             editedLeague: null,
             options: {}
         },
+        notifications: {
+            open: false,
+        },
         teamCreator: {
             open: false
         }
@@ -52,6 +55,9 @@ export const useDialogStore = defineStore("dialog", {
         }
 
         this.linescore.open = open;
+    },
+    toggleNotifications({open}) {
+        this.notifications.open = open;
     },
     toggleTeamCreator({open}) {
         this.teamCreator.open = open;

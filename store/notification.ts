@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { Notification, NotificationState } from "@/types/notification";
+import type { Notification, NotificationState } from "@/types/notification";
 
 type NotificationCollection = {
     [key: string]: Notification;

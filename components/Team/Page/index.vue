@@ -255,15 +255,15 @@
             </div>
         </q-card>
     </q-dialog>
-      <q-dialog v-model="viewing" persistent>
-        <q-card class="team-details__viewer">
+      <DialogPopup :open="viewing" @hide="viewing = false" max-width="500px">
+        <!-- <q-card class="team-details__viewer"> -->
             <TeamPageDetails
                 @back="viewing = false"
                 v-if="viewing"
                 :teamId="teamId"
             />
-        </q-card>
-    </q-dialog>
+        <!-- </q-card> -->
+    </DialogPopup>
 </template>
 <style lang="scss" scoped>
 .outbound-request__prompt {
@@ -317,14 +317,14 @@ import { useElementSize, useDebounceFn } from "@vueuse/core";
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
 
-        const {toTimezone} = useTime();
+const {toTimezone} = useTime();
 
 const viewing = ref(false)
 
 const $q = useQuasar();
 
 const route = useRoute();
-console.log(route)
+
 const teamId = Number(route.params.id)
 
 const hasPlayedGames = computed(() => !!team.value?.games?.length);

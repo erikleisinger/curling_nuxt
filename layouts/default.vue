@@ -1,7 +1,8 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
+      
         <q-page-container class="page__container--global relative-position">
-            <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" v-if="ready">
+              <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" @hide="toggleNotifications({open: false})">
                 <template v-slot:header>
                     <h1
                         class="text-md text-bold row justify-between items-center"
@@ -68,7 +69,7 @@
                     icon="notifications"
                     :color="notificationsOpen ? 'blue' : ''"
                     :size="$q.screen.xs ? 'md' : 'lg'"
-                    @click="toggleNotifications"
+                    @click="toggleNotifications({open: !notificationsOpen})"
                 >
                 <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
                     <q-badge
@@ -90,17 +91,14 @@
                 </div>
             </q-toolbar>
         </q-footer>
+            <FeedbackPopup v-model="feedbackOpen" @close="feedbackOpen = false"/>
     </q-layout>
 
-    <FeedbackPopup v-model="feedbackOpen" @close="feedbackOpen = false"/>
+
 </template>
 <style lang="scss" scoped>
 $footer-height-xs: 3em;
 $footer-height-sm: 4em;
-.team-details__viewer {
-    width: min(100vw, 500px);
-    height: min(100vh, 600px);
-}
 .profile-avatar--container {
     cursor: pointer;
     width: 25px;
@@ -181,11 +179,6 @@ $footer-height-sm: 4em;
             }
         }
     }
-    :deep(.q-drawer) {
-        .q-drawer__content {
-            padding-top: 4em !important;
-        }
-    }
 }
 .page__container--global {
     height: calc((100 * var(--vh, 1vh)) - $footer-height-xs);
@@ -197,73 +190,48 @@ $footer-height-sm: 4em;
         height: calc((100 * var(--vh, 1vh)) - $footer-height-sm);
     }
 }
-.bottom__nav {
-    display: grid;
-    grid-template-rows: 3em;
-    grid-template-columns: repeat(5, 20%);
-
-    .bottom__nav--item {
-        display: flex;
-        justify-content: center;
-        .q-badge {
-            // font-family: $font-family-secondary;
-            padding: 0px 6px;
-        }
-    }
-}
 </style>
 <script setup>
-import { useNavigationStore } from "@/store/navigation";
-import { TABLE_NAMES } from "@/constants/tables";
-import { useUserStore } from "@/store/user";
-import { onClickOutside, useEventListener, useThrottleFn } from "@vueuse/core";
+import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import { useTeamRequestStore } from "@/store/team-requests";
-import { useGameRequestStore } from "@/store/game-requests";
 import Player from "@/store/models/player";
 
 const { globalLoading } = useLoading();
+const $q = useQuasar();
 
 const route = useRoute();
 
-const feedbackOpen =  ref(false)
-const leftDrawerOpen = ref(false);
+// POPUP STATE
 
+const dialogStore = useDialogStore();
+const { toggleLineScore, toggleGlobalSearch, toggleNotifications } = dialogStore;
 
-const notificationsOpen = computed(() => {
-    if (globalLoading.value) return false;
-    if (route.name === '/gateway') return false;
-    const {hash} = route;
-    return hash === '#notifications'
-})
+// --> feedback
 
+const feedbackOpen = ref(false)
 
-const { logout } = useSession();
-const { getColor } = useColor();
-
-const $q = useQuasar();
-
-const navStore = useNavigationStore();
-const { setView } = navStore;
-const view = computed(() => navStore.view);
+// --> big fab button
 
 const actionOpen = ref(false);
-const dialogStore = useDialogStore();
-const { toggleLineScore, toggleGlobalSearch } = dialogStore;
-
 const fab = ref(null);
 onClickOutside(fab, () => {
     actionOpen.value = false;
 });
 
-const goTo = (view) => {
-    return navigateTo(`${view}`);
-};
+// --> notifications
+const unreadNotificationCount = ref(0);
+const notificationsOpen = computed(() => dialogStore.notifications.open)
+
+
+// PLAYER AVATAR
 const { user: userId } = useUser();
 
 const avatar = computed(
     () => useRepo(Player).where("id", userId.value).first()?.avatar ?? {}
 );
+
+
+// SEARCH
 
 const toggleSearch = () => {
     toggleGlobalSearch({
@@ -275,7 +243,6 @@ const toggleSearch = () => {
             callback: onSelect,
         },
     });
-    leftDrawerOpen.value = false;
 };
 
 const onSelect = (selection) => {
@@ -295,39 +262,10 @@ const onSelect = (selection) => {
         return navigateTo(`/leagues/${selection.id}`);
     }
 };
+// navigation
 
-const unreadNotificationCount = ref(0);
-
-const toggleNotifications = () => {
-    if (!notificationsOpen.value) {
-       return navigateTo({hash: '#notifications'});
-    } else {
-        return navigateTo(route.path, { replace: true });
-    }
+const goTo = (view) => {
+    return navigateTo(`${view}`);
 };
-
-// watch(
-//     () => route.path,
-//     (val, oldVal) => {
-//         if (val !== oldVal && val !== '/gateway' && oldVal !== '/gateway' && route.hash === '#notifications') {
-//             ready.value = false;
-//             navigateTo(val, {replace: true})
-//             setTimeout(() => {
-//             ready.value = true;
-//             }, 100)
-            
-//         }
-
-//     },
-//     { deep: true }
-// );
-const ready = ref(false)
-onMounted(() => {
-    setTimeout(() => {
-        ready.value = true
-    }, 1000)
-   
-})
-
 
 </script>

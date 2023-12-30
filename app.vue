@@ -1,5 +1,5 @@
 <template>
- 
+ <div>
     <GlobalLoading v-show="globalLoading" infinite />
    <NuxtLayout>
         <NuxtPage />
@@ -7,15 +7,16 @@
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
-        <q-dialog
-            v-model="isTeamCreatorOpen"
+        <DialogPopup
+        maxWidth="500px"
+            :open="isTeamCreatorOpen"
             @hide="
                 dialogStore.toggleTeamCreator({
                     open: false,
                 })
             "
         >
-            <q-card class="teamcreator__card">
+ 
                 <TeamPageDetails
                     v-if="isTeamCreatorOpen"
                     @back="
@@ -25,9 +26,9 @@
                     "
                     create
                 />
-            </q-card>
-        </q-dialog>
- 
+       
+        </DialogPopup>
+ </div>
 </template>
 <style lang="scss">
 #__nuxt {
