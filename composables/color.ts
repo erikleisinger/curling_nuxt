@@ -74,7 +74,7 @@ export const useColor = () => {
 
     const getEventColor = (color) => {
         const {r, g, b} = bgColors[color || 'default'] || {};
-        return `rgb(${r}, ${g}, ${b})`;
+        return `${r}, ${g}, ${b}`;
     }
 
     const getEventBackground = (color, height = '1440') => {

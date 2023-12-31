@@ -15,7 +15,7 @@
 
         <!-- TEAMS -->
   
-        <section name="teams" :class="$q.screen.xs ? 'col-12' : 'col-6'">
+        <section name="teams" :class="$q.screen.xs ? 'col-12' : 'col-6'" >
             <div class="row justify-between items-center header-text">
                 <div class="">
             <h3> Teams <div class="underline"/></h3>
@@ -90,7 +90,8 @@
                 </q-item-section>
             </q-item>
             </div>
-            <q-list separator>
+            <TeamGameResult v-for="game in upcomingGames" :key="game.id" :gameId="game.id" :home="game.home"/>
+            <!-- <q-list separator>
              <q-item  v-for="upcomingGame in upcomingGames" :key="upcomingGame?.id" class="upcoming-game__container">
          
              <div class="upcoming-game__item full-width">
@@ -109,9 +110,7 @@
               <q-item-label caption>
                 {{toTimezone(upcomingGame?.drawtime ?? upcomingGame?.start_time, 'h:mm a')}}
             </q-item-label>
-             <!-- <q-item-label caption v-if="upcomingGame.league">
-                <span :style="{color: upcomingGame.league.color}">{{upcomingGame.league.name}}</span>
-            </q-item-label> -->
+      
         </q-item-section>
         <q-item-section avatar style="min-width: 100px">
            <div class="row no-wrap items-center justify-start full-width q-pl-sm">
@@ -124,7 +123,7 @@
         </q-item-section>
              </div>
     </q-item> 
-            </q-list>
+            </q-list> -->
       </section>
 
         <!-- HOME RINK -->
@@ -253,7 +252,8 @@ $gap: 6px;
 }
 
 section {
-    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-sm);
+    @include bg-white-diagonal;
 }
 main {
     margin-top: var(--space-sm);
@@ -266,8 +266,8 @@ main {
     box-shadow: $pretty-shadow;
     border: 1px solid rgba(0,0,0,0.08);
     color: white;
-    background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNDAzYzNmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiMxZTI5MmQiPjwvcGF0aD4KPC9zdmc+");
-    @include sm {
+    background: $bg-black-carbon;
+     @include sm {
         margin-right: var(--space-xs);
     margin-left: var(--space-xs);
     border-radius: 16px;
@@ -337,6 +337,9 @@ main {
 </style>
 <script setup>
 import { useUserTeamStore } from "@/store/user-teams";
+import Game from '@/store/models/game';
+import GameTeam from '@/store/models/game-team'
+import Team from '@/store/models/team'
 import {useUserStore} from '@/store/user'
 import {useDialogStore} from '@/store/dialog'
 import { useQuery } from "@tanstack/vue-query";
@@ -494,10 +497,49 @@ const getUpcomingGames = async () => {
     team_2 (
         id,
         name
+    ),
+    rink_id,
+    league_drawtime_id (
+        time
     )
     `).or(`team_1.in.(${teams?.value?.map(({id}) => id)}),team_2.in.(${teams?.value?.map(({id}) => id)})`).gte('start_time', dayjs().toISOString()).order('start_time', {ascending: true}).limit(3)
 
-    return data;
+0;
+    const games = []
+
+    data.forEach((game) => {
+        const {rink_id, start_time, league_drawtime_id} = game;
+        const {time} = league_drawtime_id ?? {}
+        console.log('start: ', dayjs(start_time).unix(), start_time, time)
+        const id = Number((Math.random() * 1000000000000).toFixed())
+        useRepo(Game).save({
+            id,
+            rink_id,
+            start_time: dayjs(time ?? start_time).unix()
+
+        })
+        useRepo(Team).save({...game.team_1})
+        useRepo(Team).save({...game.team_2})
+
+        useRepo(GameTeam).save({
+            id,
+            game_id: id,
+            team_id: game.team_1.id
+        })
+         useRepo(GameTeam).save({
+            id,
+            game_id: id,
+            team_id: game.team_2.id
+        })
+
+        games.push({
+            id,
+            home: teams?.value?.some(({id}) => game.team_1.id) ? game.team_1.id : game.team_2.id
+        })
+    })
+
+
+    return games;
 }
 
 const {isLoading: isLoadingUpcoming, data: upcomingGames} = useQuery({

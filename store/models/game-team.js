@@ -13,7 +13,7 @@ export default class GameTeam extends Model {
             id: this.number(),
             game_id: this.number(),
             team_id: this.number(),
-            color: this.string('red'),
+            color: this.string(),
             team: this.belongsTo(Team, 'team_id'),
             game: this.belongsTo(Game, 'game_id', 'id'),
             stats: this.hasOne(TeamStat, ['team_id', 'game_id']),

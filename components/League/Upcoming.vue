@@ -34,8 +34,8 @@
     <q-btn flat :style="{color: league.color}"  @click="toggleEditor">Add game</q-btn>
         
 </div>
-
-    <q-item v-for="game in games" :id="game.id" class="upcoming-game__item">
+    <TeamGameResult v-for="game in games" :key="game.id" :gameId="game.id" :home="game.home" :showRink="false"/>
+    <!-- <q-item v-for="game in games" :id="game.id" class="upcoming-game__item">
         <q-item-section avatar style="min-width: 100px">
             <div class="row no-wrap items-center justify-end full-width q-pr-sm">
            <div class="text-sm q-mr-sm text-right"> {{game.team_1.name}}</div>
@@ -61,7 +61,7 @@
          
             </div>
         </q-item-section>
-    </q-item>
+    </q-item> -->
    </q-list>
    <DialogPopup :open="editorOpen" maxWidth="500px">
     <div class="row justify-between items-center editor-header" :style="{backgroundColor: league.color}">
@@ -137,6 +137,9 @@
     }
 </style>
 <script setup>
+import Game from '@/store/models/game';
+import GameTeam from '@/store/models/game-team'
+import Team from '@/store/models/team'
 import {useDialogStore} from '@/store/dialog'
 import {useNotificationStore} from '@/store/notification'
 import League from '@/store/models/league'
@@ -150,7 +153,7 @@ import {useQuery, useQueryClient } from '@tanstack/vue-query'
     const {toTimezone} = useTime()
 
     const league = computed(() => useRepo(League).withAll().where('id', props.leagueId).first());
-
+    const dayjs = useDayjs();
     const getUpcomingGames = async () => {
         const client = useSupabaseClient();
         const {data} = await client.from('scheduled_games').select(`
@@ -169,10 +172,46 @@ import {useQuery, useQueryClient } from '@tanstack/vue-query'
             league_id,
             league_drawtime_id (
                 time
-            )
+            ),
+            rink_id
         `).eq('league_id', props.leagueId)
 
-        return data;
+
+    const games = []
+
+    data.forEach((game) => {
+        const {rink_id, start_time, league_drawtime_id} = game;
+        const {time} = league_drawtime_id ?? {}
+        console.log('start: ', dayjs(start_time).unix(), start_time, time)
+        const id = Number((Math.random() * 1000000000000).toFixed())
+        useRepo(Game).save({
+            id,
+            rink_id,
+            start_time: dayjs(time ?? start_time).unix()
+
+        })
+        useRepo(Team).save({...game.team_1})
+        useRepo(Team).save({...game.team_2})
+
+        useRepo(GameTeam).save({
+            id,
+            game_id: id,
+            team_id: game.team_1.id
+        })
+         useRepo(GameTeam).save({
+            id,
+            game_id: id,
+            team_id: game.team_2.id
+        })
+
+        games.push({
+            id,
+            home: game.team_1.id
+        })
+    })
+
+
+    return games;
     }
 
 const {isLoading, data: games} = useQuery({
@@ -265,6 +304,7 @@ const save = async () => {
         start_time,
         league_id: props.leagueId,
         league_drawtime_id: league.value.drawtimes.find(({time}) => editedGame.value.selected_time)?.id ?? null,
+        rink_id: league.rink_id
 
     })
     if (errors) {

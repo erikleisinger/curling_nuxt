@@ -405,7 +405,7 @@ const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.9)`);
 const iconHeight = computed(() => `min(calc(${width.value}px * 0.08), 2em)`);
 
 onMounted(() => {
-    if (!props.animated) return;
+    if (!props.animated || !isLoadingTeam.value) return;
 
     // const t2 = gsap.timeline({repeat: -1});
 
@@ -419,8 +419,7 @@ onMounted(() => {
     // })
     // t2.duration(2)
     const tl = gsap.timeline({
-        repeat:-1,
-        repeatDelay: 3,
+        repeat: 0,
         yoyo:false,
 });
 
@@ -576,8 +575,8 @@ tl.fromTo(`#left-${uniqueId}`, 1,
    }
 );
 
-tl.duration(2)
-tl.repeatDelay(20)
+tl.duration(1)
+
 })
 </script>
 <script>

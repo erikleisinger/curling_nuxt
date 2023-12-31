@@ -135,6 +135,7 @@ $footer-height-sm: 4em;
     .q-page-container {
         box-shadow: $pretty-shadow;
         padding-top: unset !important;
+        @include bg-white-diagonal;
     }
 
     .global-footer {
