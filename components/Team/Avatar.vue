@@ -1,5 +1,12 @@
 <template>
-    <div class="avatar-outer__container" :class="{ clickable: 'viewable' }">
+    <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
+        <q-menu :disable="disableMenu || Number(route.params.id) === props.teamId" :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200">
+            <div class="card-menu__container">
+                
+            <TeamCard :teamId="props.teamId" dense style="min-height: 40px"/>
+            </div>
+
+        </q-menu>
         <div
             class="avatar-inner"
             :class="{
@@ -7,7 +14,6 @@
                 'help--animation': highlight,
             }"
             :style="{ height: teamId === null ? '100%' : 'unset' }"
-            @click="clickAvatar"
             ref="innerContainer"
         >
             <div
@@ -58,6 +64,16 @@
     </div>
 </template>
 <style lang="scss" scoped>
+:deep(div.menu) {
+    position: absolute!important;
+}
+.card-menu__container {
+    width: 200px;
+    @include sm {
+        width: 400px;
+    }
+    box-shadow: $pretty-shadow;
+}
 .avatar-outer__container {
     position: relative;
     margin-top: -16%;
@@ -168,6 +184,7 @@ const props = defineProps({
     animateRing: Boolean,
     color: String,
     create: Boolean,
+    disableMenu: Boolean,
     editable: Boolean,
     emitOnly: Boolean,
     highlight: Boolean,
@@ -175,6 +192,9 @@ const props = defineProps({
     teamId: Number,
     viewable: Boolean,
 });
+
+const route = useRoute();
+const el = ref(null)
 
 const emit = defineEmits(["edit", "invite", "update"]);
 

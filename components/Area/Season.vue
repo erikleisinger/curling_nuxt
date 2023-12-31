@@ -91,7 +91,9 @@
             </q-item>
             </div>
             <q-list separator>
-             <q-item class="upcoming-game__item" v-for="upcomingGame in upcomingGames" :key="upcomingGame?.id">
+             <q-item  v-for="upcomingGame in upcomingGames" :key="upcomingGame?.id" class="upcoming-game__container">
+         
+             <div class="upcoming-game__item full-width">
         <q-item-section avatar style="min-width: 100px">
             <div class="row no-wrap items-center justify-end full-width q-pr-sm">
            <div class="text-sm q-mr-sm text-right"> {{upcomingGame?.team_1.name}}</div>
@@ -107,6 +109,9 @@
               <q-item-label caption>
                 {{toTimezone(upcomingGame?.drawtime ?? upcomingGame?.start_time, 'h:mm a')}}
             </q-item-label>
+             <!-- <q-item-label caption v-if="upcomingGame.league">
+                <span :style="{color: upcomingGame.league.color}">{{upcomingGame.league.name}}</span>
+            </q-item-label> -->
         </q-item-section>
         <q-item-section avatar style="min-width: 100px">
            <div class="row no-wrap items-center justify-start full-width q-pl-sm">
@@ -117,6 +122,7 @@
          
             </div>
         </q-item-section>
+             </div>
     </q-item> 
             </q-list>
       </section>
@@ -234,13 +240,18 @@
 </template>
 <style lang="scss" scoped>
 $gap: 6px;
-.upcoming-game__item {
+.upcoming-game__container {
+    flex-wrap: wrap;
+    .upcoming-game__item {
         display: grid!important;
         grid-template-columns: 1fr 50px 1fr;
         .q-item__section--avatar {
             padding: unset;
         }
     }
+
+}
+
 section {
     margin-bottom: var(--space-sm);
 }

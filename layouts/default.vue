@@ -1,7 +1,7 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
       
-        <q-page-container class="page__container--global relative-position">
+        <q-page-container class="page__container--global relative-position" id="global-container">
               <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" @hide="toggleNotifications({open: false})">
                 <template v-slot:header>
                     <div class="row justify-between items-center">
@@ -129,6 +129,7 @@ $footer-height-sm: 4em;
         background-color: white;
         margin: auto;
     }
+
 
 
     .q-page-container {

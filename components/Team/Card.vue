@@ -28,8 +28,8 @@
                     <div class="row no-wrap justify-between">
                         <div class="row badges" v-if="isLoadingTeam">
                             <q-skeleton
-                                :height="dense ? '1em' : '2em'"
-                                :width="dense ? '1em' : '2em'"
+                                :height="dense ? '1.2em' : '2em'"
+                                :width="dense ? '1.2em' : '2em'"
                                 type="circle"
                                 v-for="i in Array.from(Array(3).keys())"
                                 :key="i"
@@ -70,7 +70,7 @@
                             v-if="width <= 200"
                         >
                             <q-skeleton
-                                :height="dense ? '1em' : '2em'"
+                                :height="dense ? '1.3em' : '2em'"
                                 :width="dense ? '40px' : '75px'"
                                 v-if="isLoadingTeam"
                             />
@@ -85,7 +85,7 @@
                                 <span v-else>0</span>
                             </div>
                             <q-skeleton
-                                :height="dense ? '0.7em' : '1em'"
+                                :height="dense ? '1em' : '1em'"
                                 :width="dense ? '30px' : '40px'"
                                 v-if="isLoadingTeam"
                             />
@@ -164,6 +164,7 @@
         width: auto;
         padding: 8px;
         max-width: v-bind(maxNameWidth);
+       
         .truncate {
             max-width: inherit;
             text-overflow: ellipsis;
@@ -199,7 +200,7 @@
         }
         &.dense {
             max-width: v-bind(containerWidth);
-            // white-space: nowrap;
+            min-height: 25px;
             min-width: 0;
             overflow: hidden h2 {
                 font-size: var(--text-lg);
@@ -342,7 +343,7 @@ const winAppendFontSize = computed(
 const winLineHeight = computed(() => `max(calc(${winFontSize.value}), 25px)`);
 const nameFontSize = computed(() => {
      if (width.value > 600) {
-        return '20px'
+        return '29px'
     }
     if (width.value > 300) {
         return "15px";
@@ -351,7 +352,7 @@ const nameFontSize = computed(() => {
 
     return `max(calc(${width.value}px * 0.04), 10px)`;
 });
-const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.8)`);
+const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.9)`);
 const iconHeight = computed(() => `min(calc(${width.value}px * 0.08), 2em)`);
 </script>
 <script>
