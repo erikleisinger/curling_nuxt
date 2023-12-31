@@ -1,9 +1,9 @@
 <template>
     <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
-        <q-menu :disable="disableMenu || Number(route.params.id) === props.teamId" :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200">
+        <q-menu :disable="disableMenu || Number(route.params.id) === props.teamId" :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200" style="border-radius:8px" class="shadow-10">
             <div class="card-menu__container">
                 
-            <TeamCard :teamId="props.teamId" dense style="min-height: 40px"/>
+            <TeamCard :teamId="props.teamId" dense style="min-height: 40px" animated/>
             </div>
 
         </q-menu>
@@ -64,11 +64,9 @@
     </div>
 </template>
 <style lang="scss" scoped>
-:deep(div.menu) {
-    position: absolute!important;
-}
+
 .card-menu__container {
-    width: 200px;
+    width: 225px;
     @include sm {
         width: 400px;
     }

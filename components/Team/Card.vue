@@ -6,7 +6,12 @@
         :style="`background-image: url(${avatar})`"
         
     >
-        <div class="underlay" />
+        <div class="underlay">
+            <div ref="top" class="border--top" :id="`top-${uniqueId}`"/>
+            <div ref="left" class="border--left" :id="`left-${uniqueId}`"/>
+                 <div ref="right" class="border--right" :id="`right-${uniqueId}`"/>
+                     <div ref="bottom" class="border--bottom" :id="`bottom-${uniqueId}`"/>
+        </div>
         <div class="overlay" ref="overlay">
             <div
                 class="content-container full-height"
@@ -249,6 +254,46 @@
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: inherit;
         z-index: 0;
+
+        .border--left,
+        .border--top,
+        .border--bottom,
+        .border--right {
+            position: absolute;
+            background: transparent;
+            width: 0px;
+            height: 0px;
+
+        }
+
+        .border--left {
+            left: 0;
+            bottom: 0;
+            height:100%;
+            transform: scale(0);
+            width: 4px;
+        }
+        .border--right {
+            right: 0;
+            top: 0;
+            height:100%;
+            transform: scale(0);
+            width: 4px;
+        }
+        .border--top {
+            top: 0;
+            left: 0;
+            height:4px;
+            width: 100%;
+            transform: scale(0);
+        }
+         .border--bottom {
+            bottom: 0;
+            right: 0;
+            height:4px;
+            transform: scale(0);
+            width: 100%;
+        }
     }
 
     .overlay {
@@ -275,11 +320,15 @@ import Team from "@/store/models/team";
 import Rink from "@/store/models/rink";
 import { useQuery } from "@tanstack/vue-query";
 import { useElementBounding } from "@vueuse/core";
+import gsap from 'gsap'
 
 const props = defineProps({
+    animated: Boolean,
     dense: Boolean,
     teamId: Number,
 });
+
+const uniqueId = `id-${(Math.random() * 1000000000000).toFixed()}`;
 
 const { sortBadges } = useBadge();
 const { getTeamAvatar } = useAvatar();
@@ -354,6 +403,182 @@ const nameFontSize = computed(() => {
 });
 const nameLineHeight = computed(() => `calc(${nameFontSize.value} * 1.9)`);
 const iconHeight = computed(() => `min(calc(${width.value}px * 0.08), 2em)`);
+
+onMounted(() => {
+    if (!props.animated) return;
+
+    // const t2 = gsap.timeline({repeat: -1});
+
+    // t2.to(container.value, {
+    //     scale: 1.01 ,
+    //     duration: 1
+    // })
+    // t2.to(container.value, {
+    //     scale: 1,
+    //     duration:1,
+    // })
+    // t2.duration(2)
+    const tl = gsap.timeline({
+        repeat:-1,
+        repeatDelay: 3,
+        yoyo:false,
+});
+
+const bgColor = "#ffc107";
+
+
+
+
+
+// top
+tl.fromTo(`#top-${uniqueId}`, 1, 
+   {
+    scale: 0, 
+    backgroundColor: bgColor,
+    immediateRender: false,
+    autoRound: false,
+   
+
+   }, 
+   {
+    scale: 1, 
+    backgroundColor: bgColor,
+    transformOrigin: 'left',
+   
+   }
+);
+
+tl.add('top-right')
+
+tl.fromTo(`#top-${uniqueId}`, 1, 
+   {
+    scale: 1, 
+    backgroundColor: bgColor,
+    
+    autoRound: false,
+   
+
+   }, 
+   {
+    scale: 0, 
+    backgroundColor: bgColor,
+    transformOrigin: 'right',
+    immediateRender: false,
+   
+   }, 'top-right'
+);
+
+
+
+tl.fromTo(`#right-${uniqueId}`, 1, 
+   {
+    scale:0, 
+    backgroundColor: bgColor,
+    
+    autoRound: false,
+   }, 
+   {
+    scale: 1, 
+    backgroundColor: bgColor,
+     transformOrigin: 'top',
+     immediateRender: false,
+    
+   }, 'top-right'
+);
+
+tl.add('right-bottom')
+
+
+tl.fromTo(`#right-${uniqueId}`, 1, 
+   {
+    scale:1, 
+    backgroundColor: bgColor,
+   
+    autoRound: false,
+   }, 
+   {
+    scale: 0,
+    backgroundColor: bgColor,
+
+     transformOrigin: 'bottom',
+      immediateRender: false,
+    
+   }, 'right-bottom'
+);
+
+// right
+
+
+// bottom
+tl.fromTo(`#bottom-${uniqueId}`, 1, 
+   {
+    scale:0, 
+    background: bgColor,
+    
+    autoRound: false,
+
+   }, 
+   {
+    scale:1, 
+    background: bgColor,
+     transformOrigin: 'right',
+     immediateRender: false,
+   }, 'right-bottom'
+);
+
+tl.add('bottom-left')
+
+tl.fromTo(`#bottom-${uniqueId}`, 1, 
+   {
+    scale:1, 
+    background: bgColor,
+  
+    autoRound: false,
+
+   }, 
+   {
+    scale:0, 
+    background: bgColor,
+
+     transformOrigin: 'left',
+       immediateRender: false,
+   }, 'bottom-left'
+);
+
+// left
+tl.fromTo(`#left-${uniqueId}`, 1, 
+   {
+    scale:0, 
+    background: bgColor,
+   
+    autoRound: false,
+   }, 
+   {
+    scale:1, 
+    background: bgColor,
+    transformOrigin: 'bottom',
+     immediateRender: false,
+   }, 'bottom-left'
+);
+
+tl.fromTo(`#left-${uniqueId}`, 1, 
+   {
+    scale:1, 
+    background: bgColor,
+    
+    autoRound: false,
+   }, 
+   {
+    scale:0, 
+    background: bgColor,
+    transformOrigin: 'top',
+    immediateRender: false,
+   }
+);
+
+tl.duration(2)
+tl.repeatDelay(20)
+})
 </script>
 <script>
 export default {
