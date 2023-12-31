@@ -91,39 +91,7 @@
             </q-item>
             </div>
             <TeamGameResult v-for="game in upcomingGames" :key="game.id" :gameId="game.id" :home="game.home"/>
-            <!-- <q-list separator>
-             <q-item  v-for="upcomingGame in upcomingGames" :key="upcomingGame?.id" class="upcoming-game__container">
-         
-             <div class="upcoming-game__item full-width">
-        <q-item-section avatar style="min-width: 100px">
-            <div class="row no-wrap items-center justify-end full-width q-pr-sm">
-           <div class="text-sm q-mr-sm text-right"> {{upcomingGame?.team_1.name}}</div>
-            <div style="width: 30px; min-width: 30px">
-                <TeamAvatar :teamId="upcomingGame?.team_1?.id"/>
-            </div>
-            </div>
-        </q-item-section>
-        <q-item-section style="min-width: 50px" class="text-center">
-            <q-item-label caption>
-                {{toTimezone(upcomingGame?.start_time, 'MMM DD')}}
-            </q-item-label>
-              <q-item-label caption>
-                {{toTimezone(upcomingGame?.drawtime ?? upcomingGame?.start_time, 'h:mm a')}}
-            </q-item-label>
-      
-        </q-item-section>
-        <q-item-section avatar style="min-width: 100px">
-           <div class="row no-wrap items-center justify-start full-width q-pl-sm">
-               <div style="width: 30px; min-width: 30px">
-                <TeamAvatar :teamId="upcomingGame?.team_2?.id" />
-            </div>
-           <div class="text-sm q-ml-sm" > {{upcomingGame?.team_2.name}}</div>
-         
-            </div>
-        </q-item-section>
-             </div>
-    </q-item> 
-            </q-list> -->
+
       </section>
 
         <!-- HOME RINK -->

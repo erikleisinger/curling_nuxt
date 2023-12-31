@@ -35,33 +35,6 @@
         
 </div>
     <TeamGameResult v-for="game in games" :key="game.id" :gameId="game.id" :home="game.home" :showRink="false"/>
-    <!-- <q-item v-for="game in games" :id="game.id" class="upcoming-game__item">
-        <q-item-section avatar style="min-width: 100px">
-            <div class="row no-wrap items-center justify-end full-width q-pr-sm">
-           <div class="text-sm q-mr-sm text-right"> {{game.team_1.name}}</div>
-            <div style="width: 30px; min-width: 30px">
-                <TeamAvatar :teamId="game.team_1?.id"/>
-            </div>
-            </div>
-        </q-item-section>
-        <q-item-section style="min-width: 50px" class="text-center">
-            <q-item-label caption>
-                {{toTimezone(game.start_time, 'MMM DD')}}
-            </q-item-label>
-              <q-item-label caption>
-                {{toTimezone(game.drawtime ?? game.start_time, 'h:mm a')}}
-            </q-item-label>
-        </q-item-section>
-        <q-item-section avatar style="min-width: 100px">
-           <div class="row no-wrap items-center justify-start full-width q-pl-sm">
-               <div style="width: 30px; min-width: 30px">
-                <TeamAvatar :teamId="game.team_2?.id" />
-            </div>
-           <div class="text-sm q-ml-sm" > {{game.team_2.name}}</div>
-         
-            </div>
-        </q-item-section>
-    </q-item> -->
    </q-list>
    <DialogPopup :open="editorOpen" maxWidth="500px">
     <div class="row justify-between items-center editor-header" :style="{backgroundColor: league.color}">
