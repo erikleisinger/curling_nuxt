@@ -107,7 +107,7 @@
                 </div>
              </div>
              <RinkNews v-if="homeRink?.id" :rinkId="homeRink.id"/>
-              <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm" >
+              <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm " >
                      <q-btn rounded color="primary" @click="toggleGlobalSearch({
                     open: true,
                     options: {

@@ -1,7 +1,7 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
       
-        <q-page-container class="page__container--global relative-position" id="global-container">
+        <q-page-container class="page__container--global relative-position" id="global-container" :class="{'no-footer': isLoggedOutRoute}">
               <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" @hide="toggleNotifications({open: false})">
                 <template v-slot:header>
                     <div class="row justify-between items-center">
@@ -21,7 +21,7 @@
 
             <slot />
         </q-page-container>
-        <q-footer bordered class="bg-white text-black row justify-between">
+        <q-footer bordered class="bg-white text-black row justify-between" v-if="!isLoggedOutRoute">
             <q-toolbar class="global-footer row justify-between">
                 <q-btn
                     flat
@@ -121,8 +121,7 @@ $footer-height-sm: 4em;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.05);
-    .q-page-container,
+     @include bg-white-diagonal;
     .q-footer,
     .q-header {
         width: min(960px, 100vw);
@@ -133,9 +132,11 @@ $footer-height-sm: 4em;
 
 
     .q-page-container {
-        box-shadow: $pretty-shadow;
+        &:not(.no-footer) {
+            box-shadow: $pretty-shadow;
+        }
         padding-top: unset !important;
-        @include bg-white-diagonal;
+       
     }
 
     .global-footer {
@@ -197,6 +198,10 @@ $footer-height-sm: 4em;
     @include sm {
         height: calc((100 * var(--vh, 1vh)) - $footer-height-sm);
     }
+
+    &.no-footer {
+        height: calc((100 * var(--vh, 1vh)));
+    }
 }
 </style>
 <script setup>
@@ -208,6 +213,7 @@ const { globalLoading } = useLoading();
 const $q = useQuasar();
 
 const route = useRoute();
+const isLoggedOutRoute = computed(() => ['/login', '/gateway'].includes(route.path))
 
 // POPUP STATE
 

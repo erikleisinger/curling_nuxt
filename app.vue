@@ -74,6 +74,8 @@ const { setLoading } = useLoading();
 
 const route = useRoute();
 
+
+
 const MANUAL_LOAD_ROUTES = [
     "teams-id",
     "player-id",

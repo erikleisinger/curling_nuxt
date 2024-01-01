@@ -26,6 +26,7 @@ export default defineNuxtConfig({
     esbuild: {
         pure: ['console.log'],
       },
+
     piniaOrm: {
         model: {
             withMeta: true
@@ -74,6 +75,7 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "dayjs-nuxt",
         '@pinia-orm/nuxt',
+        '@nuxtjs/google-fonts'
     ],
     image: {
         inject: true,

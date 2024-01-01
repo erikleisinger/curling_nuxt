@@ -5,7 +5,6 @@
         <div class="row tabs__container no-wrap justify-between">
             <q-tabs
                 v-model="currentIndex"
-                active-bg-color="white"
                 :active-color="tabColor"
                 :color="tabColor"
                 shrink

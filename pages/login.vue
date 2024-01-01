@@ -1,11 +1,16 @@
 <template>
-        <div class="window-height window-width row justify-center items-center">
+        <div class="full-width full-height row justify-center items-center login--container">
+            <div class="column justify-end full-height q-pb-md q-pt-lg">
+                <div style="height: 75px">
+                <Logo/>
+                </div>
+            </div>
             <q-form
                 class="login__form q-pa-lg"
                 @submit="onSubmit"
                 ref="loginForm"
             >
-                <q-card :flat="$q.screen.lt.sm">
+                <q-card :flat="$q.screen.lt.sm" class="login-card">
                     <q-tabs
                         v-model="tab"
                                    active-bg-color="white"
@@ -124,18 +129,26 @@
                     </q-card-actions>
                 </q-card>
             </q-form>
-
+<div/>
         </div>
 </template>
 
 <style lang="scss">
+.login--container {
+    display: grid;
+    grid-auto-rows: 1fr;
+}
+.login-card {
+    border-radius: 16px;
+    box-shadow: $pretty-shadow;
+    border: 1px solid rgba(0,0,0,0.05);
+}
 .login__form {
     width: 400px;
 }
 @media all and (max-width: 600px) {
     .login__form {
         .q-card {
-            height: inherit;
             display: flex;
             flex-direction: column;
         }
