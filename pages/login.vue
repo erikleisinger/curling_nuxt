@@ -6,7 +6,7 @@
                 </div>
             </div>
             <q-form
-                class="login__form q-pa-lg"
+                class="login__form q-pa-md"
                 @submit="onSubmit"
                 ref="loginForm"
             >
