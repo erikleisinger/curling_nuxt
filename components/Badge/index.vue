@@ -58,13 +58,15 @@
     cursor: pointer;
     display: grid;
     grid-template-rows: v-bind(gridRows);
+    border: 1px solid rgba(0,0,0,0.05);
     padding: var(--space-xs);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0.015);
+    background-color: rgba(255, 255, 255, 0.8);
     height: min-content;
     max-width: v-bind(badgeWidth);
     min-width: v-bind(badgeWidth);
     box-sizing: border-box;
+    box-shadow: $pretty-shadow;
     &.icon-only {
         background-color: unset;
         max-width: unset;
@@ -102,7 +104,7 @@
         z-index: 0;
         text-transform: uppercase;
         top: calc(-1 * var(--space-xxxs));
-        letter-spacing: 0em;
+        letter-spacing: -0.05em;
         font-size: 2em;
 
         font-weight: bold;
