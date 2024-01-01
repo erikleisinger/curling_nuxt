@@ -376,7 +376,7 @@ $append-icon-size: 1.7em;
         left: 0;
         top: 0;
         position: absolute;
-    background-color: white;
+    background-color: transparent;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
       

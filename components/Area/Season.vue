@@ -51,7 +51,7 @@
 
 <!-- UPCOMING -->
 
-            <section name="upcoming" :class="$q.screen.xs ? 'col-12' : 'col-6'" >
+            <section name="upcoming" :class="$q.screen.xs ? 'col-12' : 'col-6'" v-if="homeRink">
          <div class="row justify-between items-center header-text">
                 <div class="">
             <h3> Upcoming games <div class="underline"/></h3>
@@ -107,7 +107,7 @@
                 </div>
              </div>
              <RinkNews v-if="homeRink?.id" :rinkId="homeRink.id"/>
-              <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm " >
+              <div v-if="!homeRink?.id" class="full-width row justify-center items-center q-my-sm q-mt-md " >
                      <q-btn rounded color="primary" @click="toggleGlobalSearch({
                     open: true,
                     options: {
@@ -126,7 +126,7 @@
 
         <!-- LEAGUES -->
 
-        <section name="leagues" :class="$q.screen.xs ? 'col-12' : 'col-6'">
+        <section name="leagues" :class="$q.screen.xs ? 'col-12' : 'col-6'" v-if="homeRink">
             <div class="header-text">
             <h3 > Leagues <div class="underline"/></h3>
             <h4>{{leagues?.length ?? 0}} leagues</h4>

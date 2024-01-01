@@ -124,9 +124,14 @@ $footer-height-sm: 4em;
      @include bg-white-diagonal;
     .q-footer,
     .q-header {
-        width: min(960px, 100vw);
+        
         background-color: white;
         margin: auto;
+    }
+    .q-page-container,
+    .q-footer,
+    .q-header {
+width: min(960px, 100vw);
     }
 
 
