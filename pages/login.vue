@@ -144,7 +144,7 @@
     border: 1px solid rgba(0,0,0,0.05);
 }
 .login__form {
-    width: 400px;
+    width: min(400px, 100vw);
 }
 @media all and (max-width: 600px) {
     .login__form {
