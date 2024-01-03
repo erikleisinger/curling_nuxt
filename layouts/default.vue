@@ -71,7 +71,7 @@ $footer-height-sm: 4em;
         display: none;
     }
     
-     @include bg-white-diagonal;
+     @include bg-pebble;
     .q-footer,
     .q-header {
         

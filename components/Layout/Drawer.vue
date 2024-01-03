@@ -45,11 +45,12 @@
         padding-top: calc(5em + var(--space-sm));
     }
     &.mobile {
-        width: 0px;
+        visibility: hidden;
     }
     &.open {
         width: 300px;
         background-color: white;
+        visibility: visible;
     }
     height: calc(100 * var(--vh, 1vh));
     z-index: 10;

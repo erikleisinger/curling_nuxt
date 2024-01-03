@@ -1,17 +1,8 @@
 <template>
     <div class="wrap row justify-end" :class="{ big: handleOverflow }">
-        <div
-            class="rings outer clickable"
-            :class="{ big }"
+        <Rings :class="{ big }"
             @click="setBig"
-            ref="ringsMenu"
-        >
-            <div class="rings mid">
-                <div class="rings inner">
-                    <div class="rings button" />
-                </div>
-            </div>
-        </div>
+            ref="ringsMenu" :size="size"/>
         <div class="menu__container column items-center" v-if="big">
             <div class="rings-menu__option option-1">search</div>
             <div
@@ -56,7 +47,7 @@ $button-dimension: 38.5%;
     padding-right: 12px;
     pointer-events: none;
 }
-.rings {
+:deep(.rings) {
     border-radius: 50%;
     transition: transform 0.3s;
     position: relative;
