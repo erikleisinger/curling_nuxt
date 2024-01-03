@@ -5,20 +5,28 @@
                 <div style="width: 50px" class="clickable">
                     <Avataaar v-bind="parseAvatar(user?.avatar)" />
                 </div>
-                <div v-if="modelValue" class="q-ml-md">
-                <div class=" text-md text-bold">{{ user.first_name }} {{ user.last_name }}</div>
+                <div v-show="modelValue" class="q-ml-md">
+                <div class=" text-md text-bold">{{ user?.first_name }} {{ user?.last_name }}</div>
                  <div class="text-sm">{{ rink?.name }}</div>
                 </div>
             </div>
-            <q-separator v-if="modelValue" size="3px" class="separator-yellow q-mt-md q-mx-md"/>
-            <div class="drawer-header">Teams</div>
+            <q-separator v-show="modelValue" size="3px" class="separator-yellow q-mt-md q-mx-md"/>
+            <div class="drawer-header" :class="{dark: modelValue}">{{modelValue ? 'My teams' : 'Teams'}}
+                <q-btn flat round dense icon="arrow_drop_down" v-if="modelValue"/>
+
+            </div>
+            <div class="row items-center no-wrap q-mt-md" style="margin-left: auto; margin-right: auto; " :style="{width: modelValue ? '' : 'fit-content'}" :class="{'q-pl-md': modelValue}"  v-for="team in userTeams"
+                :key="team.id">
             <div
-                style="width: 40px; margin-left: auto; margin-right: auto"
-                class="clickable q-mt-md"
-                v-for="team in userTeams"
-                :key="team.id"
+                style="width: 40px; min-width: 40px "
+                class="clickable "
+               
             >
                 <TeamAvatar :teamId="team.id" />
+            </div>
+            <div v-if="modelValue" class="q-ml-md">
+                {{team.name}}
+            </div>
             </div>
             <div class="drawer-header">Leagues</div>
         </div>
@@ -53,6 +61,20 @@
         padding-top: 28px;
         font-size: 18px;
         line-height: 18px;
+        @include sm {
+            font-size: 22px;
+            line-height: 22px;
+        }
+        &.dark {
+            color: $app-slate;
+            margin: unset;
+            padding-left: var(--space-sm);
+            padding-right: var(--space-sm);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
     .separator-yellow {
         background-color: $app-yellow;

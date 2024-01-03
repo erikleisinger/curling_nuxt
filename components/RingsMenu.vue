@@ -208,7 +208,8 @@ const doAction = (e, callback) => {
 const ringsMenu = ref(null);
 onClickOutside(ringsMenu, (e) => {
     const { target } = e;
-    if (target.className.split(" ").includes("rings-menu__option")) return;
+    if (!target.className || (!Array.isArray(target.className) && typeof target.className !== 'string')) return;
+    if (target.className === 'rings-menu__option' || target?.className?.split(" ")?.includes("rings-menu__option")) return;
     if (!big.value) return;
     setBig();
 });
