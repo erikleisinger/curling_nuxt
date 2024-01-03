@@ -1,5 +1,14 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
+        <div class="layout-content__wrap" id="layoutContent">
+        <q-header class="layout-header" elevated reveal>
+           <LayoutHeader>
+            <template v-slot:menu>
+                <q-btn icon="menu" flat round color="white" @click="leftDrawerOpen = !leftDrawerOpen"/>
+            </template>
+           </LayoutHeader>  
+        </q-header>
+       <LayoutDrawer v-model="leftDrawerOpen"/>
       
         <q-page-container class="page__container--global relative-position" id="global-container" :class="{'no-footer': isLoggedOutRoute}">
               <DialogPopup :open="notificationsOpen" bottom maxHeight="600px" :maxWidth="$q.screen.xs ? null : '400px'" right :hideOverlay="!$q.screen.xs" @hide="toggleNotifications({open: false})">
@@ -21,89 +30,17 @@
 
             <slot />
         </q-page-container>
-        <q-footer bordered class="bg-white text-black row justify-between" v-if="!isLoggedOutRoute">
-            <q-toolbar class="global-footer row justify-between">
-                <q-btn
-                    flat
-                    icon="home"
-                    @click="goTo('/')"
-                    :size="$q.screen.xs ? 'md' : 'lg'"
-                    :color="route.path === '/' ? 'blue' : 'grey-9'"
-             
-                />
-                <q-btn
-                    flat
-                    icon="search"
-                  
-                    :size="$q.screen.xs ? 'md' : 'lg'"
-                    @click="toggleSearch"
-                     :color="searchOpen ? 'blue' : 'grey-9'"
-                >
-                </q-btn>
-                <div class="action-button__container z-max">
-                    <q-fab
-                        color="primary"
-                        icon="add"
-                        direction="up"
-                        class="action-button"
-                    >
-                      <q-fab-action
-                            color="primary"
-                            icon="videogame_asset"
-                            @click="goTo('/games/create')"
-                        >
-                            <span class="action-button__label">New game</span>
-                        </q-fab-action>
-                     
-                       
-                        <q-fab-action
-                            color="blue"
-                            icon="group_add"
-                           @click="dialogStore.toggleTeamCreator({open: true})"
-                        >
-                            <span class="action-button__label">New team</span>
-                        </q-fab-action>
-                        <q-fab-action color="blue" icon="comment"  @click="feedbackOpen = true" >
-                            <span class="action-button__label">Submit feedback</span>
-                        </q-fab-action>
-                      
-                    </q-fab>
-                </div>
-                <q-btn
-                    flat
-                    icon="notifications"
-                    :color="notificationsOpen ? 'blue' : 'grey-9'"
-                    :size="$q.screen.xs ? 'md' : 'lg'"
-                    @click="toggleNotifications({open: !notificationsOpen})"
-                >
-                <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
-                    <q-badge
-                        color="red"
-                        floating
-                        rounded
-                        v-if="!!unreadNotificationCount"
-                        >
-                        {{unreadNotificationCount}}
-                        </q-badge>
-                </transition>
-                </q-btn>
-
-                <div
-                    class="profile-avatar--container"
-                    @click="goTo(`/player/${userId}`)"
-                >
-                    <Avataaar v-bind="avatar" />
-                </div>
-            </q-toolbar>
-        </q-footer>
+       
             <FeedbackPopup v-model="feedbackOpen" @close="feedbackOpen = false"/>
+        </div>
     </q-layout>
 
 
 </template>
 <style lang="scss" scoped>
-$footer-height-xs: 3em;
+$footer-height-xs: 4em;
 $footer-height-sm: 4em;
+
 .profile-avatar--container {
     cursor: pointer;
     width: 25px;
@@ -121,6 +58,19 @@ $footer-height-sm: 4em;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: auto;
+    width: min(960px, 100vw);
+  
+    :deep(.q-drawer) {
+        position: absolute!important;
+        height: 100vh;
+        left: 0;
+       
+    }
+    :deep(.q-drawer__backdrop) {
+        display: none;
+    }
+    
      @include bg-white-diagonal;
     .q-footer,
     .q-header {
@@ -133,6 +83,8 @@ $footer-height-sm: 4em;
     .q-header {
 width: min(960px, 100vw);
     }
+    
+    
 
 
 
@@ -140,7 +92,7 @@ width: min(960px, 100vw);
         &:not(.no-footer) {
             box-shadow: $pretty-shadow;
         }
-        padding-top: unset !important;
+        // padding-top: unset !important;
        
     }
 
@@ -195,13 +147,14 @@ width: min(960px, 100vw);
     }
 }
 .page__container--global {
-    height: calc((100 * var(--vh, 1vh)) - $footer-height-xs);
+    height: calc((100 * var(--vh, 1vh)));
     overflow: auto;
     scroll-behavior: smooth;
-    padding: unset !important;
+    // padding: unset !important;
     margin: unset !important;
     @include sm {
-        height: calc((100 * var(--vh, 1vh)) - $footer-height-sm);
+        height: calc((100 * var(--vh, 1vh)));
+        padding-left: 80px;
     }
 
     &.no-footer {
@@ -216,6 +169,8 @@ import Player from "@/store/models/player";
 
 const { globalLoading } = useLoading();
 const $q = useQuasar();
+
+const leftDrawerOpen = ref(false)
 
 const route = useRoute();
 const isLoggedOutRoute = computed(() => ['/login', '/gateway'].includes(route.path))

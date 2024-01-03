@@ -142,14 +142,14 @@ const showMore = () => {
     }
 };
 
-const markUnread = async () => {
+const markUnread = async (nots) => {
     const client = useSupabaseClient();
     await client
         .from("notifications")
         .update({ read: true })
         .in(
             "id",
-            [...(notificationsPaginated.value ?? [])].map(({ id }) => id)
+            [...(nots ?? [])].filter(({read}) => !read).map(({ id }) => id)
         );
 };
 
@@ -251,11 +251,7 @@ watch(
     (val) => {
         if (!val) {
             // Timeout allows for animation to finish before mutating
-            setTimeout(() => {
-                markUnread();
-                // cursor.value = CURSOR_INCREMENT;
-                scrollToTop();
-            }, 1000);
+           markUnread(notificationsPaginated.value);
         }
 
         setOpen(val);

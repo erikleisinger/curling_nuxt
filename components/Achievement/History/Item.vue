@@ -559,7 +559,7 @@ const props = defineProps({
 });
 const { toTimezone } = useTime();
 
-const unread = computed(() => props.item.read !== null && props.item.read !== undefined && !props.read)
+const unread = computed(() => props.item.read !== null && props.item.read !== undefined && !props.item.read)
 
 const getAchievementDate = (d) => {
     return toTimezone(d, null, false, true).fromNow();

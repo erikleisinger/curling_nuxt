@@ -22,7 +22,7 @@
     
     // border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    height: calc(100 * var(--vh, 1vh) - 65px);
+    height: calc(100 * var(--vh, 1vh) - 82px);
     width: calc(100vw - (2 * var(--space-xs)));
     max-height: v-bind(maxHeight);
     max-width: calc(960px - (2 * var(--space-xs)));
@@ -33,13 +33,13 @@
     background-color: white;
     overflow: hidden;
     &.bottom {
-       bottom: 50px;
+       bottom: 0px;
        @include sm {
-        bottom: 65px;
+        bottom: 0px;
        }
     }
     &:not(.bottom) {
-        top: 0;
+        top: 65px;
     }
 
      &.right{

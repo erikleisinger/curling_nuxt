@@ -407,7 +407,6 @@ import { generateEnds, createSheet } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
-import team from "tests/__mock__/team";
 
 const dayjs = useDayjs();
 const $q = useQuasar();

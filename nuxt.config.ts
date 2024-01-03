@@ -26,7 +26,11 @@ export default defineNuxtConfig({
     esbuild: {
         pure: ['console.log'],
       },
-
+    googleFonts: {
+        families:{
+            Koulen: true,
+        }
+    },
     piniaOrm: {
         model: {
             withMeta: true
