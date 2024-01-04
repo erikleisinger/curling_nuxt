@@ -73,6 +73,7 @@
     &.mobile {
         // transform: scaleX(0) translateX(-50px);
         width: 0px;
+        background-color: white;
     }
     &.open {
         width: 300px;
@@ -188,15 +189,15 @@ onClickOutside(drawer, (e) => {
     }, 1);
 });
 
-const { isSwiping, direction } = useSwipe(document);
-watch(isSwiping, (val) => {
-    if (!val) return;
-    if (direction.value === "right" && !open.value) {
-        open.value = true;
-    } else if (direction.value === "left" && !!open.value) {
-        open.value = false;
-    }
-});
+// const { isSwiping, direction } = useSwipe(document);
+// watch(isSwiping, (val) => {
+//     if (!val) return;
+//     if (direction.value === "right" && !open.value) {
+//         open.value = true;
+//     } else if (direction.value === "left" && !!open.value) {
+//         open.value = false;
+//     }
+// });
 
 const onDrawerClick = () => {
     if (open.value) return;

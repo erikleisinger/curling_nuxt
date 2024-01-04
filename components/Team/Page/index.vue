@@ -3,12 +3,16 @@
     <div :class="{'q-mt-lg': route.query.request}">
     <TeamRequestsHandler :teamId="teamId" :onlyInvite="!route.query.request" />
     </div>
-    <TeamPageHeader
+    <TeamPageHeader2
         :teamId="teamId"
         @click="viewing = true"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
     />
+
+      <TeamPageStatsOverview :teamId="teamId" :class="{ 'col-6 ': !$q.screen.xs }" class="stats__overview" v-if="hasPlayedGames"/>
+   
+    <LayoutSection title="Badges">
     <div
         :class="{ column: $q.screen.xs, 'row no-wrap': !$q.screen.xs }"
         class="team-info"
@@ -59,24 +63,28 @@
         </div>
 
 
-        <TeamPageStatsOverview :teamId="teamId" :class="{ 'col-6 ': !$q.screen.xs }" class="stats__overview" v-if="hasPlayedGames"/>
+      
         </div>
 
-   
+    </LayoutSection>
 
-    <ChartTeamStatsTime
+
+<LayoutSection title="stats">
+ <ChartTeamStatsTime
         v-if="hasPlayedGames"
         :teamId="teamId"
         :visibleStats="['Hammer efficiency']"
-        class="q-mb-md"
+        class="q-mb-md stats"
+        
     />
-     <section name="leagues" v-if="$q.screen.xs">
-    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
-    <q-separator/>
-    <TeamLeagueList :teamId="teamId"/>
-    </section>
+</LayoutSection>
+<LayoutSection title="Leagues">
+
+    <TeamLeagueList :teamId="teamId" style="margin-top: calc(-1 * var(--space-md); margin-bottom: calc(-1 * var(--space-md)"/>
+
+</LayoutSection>
     <div class="row no-wrap">
-    <section name="games" :class="$q.screen.xs ? 'col-12' : 'col-6'">
+<LayoutSection title="game history">
     <GameResultList :teamId="teamId" />
 
     <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
@@ -90,8 +98,9 @@
             >Add game</q-btn
         >
     </div>
+</LayoutSection>
 
-    </section>
+
         <section name="leagues" v-if="!$q.screen.xs" class="col-6">
     <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
     <q-separator/>
@@ -201,6 +210,11 @@
     </DialogPopup>
 </template>
 <style lang="scss" scoped>
+.stats {
+    margin-left: -16px;
+    margin-right: -16px;
+    margin-top: calc(-1 * var(--space-lg));
+}
 .outbound-request__prompt {
     position: sticky;
     top: 0;
@@ -210,6 +224,8 @@
 }
 .stats__overview {
     margin: 0px calc(var(--space-md) + var(--space-xs));
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-md);
    
 }
 .team-info {
@@ -235,10 +251,6 @@
     }
 }
 
-.team-badges__container {
-    padding: 0px calc(var(--space-md) + var(--space-xs));
-    margin-bottom: var(--space-md);
-}
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";

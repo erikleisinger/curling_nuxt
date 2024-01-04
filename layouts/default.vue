@@ -102,6 +102,7 @@ $footer-height-sm: 4em;
     .q-page-container,
     .q-header {
         width: min(960px, 100vw);
+        max-width:  min(960px, 100vw);
     }
 }
 .page__container--global {
@@ -109,11 +110,10 @@ $footer-height-sm: 4em;
     overflow: auto;
     scroll-behavior: smooth;
     // padding: unset !important;
+    -ms-overflow-style: none!important; /* IE and Edge */
+    scrollbar-width: none!important;; /* Firefox */
     &::-webkit-scrollbar {
-        width: 5px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        display: none!important;;
     }
     margin: unset !important;
     @include sm {
