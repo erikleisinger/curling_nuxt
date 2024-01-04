@@ -20,7 +20,7 @@ onMounted(async () => {
     } else {
         return navigateTo(`${hash}`, {replace: true})
 }
-    }, 1)
+    }, 2000)
   
 });
 </script>

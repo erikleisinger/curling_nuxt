@@ -53,7 +53,11 @@
             </q-item>
             </q-list>
             <div class="drawer-header" :class="{ dark: !open }">Leagues</div>
+        
         </div>
+        <div class="logout--container" v-if="open">
+                <q-btn flat @click="doLogout">Log out</q-btn>
+            </div>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -82,8 +86,15 @@
         // background-color: white;
         transform: scaleX(1);
     }
-    height: calc(100 * var(--vh, 1vh) + 500px);
+    height: calc(100 * var(--vh, 1vh));
     z-index: 10;
+    .logout--container {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        bottom: var(--space-sm);
+        width: 100%;
+    }
     .nav-drawer--content {
         position: absolute;
         top: 0;
@@ -166,6 +177,14 @@ const open = computed({
     },
 });
 const $q = useQuasar();
+const { logout } = useSession();
+
+const doLogout = () => {
+    open.value = false;
+    nextTick(() => {
+        logout();
+    })
+}
 
 const { user: userId } = useUser();
 const user = computed(() => useRepo(Player).where("id", userId.value).first());
@@ -178,7 +197,6 @@ const route = useRoute();
 watch(
     () => route.path,
     (val, oldVal) => {
-        console.log('route changed: ', val, oldVal, oldVal !== val)
         if (val !== oldVal) {
             setTimeout(() => {
 open.value = false;
@@ -206,6 +224,7 @@ watch(isSwiping, (val) => {
 });
 
 const onDrawerClick = () => {
+    console.log('on drawer click')
     if (open.value) return;
     open.value = true;
 }

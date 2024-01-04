@@ -1,7 +1,7 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
         <div class="layout-content__wrap" id="layoutContent">
-            <q-header class="layout-header" elevated reveal>
+            <q-header class="layout-header" elevated reveal v-show="!isLoggedOutRoute">
                 <LayoutHeader>
                     <template v-slot:menu>
                         <q-btn
@@ -15,7 +15,7 @@
                     </template>
                 </LayoutHeader>
             </q-header>
-            <LayoutDrawer v-model="leftDrawerOpen" />
+            <LayoutDrawer v-model="leftDrawerOpen" v-show="!isLoggedOutRoute"/>
 
             <q-page-container
                 class="page__container--global relative-position"
