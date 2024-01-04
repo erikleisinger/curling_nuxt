@@ -68,11 +68,14 @@
     box-sizing: border-box;
     box-shadow: $pretty-shadow;
     &.icon-only {
-        background-color: unset;
+        background-color: transparent;
         max-width: unset;
         min-width: unset;
         display: block !important;
         padding: unset;
+        
+        border-radius: 50%;
+       
     }
 
     &:not(.icon-only) {

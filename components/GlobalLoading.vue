@@ -5,9 +5,9 @@
             class="column items-center"
         >
             <main v-if="!error" class="column items-center full-width global-loading__container justify-start">
-                <div class="logo-container" ref="logo">
-                    <Logo color="#673ab7" />
-                </div>
+                
+                    <LogoFull :width="$q.screen.xs ? '150px' : '200px'" />
+               
             </main>
             <main v-else class="column items-center full-width global-loading__container">
                 <q-icon size="5em" color="negative" name="mood_bad" />
@@ -22,11 +22,16 @@
 <style lang="scss" scoped>
 .global-loading__wrap {
     width: 100vw;
-    height: calc(100 * var(--vh, 1vh))
+    height: calc(100 * var(--vh, 1vh));
+    position: fixed;
+    top: 0;
+    z-index: 100000;
+    background-color: $app-slate;
+    left: 0;
 }
 .logo-container {
     width: min(15vw, 100px);
-    animation: fade 0.2s linear forwards;
+    // animation: fade 0.2s linear forwards;
 }
 :deep(.loading-container) {
     width: 100vw;
@@ -82,14 +87,14 @@ const logo = ref(null);
 const { height: logoHeight } = useElementSize(logo);
 const margin = computed(() => `${-1 * logoHeight.value}px`)
 onMounted(() => {
-    gsap.to('.logo-container', 
-    {
-        rotateZ: 360,
-        delay: 0.5,
-        duration: 0.4,
-        repeat: -1,
-        repeatDelay: 1.5,
-    })
+    // gsap.to('.logo-container', 
+    // {
+    //     rotateZ: 360,
+    //     delay: 0.5,
+    //     duration: 0.4,
+    //     repeat: -1,
+    //     repeatDelay: 1.5,
+    // })
 })
 </script>
 <script>

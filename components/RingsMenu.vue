@@ -4,7 +4,7 @@
             @click="setBig"
             ref="ringsMenu" :size="size"/>
         <div class="menu__container column items-center" v-if="big">
-            <div class="rings-menu__option option-1">search</div>
+            <div class="rings-menu__option option-1" @click="toggleSearch">search</div>
             <div
                 class="rings-menu__option"
                 @click.stop="
@@ -189,7 +189,8 @@ const setBig = () => {
     });
 };
 
-const { toggleTeamCreator } = useDialogStore();
+const dialogStore = useDialogStore();
+const { toggleTeamCreator, toggleGlobalSearch } = dialogStore;
 
 const doAction = (e, callback) => {
     e.stopPropagation();
@@ -218,4 +219,40 @@ watch(big, (val) => {
         }, 1);
     }
 });
+
+
+// SEARCH
+
+const toggleSearch = () => {
+    big.value = false
+    toggleGlobalSearch({
+        open: true,
+
+        options: {
+            resourceTypes: ['team', 'profile', 'rink', 'league'],
+            inputLabel: "Search for a team, player, rink, or event",
+            callback: onSelect,
+        },
+    });
+};
+
+const searchOpen = computed(() => dialogStore.globalSearch.open)
+
+const onSelect = (selection) => {
+    toggleGlobalSearch({
+        open: false,
+    });
+    if (selection.resourcetype === "team") {
+        return navigateTo(`/teams/${selection.id}`);
+    }
+    if (selection.resourcetype === "profile") {
+        return navigateTo(`/player/${selection.profile_id}`);
+    }
+    if (selection.resourcetype === 'rink') {
+        return navigateTo(`/rinks/${selection.id}`);
+    }
+     if (selection.resourcetype === 'league') {
+        return navigateTo(`/leagues/${selection.id}`);
+    }
+};
 </script>

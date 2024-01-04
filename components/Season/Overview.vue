@@ -71,8 +71,7 @@ import {useUserTeamStore} from '@/store/user-teams'
 
     const getGamesPlayed = async () => {
         const client = useSupabaseClient();
-        const {count, data} = await client.from('games').select('*', {count: 'exact'}).or(`home.in.(${userTeamIds.value.join(',')}),away.in.(${userTeamIds.value.join(',')})`)
-        console.log(data)
+        const {count } = await client.from('games').select('*', {count: 'exact'}).or(`home.in.(${userTeamIds.value.join(',')}),away.in.(${userTeamIds.value.join(',')})`)
         return count;
     }
 

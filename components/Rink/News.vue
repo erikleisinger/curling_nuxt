@@ -20,9 +20,9 @@
         </q-item>
     </div>
     <div v-else-if="!isLoading">
-        <div v-for="item in news" :key="item.id">
+        <div v-for="item in news" :key="item.id" class="news-item">
             <AchievementHistoryItem :item="item" />
-            <q-separator />
+           
         </div>
         <div
             v-if="!isLoading && !news?.length"
@@ -32,6 +32,14 @@
         </div>
     </div>
 </template>
+<style lang="scss" scoped>
+    .news-item {
+        background-color: white;
+        box-shadow: $pretty-shadow;
+        border-radius: 16px;
+        margin-bottom: var(--space-sm)
+    }
+</style>
 <script setup>
 import { useQuery } from "@tanstack/vue-query";
 import { useUserStore } from "@/store/user";

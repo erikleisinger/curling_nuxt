@@ -1,6 +1,8 @@
 <template>
  <div>
+    <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
     <GlobalLoading v-show="globalLoading" infinite />
+    </transition>
    <NuxtLayout>
         <NuxtPage />
            </NuxtLayout>
@@ -33,16 +35,8 @@
 <style lang="scss">
 #__nuxt {
     height: inherit;
-    @include sm {
-        overflow: auto;
-        scroll-behavior: smooth;
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-    }
+    background-color: rgb(233, 232, 232);
+    
 }
 
 .page-load__wrap {

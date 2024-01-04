@@ -43,13 +43,13 @@
             @include sm {
                 bottom: -23px;
             }
-            z-index: 1;
             height: fit-content;
         }
     }
     .section__main {
         position: relative;
         padding: var(--space-lg) var(--space-sm) ;
+        z-index: 1;
         &:before {
             content: '';
             height: 100%;
@@ -59,7 +59,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            z-index: 0;
+            z-index: -1;
             top:0;
         }
     }

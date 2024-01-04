@@ -23,7 +23,7 @@
                 </transition>
                  </q-btn>
                  <div class="relative-position" :style="{width: $q.screen.xs ? '30px' : '35px', height: $q.screen.xs ? '30px' : '35px'}">
-                 <RingsMenu :size="$q.screen.xs ? '30px' : '35px'"/>
+                 <RingsMenu :size="$q.screen.xs ? '30px' : '35px'" class="clickable rings-button"/>
                  </div>
                 </div>
                            </q-toolbar>
@@ -32,7 +32,6 @@
 </template>
 <style lang="scss" scoped>
     .header {
-        // padding: 0px var(--space-md);
         padding-left: var(--space-md);
         padding-right: var(--space-sm);
         background-color: $app-slate;
@@ -42,6 +41,7 @@
                 height: 5em;
             }
         }
+       
     }
 </style>
 <script setup>

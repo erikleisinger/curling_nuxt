@@ -1,7 +1,7 @@
 <template>
     <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
-        <q-menu :disable="disableMenu || Number(route.params.id) === props.teamId" :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200" style="border-radius:8px" class="shadow-10">
-            <div class="card-menu__container">
+        <q-menu v-if="!disableMenu && Number(route.params.id) !== props.teamId"  :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200" style="border-radius:8px" class="shadow-10">
+            <div class="card-menu__container" >
                 
             <TeamCard :teamId="props.teamId" dense style="min-height: 40px" animated/>
             </div>
@@ -246,7 +246,7 @@ watch(hovered, (val) => {
 });
 
 const clickAvatar = () => {
-    if (!props.viewable && !props.invitable && !props.editable) return;
+    if (props.disableMenu || (!props.viewable && !props.invitable && !props.editable)) return;
     if (props.viewable) {
         return navigateTo(`/teams/${props.teamId}`);
     } else if (props.invitable) {
