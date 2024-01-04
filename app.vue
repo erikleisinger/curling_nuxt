@@ -1,7 +1,7 @@
 <template>
  <div>
     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <GlobalLoading v-show="globalLoading" infinite />
+    <GlobalLoading v-show="true" infinite />
     </transition>
    <NuxtLayout>
         <NuxtPage />
@@ -35,7 +35,7 @@
 <style lang="scss">
 #__nuxt {
     height: inherit;
-    background-color: rgb(233, 232, 232);
+    @include bg-white-diagonal;
     
 }
 

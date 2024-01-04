@@ -108,6 +108,7 @@ $footer-height-sm: 4em;
 .page__container--global {
     height: calc((100 * var(--vh, 1vh)));
     overflow: auto;
+    overflow-x:hidden;
     scroll-behavior: smooth;
     // padding: unset !important;
     -ms-overflow-style: none!important; /* IE and Edge */

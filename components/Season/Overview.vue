@@ -1,19 +1,22 @@
 <template>
  <div class="overview-section">
         <div class="overview-tile">
-            <q-skeleton v-if="isLoadingWinPercent" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
-            <h2 v-else>{{winPercent}}<span class="append">%</span></h2>
-             <h3 class="yellow">wins</h3>
+            <q-skeleton v-if="isLoading" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
+            <h2 v-else class="overview-h2" ref="winPercentRef">{{winPercent}}<span class="append">%</span></h2>
+              <q-skeleton v-if="isLoading" height="0.9em" width="75px" style="margin-top: 2px"/>
+             <h3 class="yellow overview-h3" v-else>wins</h3>
         </div>
          <div class="overview-tile">
-              <q-skeleton v-if="isLoadingGames" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
-            <h2 v-else>{{gameCount}}</h2>
-            <h3 class="red">games played</h3>
+              <q-skeleton v-if="isLoading" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
+            <h2 v-else class="overview-h2">{{gameCount}}</h2>
+             <q-skeleton v-if="isLoading" height="0.9em" width="75px" style="margin-top: 2px"/>
+            <h3 class="red overview-h3" v-else>games played</h3>
          </div>
         <div class="overview-tile">
-               <q-skeleton v-if="isLoadingBadgeCount" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
-            <h2 v-else>{{badgeCount}}</h2>
-             <h3 class="blue">badges earned</h3>
+               <q-skeleton v-if="isLoading" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
+            <h2 v-else class="overview-h2">{{badgeCount}}</h2>
+            <q-skeleton v-if="isLoading" height="0.9em" width="75px" style="margin-top: 2px"/>
+             <h3 class="blue overview-h3" v-else>badges earned</h3>
         </div>
        </div>
 </template>
@@ -23,6 +26,9 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         .overview-tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
             
             h2 {
@@ -65,7 +71,10 @@
 </style>
 <script setup>
 import {useUserTeamStore} from '@/store/user-teams'
-    import {useQuery} from '@tanstack/vue-query';
+import {useQuery} from '@tanstack/vue-query';
+import gsap from 'gsap';
+import {Flip} from 'gsap/Flip';
+gsap.registerPlugin(Flip)
 
     const userTeamIds = computed(() => useUserTeamStore().userTeams.map(({id}) => id))
 
@@ -119,4 +128,44 @@ import {useUserTeamStore} from '@/store/user-teams'
         refetchOnWindowFocus: false,
         enabled: isBadgeCountFetchEnabled
     })
-</script>
+    const winPercentRef = ref(null)
+     const gameCountRef = ref(null);
+     const badgeCountRef = ref(null);
+    const animateRefs = (el) => {
+        // const tl = gsap.timeline
+        nextTick(() => {
+            gsap.from('.overview-h2', {
+                scale: 0,
+                duration:1,
+                stagger: 0.4,
+                ease: 'elastic',
+                delay: 0.1,
+            })
+            gsap.from('.overview-h3', {
+                scaleY: 0,
+                duration:0.1,
+                stagger: 0.4,
+                delay: 0.3,
+            })
+            })
+    }
+
+
+
+    watch(winPercentRef, (val) => {
+        if (!!val) animateRefs()
+    })
+
+   
+    // watch(gameCountRef, (val) => {
+    //     if (!!val) animateRef(val)
+    // })
+
+
+    // watch(badgeCountRef, (val) => {
+    //     if (!!val) animateRef(val)
+    // })
+
+const isLoading = computed(() => isLoadingBadgeCount.value || isLoadingGames.value || isLoadingWinPercent.value)
+
+    </script>

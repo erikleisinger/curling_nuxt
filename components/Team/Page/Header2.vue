@@ -47,7 +47,6 @@
 .header__container {
     padding-bottom: calc(var(--space-lg) + var(--space-sm)) ;
     position: relative;
-    overflow: hidden;
     width: 100%;
     .header--content {
         z-index: 1;
@@ -84,6 +83,10 @@
     }
     .team-name__container {
         margin-top: -4px;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         h1 {
             font-size: 48px;
             font-family: $font-family-header;
@@ -91,6 +94,18 @@
             padding: 0px var(--space-md);
             line-height: 44px;
             color: white;
+            
+            margin:auto;
+            @include sm {
+                font-size: 56px;
+                line-height: 60px;
+                min-height: 150px;
+                
+            }
+            @include md {
+                font-size: 64px;
+                
+            }
         }
     }
 
@@ -107,18 +122,19 @@
         left: -12.5%;
         .avatar {
             border-radius: inherit;
+            position: absolute;
         }
         box-shadow: $pretty-shadow;
         .mid-underlay {
             position:absolute;
             height: 100%;
             width: 100%;
-            border: 1px solid rgba(0,0,0,0.01);
-            background-color: rgba(0,0,0,0.2);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: rgba(0,0,0,0.3);
             top: 0;
             border-radius: inherit;;
         }
-        border: 4px solid white;
+        border: 5px solid white;
     }
 }
 </style>

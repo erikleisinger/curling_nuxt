@@ -53,7 +53,9 @@
             </q-item-label>
         </q-item-section>
         <div class="date--floating">
+               <q-item-label caption>
             {{ getAchievementDate(item.created_at) }}
+               </q-item-label>
         </div>
     </q-item>
 </template>
@@ -66,8 +68,8 @@ $append-icon-size: 1.7em;
     }
     .date--floating {
         position: absolute;
-        top: 4px;
-        right: 4px;
+        top: 8px;
+        right: 16px;
         font-size: var(--text-sm);
         color: rgba(0, 0, 0, 0.5);
     }

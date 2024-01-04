@@ -32,9 +32,13 @@
 </template>
 <style lang="scss" scoped>
     .header {
-        padding-left: var(--space-md);
+        padding-left: var(--space-xxs);
+        @include sm {
+            padding-left: var(--space-md);
+        }
+        
         padding-right: var(--space-sm);
-        background-color: $app-slate;
+        @include bg-slate-texture;
         &.q-toolbar {
             height: 4em;
             @include sm {

@@ -114,7 +114,7 @@
         <div class="loading-container" v-if="isLoading">
             <q-inner-loading :showing="true" color="primary" />
         </div>
-        <div v-if="gamesPaginated.length" class="q-px-sm">
+        <div v-if="gamesPaginated.length" >
             <div
                 v-for="(game, index) in gamesPaginated"
                 :key="game.id"

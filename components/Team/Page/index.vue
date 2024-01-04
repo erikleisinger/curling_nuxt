@@ -1,111 +1,134 @@
 <template>
-    <TeamPlayerChangeListener/>
-    <div :class="{'q-mt-lg': route.query.request}">
-    <TeamRequestsHandler :teamId="teamId" :onlyInvite="!route.query.request" />
+    <TeamPlayerChangeListener />
+    <div :class="{ 'q-mt-lg': route.query.request }">
+        <TeamRequestsHandler
+            :teamId="teamId"
+            :onlyInvite="!route.query.request"
+        />
     </div>
     <TeamPageHeader2
         :teamId="teamId"
         @click="viewing = true"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
+        ref="header"
     />
-
-      <TeamPageStatsOverview :teamId="teamId" :class="{ 'col-6 ': !$q.screen.xs }" class="stats__overview" v-if="hasPlayedGames"/>
-   
-    <LayoutSection title="Badges">
-    <div
-        :class="{ column: $q.screen.xs, 'row no-wrap': !$q.screen.xs }"
-        class="team-info"
+    <q-tabs
+        class="team-page__tabs"
+        ref="tabs"
+        :class="{ dark: darkTabs }"
+        v-model="currentIndex"
+        outside-arrows
+        shrink
+        @update:modelValue="onTabChange"
     >
-        <div
-            class="team-badges__container"
-            :class="$q.screen.xs ? 'col-12' : 'col-6'"
-            v-if="team?.badges?.length"
-        >
-            <div
-                class="row items-center"
-                :class="{
-                    'col-6 justify-around': !$q.screen.xs,
-                    'justify-between': $q.screen.xs,
-                }"
-            >
-                <Badge v-if="featuredBadge?.id" :badge="featuredBadge">
-                    <template v-slot:underlay> Featured </template>
-                </Badge>
-                <Badge
-                    v-for="(badge, index) in badgesLimited"
-                    :key="badge.id"
-                    :badge="badge"
+        <q-tab label="Overview" :name="0" :ripple="false" />
 
-                >
-                    <template v-slot:underlay>
-                        <span v-if="index === 0 && !!team.featured_badge_id">Recent</span>
-                    </template>
-                </Badge>
-            </div>
-            <div class="row " :class="canEdit ? 'justify-between' : 'justify-end'">
-                <div
-                    class="text-sm q-mt-xs text-underline"
-                    style="cursor: pointer"
-                    @click="beginSelectFeatured"
-                    v-if="canEdit"
-                >
-                    Select featured badge
-                </div>
-                <div
-                    class="text-sm q-mt-xs text-underline"
-                    style="cursor: pointer"
-                    @click="badgesOpen = true"
-                >
-                    View all badges
-                </div>
-            </div>
-        </div>
+        <q-tab label="Badges" :name="1" :ripple="false" />
+        <q-tab label="Stats" :name="2" :ripple="false" />
+        <q-tab label="Leagues" :name="3" :ripple="false" />
+        <q-tab label="Game history" :name="4" :ripple="false" />
+    </q-tabs>
 
-
-      
-        </div>
-
-    </LayoutSection>
-
-
-<LayoutSection title="stats">
- <ChartTeamStatsTime
-        v-if="hasPlayedGames"
+    <TeamPageStatsOverview
         :teamId="teamId"
-        :visibleStats="['Hammer efficiency']"
-        class="q-mb-md stats"
+        :class="{ 'col-6 ': !$q.screen.xs }"
+        class="stats__overview"
         
     />
-</LayoutSection>
-<LayoutSection title="Leagues">
 
-    <TeamLeagueList :teamId="teamId" style="margin-top: calc(-1 * var(--space-md); margin-bottom: calc(-1 * var(--space-md)"/>
-
-</LayoutSection>
-    <div class="row no-wrap">
-<LayoutSection title="game history">
-    <GameResultList :teamId="teamId" />
-
-    <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
-        <div>{{ team.name }} hasn't played any games!</div>
-        <q-btn
-            icon="add"
-            color="primary"
-            rounded
-            class="q-mt-md"
-            @click="navigateTo('/games/create')"
-            >Add game</q-btn
+    <LayoutSection title="Badges" ref="sectionBadges">
+        <div
+            :class="{ column: $q.screen.xs, 'row no-wrap': !$q.screen.xs }"
+            class="team-info"
         >
-    </div>
-</LayoutSection>
+            <div
+                class="team-badges__container"
+                :class="$q.screen.xs ? 'col-12' : 'col-6'"
+                v-if="team?.badges?.length"
+            >
+                <div
+                    class="row items-center"
+                    :class="{
+                        'col-6 justify-around': !$q.screen.xs,
+                        'justify-between': $q.screen.xs,
+                    }"
+                >
+                    <Badge v-if="featuredBadge?.id" :badge="featuredBadge">
+                        <template v-slot:underlay> Featured </template>
+                    </Badge>
+                    <Badge
+                        v-for="(badge, index) in badgesLimited"
+                        :key="badge.id"
+                        :badge="badge"
+                    >
+                        <template v-slot:underlay>
+                            <span v-if="index === 0 && !!team.featured_badge_id"
+                                >Recent</span
+                            >
+                        </template>
+                    </Badge>
+                </div>
+                <div
+                    class="row"
+                    :class="canEdit ? 'justify-between' : 'justify-end'"
+                >
+                    <div
+                        class="text-sm q-mt-xs text-underline"
+                        style="cursor: pointer"
+                        @click="beginSelectFeatured"
+                        v-if="canEdit"
+                    >
+                        Select featured badge
+                    </div>
+                    <div
+                        class="text-sm q-mt-xs text-underline"
+                        style="cursor: pointer"
+                        @click="badgesOpen = true"
+                    >
+                        View all badges
+                    </div>
+                </div>
+            </div>
+        </div>
+    </LayoutSection>
 
+    <LayoutSection title="stats" ref="sectionStats">
+        <ChartTeamStatsTime
+            v-if="hasPlayedGames"
+            :teamId="teamId"
+            :visibleStats="['Hammer efficiency']"
+            class="q-mb-md stats"
+        />
+    </LayoutSection>
+    <LayoutSection title="Leagues" ref="sectionLeagues">
+        <TeamLeagueList
+            :teamId="teamId"
+            style="margin-top: calc(-1 * var(--space-md); margin-bottom: calc(-1 * var(--space-md)"
+        />
+    </LayoutSection>
+    <div class="row no-wrap">
+        <LayoutSection title="game history" ref="sectionGames">
+            <GameResultList :teamId="teamId" />
+
+            <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
+                <div>{{ team.name }} hasn't played any games!</div>
+                <q-btn
+                    icon="add"
+                    color="primary"
+                    rounded
+                    class="q-mt-md"
+                    @click="navigateTo('/games/create')"
+                    >Add game</q-btn
+                >
+            </div>
+        </LayoutSection>
 
         <section name="leagues" v-if="!$q.screen.xs" class="col-6">
-    <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
-    <q-separator/>
-    <TeamLeagueList :teamId="teamId"/>
-    </section>
+            <h3 class="text-md text-bold q-pa-sm q-pl-md">Leagues</h3>
+            <q-separator />
+            <TeamLeagueList :teamId="teamId" />
+        </section>
     </div>
     <q-dialog
         v-model="badgesOpen"
@@ -122,63 +145,56 @@
                 </span>
                 <span v-else class="text-sm"> Select featured badge </span>
                 <div class="row">
-                  <q-btn flat round icon="sort">
-           
-                <q-menu>
-                    <q-item
-                        clickable
-                        v-ripple
-                        @click="onClickSort('Alphabetical')"
-                        :active="!!sortAlphabeticalOrder"
-                       
-                    >
-                       
-                        <q-item-section no-wrap>
-                            Sort Alphabetically
-                        </q-item-section>
-                         <q-item-section no-wrap avatar>
- <q-icon
-                                :name="
-                                    sortAlphabeticalOrder === 'desc'
-                                        ? 'keyboard_arrow_down'
-                                        : 'keyboard_arrow_up'
-                                "
-                            ></q-icon>
-                            </q-item-section>
-                    </q-item>
-                     <q-item
-                        clickable
-                        v-ripple
-                         @click="onClickSort('Date')"
-                         :active="!!sortDateOrder"
-
-                       
-                    >
-                       
-                        <q-item-section no-wrap>
-                            Sort By Date Earned
-                        </q-item-section>
-                         <q-item-section no-wrap avatar>
-                             <q-icon
-                                 :name="
-                                    sortDateOrder === 'desc'
-                                        ? 'keyboard_arrow_down'
-                                        : 'keyboard_arrow_up'
-                                "
-                            ></q-icon>
-                            </q-item-section>
-                    </q-item>
-
-                </q-menu>
-            </q-btn>
-                <q-btn
-                    flat
-                    round
-                    icon="close"
-                    dense
-                    @click="badgesOpen = false"
-                    style="margin-right: -12px"
-                />
+                    <q-btn flat round icon="sort">
+                        <q-menu>
+                            <q-item
+                                clickable
+                                v-ripple
+                                @click="onClickSort('Alphabetical')"
+                                :active="!!sortAlphabeticalOrder"
+                            >
+                                <q-item-section no-wrap>
+                                    Sort Alphabetically
+                                </q-item-section>
+                                <q-item-section no-wrap avatar>
+                                    <q-icon
+                                        :name="
+                                            sortAlphabeticalOrder === 'desc'
+                                                ? 'keyboard_arrow_down'
+                                                : 'keyboard_arrow_up'
+                                        "
+                                    ></q-icon>
+                                </q-item-section>
+                            </q-item>
+                            <q-item
+                                clickable
+                                v-ripple
+                                @click="onClickSort('Date')"
+                                :active="!!sortDateOrder"
+                            >
+                                <q-item-section no-wrap>
+                                    Sort By Date Earned
+                                </q-item-section>
+                                <q-item-section no-wrap avatar>
+                                    <q-icon
+                                        :name="
+                                            sortDateOrder === 'desc'
+                                                ? 'keyboard_arrow_down'
+                                                : 'keyboard_arrow_up'
+                                        "
+                                    ></q-icon>
+                                </q-item-section>
+                            </q-item>
+                        </q-menu>
+                    </q-btn>
+                    <q-btn
+                        flat
+                        round
+                        icon="close"
+                        dense
+                        @click="badgesOpen = false"
+                        style="margin-right: -12px"
+                    />
                 </div>
             </h3>
             <q-separator />
@@ -191,7 +207,9 @@
                     :key="badge.id"
                     :badge="badge"
                     :width="badgeWidth"
-                    :highlight="selectingFeatured && team.featured_badge_id === badge.id"
+                    :highlight="
+                        selectingFeatured && team.featured_badge_id === badge.id
+                    "
                     @click="selectFeaturedBadge($event, badge.id)"
                     :canView="!selectingFeatured"
                     showTime
@@ -199,17 +217,47 @@
             </div>
         </q-card>
     </q-dialog>
-      <DialogPopup :open="viewing" @hide="viewing = false" max-width="500px">
+    <DialogPopup :open="viewing" @hide="viewing = false" max-width="500px">
         <!-- <q-card class="team-details__viewer"> -->
-            <TeamPageDetails
-                @back="viewing = false"
-                v-if="viewing"
-                :teamId="teamId"
-            />
+        <TeamPageDetails
+            @back="viewing = false"
+            v-if="viewing"
+            :teamId="teamId"
+        />
         <!-- </q-card> -->
     </DialogPopup>
 </template>
 <style lang="scss" scoped>
+.team-page__tabs {
+    position: sticky;
+    top: 0;
+    background-color: transparent;
+    transition: all 0.2s;
+    font-family: $font-family-header;
+
+    :deep(.q-tab__label) {
+        font-size: 18px !important;
+    }
+    .tab__label {
+        font-size: 18px !important;
+    }
+
+    :deep(.q-tab__indicator) {
+        bottom: 12px;
+        background-color: $app-yellow;
+    }
+    :deep(.q-focus-helper) {
+        display: none;
+    }
+    :deep(.q-tab) {
+        padding: unset;
+        margin: 0px var(--space-xs);
+    }
+    &.dark {
+        @include bg-slate-texture;
+        color: white;
+    }
+}
 .stats {
     margin-left: -16px;
     margin-right: -16px;
@@ -226,7 +274,6 @@
     margin: 0px calc(var(--space-md) + var(--space-xs));
     margin-top: var(--space-md);
     margin-bottom: var(--space-md);
-   
 }
 .team-info {
     @include sm {
@@ -250,29 +297,36 @@
         gap: 6px 0px;
     }
 }
-
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
 import { useTeamRequestStore } from "@/store/team-requests";
-import {useDialogStore} from '@/store/dialog'
+import { useDialogStore } from "@/store/dialog";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { useEventListener } from "@vueuse/core";
 import { BADGE_NAMES } from "@/constants/badges";
-import { useElementSize, useDebounceFn } from "@vueuse/core";
+import {
+    useDebounceFn,
+    useElementBounding,
+    useElementSize,
+    useEventListener,
+    useIntersectionObserver,
+    useScroll,
+} from "@vueuse/core";
 
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
 
-const {toTimezone} = useTime();
+const currentIndex = ref(0);
 
-const viewing = ref(false)
+const { toTimezone } = useTime();
+
+const viewing = ref(false);
 
 const $q = useQuasar();
 
 const route = useRoute();
 
-const teamId = Number(route.params.id)
+const teamId = Number(route.params.id);
 
 const hasPlayedGames = computed(() => !!team.value?.games?.length);
 
@@ -306,20 +360,34 @@ const headerLoaded = ref(false);
 const { sortAlphabetically } = useSort();
 
 const featuredBadge = computed(() =>
-    [...(team.value?.badges ?? [])].find(({ id }) => id === team.value.featured_badge_id)
+    [...(team.value?.badges ?? [])].find(
+        ({ id }) => id === team.value.featured_badge_id
+    )
 );
 const badgesLimited = computed(() =>
     [...(team.value?.badges ?? [])]
         .filter(({ id }) => id !== team.value.featured_badge_id)
-        .sort((a,b) =>  toTimezone(b.created_at, null, false, true).unix() - toTimezone(a.created_at, null, false, true).unix())
-        .splice(0, $q.screen.xs ? (team.value.featured_badge_id ? 1 : 2) : (team.value.featured_badge_id ? 3 : 4))
+        .sort(
+            (a, b) =>
+                toTimezone(b.created_at, null, false, true).unix() -
+                toTimezone(a.created_at, null, false, true).unix()
+        )
+        .splice(
+            0,
+            $q.screen.xs
+                ? team.value.featured_badge_id
+                    ? 1
+                    : 2
+                : team.value.featured_badge_id
+                ? 3
+                : 4
+        )
 );
 
 const { setLoading } = useLoading();
 
-
 const sortDateOrder = ref(null);
-const sortAlphabeticalOrder = ref('asc');
+const sortAlphabeticalOrder = ref("asc");
 
 const onClickSort = (type) => {
     const typeKey = `sort${type}Order`;
@@ -343,21 +411,31 @@ const onClickSort = (type) => {
     }
 };
 
-
-const badgesSorted = computed(() => [...(team.value?.badges ?? [])].sort((a,b) => {
-    if (sortAlphabeticalOrder.value) {
-        const {sortAlphabetically} = useSort();
-        return sortAlphabetically(BADGE_NAMES[a.name].toLowerCase().replaceAll(' ', ''), BADGE_NAMES[b.name].toLowerCase().replaceAll(' ', ''), sortAlphabeticalOrder.value === 'asc')
-    }
-    if (sortDateOrder.value) {
-
-        if (sortDateOrder.value === 'asc') {
-            return toTimezone(b.created_at, null, false, true).unix() - toTimezone(a.created_at, null, false, true).unix();
+const badgesSorted = computed(() =>
+    [...(team.value?.badges ?? [])].sort((a, b) => {
+        if (sortAlphabeticalOrder.value) {
+            const { sortAlphabetically } = useSort();
+            return sortAlphabetically(
+                BADGE_NAMES[a.name].toLowerCase().replaceAll(" ", ""),
+                BADGE_NAMES[b.name].toLowerCase().replaceAll(" ", ""),
+                sortAlphabeticalOrder.value === "asc"
+            );
         }
-        return toTimezone(a.created_at, null, false, true).unix() - toTimezone(b.created_at, null, false, true).unix();
-    }
-    return 1
-}))
+        if (sortDateOrder.value) {
+            if (sortDateOrder.value === "asc") {
+                return (
+                    toTimezone(b.created_at, null, false, true).unix() -
+                    toTimezone(a.created_at, null, false, true).unix()
+                );
+            }
+            return (
+                toTimezone(a.created_at, null, false, true).unix() -
+                toTimezone(b.created_at, null, false, true).unix()
+            );
+        }
+        return 1;
+    })
+);
 
 const pageReady = computed(() => headerLoaded.value);
 
@@ -412,9 +490,94 @@ watch(badgesOpen, (val) => {
     selectingFeatured.value = false;
 });
 
-const {isOnTeam} = useTeam()
+const { isOnTeam } = useTeam();
 
-const canEdit = computed (() => isOnTeam(teamId))
+const canEdit = computed(() => isOnTeam(teamId));
+
+const tabs = ref(null);
+const { y } = useElementBounding(tabs);
+const darkTabs = ref(false);
+watch(y, (val) => {
+    darkTabs.value = val <= ($q.screen.xs ? 64 : 80);
+});
+
+const header = ref(null)
+const sectionBadges = ref(null);
+const sectionStats = ref(null);
+const sectionLeagues = ref(null);
+const sectionGames = ref(null);
+const statsY = ref(0);
+const badgesY = ref(0);
+const leaguesY = ref(0);
+const gamesY = ref(0)
+const preventIntersection = ref(true)
+
+const changeTab = (newTab) => {
+    currentIndex.value = newTab
+}
+
+useIntersectionObserver(header, ([{isIntersecting}]) => {
+    if (!isIntersecting || preventIntersection.value) return;
+    changeTab(0)
+}, {threshold: 0.5})
+
+useIntersectionObserver(sectionBadges, ([{isIntersecting}]) => {
+      if (!isIntersecting || preventIntersection.value) return;
+     changeTab(1)
+}, {threshold: 1})
+useIntersectionObserver(sectionStats, ([{isIntersecting}]) => {
+      if (!isIntersecting || preventIntersection.value) return;
+    changeTab(2)
+}, {threshold: 1})
+useIntersectionObserver(sectionLeagues, ([{isIntersecting}]) => {
+       if (!isIntersecting || preventIntersection.value) return;
+    changeTab(3)
+}, {threshold: 1})
+useIntersectionObserver(sectionGames, ([{isIntersecting}]) => {
+      if (!isIntersecting || preventIntersection.value) return;
+    changeTab(4)
+}, {threshold: 0.7})
+
+onMounted(() => {
+    setTimeout(() => {
+        const { y: bY } = useElementBounding(sectionBadges);
+        badgesY.value = bY.value;
+        const { y: stY } = useElementBounding(sectionStats);
+        statsY.value = stY.value;
+         const { y: lY } = useElementBounding(sectionLeagues);
+        leaguesY.value = lY.value;
+           const { y: gY } = useElementBounding(sectionGames);
+        gamesY.value = gY.value;
+        preventIntersection.value = false;
+    }, 1000);
+});
+
+const yModifier = computed(() => $q.screen.xs ? -115 : -126)
+
+const onTabChange = (val) => {
+     const scroller = document.querySelector("#global-container");
+     preventIntersection.value = true;
+    if (val === 0) {
+        scroller.scrollTop = 0;
+    }
+    if (val === 1) {
+        scroller.scrollTop = badgesY.value + yModifier.value;
+    }
+    if (val === 2) {
+        scroller.scrollTop = statsY.value + yModifier.value;
+    }
+    if (val === 3) {
+        scroller.scrollTop = leaguesY.value + yModifier.value;
+    }
+     if (val === 4) {
+        scroller.scrollTop = gamesY.value + yModifier.value;
+    }
+}
+
+const {isScrolling} = useScroll(document.querySelector('#global-container'));
+watch(isScrolling, (val) => {
+    if (!val) preventIntersection.value = false;
+})
 </script>
 <script lang="ts">
 export default {

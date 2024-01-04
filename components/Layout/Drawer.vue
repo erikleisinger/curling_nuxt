@@ -31,7 +31,7 @@
                 Teams
                 <q-btn flat round dense icon="arrow_drop_down" v-if="open" />
             </div>
-            <q-list separator>
+            <q-list  class="nav-drawer__list">
             <q-item
             clickable v-ripple
                 class="row items-center no-wrap team-container"
@@ -62,25 +62,27 @@
     left: 0;
     top: 0;
     width: 80px;
-    transition: all 0.2s;
-    background-color: $app-slate;
+    transition: width 0.2s;
+   
     padding-top: calc(4em + var(--space-sm));
     overflow: hidden;
+    color: white;
     @include sm {
         padding-top: calc(5em + var(--space-sm));
     }
+    margin-bottom: -100px;
     transform-origin: left;
     &.mobile {
         // transform: scaleX(0) translateX(-50px);
         width: 0px;
-        background-color: white;
+        // background-color: white;
     }
     &.open {
         width: 300px;
-        background-color: white;
+        // background-color: white;
         transform: scaleX(1);
     }
-    height: calc(100 * var(--vh, 1vh));
+    height: calc(100 * var(--vh, 1vh) + 500px);
     z-index: 10;
     .nav-drawer--content {
         position: absolute;
@@ -93,7 +95,7 @@
         }
     }
     .drawer-header {
-        color: $app-slate;
+        // color: $app-slate;
         font-family: $font-family-header;
 
         width: fit-content;
@@ -107,7 +109,7 @@
             line-height: 22px;
         }
         &.dark {
-            color: white;
+            // color: white;
             width: 80px;
             display: flex;
             justify-content: center;
@@ -125,7 +127,7 @@
     .team-container {
         margin-left: -12px;
         
-        color: $app-slate;
+        // color: $app-slate;
     }
     .click-overlay {
         position: absolute;
@@ -135,6 +137,12 @@
         top: 0;
 
     }
+    .nav-drawer__list {
+        :deep(.q-item) {
+            border-color:  rgb(246, 174, 45, 0.2);
+        }
+    }
+     @include bg-slate-texture;
 }
 </style>
 <script setup>
@@ -189,15 +197,13 @@ onClickOutside(drawer, (e) => {
     }, 1);
 });
 
-// const { isSwiping, direction } = useSwipe(document);
-// watch(isSwiping, (val) => {
-//     if (!val) return;
-//     if (direction.value === "right" && !open.value) {
-//         open.value = true;
-//     } else if (direction.value === "left" && !!open.value) {
-//         open.value = false;
-//     }
-// });
+const { isSwiping, direction } = useSwipe(document);
+watch(isSwiping, (val) => {
+    if (!val) return;
+    if (direction.value === "left" && !!open.value) {
+        open.value = false;
+    }
+});
 
 const onDrawerClick = () => {
     if (open.value) return;
