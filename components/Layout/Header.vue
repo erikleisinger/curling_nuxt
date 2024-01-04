@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="row items-center">
-                 <q-btn icon="notifications" flat round color="white" class="q-mr-sm" @click="toggleNotifications({open: true})" :size="$q.screen.xs ? '14px' : '16px'">
+                 <q-btn icon="notifications" flat round color="white" class="q-mr-sm" @click="toggleNotifications({open: !notificationsOpen})" :size="$q.screen.xs ? '14px' : '16px'">
                      <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
                     <q-badge
                         color="red"
@@ -48,6 +48,7 @@
     
     import { useDialogStore } from "@/store/dialog";
     const {toggleNotifications} = useDialogStore();
+    const notificationsOpen = computed(() => useDialogStore().notifications.open)
 
     const {listenForNotifications, count: unreadNotificationCount} = useNotification();
 
