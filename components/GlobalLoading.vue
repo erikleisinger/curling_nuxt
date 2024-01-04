@@ -99,15 +99,8 @@ const logo = ref(null);
 
 const { height: logoHeight } = useElementSize(logo);
 const margin = computed(() => `${-1 * logoHeight.value}px`);
-onMounted(() => {
-    // gsap.to('.logo-container',
-    // {
-    //     rotateZ: 360,
-    //     delay: 0.5,
-    //     duration: 0.4,
-    //     repeat: -1,
-    //     repeatDelay: 1.5,
-    // })
+
+const doAnimation = () => {
 
     const els = logo.value.$el.querySelectorAll(
         "path:not(.logo-i):not(.logo-rock)"
@@ -178,7 +171,12 @@ onMounted(() => {
     }, 'fall')
 
     tl.duration(2.1);
-});
+}
+
+onMounted(() => {
+    doAnimation();
+})
+
 </script>
 <script>
 export default {
