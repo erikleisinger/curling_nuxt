@@ -1,7 +1,7 @@
 <template>
  <div>
     <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-    <GlobalLoading v-show="true" infinite />
+    <GlobalLoading v-show="globalLoading" infinite />
     </transition>
    <NuxtLayout>
         <NuxtPage />
