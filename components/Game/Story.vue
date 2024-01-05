@@ -706,6 +706,10 @@ const isPlaying = ref(false);
 
 const play = () => {
     isPlaying.value = true;
+    if (animation.value) {
+        animation.value.restart();
+        return;
+    }
     const tl = gsap.timeline();
 
     tl.add("start");
@@ -895,16 +899,20 @@ const play = () => {
         );
     });
     animation.value = tl;
+    tl.eventCallback('onComplete', () => {
+        isPlaying.value = false;
+    })
 };
 
 const playAnimation = () => {
-    if (!animation.value) {
-        play();
-    } else if (animation.value.paused()) {
+    
+    if (animation.value?.paused()) {
         console.log(animation.value.totalProgress());
 
         animation.value.resume();
         isPlaying.value = true;
+    } else {
+        play();
     }
 };
 
