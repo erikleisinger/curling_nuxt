@@ -516,47 +516,7 @@ const changeTab = (newTab) => {
     currentIndex.value = newTab;
 };
 
-useIntersectionObserver(
-    header,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(0);
-    },
-    { threshold: 0.5 }
-);
 
-useIntersectionObserver(
-    sectionBadges,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(1);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionStats,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(2);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionLeagues,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(3);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionGames,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(4);
-    },
-    { threshold: 0.7 }
-);
 
 onMounted(() => {
     setTimeout(() => {
@@ -570,6 +530,47 @@ onMounted(() => {
         gamesY.value = gY.value;
         preventIntersection.value = false;
     }, 1000);
+//     useIntersectionObserver(
+//     header,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(0);
+//     },
+//     { threshold: 0.5 }
+// );
+
+// useIntersectionObserver(
+//     sectionBadges,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(1);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionStats,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(2);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionLeagues,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(3);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionGames,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(4);
+//     },
+//     { threshold: 0.7 }
+// );
 });
 
 const yModifier = computed(() => ($q.screen.xs ? -115 : -126));
