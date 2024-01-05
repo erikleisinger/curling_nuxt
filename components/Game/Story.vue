@@ -700,18 +700,15 @@ const { isLoading, data: ends } = useQuery({
 });
 
 // ANIMATION
-
-const animation = ref(null);
+    const tl = gsap.timeline();
 const isPlaying = ref(false);
 
 const play = () => {
     isPlaying.value = true;
-    if (animation.value) {
-        animation.value.restart();
+    if (tl.isActive()) {
+        tl.restart();
         return;
     }
-    const tl = gsap.timeline();
-
     tl.add("start");
 
     // Remove elements for beginning state
@@ -767,17 +764,18 @@ const play = () => {
             opacity: 0,
             padding: 0,
             duration: 1,
+
         },
         "start"
     );
-    tl.to(
-        "#game-story-end-0>div,#game-story-end-0>header",
-        {
-            opacity: 0,
-            scale: 0,
-        },
-        "start"
-    );
+    // tl.to(
+    //     "#game-story-end-0>div,#game-story-end-0>header",
+    //     {
+    //         opacity: 0,
+    //         scale: 0,
+    //     },
+    //     "start"
+    // );
 
     tl.fromTo(
         ".color-bg__inner",
@@ -821,6 +819,7 @@ const play = () => {
                 scale: 3,
                 y: 25,
                 transformOrigin: "top",
+                immediateRender: true,
                 // x:0,
                 duration: 0.4,
             }
@@ -830,6 +829,7 @@ const play = () => {
             y: -12,
             scale: 2,
             duration: 0.5,
+             immediateRender: false,
             delay: 0.5,
         });
 
@@ -845,6 +845,7 @@ const play = () => {
                 scale: 1,
                 opacity: 1,
                 duration: 0.5,
+                 immediateRender: true,
             }
         );
  
@@ -894,22 +895,26 @@ const play = () => {
                 minHeight: "128px",
                 delay: 2,
                 onComplete: () => setTotalScore(index),
+                absolute: `#game-story-end-${index}>header`
             },
             "end"
         );
     });
-    animation.value = tl;
     tl.eventCallback('onComplete', () => {
         isPlaying.value = false;
+        setTimeout(() => {
+            tl.revert();
+            tl.clear()
+            
+        }, 1000)
     })
 };
 
 const playAnimation = () => {
     
-    if (animation.value?.paused()) {
-        console.log(animation.value.totalProgress());
+    if (tl.paused()) {
 
-        animation.value.resume();
+        tl.resume();
         isPlaying.value = true;
     } else {
         play();
@@ -917,14 +922,12 @@ const playAnimation = () => {
 };
 
 const pauseAnimation = () => {
-    if (!animation.value) return;
-    animation.value.pause();
+    tl.pause();
     isPlaying.value = false;
 };
 
 const restartAnimation = () => {
-    if (!animation.value) return;
-    animation.value.restart();
+    tl.restart();
     isPlaying.value = true;
 };
 </script>
