@@ -1,6 +1,6 @@
 <template>
     <q-layout view="hhh lpr fff" class="app-layout">
-        <div class="layout-content__wrap" id="layoutContent">
+
             <q-header class="layout-header" elevated reveal v-show="!isLoggedOutRoute">
                 <LayoutHeader>
                     <template v-slot:menu>
@@ -50,15 +50,20 @@
                         v-model="unreadNotificationCount"
                     />
                 </DialogPopup>
-
+         <div>
                 <slot />
+         </div>
+                
+                     <LayoutAside v-if="$q.screen.gt.sm"/>
+           
+           
             </q-page-container>
 
             <FeedbackPopup
                 v-model="feedbackOpen"
                 @close="feedbackOpen = false"
             />
-        </div>
+   
     </q-layout>
 </template>
 <style lang="scss" scoped>
@@ -83,7 +88,7 @@ $footer-height-sm: 4em;
     flex-direction: column;
     align-items: center;
     margin: auto;
-    width: min(960px, 100vw);
+    width: $app-width;
 
     :deep(.q-drawer) {
         position: absolute !important;
@@ -101,8 +106,8 @@ $footer-height-sm: 4em;
     }
     .q-page-container,
     .q-header {
-        width: min(960px, 100vw);
-        max-width:  min(960px, 100vw);
+        width: $app-width;
+        max-width:  $app-width;
     }
 }
 .page__container--global {
@@ -120,6 +125,19 @@ $footer-height-sm: 4em;
     @include sm {
         height: calc((100 * var(--vh, 1vh)));
         padding-left: 80px;
+
+    }
+     @include md {
+
+        display: grid;
+        grid-template-columns: calc(100% - 300px) 300px;
+    }
+    .page-container__content {
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        
     }
 }
 </style>

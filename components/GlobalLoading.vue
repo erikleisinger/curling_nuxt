@@ -35,7 +35,7 @@
     left: 0;
     right: 0;
     .global-loading__inner {
-        width: min(100vw, 960px);
+        width: $app-width;
         position: relative;
         margin: auto;
 

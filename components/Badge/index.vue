@@ -11,19 +11,18 @@
         <div class="underlay">
             <slot name="underlay" />
         </div>
-        <div class="row no-wrap items-center icon-container">
-            <div class="relative-position">
+        <!-- <div class="relative-position" style="margin: auto"> -->
                 <BadgeIcon
-                    :height="iconOnly ? iconHeight : '2em'"
+                    :height="iconOnly ? iconHeight : $q.screen.xs ? '6em' : '8em'"
                     class="badge-icon"
                     :badge="badge"
+                    style="margin: auto"
                 />
+            <!-- </div> -->
+        <div v-if="!iconOnly" class="q-mt-sm">
+                <h2 class="text-md  text-center">{{ BADGE_NAMES[badge.name] }}</h2>
             </div>
-            <div v-if="!iconOnly">
-                <h2 class="text-sm text-bold">{{ BADGE_NAMES[badge.name] }}</h2>
-            </div>
-        </div>
-        <div class="text-sm badge-description" v-if="!iconOnly">
+        <div class="text-sm badge-description text-center text-italic" v-if="!iconOnly">
             {{ getBadgeDescription(badge) }}
         </div>
         <div class="row no-wrap justify-end" v-if="!iconOnly">
@@ -56,17 +55,17 @@
 .badge__container {
     position: relative;
     cursor: pointer;
-    display: grid;
-    grid-template-rows: v-bind(gridRows);
-    border: 1px solid rgba(0,0,0,0.05);
+    // display: grid;
+    // grid-template-rows: v-bind(gridRows);
+    // border: 1px solid rgba(0,0,0,0.05);
     padding: var(--space-xs);
     border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.8);
+    // background-color: rgba(255, 255, 255, 0.8);
     height: min-content;
-    max-width: v-bind(badgeWidth);
-    min-width: v-bind(badgeWidth);
+    max-width: v-bind(width);
+    min-width: v-bind(width);
     box-sizing: border-box;
-    box-shadow: $pretty-shadow;
+    // box-shadow: $pretty-shadow;
     &.icon-only {
         background-color: transparent;
         max-width: unset;
@@ -82,7 +81,7 @@
         .icon-container {
             margin-bottom: var(--space-sm);
             .badge-icon {
-                margin-right: var(--space-xs);
+                margin: auto;
             }
         }
     }
@@ -139,7 +138,7 @@ const props = defineProps({
     showTime: Boolean,
     width: {
         type: String,
-        default: "150px",
+        default: "100%",
     },
 });
 const { toTimezone } = useTime();
@@ -147,7 +146,6 @@ const showMore = ref(false);
 
 const {getBadgeDescription} = useBadge();
 
-const badgeWidth = computed(() => `min(50%, ${props.width})`);
 
 const gridRows = computed(() =>
     props.showTeam ? "2.5em 3.7em 1em" : "2.5em 3.7em"

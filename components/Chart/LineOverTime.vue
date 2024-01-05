@@ -6,7 +6,7 @@
             id="line-chart-annotation"
             ref="annotation"
         >
-            <slot name="annotation" />
+            <!-- <slot name="annotation" /> -->
         </div>
         <canvas ref="chart" id="canvas" style="z-index: 100" />
     </div>

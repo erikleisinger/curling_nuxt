@@ -4,7 +4,7 @@
             <GameRequest :request="gameRequest" />
             <q-separator />
         </aside>
-
+        <GameStory :gameId="Number(gameId)"/>
         <LinescoreEditor
             v-if="!isLoadingGames && !loading && !!currentGame"
             :canEdit="canEdit && !!editedGame"

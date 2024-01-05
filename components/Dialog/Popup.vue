@@ -25,7 +25,7 @@
     height: calc(100 * var(--vh, 1vh) - 82px);
     width: calc(100vw - (2 * var(--space-xs)));
     max-height: v-bind(maxHeight);
-    max-width: calc(960px - (2 * var(--space-xs)));
+    max-width: calc(1300px - (2 * var(--space-xs)));
     box-sizing: border-box;
     box-shadow: $pretty-shadow;
     position: fixed;
@@ -91,7 +91,7 @@ const props = defineProps({
     },
       maxWidth: {
         type: String,
-        default: 'calc(960px - (2 * var(--space-xs)))'
+        default: 'calc(1300px - (2 * var(--space-xs)))'
     },
     open: Boolean,
     right: Boolean,

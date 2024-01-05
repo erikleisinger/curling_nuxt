@@ -38,7 +38,7 @@ $button-dimension: 38.5%;
     top: 0;
     right: 0;
     overflow: hidden;
-    width: min(100vw, 960px);
+    width: $app-width;
     height: 100vh;
     transform: all 0.3s;
     top: -22px;

@@ -5,7 +5,6 @@
         ref="drawer"
         @click="onDrawerClick"
     >
-    <!-- <div class="click-overlay" v-if="!open"/> -->
         <div
             :style="{ opacity: open || !$q.screen.xs ? 1 : 0 }"
             class="nav-drawer--content"
@@ -15,10 +14,10 @@
                     <Avataaar v-bind="parseAvatar(user?.avatar)" />
                 </div>
                 <div  class="q-ml-md q-pt-xs">
-                    <div class="text-md text-bold">
+                    <div class="smmd-text text-bold">
                         {{ user?.first_name }} {{ user?.last_name }}
                     </div>
-                    <div class="text-sm" style="margin-top: -4px">{{ rink?.name }}</div>
+                    <div class="text-caption" >{{ rink?.name }}</div>
                 </div>
             </div>
             <q-separator
@@ -27,7 +26,7 @@
                 class="separator-yellow q-mt-md"
                   :style="{ opacity: open ? 1 : 0 }"
             />
-            <div class="drawer-header" :class="{ dark: !open }">
+            <div class="drawer-header " :class="{ dark: !open }">
                 Teams
                 <q-btn flat round dense icon="arrow_drop_down" v-if="open" />
             </div>
@@ -106,21 +105,14 @@
         }
     }
     .drawer-header {
-        // color: $app-slate;
         font-family: $font-family-header;
+        @include smmd-text;
 
         width: fit-content;
         margin-top: 28px;
-        font-size: 18px;
-        line-height: 12px;
         min-height: 35px;
-        // margin-bottom: -10px;
-        @include sm {
-            font-size: 22px;
-            line-height: 22px;
-        }
+
         &.dark {
-            // color: white;
             width: 80px;
             display: flex;
             justify-content: center;
@@ -137,8 +129,6 @@
     }
     .team-container {
         margin-left: -12px;
-        
-        // color: $app-slate;
     }
     .click-overlay {
         position: absolute;

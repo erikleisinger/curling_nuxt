@@ -21,7 +21,7 @@
                             >
                                 <div class="team-name__container q-mr-sm">
                                     <h2
-                                        class="text-sm text-right col-grow full-width highlightable"
+                                        class="reg-text text-right col-grow full-width highlightable"
                                         v-html="truncateWords(home.name)"
                                         
                                     ></h2>
@@ -130,7 +130,7 @@
                                     name="o_smart_toy"
                                 /> -->
                                     <h2
-                                        class="text-sm text-left highlightable"
+                                        class="reg-text text-left highlightable"
                                         style="
                                             width: fit-content;
                                             position: relative;
@@ -181,9 +181,9 @@ $container-padding-top: 10px;
 
 .view-game {
     position: absolute;
-    bottom: 12px;
+    bottom: var(--space-md);
     right: 12px;
-    font-size: var(--text-sm);
+    @include text-caption;
     // text-decoration: underline;
     color: rgba(0,0,0,0.7)
 }
@@ -218,7 +218,8 @@ $container-padding-top: 10px;
         border: 1px solid rgba(0, 0, 0, 0.08);
 
         .game-info__text {
-            font-size: 0.7em;
+            @include text-caption;
+            @include line-snug;
             text-align: center;
         }
         padding: 0px var(--space-xs);
@@ -292,8 +293,7 @@ $container-padding-top: 10px;
         z-index: 1;
         position: relative;
         .score {
-            line-height: 40px;
-            font-size: 50px;
+            @include lg-text;
             transition: all 0.2s;
             position: relative;
             &.winning {

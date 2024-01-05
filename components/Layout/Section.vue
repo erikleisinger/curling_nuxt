@@ -4,11 +4,14 @@
         <div class="rings-icon__wrap">
             <Rings :size="$q.screen.xs ? '25px' : '32px'"/>
         </div>
-        <div class="section-header__text" v-html="titleHtml">
+        <div class="section-header__text" >
+            <div v-for="titleWord, i in words" :key="i" class="word">
+                {{titleWord}}
+            </div>
         
         </div>
     </header>
-    <main class="section__main">
+    <main class="section__main" v-bind="$attrs">
         <slot/>
     </main>
   
@@ -31,6 +34,20 @@
             width: fit-content;
             font-family: $font-family-header;
             padding: 12px 0px;
+            .word {
+                @include smmd-text;
+                @include line-tight;
+                &:only-child {
+                    @include lg-text;
+                }
+                &:nth-child(2) {
+                     @include lg-text;
+                }
+               
+            }
+            // .word-sm {
+            //     @include 
+            // }
         }
 
         .rings-icon__wrap {
@@ -66,21 +83,12 @@
 </style>
 <script setup>
     const props = defineProps({
+        noPadding: Boolean,
         title: String,
     })
 
     const $q = useQuasar();
 
-    const titleHtml = computed(() => {
-        const words = props?.title?.split(' ');
-        const smallSize = $q.screen.xs ? '14px' : '24px';
-        const largeSize = $q.screen.xs ? '32px' : '48px'
-        if (words.length > 1) {
-            return `
-                <div style="font-size: ${smallSize}; line-height: ${smallSize}">${words[0]}</div>
-                <div style="font-size: ${largeSize}; line-height: ${largeSize}">${words[1]}</div>
-            `
-        } 
-       return `<div style="font-size: ${largeSize}; line-height: ${largeSize}">${words[0]}</div>`
-    })
+    const words = props.title?.split(' ')
+  
 </script>

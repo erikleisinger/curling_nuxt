@@ -48,14 +48,14 @@
             <q-item-label caption>
                 {{ getBadgeType(item.type, item.name) }}
             </q-item-label>
-            <q-item-label class="text">
+            <q-item-label>
                 <AchievementHistoryItemText :item="item" />
             </q-item-label>
         </q-item-section>
         <div class="date--floating">
-               <q-item-label caption>
-            {{ getAchievementDate(item.created_at) }}
-               </q-item-label>
+            <q-item-label caption>
+                {{ getAchievementDate(item.created_at) }}
+            </q-item-label>
         </div>
     </q-item>
 </template>
@@ -63,34 +63,26 @@
 $append-icon-size: 1.7em;
 .achievement-history__item {
     position: relative;
-    .text {
-        font-size: 15px;
-    }
+
     .date--floating {
         position: absolute;
         top: 8px;
         right: 16px;
-        font-size: var(--text-sm);
         color: rgba(0, 0, 0, 0.5);
-    }
-    .q-item__section--avatar {
-        align-items: center;
-    }
-    &:before {
-        content: "";
-        bottom: 0;
-        width: 5px;
-        left: 0;
-        top: 0;
-        position: absolute;
-        background-color: transparent;
-        border-top-right-radius: 8px;
-        border-bottom-right-radius: 8px;
     }
     &.unread {
         background-color: #ecf8fe;
         &:before {
             background-color: #00a4f6;
+            content: "";
+            bottom: 0;
+            width: 5px;
+            left: 0;
+            top: 0;
+            position: absolute;
+            background-color: transparent;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
     }
 
@@ -162,10 +154,6 @@ $append-icon-size: 1.7em;
                 }
             }
         }
-        &.dense {
-            padding-top: 0.6em;
-            font-size: var(--text-sm);
-        }
 
         border-radius: 50%;
         border: 3px solid white;
@@ -186,14 +174,10 @@ $append-icon-size: 1.7em;
             line-height: 1em;
         }
     }
-    .overlay {
-        filter: grayscale(100%);
-    }
 }
 </style>
 <script setup>
 import { parseAvatar } from "@/utils/avatar";
-import { BADGE_NAMES, BADGE_DESCRIPTIONS } from "@/constants/badges";
 import {
     ACHIEVEMENT_TITLES,
     ACHIEVEMENT_TYPES,
@@ -218,11 +202,6 @@ const getAchievementDate = (d) => {
 
 const { user: userId } = useUser();
 
-const getProfileName = (profile) => {
-    if (!profile) return "";
-    if (profile.id === userId.value) return "You";
-    return `${profile.first_name} ${profile.last_name}`;
-};
 
 const getBadgeType = (type, name) => {
     const badgeTitle = ACHIEVEMENT_TITLES[type] ?? "Update";

@@ -30,11 +30,11 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            @include line-tight;
             
             h2 {
                 font-family: $font-family-header;
-                line-height: 56px;
-                font-size: 56px;
+                @include xl-text;
                 .append {
                     font-size: 16px;
                     line-height: 16px;
@@ -43,15 +43,11 @@
                     }
                 }
 
-                @include sm {
-                    font-size: 75px;
-                    line-height: 70px;
-                }
+              
             }
             h3 {
                 font-family: $font-family-header;
-                font-size: 18px;
-                line-height: 12px;
+                
                 &.yellow {
                     color: $app-yellow;
                 }
