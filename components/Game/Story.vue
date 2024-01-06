@@ -1,13 +1,33 @@
 <template>
-    <LayoutSection title="Game Story" id="game-story-container">
-        <template v-slot:append-right>
+<div :id="`game-story-${uniqueId}`" class="relative-position" @click="onClick">
+   <!-- <LayoutSection title="Game Story"  > -->
+      
+        <!-- <template v-slot:append-left>
+<q-btn
+                flat
+                round
+                dense
+                icon="close"
+                v-if="isPaused || isEnded"
+                @click="doEndAnimation"
+            />
+        </template> -->
+        <!-- <template v-slot:append-right>
+            <q-btn
+                flat
+                round
+                dense
+                icon="refresh"
+                v-if="isEnded || isPaused"
+                @click="restartAnimation"
+            />
             <q-btn
                 flat
                 round
                 dense
                 icon="play_arrow"
                 @click="playAnimation"
-                v-if="!isPlaying"
+                
             />
             <q-btn
                 flat
@@ -17,19 +37,14 @@
                 v-if="isPlaying"
                 @click="pauseAnimation"
             />
-            <q-btn
-                flat
-                round
-                dense
-                icon="refresh"
-                v-if="isPlaying"
-                @click="restartAnimation"
-            />
-        </template>
+            
+        </template> -->
+
         <div v-if="ends?.length">
+            <!-- HEADER -->
             <div
                 class="end__container full-width first"
-                :class="{ 'show-score': isPlaying }"
+                :class="{ 'show-score': isPlaying || isPaused }"
                 id="game-story--header"
             >
                 <div class="color-bg home">
@@ -47,7 +62,7 @@
                 <div
                     class="row items-center no-wrap relative-position full-width"
                 >
-                    <div style="width: 40px" class="game-story__avatar">
+                    <div style="width: 30px; min-width: 30px" class="game-story__avatar">
                         <TeamAvatar
                             :teamId="homeTeam?.team_id"
                             :color="homeTeam?.color"
@@ -60,13 +75,13 @@
                 </div>
                 <div
                     class="xl-text q-mx-sm font-header text-center game-story-total__score home row items-center"
-                    v-if="isPlaying"
+                    v-if="isPlaying || isPaused"
                 >
                     <div>{{ totalScore.home }}</div>
                 </div>
                 <div
                     class="xl-text q-mx-sm font-header text-center game-story-total__score away row items-center"
-                    v-if="isPlaying"
+                    v-if="isPlaying || isPaused"
                 >
                     <div>{{ totalScore.away }}</div>
                 </div>
@@ -77,7 +92,7 @@
                     <div class="q-mr-sm text-right team-name">
                         {{ awayTeam.team?.name }}
                     </div>
-                    <div style="width: 40px" class="game-story__avatar">
+                    <div style="width: 30px; min-width: 30px" class="game-story__avatar">
                         <TeamAvatar
                             :teamId="awayTeam?.team_id"
                             :color="awayTeam?.color"
@@ -110,7 +125,11 @@
                     class="lg-text font-header row justify-end items-center text-right event-container"
                     :class="homeTeam?.color"
                 >
-                    <!-- {{ getEndMomentum(index, "home") }} -->
+                <!-- <div class="text-xs">
+                    {{ getEndStartMomentum(index, "home") }} 
+                
+
+                </div> -->
                     <div v-if="endMomentum[index].team === 'home'">
                         <div
                             class="font-header game-story-event"
@@ -190,6 +209,10 @@
                     class="lg-text font-header text-left row items-center event-container"
                     :class="awayTeam?.color"
                 >
+              <!-- <div class="text-xs">
+                    {{ getEndStartMomentum(index, "away") }}
+
+                </div> -->
                     <div v-if="endMomentum[index].team === 'away'">
                         <div
                             class="font-header game-story-event"
@@ -274,6 +297,9 @@
         </div>
         <div class="momentum-scale__floating">
             <div class="momentum-scale__container">
+                <!-- <div class="momentum-total left">
+                    {{momentumTotalHome}}
+                </div> -->
                 <div
                     class="momentum-scale__value home"
                     :style="{ backgroundColor: getColor(homeTeam?.color) }"
@@ -282,9 +308,13 @@
                     class="momentum-scale__value away"
                     :style="{ backgroundColor: getColor(awayTeam?.color) }"
                 />
+                <!-- <div class="momentum-total right">
+  {{momentumTotalAway}}
+                </div> -->
             </div>
         </div>
-    </LayoutSection>
+   <!-- </LayoutSection> -->
+   </div>
 </template>
 <style lang="scss" scoped>
 .color-bg {
@@ -310,7 +340,7 @@
             bottom: 0;
             margin: auto;
             left: -25%;
-           
+
             width: 100%;
             aspect-ratio: 1/1;
         }
@@ -320,9 +350,9 @@
             bottom: 0;
             margin: auto;
             right: -25%;
-            
+
             width: 100%;
-             aspect-ratio: 1/1;
+            aspect-ratio: 1/1;
         }
     }
 }
@@ -363,6 +393,17 @@
                 border-top-right-radius: 12px;
                 border-bottom-right-radius: 12px;
             }
+        }
+    }
+    .momentum-total {
+        position: absolute;
+        bottom: 0px;
+        &.right {
+            right: 12px;
+
+        }
+        &.left {
+            left: 12px;
         }
     }
 }
@@ -454,9 +495,15 @@ import { useQuery } from "@tanstack/vue-query";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
 import gsap from "gsap";
+import {Flip} from 'gsap/Flip';
+gsap.registerPlugin(Flip)
 const props = defineProps({
     gameId: Number,
+    animated: Boolean,
 });
+
+
+const uniqueId = (Math.random() * 1000000000000).toFixed();
 
 const game = computed(() =>
     useRepo(Game).withAllRecursive().where("id", props.gameId).first()
@@ -473,35 +520,77 @@ const isHomeTeam = (id) => {
 };
 
 const isTeam = (id, id2) => {
-    if (id > 100000000) return id2 === null || id === id2;
+
+    if (id === awayTeam.value?.team_id) return id2 === null || id === id2;
     return id === id2;
 };
 
-const getMomentumTeam = (
-    homeId,
-    awayId,
-    hammerTeamId,
-    scoringTeamId,
-    pointsScored
-) => {
-    if (isTeam(homeId, hammerTeamId)) {
-        if (!isTeam(homeId, scoringTeamId)) return "away";
-        return pointsScored === 1 ? "away" : "home";
+const getMomentumTeam = (index) => {
+    const homeId = homeTeam.value.team_id;
+    const awayId = awayTeam.value.team_id;
+    const { scoring_team_id, hammer_team_id, points_scored } =
+        ends.value[index];
+    let t = null;
+    if (isTeam(homeId, hammer_team_id)) {
+        if (!isTeam(homeId, scoring_team_id)) {
+            t = "away";
+        } else {
+            t = points_scored === 1 ? "away" : "home";
+        }
     } else {
-        if (!isTeam(awayId, scoringTeamId)) return "home";
-        return pointsScored === 1 ? "home" : "away";
+        if (!isTeam(awayId, scoring_team_id)) {
+            t = "home";
+        } else {
+            t = points_scored === 1 ? "home" : "away";
+        }
     }
+    return t;
+};
+
+const getEndMomentum = (teamId, index, includeHammer) => {
+    let total = 0;
+    let end;
+    if (index > ends.value?.length - 1) {
+        end = ends.value[ends.value.length - 1];
+    } else {
+        end = ends.value[index];
+    }
+
+    const { scoring_team_id, points_scored, end_number, hammer_team_id } = end;
+    const isHome = teamId === homeTeam?.value?.team_id;
+    const hasHammer = isTeam(teamId, hammer_team_id);
+
+    const isScoringTeam = isTeam(teamId, scoring_team_id);
+    const isSteal = !!isScoringTeam && !hasHammer;
+    const isForce = !isScoringTeam && !hasHammer && points_scored === 1;
+
+    if (isScoringTeam) {
+        total += points_scored + (isSteal ? 1 : 0);
+    } else if (isForce) {
+        total += 1;
+    }
+
+    // LAST END MODIFIERS
+    const { end_count } = game.value;
+    const lastEnd = Math.max(ends.value.length, end_count);
+    if (end_number === lastEnd && hasHammer) {
+        const score = getTotalScore(index - 1);
+        const lead = isHome ? score.home - score.away : score.away - score.home;
+        total += 1 + lead;
+    }else if ( includeHammer && hasHammer && !isSteal) {
+        total += 1;
+    }
+
+    return total;
 };
 
 const endMomentum = computed(() => {
     if (!ends.value) return;
-
     let runningMomentum = {
         home: 0,
         away: 0,
         hasMom: null,
     };
-
     const homeId = homeTeam?.value?.team_id;
     const awayId = awayTeam?.value?.team_id;
     if (!homeId) return;
@@ -510,49 +599,14 @@ const endMomentum = computed(() => {
         const allClone = [...all];
         const { scoring_team_id, hammer_team_id, points_scored } = end;
 
-        const momentumTeam = getMomentumTeam(
-            homeId,
-            awayId,
-            hammer_team_id,
-            scoring_team_id,
-            points_scored
-        );
-        const momentumTeamId = momentumTeam === "home" ? homeId : awayId;
-
-        let modifier = 0;
-        let runningTotal = 0;
-
-        const isSteal = !isTeam(momentumTeamId, scoring_team_id);
-
-        if (isSteal) modifier = 1;
-        runningTotal += modifier + points_scored;
-
-        const hasHammer = isTeam(momentumTeamId, hammer_team_id);
-
-        const { end_count } = game.value;
-        const numEndsPlayed = ends.value?.length;
-        if (
-            numEndsPlayed >= end_count &&
-            index + 1 === numEndsPlayed &&
-            hasHammer
-        ) {
-            if (isTeam(momentumTeamId, hammer_team_id))
-                allClone[index - 1][momentumTeam] =
-                    allClone[index - 1][momentumTeam] + 2;
-        }
+        const momentumTeam = getMomentumTeam(index);
 
         const running = { ...runningMomentum };
 
         const newMomentum = {
             team: momentumTeam,
-            home:
-                momentumTeam === "home"
-                    ? (running[momentumTeam] += runningTotal)
-                    : running.home,
-            away:
-                momentumTeam === "away"
-                    ? (running[momentumTeam] += runningTotal)
-                    : running.away,
+            home: getEndMomentum(homeId, index, false) + running.home,
+            away: getEndMomentum(awayId, index, false) + running.away,
         };
 
         runningMomentum = newMomentum;
@@ -561,18 +615,46 @@ const endMomentum = computed(() => {
     }, []);
 });
 
+const getEndStartMomentum = (index, team) => {
+    let lastEndMomentum;
+    if (index === 0) {
+        lastEndMomentum = 0;
+    } else if (index > endMomentum.value.length - 1) {
+        lastEndMomentum = endMomentum.value[endMomentum.value.length - 1][team]
+    } else {
+        lastEndMomentum = endMomentum.value[index - 1][team];
+    }
+    let end;
+    if (index > ends.value.length - 1) {
+        end = ends.value[ends.value.length - 1];
+    } else {
+        end = ends.value[index];
+    }
+
+    const { hammer_team_id } = end;
+    const teamId =
+        team === "home" ? homeTeam.value.team_id : awayTeam.value.team_id;
+    const hasHammer = isTeam(teamId, hammer_team_id);
+    const mod = hasHammer ? 1 : 0;
+    return lastEndMomentum + mod;
+};
+
 const endEvents = computed(() => {
     if (!endMomentum.value?.length) return;
     const shiftHistory = [];
     return endMomentum.value.reduce((all, current, index) => {
-        const momentum = endMomentum.value[index] ?? {};
-        const momentumTeam =
-            momentum.home - 1 > momentum.away
-                ? "home"
-                : momentum.away - 1 > momentum.home
-                ? "away"
-                : null;
+        const lastTeamWithMomentum = [...shiftHistory]
+            .reverse()
+            .find((i) => !!i);
+        const homeMomentum = getEndStartMomentum(index + 1, "home");
+        const awayMomentum = getEndStartMomentum(index + 1, "away");
 
+        const momentumTeam =
+            homeMomentum > awayMomentum
+                ? "home"
+                : awayMomentum > homeMomentum
+                ? "away"
+                : lastTeamWithMomentum;
         shiftHistory.push(momentumTeam);
 
         const returnObj = {
@@ -618,19 +700,30 @@ const endEvents = computed(() => {
         // No points are scored
         if (!ends.value[index].points_scored) returnObj.blank = true;
 
-        const lastMomentum = shiftHistory[index - 1];
-        if (!!index && !!momentumTeam && lastMomentum !== momentumTeam)
-            returnObj.momentum = true;
+        const lastMomentumTeam = shiftHistory[shiftHistory.length - 2];
+
+        if (momentumTeam === "home") {
+            if (
+                getEndStartMomentum(index + 1, "home") >
+                    getEndStartMomentum(index + 1, "away") &&
+                lastMomentumTeam === "away"
+            ) {
+                returnObj.momentum = true;
+            }
+
+
+        } else if (momentumTeam === "away") {
+            if (
+                getEndStartMomentum(index + 1, "away") >
+                    getEndStartMomentum(index + 1, "home") &&
+                lastMomentumTeam === "home"
+            )
+                returnObj.momentum = true;
+        }
+
         return [...all, returnObj];
     }, []);
 });
-
-const getEndMomentum = (index, team) => {
-    const teamId =
-        team === "home" ? homeTeam.value?.team_id : awayTeam?.value?.team_id;
-    const hasHammer = isTeam(teamId, ends.value[index + 1].hammer_team_id);
-    return endMomentum.value[index][team] + (hasHammer ? 1 : 0);
-};
 
 const getGameEnds = async () => {
     const client = useSupabaseClient();
@@ -646,32 +739,62 @@ const momentumTransformAway = ref(`scaleX(0)`);
 
 const { getColor } = useColor();
 
+const momentumTotalHome = ref(0);
+const momentumTotalAway = ref(0)
+
 const setMomentum = (index) => {
     if (index >= ends.value?.length - 1) return;
-    const home = getEndMomentum(index, "home");
-    const away = getEndMomentum(index, "away");
+     const {hammer_team_id} = ends.value[index + 1] ?? ends.value[index];
+    const home = endMomentum.value[index].home + (isTeam(homeTeam.value.team_id, hammer_team_id) ? 1 : 0);
+    const away = endMomentum.value[index].away + (isTeam(awayTeam.value.team_id, hammer_team_id) ? 1 : 0);
+
+   
+
+    momentumTotalHome.value = home;
+    momentumTotalAway.value = away;
+    
     if (home > away) {
-        const lead = (home - away) / 5;
-        momentumTransformHome.value = `scaleX(${lead})`;
-        momentumTransformAway.value = "scaleX(0)";
+        const homeLead = (home - away) / 10;
+ momentumTransformHome.value = `scaleX(${homeLead})`;
+  momentumTransformAway.value = `scaleX(0)`;
     } else if (away > home) {
-        const lead = (away - home) / 5;
-        momentumTransformAway.value = `scaleX(${lead})`;
-        momentumTransformHome.value = "scaleX(0)";
+const awayLead = (away - home) / 10;
+          momentumTransformAway.value = `scaleX(${awayLead})`;
+          momentumTransformHome.value = `scaleX(0)`;
     } else {
-        momentumTransformHome.value = `scaleX(0)`;
-        momentumTransformAway.value = `scaleX(0)`;
+         momentumTransformAway.value = `scaleX(0)`;
+           momentumTransformHome.value = `scaleX(0)`;
     }
+   
+   
+    
+     
+   
+    // if (home > away) {
+    //     const lead = (home - away) / 5;
+
+    //     momentumTransformHome.value = `scaleX(${lead})`;
+    //     // momentumTransformAway.value = "scaleX(0)";
+    // } else if (away > home) {
+    //     const lead = (away - home) / 5;
+
+    //     momentumTransformAway.value = `scaleX(${lead})`;
+    //     momentumTransformHome.value = "scaleX(0)";
+    // } else {
+    //     momentumTransformHome.value = `scaleX(0)`;
+    //     momentumTransformAway.value = `scaleX(0)`;
+    // }
 };
 
-const totalScore = ref({
+const defaultTotalScore = {
     home: 0,
     away: 0,
-});
+}
+const totalScore = ref({...defaultTotalScore});
 
-const setTotalScore = (index) => {
+const getTotalScore = (index) => {
     const endScores = [...ends.value].splice(0, index + 1);
-    totalScore.value = endScores.reduce(
+    return endScores.reduce(
         (all, current) => {
             const { scoring_team_id, points_scored } = current;
 
@@ -700,11 +823,12 @@ const { isLoading, data: ends } = useQuery({
 });
 
 // ANIMATION
-    const tl = gsap.timeline();
+const tl = gsap.timeline();
 const isPlaying = ref(false);
+const isPaused = ref(false);
+const isEnded = ref(false)
 
-const play = () => {
-    isPlaying.value = true;
+const play = (startAnimated = false) => {
     if (tl.isActive()) {
         tl.restart();
         return;
@@ -712,17 +836,11 @@ const play = () => {
     tl.add("start");
 
     // Remove elements for beginning state
+    const parentEl = document.querySelector(`#game-story-${uniqueId}`)
+    console.log(parentEl)
 
     tl.to(
-        "#game-story-container",
-        {
-            paddingBottom: 0,
-            duration: 0.2,
-        },
-        "start"
-    );
-    tl.to(
-        "#game-story-footer",
+    parentEl.querySelectorAll("#game-story-footer"),
         {
             height: 0,
             opacity: 0,
@@ -733,7 +851,7 @@ const play = () => {
     );
 
     tl.to(
-        ".hammer-icon--floating",
+        parentEl.querySelectorAll(".hammer-icon--floating"),
         {
             opacity: 0,
             duration: 0.2,
@@ -743,28 +861,16 @@ const play = () => {
 
     // Apply container styling
 
-    tl.to(
-        "#game-story-container",
-        {
-            border: "1px solid rgba(0,0,0,0.2)",
-            borderRadius: "16px",
-            overflow: "hidden",
-            paddingRight: 0,
-            paddingLeft: 0,
-            duration: 0.3,
-        },
-        "start"
-    );
+
 
     // Collapse ends
     tl.to(
-        ".end__container.end:not(#game-story-end-0)",
+        parentEl.querySelectorAll(".end__container.end:not(#game-story-end-0)"),
         {
             height: 0,
             opacity: 0,
             padding: 0,
             duration: 1,
-
         },
         "start"
     );
@@ -778,7 +884,7 @@ const play = () => {
     // );
 
     tl.fromTo(
-        ".color-bg__inner",
+        parentEl.querySelectorAll(".color-bg__inner"),
         {
             scale: 0,
             opacity: 1,
@@ -792,7 +898,7 @@ const play = () => {
         "start"
     );
     tl.to(
-        ".team-name",
+        parentEl.querySelectorAll(".team-name"),
         {
             color: "white",
             duration: 0.2,
@@ -803,11 +909,13 @@ const play = () => {
         "start"
     );
 
+tl.add('intro-end')
     // BEGIN END LOOP
 
     ends.value.forEach((end, index) => {
+       tl.add('headerlg')
         tl.fromTo(
-            `#game-story-end-${index}>header`,
+            parentEl.querySelector(`#game-story-end-${index}>header`),
             {
                 opacity: 0,
                 scale: 0,
@@ -822,57 +930,98 @@ const play = () => {
                 immediateRender: true,
                 // x:0,
                 duration: 0.4,
-            }
+            }, 'headerlg'
         );
-        tl.to(`#game-story-end-${index}>header`, {
+         tl.add('header')
+        tl.to(parentEl.querySelector(`#game-story-end-${index}>header`), {
             // x: -1000,
             y: -12,
             scale: 2,
             duration: 0.5,
-             immediateRender: false,
+            immediateRender: false,
             delay: 0.5,
-        });
+        }, 'header');
+       
 
-        const endEl = document.querySelector(`#game-story-end-${index}`);
+        const endEl = parentEl.querySelector(`#game-story-end-${index}`);
+        tl.to(endEl.querySelector('.hammer-icon--floating'), {
+            scale: 0.5,
+            duration: 0,
+            opacity: 0,
+         
+        }, 'headerlg')
+
+        tl.add('gamedata')
+        tl.to(endEl.querySelector('.hammer-icon--floating:not(.right)'), 
+        {
+            duration: 1,
+            opacity: 1,
+            x: 30,
+          
+          
+        }, 'gamedata')
+        tl.to(endEl.querySelector('.hammer-icon--floating.right'), 
+        {
+            duration: 1,
+            opacity: 1,
+            x: -30,
+           
+          
+        }, 'gamedata')
+        //  tl.to('.hammer-icon--floating.right', {
+        //     scale: 0.5,
+        //     opacity: 1,
+        //     duration: 0.2,
+        //     x: -50,
+        // })
 
         tl.fromTo(
             endEl.querySelectorAll(".game-story-points__scored"),
             {
-                scale: 0,
+                // scale: 0,
+                x: (e) => !!e ? 50 : -50,
+                y: -50,
                 opacity: 0,
             },
             {
-                scale: 1,
+                
                 opacity: 1,
+                x: 0,
+                y: 0,
                 duration: 0.5,
-                 immediateRender: true,
-            }
+                delay: 0.2,
+                stagger: 0.2,
+                immediateRender: true,
+                onComplete: () => setMomentum(index),
+               
+            }, 'gamedata'
         );
- 
+
         tl.add("events");
 
         tl.fromTo(
             endEl.querySelectorAll(".game-story-event"),
             {
                 opacity: 0,
-                y: (e) => !!e ? 0 : -100,
-                scale: (e) => !!e ? 0 : 1
+                x: (e) => (!e ? 0 : -100),
+                scaleX: (e) => (!e ? 0 : 1),
             },
             {
                 opacity: 1,
-                y:0,
-                scale: 1,
+                x: 0,
+                scaleX: 1,
+                transformOrigin: (e) => !!e ? 'right' : 'left',
                 duration: 0.5,
                 stagger: 0.8,
-                ease: 'sine',
+                ease: "sine",
+
                 
-                onComplete: () => setMomentum(index),
             },
             "events"
         );
         tl.add("end");
         tl.to(
-            `#game-story-end-${index}`,
+            parentEl.querySelectorAll(`#game-story-end-${index}`),
             {
                 height: 0,
                 opacity: 0,
@@ -884,7 +1033,7 @@ const play = () => {
             "end"
         );
         tl.to(
-            `#game-story-end-${index + 1}`,
+            parentEl.querySelectorAll(`#game-story-end-${index + 1}`),
             {
                 height: "auto",
                 paddingTop: 32,
@@ -894,42 +1043,94 @@ const play = () => {
                 scale: 1,
                 minHeight: "128px",
                 delay: 2,
-                onComplete: () => setTotalScore(index),
-                absolute: `#game-story-end-${index}>header`
+                onComplete: () => {
+                    totalScore.value = getTotalScore(index);
+                },
+             
             },
             "end"
         );
     });
-    tl.eventCallback('onComplete', () => {
+    tl.eventCallback("onComplete", () => {
         isPlaying.value = false;
-        setTimeout(() => {
-            tl.revert();
-            tl.clear()
-            
-        }, 1000)
-    })
+        isEnded.value = true;
+       
+    });
+    if (startAnimated) {
+        tl.play('intro-end')
+    }
 };
 
-const playAnimation = () => {
-    
-    if (tl.paused()) {
 
+const doEndAnimation = () => {
+    const state = Flip.getState('#game-story-footer,.hammer-icon--floating, .end__container, .end,.color-bg__inner,.team-name,.end__container')
+    tl.revert();
+    tl.kill();
+    nextTick(() => {
+          isEnded.value = false;
+        isPaused.value = false;
+ Flip.from(state, {
+    duration: 0.5,
+    nested: true,
+    fade: true,
+ 
+ })
+    })
+   
+    // gsap.to('#game-story-container', {
+    //     rotateY: 360,
+    //     duration: 0.1,
+    //     repeat: 2,
+    // })
+}
+
+const playAnimation = (startAnimated) => {
+    if (tl.paused()) {
         tl.resume();
-        isPlaying.value = true;
+    
     } else {
-        play();
+         totalScore.value = {...defaultTotalScore}
+       momentumTotalHome.value = 0;
+    momentumTotalAway.value = 0;
+        play(startAnimated);
     }
+
+    isPlaying.value = true;
+    isPaused.value = false;
 };
 
 const pauseAnimation = () => {
     tl.pause();
     isPlaying.value = false;
+    isPaused.value = true;
 };
 
 const restartAnimation = () => {
     tl.restart();
-    isPlaying.value = true;
+    totalScore.value = {...defaultTotalScore}
+        momentumTotalHome.value = 0;
+    momentumTotalAway.value = 0;
+     isPlaying.value = true;
+    isPaused.value = false;
+    
 };
+
+const onClick = () => {
+    if (!props.animated) return;
+    if (isEnded.value) {
+        restartAnimation()
+    } else if (isPlaying.value) {
+        pauseAnimation()
+    } else {
+        playAnimation(true)
+    }
+}
+
+onMounted(() => {
+    if (props.animated) {
+        playAnimation(true);
+    }
+})
 </script>
 <script>
 export default {

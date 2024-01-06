@@ -4,7 +4,8 @@
             <GameRequest :request="gameRequest" />
             <q-separator />
         </aside>
-        <GameStory :gameId="Number(gameId)"/>
+
+       
         <LinescoreEditor
             v-if="!isLoadingGames && !loading && !!currentGame"
             :canEdit="canEdit && !!editedGame"
@@ -58,7 +59,24 @@
                 </div>
             </template>
         </LinescoreEditor>
-
+        <q-dialog v-model="showAnimation" full-width class="story-dialog">
+            <div style="background-color: white;  width: min(600px, 100vw); padding-top: 32px; overflow: hidden; border-radius: 8px; margin: 0px 8px" class="bg-pebble">
+            <GameStory :gameId="Number(gameId)" animated/>
+            </div>
+        </q-dialog>
+         <LayoutSection title="game story">
+            <template v-slot:append-right>
+ <q-btn
+                flat
+                round
+                dense
+                icon="play_arrow"
+                @click="showAnimation = true"
+                
+            />
+            </template> 
+        <GameStory :gameId="Number(gameId)"/>
+         </LayoutSection>
         <TeamStatsView
             v-if="!isLoadingGames && !loading && !!currentGame"
             :teamId="home.id"
@@ -68,7 +86,16 @@
         />
 
 </template>
+<style lang="scss">
+.story-dialog {
+   
+    .q-dialog__inner {
+        padding: unset;
+    }
+}
+</style>
 <style lang="scss" scoped>
+
 .badges {
     gap: var(--space-xs);
     margin-top: var(--space-xs);
@@ -125,7 +152,7 @@ const gameRequest = computed(() =>
     )
 );
 
-
+const showAnimation = ref(false)
 
 const loading = ref(false);
 const result = ref(null);
