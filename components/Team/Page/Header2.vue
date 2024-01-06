@@ -1,30 +1,8 @@
 <template>
-    <header class="header__container" ref="header">
-        <div class="underlay" ref="underlay">
-            <q-img
-                :src="avatar"
-                spinner-color="white"
-                v-if="avatar"
-                class="avatar"
-                position="50% 50%"
-                fit="cover"
-                :style="{height: `${headerHeight}px`}"
-            ></q-img>
-            <div class="mid-underlay" />
-        </div>
-        <div class="header--content">
-            <div class="full-width players__header">
-                <!-- <div class="row justify-start players__container">
-                <div
-                    class="player-avatar__container"
-                    v-for="player in players"
-                    :key="player.id"
-                >
-                    <Avataaar v-bind="parseAvatar(player.avatar)" />
-                   
-                </div>
-               
-            </div> -->
+    <LayoutCircleTitle :title="team.name" :backgroundImage="avatar">
+        <template v-slot:prepend>
+             <div class="full-width players__header">
+            
                 <div />
 
                 <h2>Team</h2>
@@ -37,18 +15,16 @@
                         <Avataaar v-bind="parseAvatar(player.avatar)" />
                     </div>
                 </div>
-            </div>
-            <div class="team-name__container">
-                <h1>{{ team.name }}</h1>
-            </div>
-        </div>
-    </header>
+            </div> 
+            </template>
+    </LayoutCircleTitle>
+
 </template>
 <style lang="scss" scoped>
 .header__container {
-    padding-bottom: calc(var(--space-lg) + var(--space-sm));
     position: relative;
     width: 100%;
+    border-radius: 50%;
     @include sm {
         min-height: 250px;
     }
@@ -58,11 +34,19 @@
     .header--content {
         z-index: 1;
         position: relative;
+        min-height: inherit;
+        padding-bottom: calc(var(--space-lg) + var(--space-sm));
+        display: flex;
+        flex-direction: column;
     }
     .players__header {
         display: grid;
         grid-template-columns: 1fr 50px 1fr;
         position: relative;
+        height: 40px;
+        @include sm {
+            height: 50px;
+        }
         .player-avatar__container {
             width: 25px;
             margin-left: var(--space-xs);
@@ -91,26 +75,30 @@
             @include smmd-text;
             text-align: center;
             color: white;
+            line-height: 40px;
+            @include sm {
+                line-height: 50px;
+            }
         }
     }
     .team-name__container {
         margin-top: -4px;
         min-height: 100px;
-        
+
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-grow: 1;
         h1 {
-           
             font-family: $font-family-header;
             text-align: center;
             padding: 0px var(--space-md);
-            
+
             color: white;
 
             margin: auto;
             @include lg-text;
-           
+            font-size: clamp(2rem, 10vw, 4rem);
         }
     }
 
@@ -156,7 +144,7 @@
 
 <script setup lang="ts">
 import { parseAvatar } from "@/utils/avatar";
-import {useElementSize, useElementBounding} from '@vueuse/core'
+import { useElementSize, useElementBounding } from "@vueuse/core";
 import Team from "@/store/models/team";
 import TP from "@/store/models/team-player";
 import { TEAM_POSITIONS } from "@/constants/team";
@@ -225,9 +213,9 @@ const { isLoading: isLoadingPlayers } = useQuery({
 });
 
 const underlay = ref(null);
-const {width: underlayWidth} = useElementSize(underlay);
+const { width: underlayWidth } = useElementSize(underlay);
 
-const header = ref(null)
-const {height:headerHeight} = useElementBounding(header)
+const header = ref(null);
+const { height: headerHeight } = useElementBounding(header);
 // const left = computed(() => `${-1 * (underlayWidth.value / 2)}px`)
 </script>

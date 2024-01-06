@@ -13,6 +13,7 @@
         @loaded="headerLoaded = true"
         ref="header"
     />
+
     <q-tabs
         class="team-page__tabs"
         ref="tabs"
@@ -29,11 +30,14 @@
         <q-tab label="Leagues" :name="3" :ripple="false" />
         <q-tab label="Game history" :name="4" :ripple="false" />
     </q-tabs>
-
+    
+ <LayoutSection  mainStyle="padding: unset" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}">
     <TeamPageStatsOverview
         :teamId="teamId"
         class="stats__overview"
     />
+ </LayoutSection>
+
 
     <LayoutSection title="Badges" ref="sectionBadges" style="padding-left: unset; padding-right: unset">
         <div
@@ -92,7 +96,7 @@
         />
     </LayoutSection>
   
-        <LayoutSection title="game history" ref="sectionGames">
+        <LayoutSection title="game history" ref="sectionGames" mainStyle="padding-left: unset; padding-right: unset">
             <GameResultList :teamId="teamId" />
 
             <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
@@ -515,6 +519,46 @@ const preventIntersection = ref(true);
 const changeTab = (newTab) => {
     currentIndex.value = newTab;
 };
+    useIntersectionObserver(
+    header,
+    ([{ isIntersecting }]) => {
+        if (!isIntersecting || preventIntersection.value) return;
+        changeTab(0);
+    },
+    { threshold: 0.5 }
+);
+useIntersectionObserver(
+    sectionBadges,
+    ([{ isIntersecting }]) => {
+        if (!isIntersecting || preventIntersection.value) return;
+        changeTab(1);
+    },
+    { threshold: 1 }
+);
+useIntersectionObserver(
+    sectionStats,
+    ([{ isIntersecting }]) => {
+        if (!isIntersecting || preventIntersection.value) return;
+        changeTab(2);
+    },
+    { threshold: 1 }
+);
+useIntersectionObserver(
+    sectionLeagues,
+    ([{ isIntersecting }]) => {
+        if (!isIntersecting || preventIntersection.value) return;
+        changeTab(3);
+    },
+    { threshold: 1 }
+);
+useIntersectionObserver(
+    sectionGames,
+    ([{ isIntersecting }]) => {
+        if (!isIntersecting || preventIntersection.value) return;
+        changeTab(4);
+    },
+    { threshold: 0.7 }
+);
 
 
 
@@ -530,47 +574,9 @@ onMounted(() => {
         gamesY.value = gY.value;
         preventIntersection.value = false;
     }, 1000);
-//     useIntersectionObserver(
-//     header,
-//     ([{ isIntersecting }]) => {
-//         if (!isIntersecting || preventIntersection.value) return;
-//         changeTab(0);
-//     },
-//     { threshold: 0.5 }
-// );
 
-// useIntersectionObserver(
-//     sectionBadges,
-//     ([{ isIntersecting }]) => {
-//         if (!isIntersecting || preventIntersection.value) return;
-//         changeTab(1);
-//     },
-//     { threshold: 1 }
-// );
-// useIntersectionObserver(
-//     sectionStats,
-//     ([{ isIntersecting }]) => {
-//         if (!isIntersecting || preventIntersection.value) return;
-//         changeTab(2);
-//     },
-//     { threshold: 1 }
-// );
-// useIntersectionObserver(
-//     sectionLeagues,
-//     ([{ isIntersecting }]) => {
-//         if (!isIntersecting || preventIntersection.value) return;
-//         changeTab(3);
-//     },
-//     { threshold: 1 }
-// );
-// useIntersectionObserver(
-//     sectionGames,
-//     ([{ isIntersecting }]) => {
-//         if (!isIntersecting || preventIntersection.value) return;
-//         changeTab(4);
-//     },
-//     { threshold: 0.7 }
-// );
+
+
 });
 
 const yModifier = computed(() => ($q.screen.xs ? -115 : -126));
@@ -595,7 +601,7 @@ const onTabChange = (val) => {
     }
 };
 
-const { isScrolling } = useScroll(document.querySelector("#global-container"));
+const { isScrolling } = useScroll(document.getElementById("global-container"));
 watch(isScrolling, (val) => {
     if (!val) preventIntersection.value = false;
 });

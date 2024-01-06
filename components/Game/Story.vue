@@ -1,59 +1,21 @@
 <template>
 <div :id="`game-story-${uniqueId}`" class="relative-position" @click="onClick">
-   <!-- <LayoutSection title="Game Story"  > -->
-      
-        <!-- <template v-slot:append-left>
-<q-btn
-                flat
-                round
-                dense
-                icon="close"
-                v-if="isPaused || isEnded"
-                @click="doEndAnimation"
-            />
-        </template> -->
-        <!-- <template v-slot:append-right>
-            <q-btn
-                flat
-                round
-                dense
-                icon="refresh"
-                v-if="isEnded || isPaused"
-                @click="restartAnimation"
-            />
-            <q-btn
-                flat
-                round
-                dense
-                icon="play_arrow"
-                @click="playAnimation"
-                
-            />
-            <q-btn
-                flat
-                round
-                dense
-                icon="pause"
-                v-if="isPlaying"
-                @click="pauseAnimation"
-            />
-            
-        </template> -->
+
 
         <div v-if="ends?.length">
             <!-- HEADER -->
             <div
-                class="end__container full-width first"
-                :class="{ 'show-score': isPlaying || isPaused }"
+                class="end__container full-width first show-score"
+          
                 id="game-story--header"
             >
-                <div class="color-bg home">
+                <div class="color-bg home"    :style="{ backgroundColor: getColor(homeTeam?.color) }">
                     <div
                         class="color-bg__inner home"
                         :style="{ backgroundColor: getColor(homeTeam?.color) }"
                     />
                 </div>
-                <div class="color-bg away">
+                <div class="color-bg away" :style="{ backgroundColor: getColor(awayTeam?.color) }">
                     <div
                         class="color-bg__inner away"
                         :style="{ backgroundColor: getColor(awayTeam?.color) }"
@@ -62,26 +24,26 @@
                 <div
                     class="row items-center no-wrap relative-position full-width"
                 >
-                    <div style="width: 30px; min-width: 30px" class="game-story__avatar">
+                    <!-- <div style="width: 30px; min-width: 30px" class="game-story__avatar">
                         <TeamAvatar
                             :teamId="homeTeam?.team_id"
                             :color="homeTeam?.color"
                             animateRing
                         />
-                    </div>
+                    </div> -->
                     <div class="q-ml-sm reg-text team-name">
                         {{ homeTeam.team?.name }}
                     </div>
                 </div>
                 <div
                     class="xl-text q-mx-sm font-header text-center game-story-total__score home row items-center"
-                    v-if="isPlaying || isPaused"
+              
                 >
                     <div>{{ totalScore.home }}</div>
                 </div>
                 <div
                     class="xl-text q-mx-sm font-header text-center game-story-total__score away row items-center"
-                    v-if="isPlaying || isPaused"
+               
                 >
                     <div>{{ totalScore.away }}</div>
                 </div>
@@ -92,13 +54,13 @@
                     <div class="q-mr-sm text-right team-name">
                         {{ awayTeam.team?.name }}
                     </div>
-                    <div style="width: 30px; min-width: 30px" class="game-story__avatar">
+                    <!-- <div style="width: 30px; min-width: 30px" class="game-story__avatar">
                         <TeamAvatar
                             :teamId="awayTeam?.team_id"
                             :color="awayTeam?.color"
                             animateRing
                         />
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <section
@@ -263,37 +225,7 @@
             </section>
 
             <!-- FINAL SCORE -->
-            <div class="end__container full-width last" id="game-story-footer">
-                <header class="end__header font-header sm-text">FINAL</header>
-                <div class="row items-center no-wrap">
-                    <div style="width: 40px">
-                        <TeamAvatar
-                            :teamId="homeTeam?.team_id"
-                            :color="homeTeam?.color"
-                            animateRing
-                        />
-                    </div>
-                    <div class="q-ml-sm">{{ homeTeam.team?.name }}</div>
-                </div>
-                <div class="xl-text q-mx-sm font-header text-center">
-                    {{ homeTeam.points_scored }}
-                </div>
-                <div class="xl-text q-mx-sm font-header text-center">
-                    {{ awayTeam.points_scored }}
-                </div>
-                <div class="row items-center justify-end no-wrap">
-                    <div class="q-mr-sm text-right">
-                        {{ awayTeam.team?.name }}
-                    </div>
-                    <div style="width: 40px">
-                        <TeamAvatar
-                            :teamId="awayTeam?.team_id"
-                            :color="awayTeam?.color"
-                            animateRing
-                        />
-                    </div>
-                </div>
-            </div>
+
         </div>
         <div class="momentum-scale__floating">
             <div class="momentum-scale__container">
@@ -317,6 +249,11 @@
    </div>
 </template>
 <style lang="scss" scoped>
+.team-name {
+    color: white;
+    @include smmd-text;
+    font-family: $font-family-header;
+}
 .color-bg {
     position: absolute;
     height: 100%;
@@ -333,7 +270,7 @@
     }
     .color-bg__inner {
         border-radius: 50%;
-        opacity: 0;
+        opacity: 1;
         &.home {
             position: absolute;
             top: 0;
@@ -504,6 +441,12 @@ const props = defineProps({
 
 
 const uniqueId = (Math.random() * 1000000000000).toFixed();
+
+const defaultTotalScore = {
+    home: 0,
+    away: 0,
+}
+const totalScore = ref({...defaultTotalScore});
 
 const game = computed(() =>
     useRepo(Game).withAllRecursive().where("id", props.gameId).first()
@@ -786,11 +729,7 @@ const awayLead = (away - home) / 10;
     // }
 };
 
-const defaultTotalScore = {
-    home: 0,
-    away: 0,
-}
-const totalScore = ref({...defaultTotalScore});
+
 
 const getTotalScore = (index) => {
     const endScores = [...ends.value].splice(0, index + 1);
@@ -820,7 +759,13 @@ const { isLoading, data: ends } = useQuery({
     queryKey: ["game", "ends", props.gameId],
     queryFn: getGameEnds,
     refetchOnWindowFocus: false,
+
 });
+
+watch(ends, (val) => {
+    if (!val) return;
+totalScore.value = getTotalScore(100);
+})
 
 // ANIMATION
 const tl = gsap.timeline();
@@ -839,16 +784,6 @@ const play = (startAnimated = false) => {
     const parentEl = document.querySelector(`#game-story-${uniqueId}`)
     console.log(parentEl)
 
-    tl.to(
-    parentEl.querySelectorAll("#game-story-footer"),
-        {
-            height: 0,
-            opacity: 0,
-            padding: 0,
-            duration: 0.2,
-        },
-        "start"
-    );
 
     tl.to(
         parentEl.querySelectorAll(".hammer-icon--floating"),
@@ -883,31 +818,31 @@ const play = (startAnimated = false) => {
     //     "start"
     // );
 
-    tl.fromTo(
-        parentEl.querySelectorAll(".color-bg__inner"),
-        {
-            scale: 0,
-            opacity: 1,
-        },
-        {
-            transformOrigin: "center",
-            scale: 2,
-            opacity: 1,
-            duration: 1,
-        },
-        "start"
-    );
-    tl.to(
-        parentEl.querySelectorAll(".team-name"),
-        {
-            color: "white",
-            duration: 0.2,
-            zIndex: 1,
-            fontFamily: '"Koulen", sans-serif',
-            fontSize: 20,
-        },
-        "start"
-    );
+    // tl.fromTo(
+    //     parentEl.querySelectorAll(".color-bg__inner"),
+    //     {
+    //         scale: 0,
+    //         opacity: 1,
+    //     },
+    //     {
+    //         transformOrigin: "center",
+    //         scale: 2,
+    //         opacity: 1,
+    //         duration: 1,
+    //     },
+    //     "start"
+    // );
+    // tl.to(
+    //     parentEl.querySelectorAll(".team-name"),
+    //     {
+    //         color: "white",
+    //         duration: 0.2,
+    //         zIndex: 1,
+    //         fontFamily: '"Koulen", sans-serif',
+    //         fontSize: 20,
+    //     },
+    //     "start"
+    // );
 
 tl.add('intro-end')
     // BEGIN END LOOP
@@ -1063,7 +998,7 @@ tl.add('intro-end')
 
 
 const doEndAnimation = () => {
-    const state = Flip.getState('#game-story-footer,.hammer-icon--floating, .end__container, .end,.color-bg__inner,.team-name,.end__container')
+    const state = Flip.getState('.hammer-icon--floating, .end__container, .end,.color-bg__inner,.team-name,.end__container')
     tl.revert();
     tl.kill();
     nextTick(() => {

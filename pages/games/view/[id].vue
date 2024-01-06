@@ -1,12 +1,88 @@
 <template>
-
-        <aside class="game-request__container" v-if="gameRequest">
+    <!-- <aside class="game-request__container" v-if="gameRequest">
             <GameRequest :request="gameRequest" />
             <q-separator />
-        </aside>
+        </aside> -->
+    <LayoutCircleTitle title="game Summary" minHeight="225px">
+        <template v-slot:underlay>
+            <Rings size="100%" />
+        </template>
+        <template v-slot:append>
+            <div class="full-width text-center text-white">
+                {{ toTimezone(currentGame.start_time, "MMM D, YYYY") }}
+            </div>
+            <div
+                class="full-width text-center text-white"
+                v-if="currentGame.rink"
+            >
+                {{ currentGame.rink?.name }}
+            </div>
+            <div
+                class="full-width text-center text-white"
+                v-if="currentGame.sheet"
+            >
+                Sheet {{ currentGame.sheet?.number }}
+            </div>
+            <div
+                style="width: fit-content"
+                class="full-width row justify-center"
+            >
+                <TeamGameResultVerification :gameId="Number(gameId)" />
+            </div>
+        </template>
+    </LayoutCircleTitle>
 
-       
-        <LinescoreEditor
+    <div class="game-summary__container">
+        <div class="avatar-container">
+            <TeamAvatar
+                :teamId="home?.id"
+                :color="home.color"
+                style="height: unset"
+            />
+        </div>
+        <div class="column justify-center items-center">
+            <h2 class="score">
+                {{ home.points_scored }} : {{ away.points_scored }}
+            </h2>
+           
+        </div>
+           <div class="avatar-container full-width">
+            <TeamAvatar
+                :teamId="away?.id"
+                :color="away.color"
+                style="height: unset;"
+            />
+           
+        </div>
+          <h3 class="text-center md-text q-pt-md">{{home.name}}</h3>
+
+          <div class="full-width text-center text-caption" style="margin-top: -1.5em">After 8</div>
+           <h3 class="text-center md-text q-pt-md">{{ away.name }}</h3>
+    </div>
+      <LinescoreGrid
+            :score="score"
+
+
+        >
+         <template v-slot:avatarHome>
+            
+                   <TeamAvatar
+                :teamId="home?.id"
+                :color="home.color"
+                style="height: unset; width: 30px"
+            />
+         </template>
+           <template v-slot:avatarAway>
+            
+                   <TeamAvatar
+                :teamId="away?.id"
+                :color="away.color"
+                style="height: unset; width: 30px"
+            />
+         </template>
+                
+      </LinescoreGrid>
+    <!-- <LinescoreEditor
             v-if="!isLoadingGames && !loading && !!currentGame"
             :canEdit="canEdit && !!editedGame"
             :canEditDetails="canEdit && !!editedGame"
@@ -58,44 +134,73 @@
                        <div v-if="showMoreBadgesAway" class="text-sm full-width text-center text-underline clickable" @click="showMoreBadges('away')">Show less</div>
                 </div>
             </template>
-        </LinescoreEditor>
-        <q-dialog v-model="showAnimation" full-width class="story-dialog">
-            <div style="background-color: white;  width: min(600px, 100vw); padding-top: 32px; overflow: hidden; border-radius: 8px; margin: 0px 8px" class="bg-pebble">
-            <GameStory :gameId="Number(gameId)" animated/>
-            </div>
-        </q-dialog>
-         <LayoutSection title="game story">
-            <template v-slot:append-right>
- <q-btn
+        </LinescoreEditor> -->
+    <q-dialog v-model="showAnimation" full-width class="story-dialog">
+        <div
+            style="
+                background-color: white;
+                width: min(600px, 100vw);
+                padding-top: 32px;
+                overflow: hidden;
+                border-radius: 8px;
+                margin: 0px 8px;
+            "
+            class="bg-pebble"
+        >
+            <GameStory :gameId="Number(gameId)" animated />
+        </div>
+    </q-dialog>
+    <LayoutSection title="game story">
+        <template v-slot:append-right>
+            <q-btn
                 flat
                 round
                 dense
                 icon="play_arrow"
                 @click="showAnimation = true"
-                
             />
-            </template> 
-        <GameStory :gameId="Number(gameId)"/>
-         </LayoutSection>
-        <TeamStatsView
-            v-if="!isLoadingGames && !loading && !!currentGame"
-            :teamId="home.id"
-            :oppositionId="away.id"
-            h2h
-            :gameId="Number(gameId)"
-        />
-
+        </template>
+        <GameStory :gameId="Number(gameId)" />
+    </LayoutSection>
+    <TeamStatsView
+        v-if="!isLoadingGames && !loading && !!currentGame"
+        :teamId="home.id"
+        :oppositionId="away.id"
+        h2h
+        :gameId="Number(gameId)"
+    />
 </template>
 <style lang="scss">
+.game-summary__container {
+    display: grid;
+    grid-template-columns: 30% 40% 30%;
+    padding: 0px var(--space-md);
+    margin: var(--space-lg) auto;
+    max-width: 700px;
+
+    .score {
+        @include lg-text;
+        @include sm {
+            @include xl-text;
+        }
+    }
+    .avatar-container {
+
+        .avatar-outer__container {
+max-width:175px;
+margin-left: auto;
+margin-right: auto;
+        }
+        
+    }
+}
 .story-dialog {
-   
     .q-dialog__inner {
         padding: unset;
     }
 }
 </style>
 <style lang="scss" scoped>
-
 .badges {
     gap: var(--space-xs);
     margin-top: var(--space-xs);
@@ -152,7 +257,7 @@ const gameRequest = computed(() =>
     )
 );
 
-const showAnimation = ref(false)
+const showAnimation = ref(false);
 
 const loading = ref(false);
 const result = ref(null);
@@ -163,12 +268,12 @@ const showMoreBadgesHome = ref(false);
 const showMoreBadgesAway = ref(false);
 
 const showMoreBadges = (name) => {
-    if (name === 'home') {
-        showMoreBadgesHome.value = !showMoreBadgesHome.value
+    if (name === "home") {
+        showMoreBadgesHome.value = !showMoreBadgesHome.value;
     } else {
-        showMoreBadgesAway.value = !showMoreBadgesAway.value
+        showMoreBadgesAway.value = !showMoreBadgesAway.value;
     }
-}
+};
 
 const { id: gameId } = route.params;
 
@@ -427,10 +532,10 @@ const queryClient = useQueryClient();
 const notStore = useNotificationStore();
 
 const refreshGame = () => {
-      queryClient.invalidateQueries({
-            queryKey: ["game", Number(gameId)],
-        });
-}
+    queryClient.invalidateQueries({
+        queryKey: ["game", Number(gameId)],
+    });
+};
 
 const updated = ref(false);
 
@@ -447,7 +552,7 @@ const onUpdate = async (val) => {
     const { start_time, rink = {}, sheet = {}, league = {} } = val;
     const { id: rink_id } = rink ?? {};
     const { number: sheet_number } = sheet || {};
-    const {id: league_id} = league || {}
+    const { id: league_id } = league || {};
 
     let sheet_id;
     if (sheet_number) sheet_id = await createSheet(rink_id, sheet_number);
@@ -456,13 +561,13 @@ const onUpdate = async (val) => {
     if (sheet_id) updates.sheet_id = sheet_id;
     if (rink_id) updates.rink_id = rink_id;
     if (start_time) updates.start_time = toUTC(start_time, null, true);
-    if (league_id) updates.league_id = league_id
+    if (league_id) updates.league_id = league_id;
     const client = useSupabaseClient();
     const { error } = await client
         .from("games")
         .update(updates)
         .eq("id", Number(gameId));
-    if (!error) refreshGame()
+    if (!error) refreshGame();
 
     if (error) {
         notStore.updateNotification(notId, {
@@ -477,6 +582,8 @@ const onUpdate = async (val) => {
         });
     }
 };
+
+const { toTimezone } = useTime();
 </script>
 <script>
 export default {

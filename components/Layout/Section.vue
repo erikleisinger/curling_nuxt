@@ -1,5 +1,5 @@
 <template>
-
+<section>
         <header class="section__header">
             <div class="rings-icon__wrap">
                 <Rings :size="$q.screen.xs ? '25px' : '32px'" />
@@ -8,19 +8,21 @@
                 <slot name="append-left" />
             </div>
             <div class="section-header__text">
+                <slot name="title">
                 <div v-for="(titleWord, i) in words" :key="i" class="word">
                     {{ titleWord }}
                 </div>
+                </slot>
             </div>
             <div class="slot__container right">
                 <slot name="append-right" />
             </div>
           
         </header>
-        <main class="section__main" v-bind="$attrs">
+        <main class="section__main" :style="mainStyle">
             <slot />
         </main>
-
+</section>
 </template>
 <style lang="scss" scoped>
 .section__header {
@@ -102,6 +104,7 @@
 <script setup>
 const props = defineProps({
     noPadding: Boolean,
+    mainStyle: String,
     title: String,
 });
 

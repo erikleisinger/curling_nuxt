@@ -72,7 +72,11 @@ import gsap from 'gsap';
 import {Flip} from 'gsap/Flip';
 gsap.registerPlugin(Flip)
 
-    const userTeamIds = computed(() => useUserTeamStore().userTeams.map(({id}) => id))
+const props = defineProps({
+    teamIds: Array,
+})
+
+    const userTeamIds = ref(props.teamIds)
 
     const getGamesPlayed = async () => {
         const client = useSupabaseClient();
@@ -94,9 +98,13 @@ gsap.registerPlugin(Flip)
 
     const getWinPercentage = async () => {
         const client = useSupabaseClient();
-        const {count} = await client.from('team_stats').select('*', {count:'exact'}).in('team_id', userTeamIds.value).eq('win', 1)
- 
-        return ((count / gameCount.value) * 100).toFixed(0)
+        const {data} = await client.from('team_stats').select('win, loss, tie', {count:'exact'}).in('team_id', userTeamIds.value)
+        const wins = data.filter(({win}) => !!win);
+        const losses = data.filter(({loss}) => !!loss);
+        const ties = data.filter(({tie}) => !!tie);
+        const totalGames = wins.length + ties.length + losses.length;
+
+        return ((wins.length / totalGames) * 100).toFixed(0)
     }
 
     const isWinPercentFetchEnabled = computed(() => !!gameCount.value > 0)

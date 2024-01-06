@@ -105,7 +105,7 @@ const doAnimation = () => {
     const els = logo.value.$el.querySelectorAll(
         "path:not(.logo-i):not(.logo-rock)"
     );
-    const rock = logo.value.$el.querySelector("path.logo-rock");
+    const rock = logo.value.$el.querySelectorAll("path.logo-rock");
     const i = logo.value.$el.querySelector("path.logo-i");
 
     const tl = gsap.timeline();
@@ -120,55 +120,55 @@ const doAnimation = () => {
         },
         "start"
     );
-    tl.to(
-        i,
-        {
-            rotateZ: -16,
-            transformOrigin: "center",
-            duration: 0,
-        },
-        "start"
-    );
-    tl.from(i, {
-        y: 100,
-        duration: 0.4,
-        delay: 0.4,
-    }, 'start')
-    tl.to(
-        rock,
-        {
-            rotateZ: -33,
-            duration: 0,
-        },
-        "start"
-    );
-    tl.add('fall')
-    tl.fromTo(
-        rock,
-        {
-            x: -70,
-            opacity: 0,
-        },
-        {
-            opacity: 1,
-            x: -7,
-            duration: 1,
-        }, 'fall'
-    );
+    // tl.to(
+    //     i,
+    //     {
+    //         rotateZ: -16,
+    //         transformOrigin: "center",
+    //         duration: 0,
+    //     },
+    //     "start"
+    // );
+    // tl.from(i, {
+    //     y: 100,
+    //     duration: 0.4,
+    //     delay: 0.4,
+    // }, 'start')
+    // tl.to(
+    //     rock,
+    //     {
+    //         rotateZ: -33,
+    //         duration: 0,
+    //     },
+    //     "start"
+    // );
+    // tl.add('fall')
+    // tl.fromTo(
+    //     rock,
+    //     {
+    //         x: -70,
+    //         opacity: 0,
+    //     },
+    //     {
+    //         opacity: 1,
+    //         x: -7,
+    //         duration: 1,
+    //     }, 'fall'
+    // );
     
-    tl.to(rock, {
-        x: 1,
-        rotateZ: 4,
-        duration: 0.6,
-        delay: 0.8,
-        ease: 'bounce',
-    }, 'fall');
-    tl.to(i, {
-        rotateZ: -1,
-        delay: 0.8,
-        duration: 0.6,
-        ease: 'bounce',
-    }, 'fall')
+    // tl.to(rock, {
+    //     x: 1,
+    //     rotateZ: 4,
+    //     duration: 0.6,
+    //     delay: 0.8,
+    //     ease: 'bounce',
+    // }, 'fall');
+    // tl.to(i, {
+    //     rotateZ: -1,
+    //     delay: 0.8,
+    //     duration: 0.6,
+    //     ease: 'bounce',
+    // }, 'fall')
 
     tl.duration(2.1);
 }

@@ -28,12 +28,12 @@
             />
             <div class="drawer-header " :class="{ dark: !open }">
                 Teams
-                <q-btn flat round dense icon="arrow_drop_down" v-if="open" />
+                <!-- <q-btn flat round dense icon="arrow_drop_down" v-if="open" /> -->
             </div>
             <q-list  class="nav-drawer__list">
             <q-item
             clickable v-ripple
-                class="row items-center no-wrap team-container"
+                class="row items-center no-wrap list-item"
                 :style="{ width: open ? '' : 'fit-content' }"
                 v-for="team in userTeams"
                 :key="team.id"
@@ -44,19 +44,46 @@
                     <TeamAvatar :teamId="team.id" :disableMenu="true"/>
                 </div>
             </q-item-section>
-            <q-item-section>
-                <div class="q-ml-md">
+            <q-item-section class="q-ml-md">
+                <div >
                     {{ team.name }}
                 </div>
             </q-item-section>
             </q-item>
             </q-list>
             <div class="drawer-header" :class="{ dark: !open }">Leagues</div>
-        
+            <q-list>
+                <q-item v-for="league in leagues" :key="league.id" class="list-item" clickable v-ripple @click="navigateTo(`/leagues/${league.id}`)">
+                    <q-item-section avatar>
+                        <div class="league-icon "  :style="{backgroundColor: league.color}">
+                            <div class="league-icon-abbrev row justify-center items-center">
+                                {{getAbbrev(league.name)}}
+                            </div>
+                        </div>
+                    </q-item-section>
+                        <q-item-section class="q-ml-md">
+               <q-item-label>
+                    {{ league.name }}
+                </q-item-label>
+                <q-item-label caption>
+                    {{league?.rink?.name}}
+                </q-item-label>
+            </q-item-section>
+                </q-item>
+            </q-list>
+          <div class="drawer-header dark" v-if="open">Bye Bye</div>
+          <q-list v-if="open">
+            <q-item clickable v-ripple @click="logout">
+                <q-item-section avatar>
+                    <q-icon name="logout"/>
+                </q-item-section>
+                <q-item-section>
+                    Logout
+                </q-item-section>
+            </q-item>
+          </q-list>
         </div>
-        <div class="logout--container" v-if="open">
-                <q-btn flat @click="doLogout">Log out</q-btn>
-            </div>
+
     </div>
 </template>
 <style lang="scss" scoped>
@@ -78,15 +105,15 @@
     &.mobile {
         // transform: scaleX(0) translateX(-50px);
         width: 0px;
-        // background-color: white;
     }
     &.open {
         width: 300px;
-        // background-color: white;
         transform: scaleX(1);
     }
     height: calc(100 * var(--vh, 1vh));
+    overflow: auto;
     z-index: 10;
+  
     .logout--container {
         position: absolute;
         display: flex;
@@ -103,12 +130,14 @@
             top: calc(5em + var(--space-sm));
             width: 300px;
         }
+          padding-bottom: var(--space-md);
     }
     .drawer-header {
         font-family: $font-family-header;
-        @include smmd-text;
+        @include reg-text;
 
         width: fit-content;
+        white-space: nowrap;
         margin-top: 28px;
         min-height: 35px;
 
@@ -127,8 +156,11 @@
         margin-left: 0px;
         margin-right: 36px;
     }
-    .team-container {
+    .list-item {
         margin-left: -12px;
+        .q-item__label--caption {
+            color: rgb(227, 226, 226);
+        }
     }
     .click-overlay {
         position: absolute;
@@ -144,6 +176,30 @@
         }
     }
      @include bg-slate-texture;
+
+     .league-icon {
+        width: 40px;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+         
+         position: relative;
+         border: 3px solid white;
+         .league-icon-abbrev {
+            font-weight: bold;
+            color: white;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            border-radius: inherit;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            border: 1px solid rbga(0,0,0, 0.1);
+            line-height: 40px;
+
+         }
+     }
 }
 </style>
 <script setup>
@@ -151,10 +207,21 @@ import { onClickOutside, useSwipe } from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
 import Rink from "@/store/models/rink";
 import { parseAvatar } from "@/utils/avatar";
+import {useQuery} from '@tanstack/vue-query'
 import Player from "@/store/models/player";
 const props = defineProps({
     modelValue: Boolean,
 });
+
+const getAbbrev = (name) => {
+    const words = name.split(' ').map((w) => w.substring(0,1).toUpperCase())
+    if (words.length < 4) {
+        return words.join('')
+    }
+
+    return `${words[0]}${words[words.length - 1]}`
+
+}
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -218,6 +285,49 @@ const onDrawerClick = () => {
     if (open.value) return;
     open.value = true;
 }
+
+const getUserLeagues = async () => {
+    const client = useSupabaseClient();
+
+    const { data } = await client
+        .from("league_teams")
+        .select(
+            `
+            team_id,
+            league:league_id (
+                id,
+                name,
+                color,
+                font_color,
+                icon,
+                rink:rink_id (
+                    id,
+                    name,
+                    city,
+                    province,
+                    sheets
+                )
+            )
+        `
+        )
+        .in(
+            "team_id",
+            userTeams.value.map(({ id }) => id)
+        );
+
+    return data.reduce((all, current) => {
+        if (all.some(({league}) => league.id === current.league?.id)) return all;
+        return [...all, current]
+    }, []).map(({league}) => ({
+        ...league
+    }))
+};
+
+const {isLoading: isLoadingLeagues, data: leagues} = useQuery({
+    queryKey: ['user', 'leagues', userId.value],
+    queryFn: getUserLeagues,
+    refetchOnWindowFocus: false,
+})
 
 
 </script>

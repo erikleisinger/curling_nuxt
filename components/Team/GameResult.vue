@@ -1,27 +1,28 @@
 <template>
     <div style="position: relative full-width" ref="gameResult">
+
         <div class="result__container--wrap">
             <div class="row no-wrap">
                 <div class="result__header">
                     <slot name="before" />
                     <div class="result-container__outer">
                         <div class="result__container" @click="emit('expand')">
-                            <div
+                            <!-- <div
                                 class="row full-width justify-center verified--wrap" v-if="!isUpcoming"
                             >
                                 <TeamGameResultVerification
                                     :gameId="props.gameId"
                                     @refresh="refreshQuery"
                                 />
-                            </div>
+                            </div> -->
                             <div class="backdrop--behind" />
                             <div class="backdrop" />
                             <div
                                 class="team__profile--container row no-wrap justify-end"
                             >
-                                <div class="team-name__container q-mr-sm">
+                                <div class="team-name__container left">
                                     <h2
-                                        class="reg-text text-right col-grow full-width highlightable"
+                                        class="text-right col-grow full-width highlightable team-name"
                                         v-html="truncateWords(home.name)"
                                         
                                     ></h2>
@@ -41,8 +42,9 @@
                                             :teamId="home.id"
                                             :color="home.color ?? ''"
                                             :viewable="viewHome && !!home.id"
-                                            :animateRing="home.points_scored > away.points_scored"
+                                            animateRing
                                         />
+                                        <!-- :animateRing="home.points_scored > away.points_scored" -->
                                     </div>
                                 </div>
                             </div>
@@ -50,9 +52,10 @@
                             <div class="row no-wrap justify-center">
                      
                                 <div class="column game-info__container">
+                                    <div v-if="!isUpcoming">
                                     <div
                                     v-if="!isUpcoming"
-                                        class="row justify-center full-width no-wrap clickable"
+                                        class="row justify-center full-width no-wrap clickable score-container"
                                         
                                     >
                                         <div
@@ -70,7 +73,7 @@
                                                 {{ home.points_scored }}
                                             </div>
                                         </div>
-                                        <div class="score q-mx-xs">:</div>
+                                        <div class="score">:</div>
                                         <div
                                             class="column no-wrap relative-position"
                                             style="height: min-content"
@@ -86,6 +89,14 @@
                                                 {{ away.points_scored }}
                                             </div>
                                         </div>
+                                       
+                                    </div>
+                                       <div
+                            class="row justify-center full-width game-info__text highlightable"
+                            v-if="!isUpcoming"
+                        >
+                            {{ `After ${game.end_count}` }}
+                        </div>
                                     </div>
                                     <div v-else>
                                          <div
@@ -116,12 +127,13 @@
                                             :viewable="
                                                 viewAway && !away.isPlaceholder
                                             "
-                                             :animateRing="away.points_scored > home.points_scored"
+                                                animateRing
                                         />
+                                         <!-- :animateRing="away.points_scored > home.points_scored" -->
                                     </div>
                                 </div>
                                 <div
-                                    class="team-name__container row no-wrap q-ml-sm"
+                                    class="team-name__container row no-wrap right"
                                   
                                 >
                                     <!-- <q-icon
@@ -130,7 +142,7 @@
                                     name="o_smart_toy"
                                 /> -->
                                     <h2
-                                        class="reg-text text-left highlightable"
+                                        class="text-left highlightable team-name"
                                         style="
                                             width: fit-content;
                                             position: relative;
@@ -141,19 +153,20 @@
                                 </div>
                             </div>
                         </div>
-                        <div
+                      
+                        <!-- <div
                             class="row justify-center full-width game-info__text highlightable"
                             v-if="game.start_time && !isUpcoming"
                         >
                             {{ toTimezone(game.start_time, "MMM D, YYYY") }}
-                        </div>
-                        <div
+                        </div> -->
+                        <!-- <div
                                     class="row justify-center full-width game-info__text highlightable"
                                     v-if="rink && showRink"
                                     :class="{'q-mt-xs': isUpcoming}"
                                 >
                                     {{ rink.name }}
-                                </div>
+                                </div> -->
                                 <!-- <div
                                     class="row justify-center full-width game-info__text highlightable"
                                     v-if="sheet && sheet.number"
@@ -185,7 +198,11 @@ $container-padding-top: 10px;
     right: 12px;
     @include text-caption;
     // text-decoration: underline;
+    
     color: rgba(0,0,0,0.7)
+}
+.header {
+    background-color: rgba(0,0,0,0.05);
 }
 .result__container--wrap {
     max-height: fit-content;
@@ -194,55 +211,64 @@ $container-padding-top: 10px;
     position: relative;
     overflow: visible;
     margin: auto;
-    max-width: $max-container-width;
+    // max-width: $max-container-width;
     .verified--wrap {
         position: absolute;
-        top: -8px;
+        top: -15%;
+      
     }
     .result__header {
-        padding-bottom: var(--space-xs);
-        padding-top: var(--space-xs);
+        // padding-bottom: var(--space-xs);
+        // padding-top: var(--space-xs);
         border-radius: inherit;
         width: 100%;
         box-sizing: border-box;
     }
 
     .result-container__outer {
-        background-color: rgb(251, 251, 251, 0.3);
+        // background-color: rgb(251, 251, 251, 0.3);
+        background-color: white;
         // color: white;
         border-radius: 16px;
         box-shadow: $pretty-shadow;
         // border-width: 3px;
         // border-style: solid;
         // border-color: $primary;
-        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 
         .game-info__text {
             @include text-caption;
-            @include line-snug;
+            line-height: 1;
             text-align: center;
         }
-        padding: 0px var(--space-xs);
-        padding-bottom: var(--space-sm);
+        padding: 0px var(--space-md);
+        padding-bottom: var(--space-xs);
     }
 
     .result__container {
         display: grid;
         grid-template-rows: 100%;
         grid-template-columns: $columns;
-        max-width: $max-container-width;
+        // max-width: $max-container-width;
         margin: auto;
         position: relative;
         // border: 1px solid rgba(0, 0, 0, 0.2);
 
         .team__profile--container {
-            margin-top: 15px;
+            margin-top: auto;
+            margin-bottom: auto;
             height: fit-content;
             align-items: center;
             .team-avatar__container {
                 .team-avatar--wrap {
                     position: relative;
-                    width: calc($result-height - 50px);
+                    width: 30px;
+                    // @include sm {
+                    //     width: 50px;
+                    // }
+                    // @include sm {
+                    //     width: 60px;
+                    // }
 
                     // margin-top: 15px;
                 }
@@ -258,6 +284,17 @@ $container-padding-top: 10px;
                 overflow: hidden;
                 min-width: 0;
                 text-overflow: ellipsis;
+                &.left {
+                    margin-right: var(--space-sm)
+                }
+                &.right {
+                    margin-left: var(--space-sm)
+                }
+
+                @include reg-text;
+                // @include sm {
+                //     @include smmd-text;
+                // }
             }
         }
 
@@ -292,14 +329,29 @@ $container-padding-top: 10px;
         margin-top: calc($container-padding-top + var(--space-xs));
         z-index: 1;
         position: relative;
-        .score {
+        .score-container {
+            // @include sm {
+            //     padding: 0px var(--space-md)
+            // }
+.score {
             @include lg-text;
+            line-height: 0.7;
+            padding-bottom: 10%;
             transition: all 0.2s;
             position: relative;
+            font-family: $font-family-header;
+            // font-weight: bold;
             &.winning {
-                font-weight: bold;
+                
             }
+            // @include sm {
+            //     @include xl-text;
+            //     line-height: 0.7;
+              
+            // }
         }
+        }
+        
     }
 
     .notify-badge {

@@ -5,10 +5,10 @@
 <ellipse cx="16" cy="16.25" rx="11" ry="11.25" fill="white"/>
 <circle cx="16" cy="16" r="6.5" fill="#FB4F4F"/>
 <circle cx="16" cy="16" r="2.5" fill="white"/> -->
-<circle cx="16" cy="16" r="16" fill="#347fc4"/>
-<ellipse cx="16" cy="16.25" rx="11" ry="11.25" fill="white"/>
-<circle cx="16" cy="16" r="6.5" fill="#ed254e"/>
-<circle cx="16" cy="16" r="2.5" fill="white"/>
+<circle cx="16" cy="16" r="16" :fill="twelveft"/>
+<ellipse cx="16" cy="16.25" rx="11" ry="11.25" :fill="eightft"/>
+<circle cx="16" cy="16" r="6.5" :fill="fourft"/>
+<circle cx="16" cy="16" r="2.5" :fill="buttonft"/>
 </svg>
 
 </template>
@@ -19,5 +19,21 @@
         type: String,
         default: "35px",
     },
+    twelveft: {
+        type: String,
+        default: "#347fc4"
+    },
+    eightft: {
+        type: String,
+        default: "white"
+    },
+    fourft: {
+         type: String,
+        default: "#ed254e"
+    },
+    buttonft: {
+ type: String,
+        default: "white"
+    }
 });
 </script>

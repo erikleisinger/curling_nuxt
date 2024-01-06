@@ -41,7 +41,9 @@
                 </div>
                 <!-- HOME total -->
                 <div class="linescore-column--item text-bold">
-                    <slot name="homeScore"/>
+                    <slot name="homeScore">
+                        {{totalScore.home}}
+                    </slot>
                       
                    
                 </div>
@@ -63,7 +65,9 @@
                 </div>
                 <!-- AWAY total -->
                 <div class="linescore-column--item text-bold">
-                    <slot name="awayScore"/>
+                    <slot name="awayScore">
+                        {{totalScore.away}}
+                    </slot>
                         
                
                 </div>

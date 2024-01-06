@@ -1,6 +1,8 @@
 <template>
     <q-badge
-        :color="isVerified ? 'primary' : 'red'"
+        :style="{backgroundColor: isVerified ? getColor('mint') : getColor('slate')}"
+        class="badge"
+        rounded
         @click.stop="
             () => {
                 verifiedPopup = true;
@@ -72,6 +74,19 @@
         </span>
     </DialogInfo>
 </template>
+<style lang="scss" scoped>
+    .badge {
+        transform: scale(0.9);
+        padding: 4px 8px;
+        font-weight: bold;
+        @include text-caption;
+        line-height: 0.9;
+        @include sm {
+            padding-top: 8px;
+        }
+     
+    }
+</style>
 <script setup>
 import { useGameRequestStore } from "@/store/game-requests";
 import {useDialogStore} from '@/store/dialog'
@@ -102,6 +117,8 @@ const creatorTeam = computed(() =>
 );
 
 const { isOnTeam } = useTeam();
+
+const {getColor} = useColor();
 
 
 const verifiedPopup = ref(false);

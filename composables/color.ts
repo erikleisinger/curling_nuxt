@@ -1,9 +1,11 @@
 export const useColor = () => {
     const getColor = (key: string) => {
         return {
+            slate: '#283044',
             yellow: "#f6ae2d",
             blue: "#347fc4",
             red: "#ed254e",
+            mint: '#00C49A',
             purple: "#ab47bc",
             pink: "#f06292",
             deepPurple: "#673ab7",

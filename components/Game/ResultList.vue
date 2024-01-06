@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="full-width row justify-between items-center">
+        <div class="full-width row justify-between items-center ">
             <q-input
                 dense
                 class="col-grow q-pl-sm"
@@ -114,13 +114,21 @@
         <div class="loading-container" v-if="isLoading">
             <q-inner-loading :showing="true" color="primary" />
         </div>
-        <div v-if="gamesPaginated.length" >
+        <div v-if="gamesPaginated.length" class="q-mt-md">
             <div
                 v-for="(game, index) in gamesPaginated"
                 :key="game.id"
                 class="result__container"
             >
-                <TeamGameResult
+            <div class="text-caption full-width text-center row items-center justify-center" style="padding: 0px 20px">
+                <!-- <div/> -->
+                <div>{{ toTimezone(game.start_time, "MMM D, YYYY") }}</div>
+                <!-- <div  ><q-chip dense color="blue" text-color="white">
+                    RCC
+                    </q-chip>
+                </div> -->
+            </div>
+                <TeamGameResult2
                     :gameId="game.id"
                     :home="teamId"
                     :search="searchInput"
@@ -165,7 +173,7 @@
     padding: var(--space-sm);
 }
 .result__container {
-    padding-top: var(--space-xs);
+    // padding-top: var(--space-xs);
 }
 </style>
 <script setup>

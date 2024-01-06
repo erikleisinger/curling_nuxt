@@ -3,14 +3,14 @@
      <q-toolbar class="row justify-between items-center header">
        
                 <slot name="menu"/>
-                <div style="position: absolute; left: 0; right: 0; margin: auto; width: fit-content;">
+                <div style="position: absolute; left: 0; right: 0; margin: auto; width: fit-content;" class="row items-center"> 
                     
-                <LogoFull :width="$q.screen.xs ? '75px' : '100px'" class="clickable" @click="navigateTo('/')"/>
+                <LogoFull :width="$q.screen.xs ? '75px' : '120px'" class="clickable" @click="navigateTo('/')"/>
                 
                 </div>
 
                 <div class="row items-center">
-                 <q-btn icon="notifications" flat round color="white" class="q-mr-sm" @click="toggleNotifications({open: !notificationsOpen})" :size="$q.screen.xs ? '14px' : '16px'">
+                 <q-btn icon="notifications" flat round color="white"  @click="toggleNotifications({open: !notificationsOpen})" :size="$q.screen.xs ? '14px' : '16px'">
                      <transition appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
                     <q-badge
                         color="red"
@@ -32,12 +32,13 @@
 </template>
 <style lang="scss" scoped>
     .header {
-        padding-left: var(--space-xxs);
+        padding: 0px var(--space-xxs);
+        padding-right: var(--space-sm);
         @include sm {
             padding-left: var(--space-md);
         }
         
-        padding-right: var(--space-sm);
+        // padding-right: var(--space-sm);
         @include bg-slate-texture;
         &.q-toolbar {
             height: 4em;

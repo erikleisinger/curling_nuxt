@@ -2,6 +2,10 @@
     <div class="wrap row justify-end" :class="{ big: handleOverflow }">
         <Rings :class="{ big }"
             @click="setBig"
+            :twelveft="big ? undefined : 'white'"
+            :eightft="big ? undefined : getColor('slate')"
+            :fourft="big ? undefined : 'white'"
+            :buttonft="big ? undefined : getColor('slate')"
             ref="ringsMenu" :size="size"/>
         <div class="menu__container column items-center" v-if="big">
             <div class="rings-menu__option option-1" @click="toggleSearch">search</div>
@@ -165,6 +169,8 @@ import {
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 gsap.registerPlugin(Flip);
+
+const {getColor} = useColor();
 
 const big = ref(false);
 const props = defineProps({
