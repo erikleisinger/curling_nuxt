@@ -3,6 +3,7 @@ export const ACHIEVEMENT_TYPES = {
         BADGE_LOST: 'badge_lost',
         BADGE_UPDATED: 'badge_updated',
         GAME_RESULT: 'game_result',
+        GAME_REQUEST: 'game_request',
         SCHEDULE_REQUEST: 'schedule_request',
         TEAM_CHANGE: 'team_roster_change',
         TEAM_INVITATION: 'team_invitation',

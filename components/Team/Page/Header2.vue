@@ -3,17 +3,28 @@
         <template v-slot:prepend>
              <div class="full-width players__header">
             
-                <div />
+                <div class="row justify-start players__container reverse" v-if="playersGroupTwo?.length">
+                    <div
+                        class="player-avatar__container"
+                        v-for="player in playersGroupTwo"
+                        :key="player.id"
+                    >
+                        <Avataaar v-bind="parseAvatar(player.avatar)" />
+                    </div>
+                  
+                </div>
+                <div v-else/>
 
                 <h2>Team</h2>
                 <div class="row justify-start players__container reverse">
                     <div
                         class="player-avatar__container"
-                        v-for="player in players"
+                        v-for="player in playersGroupOne"
                         :key="player.id"
                     >
                         <Avataaar v-bind="parseAvatar(player.avatar)" />
                     </div>
+                    
                 </div>
             </div> 
             </template>
@@ -98,7 +109,7 @@
 
             margin: auto;
             @include lg-text;
-            font-size: clamp(2rem, 10vw, 4rem);
+            font-size: clamp(2rem, 8vw, 3rem);
         }
     }
 
@@ -197,6 +208,9 @@ const players = computed(() => {
 const requests = computed(() =>
     players.value?.filter(({ status }) => status === "requested")
 );
+
+const playersGroupOne = computed(() => [...players.value]?.splice(0, 4))
+const playersGroupTwo = computed(() => [...players.value]?.splice(4, 8))
 
 const { user: userId } = useUser();
 

@@ -25,12 +25,33 @@
     .overview-section {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        column-gap: 12px;
         .overview-tile {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             @include line-tight;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+            aspect-ratio: 1/1;
+            padding: 4px;
+            position: relative;
+            background-color: rgb(239, 238, 246);
+            color: white;
+            &:before {
+                content: '';
+                position:absolute;
+                // background-color: red;
+                left: 4px;
+                top: 4px;
+                right: 4px;
+                bottom: 4px;
+                border: 1px solid rgba(0,0,0,0.05);
+                border-radius: inherit;
+                background-color: $app-slate;
+            }
             
             h2 {
                 font-family: $font-family-header;
@@ -52,11 +73,12 @@
                     color: $app-yellow;
                 }
                  &.red {
-                    color: $app-red;
-                }
-                 &.blue {
                     color: $app-blue;
                 }
+                 &.blue {
+                    color: $app-red;
+                }
+                @include text-caption;
                 @include sm {
                     font-size: 22px;
                     line-height: 18px;

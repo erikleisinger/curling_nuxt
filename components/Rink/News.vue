@@ -34,10 +34,11 @@
 </template>
 <style lang="scss" scoped>
     .news-item {
-        background-color: white;
-        box-shadow: $pretty-shadow;
-        border-radius: 16px;
-        margin-bottom: var(--space-sm)
+        // background-color: white;
+        // box-shadow: $pretty-shadow;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        // border-radius: 16px;
+        // margin-bottom: var(--space-sm)
     }
 </style>
 <script setup>

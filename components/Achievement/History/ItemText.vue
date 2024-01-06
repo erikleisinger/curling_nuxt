@@ -1,5 +1,5 @@
 <template>
-    <TeamChip :teamId="item.team?.id ?? item.info?.team?.id" v-if="teamFirst" />
+    <TeamChip :teamId="item.team?.id ?? item.info?.team?.id ?? item.info?.id" v-if="teamFirst" />
 
     <!-- BADGE RESULT -->
 
@@ -21,6 +21,14 @@
         }}</span
         >.
     </span>
+
+    <span v-if="item.type === ACHIEVEMENT_TYPES.GAME_REQUEST">
+        has asked you to verify a game result.
+        </span>
+
+        <span v-if="item.type === ACHIEVEMENT_TYPES.TEAM_INVITATION">
+        has invited you to join their team.
+        </span>
 
     <!-- WIN STREAK -->
 
@@ -70,6 +78,7 @@ const teamFirst = computed(() =>
         ACHIEVEMENT_TYPES.BADGE_UPDATED,
         ACHIEVEMENT_TYPES.BADGE_LOST,
         ACHIEVEMENT_TYPES.GAME_RESULT,
+        ACHIEVEMENT_TYPES.GAME_REQUEST,
         ACHIEVEMENT_TYPES.TEAM_INVITATION,
         ACHIEVEMENT_TYPES.WIN_STREAK,
     ].includes(props.item.type)

@@ -1,9 +1,9 @@
 <template>
     <main>
-        <LayoutSection title="Season Overview">
+        <!-- <LayoutSection title="Season Overview">
             <SeasonOverview :teamIds="userTeams" />
-        </LayoutSection>
-        <LayoutSection title="The Latest">
+        </LayoutSection> -->
+        <LayoutSection title="The Latest" mainStyle="padding-left: unset; padding-right: unset; padding-top: var(--space-sm)">
             <RinkNews v-if="homeRink?.id" :rinkId="homeRink.id" :limit="10" />
         </LayoutSection>
     </main>

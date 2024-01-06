@@ -6,8 +6,11 @@
         clickable
         style="border-radius: inherit"
         @click="
-            !!item.team
-                ? navigateTo(`/teams/${item.team.id}`, { replace: true })
+            !!item.team ||
+            (item.info && item.type === ACHIEVEMENT_TYPES.TEAM_INVITATION)
+                ? navigateTo(`/teams/${item.team.id ?? item.info?.id}`, {
+                      replace: true,
+                  })
                 : navigateTo(`/player/${item.profile.id}`, { replace: true })
         "
     >
@@ -22,6 +25,11 @@
             <div style="width: 40px" v-else-if="isPlayer">
                 <Avataaar v-bind="item.profile?.avatar ?? {}" />
             </div>
+
+            <div style="width: 40px" v-else-if="isTeam">
+                <TeamAvatar :teamId="item.team?.id || item.info?.id" />
+            </div>
+
             <div v-else>
                 <div class="row no-wrap justify-center game-result__icon">
                     <div
@@ -202,7 +210,6 @@ const getAchievementDate = (d) => {
 
 const { user: userId } = useUser();
 
-
 const getBadgeType = (type, name) => {
     const badgeTitle = ACHIEVEMENT_TITLES[type] ?? "Update";
     if (typeof badgeTitle === "function") return badgeTitle(name);
@@ -221,6 +228,10 @@ const isPlayer = computed(() =>
     [ACHIEVEMENT_TYPES.TEAM_CHANGE, ACHIEVEMENT_TYPES.TEAM_REQUEST].includes(
         props.item.type
     )
+);
+
+const isTeam = computed(() =>
+    [ACHIEVEMENT_TYPES.GAME_REQUEST, ACHIEVEMENT_TYPES.TEAM_INVITATION].includes(props.item.type)
 );
 </script>
 <script>

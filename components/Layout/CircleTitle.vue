@@ -78,11 +78,12 @@
             width: 110%;
             left: -5%;
         }
-
+        // border: px solid rgb(215, 215, 215);
         border-radius: 50%;
         z-index: 0;
         left: -25%;
         overflow: hidden;
+       
         .background {
             position: absolute;
             height: 50%;
@@ -95,10 +96,36 @@
             height: 100%;
             width: 100%;
 
-            border: 5px solid white;
-            background-color: rgba(0, 0, 0, 0.3);
+            border: 10px solid white;
+            background-color: rgba(0, 0, 0, 0.5);
             top: 0;
             border-radius: inherit;
+            &:before {
+                 content: '';
+            position: absolute;
+            background-color:rgba(0,0,0,0.1);
+            height: calc(100% - 300px);
+            width: calc(100% - 300px);
+            border-radius: inherit;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+            }
+             &:after {
+            content: '';
+            position: absolute;
+            background-color:rgba(0,0,0,0.1);
+            height: calc(100% - 150px);
+            width: calc(100% - 150px);
+            border-radius: inherit;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+        }
         }
     }
 }

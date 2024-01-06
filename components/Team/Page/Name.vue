@@ -69,7 +69,7 @@ const { width: parentWidth, height: parentHeight } = useElementBounding(
 );
 
 const MAX_FONT_SIZE = computed(() => {
-    return (parentWidth.value * 1.2) / (maxWordLength.value)
+    return Math.min((parentWidth.value * 1.5) / (maxWordLength.value), 85)
 })
 
 const fontSize = computed(() => {

@@ -77,7 +77,7 @@
           
         </div>
         <div class="full-width row justify-center q-mt-md">
-            <q-btn rounded class="view-badge-btn">View all badges</q-btn>
+            <q-btn rounded class="view-badge-btn" @click="badgesOpen = true">View all badges</q-btn>
         </div>
     </LayoutSection>
 
