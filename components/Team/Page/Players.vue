@@ -98,24 +98,91 @@
                         @click="showConfirmDelete = false"
                         >Cancel</q-btn
                     >
-                    <q-btn rounded class="confirm-btn" @click="onRemove"
+                    <q-btn rounded class="confirm-btn red" @click="onRemove"
                         >Confirm</q-btn
                     >
                 </template>
             </DialogCard>
         </GlobalMenu>
+          <GlobalMenu v-model="showRequestsMenu" >
+            <DialogCard ref="confirmDelete" maxWidth="95vw">
+                <template v-slot:title>
+                    {{pendingPlayers.length}} pending request{{pendingPlayers.length > 1 ? 's' : ''}}
+                </template>
+
+                <template v-slot:content>
+                   <q-list separator >
+                    <q-item v-for="player in pendingPlayers" :key="player.id" style="padding: unset">
+                        <q-item-section avatar>
+                            <div style="width: 40px">
+                                <Avataaar v-bind="parseAvatar(player.avatar)"/>
+                            </div>
+                        </q-item-section>
+                        <q-item-section class="request-name-section">
+                            <q-item-label class="text-caption truncate-text">{{player.first_name}} {{player.last_name}}</q-item-label>
+                            <q-item-label caption>@{{player.username}}</q-item-label>
+                        </q-item-section>
+                        <q-item-section class="request-card-actions">
+                            <q-btn flat round icon="close" dense @click="respondToRequest('rejected', player.id)" :disable="responding" :loading="responding"/>
+                            <q-btn flat round icon="check" dense @click="respondToRequest('accepted', player.id)" :disable="responding" :loading="responding"/>
+                        </q-item-section>
+                    </q-item>
+                   </q-list>
+                </template>
+                <template v-slot:footer>
+                    <div/>
+                    <q-btn
+                        rounded
+                        class="confirm-btn"
+                       
+                        >Close</q-btn
+                    >
+                    
+                </template>
+            </DialogCard>
+        </GlobalMenu>
+      
     </div>
+      <div v-if="!canEdit" class="row full-width justify-center">
+           <q-btn rounded class="request-btn" v-if="!hasRequested" @click="requestToJoin">Request to join team</q-btn>
+           <q-chip v-else class="request-chip">Request pending</q-chip>
+        </div>
+        <div v-else-if="pendingPlayers?.length">
+    <q-chip clickable class="request-chip" @click="showRequestsMenu = true">{{pendingPlayers.length}} pending requests</q-chip>
+        </div>
 </template>
 <style lang="scss"></style>
 <style lang="scss" scoped>
+.request-card-actions {
+    min-width: 75px;
+    justify-content: flex-end;
+    flex-direction: row!important;
+    flex-grow: 0;
+}
+.request-name-section {
+    flex-grow: 1;
+}
 .confirm-btn {
     font-family: $font-family-header;
     font-size: 1em;
 
-    &:not(:first-child) {
+    &.red {
         background-color: $app-red;
         color: white;
     }
+}
+.request-btn {
+    background-color: $app-yellow;
+    color: white;
+    font-family: $font-family-header;
+    @include reg-text;
+}
+.request-chip {
+    padding: var(--space-xs);
+    font-family: $font-family-header;
+    background-color: $app-yellow;
+    color: white;
+    @include reg-text;
 }
 
 .player-tile__container {
@@ -196,6 +263,7 @@
 import Team from "@/store/models/team";
 import TeamPlayer from "@/store/models/team-player";
 import { useDialogStore } from "@/store/dialog";
+import {parseAvatar} from '@/utils/avatar'
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
 import { onClickOutside } from "@vueuse/core";
@@ -282,6 +350,8 @@ const teamPlayers = computed(() =>
 const pendingPlayers = computed(() =>
     team.value.players?.filter(({ pivot }) => !!pivot.status)
 );
+const {user: userId} = useUser();
+const hasRequested = computed(() => !canEdit.value && pendingPlayers.value.some(({id}) => id === userId.value))
 
 const columns = computed(() => (team.value?.players?.length < 5 ? 2 : 3));
 
@@ -490,4 +560,43 @@ const tileWidth = computed(() => {
         return $q.screen.xs ? "150px" : "160px";
     }
 });
+
+const requestToJoin = async () => {
+    await useTeamRequestStore().sendTeamRequest({
+        team_id: props.teamId,
+        requester_profile_id: userId.value,
+    });
+      queryClient.invalidateQueries({
+        queryKey: ["team", "players", props.teamId],
+    });
+};
+
+const showRequestsMenu = ref(false)
+
+const responding = ref(false);
+const respondToRequest = async (status, playerId) => {
+    responding.value = true;
+    const player = pendingPlayers.value?.find(
+        ({ id }) => id === playerId
+    );
+    const {pivot} = player ?? {};
+    const {request_id} = pivot ?? {};
+    if (!request_id) return;
+    await useTeamRequestStore().updateTeamRequestStatus({
+        id: request_id,
+        status,
+    });
+    await useUserTeamStore().fetchUserTeams(true);
+    useNotificationStore().addNotification({
+        state: "completed",
+        text: `Request ${status}`,
+        timeout: 3000,
+    });
+       queryClient.invalidateQueries({
+        queryKey: ["team", "players", props.teamId],
+    });
+    if (pendingPlayers.value.length === 1) showRequestsMenu.value = false; 
+    responding.value = false;
+    doInviteAnimation(false);
+};
 </script>
