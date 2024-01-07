@@ -30,12 +30,16 @@
         <q-tab label="Leagues" :name="3" :ripple="false" />
         <q-tab label="Game history" :name="4" :ripple="false" />
     </q-tabs>
- <LayoutSection  mainStyle="padding-left: unset; padding-right: unset; padding-top: unset; padding-bottom: var(--space-md)" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}" headerStyle="background-color: transparent">
-        <TeamPageLocation :teamId="teamId"  :class="$q.screen.xs ? 'col-12' : 'col-6'" />
-    <div class="row full-width q-mt-md" style="gap: 16px">
-        <div :class="$q.screen.xs ? 'col-12' : 'col-6'" class="row justify-around" style="gap: var(--space-xs)">
+ <LayoutSection  mainStyle="padding-left: unset; padding-right: unset; padding-bottom: var(--space-md)" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}" headerStyle="background-color: transparent">
+    <div class="row">
+        <div :class="$q.screen.xs ? 'col-12' : 'col-5'">
+        <TeamPageLocation :teamId="teamId"   />
+        </div>
+    <div class="row justify-center" style="gap: 16px" :class="$q.screen.xs ? 'col-12' : 'col-7'">
+        <div  class="row justify-around" style="gap: var(--space-xs)">
          <TeamPagePlayers :teamId="teamId" />
         </div>
+    </div>
 
 
    

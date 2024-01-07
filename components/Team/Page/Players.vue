@@ -300,7 +300,7 @@ const selectPlayer = (id) => {
     if (selectedPlayer.value?.id === id) {
         selectedPlayer.value = null;
     } else {
-        selectedPlayer.value = team.value?.players.find(
+        selectedPlayer.value = teamPlayers.value?.find(
             ({ id: playerId }) => playerId === id
         );
     }
@@ -332,8 +332,8 @@ const PLAYER_SORT_ORDER = [
     null,
 ];
 
-const teamPlayers = computed(() =>
-    team.value.players
+const teamPlayers = computed(() => {
+    return team.value.players
         ?.filter(({ pivot }) => !pivot.status)
         .sort((a, b) => {
             const { pivot: pivotA } = a;
@@ -345,6 +345,7 @@ const teamPlayers = computed(() =>
                 PLAYER_SORT_ORDER.indexOf(positionB)
             );
         })
+}
 );
 
 const pendingPlayers = computed(() =>
@@ -353,7 +354,7 @@ const pendingPlayers = computed(() =>
 const {user: userId} = useUser();
 const hasRequested = computed(() => !canEdit.value && pendingPlayers.value.some(({id}) => id === userId.value))
 
-const columns = computed(() => (team.value?.players?.length < 5 ? 2 : 3));
+const columns = computed(() => (teamPlayers.value?.length < 4 ? 2 : 3));
 
 const emptySlots = computed(() => {
     if (columns.value === 2) {
@@ -362,7 +363,12 @@ const emptySlots = computed(() => {
     return 6 - teamPlayers.value?.length ?? 4;
 });
 // const columns = computed(() => 3)
-const columnStyle = computed(() => `repeat(${columns.value}, 1fr)`);
+const columnStyle = computed(() => {
+    if ($q.screen.xs) {
+        return `repeat(2, 1fr)`
+    }
+    return `repeat(${columns.value}, 1fr)`
+});
 
 const getStyle = (index) => {
     let directions;
@@ -375,13 +381,22 @@ const getStyle = (index) => {
             2: "bottom-left",
             3: "bottom-right",
         };
-    } else {
+    } else if (!$q.screen.xs) {
         directions = {
             0: "top-left",
             1: null,
             2: "top-right",
             3: "bottom-left",
             4: null,
+            5: "bottom-right",
+        };
+    } else {
+        directions = {
+            0: "top-left",
+            1: 'top-right',
+            2: null,
+            3: null,
+            4: 'bottom-left',
             5: "bottom-right",
         };
     }

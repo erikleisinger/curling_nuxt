@@ -332,8 +332,10 @@ const transform = computed(() => {
         t = {
             0: `translate(-${amount}px, -${amount}px)`,
             1: `translate(${amount}px, -${amount}px)`,
-            2: `translate(-${amount}px, ${amount}px)`,
-            3: `translate(${amount}px, ${amount}px)`,
+            2: `translate(-${amount}px)`,
+            3: `translate(${amount}px)`,
+            4: `translate(-${amount}px, ${amount}px)`,
+             5: `translate(${amount}px, ${amount}px)`,
         };
     }
     return `scale(1.05) ${t[props.index]}`;
@@ -357,7 +359,7 @@ const $q = useQuasar();
 
 const width = computed(() => {
     if (props.columns === 3) {
-        return $q.screen.xs ? "120px" : "150px";
+        return $q.screen.xs ? "150px" : "160px";
     } else {
         return $q.screen.xs ? "150px" : "160px";
     }
