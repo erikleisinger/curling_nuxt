@@ -1,4 +1,11 @@
 <template>
+<div class="player-tile__container--outer">
+    <div class="player-tiles__header full-width row justify-center">
+        <div class="player-tiles__header--inner">
+            Players
+        </div>
+
+    </div>
     <div class="player-tile__container">
         <TeamPagePlayerTile
             v-for="(player, index) in teamPlayers"
@@ -143,6 +150,7 @@
         </GlobalMenu>
       
     </div>
+</div>
       <div v-if="!canEdit" class="row full-width justify-center">
            <q-btn rounded class="request-btn" v-if="!hasRequested" @click="requestToJoin">Request to join team</q-btn>
            <q-chip v-else class="request-chip">Request pending</q-chip>
@@ -185,6 +193,23 @@
     @include reg-text;
 }
 
+
+.player-tiles__header--inner {
+    @include chunky-border(6px);
+    font-family: $font-family-header;
+    @include bg-slate-diagonal;
+    color: white;
+    padding: 0px var(--space-xl);
+    padding-top: var(--space-xxxs);
+    box-shadow: $pretty-shadow;
+    border-bottom: unset;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    position: relative;
+    line-height: 1;
+    @include text-caption;
+
+}
 .player-tile__container {
     display: grid;
     position: relative;

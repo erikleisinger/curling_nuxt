@@ -32,10 +32,12 @@
     </q-tabs>
  <LayoutSection  mainStyle="padding-left: unset; padding-right: unset; padding-bottom: var(--space-md)" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}" headerStyle="background-color: transparent">
     <div class="row">
-        <div :class="$q.screen.xs ? 'col-12' : 'col-5'">
+        <div :class="$q.screen.xs ? 'col-12' : team?.players?.length > 4 ? 'col-5' : 'col-6'">
         <TeamPageLocation :teamId="teamId"   />
         </div>
-    <div class="row justify-center" style="gap: 16px" :class="$q.screen.xs ? 'col-12' : 'col-7'">
+    <div class="row justify-center players-container" style="gap: 16px" :class="
+        $q.screen.xs ? 'col-12' : team?.players?.length > 4 ? 'col-7' : 'col-6'
+    ">
         <div  class="row justify-around" style="gap: var(--space-xs)">
          <TeamPagePlayers :teamId="teamId" />
         </div>
@@ -215,6 +217,12 @@
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+.players-container {
+    margin-top: var(--space-md);
+    @include sm {
+        margin-top: unset;
+    }
+}
 .view-badge-btn {
     background-color: $app-yellow;
     color: white;
