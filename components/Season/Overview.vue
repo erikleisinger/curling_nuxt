@@ -1,5 +1,7 @@
 <template>
+
  <div class="overview-section">
+      
         <div class="overview-tile">
             <q-skeleton v-if="isLoading" :height="$q.screen.xs ? '56px' : '75px'" :width="$q.screen.xs ? '50px' : '50px'" style="margin:auto"/>
             <h2 v-else class="overview-h2" ref="winPercentRef">{{winPercent}}<span class="append">%</span></h2>
@@ -89,6 +91,7 @@
 </style>
 <script setup>
 import {useUserTeamStore} from '@/store/user-teams'
+
 import {useQuery} from '@tanstack/vue-query';
 import gsap from 'gsap';
 import {Flip} from 'gsap/Flip';
@@ -191,6 +194,8 @@ const props = defineProps({
     // watch(badgeCountRef, (val) => {
     //     if (!!val) animateRef(val)
     // })
+
+
 
 const isLoading = computed(() => isLoadingBadgeCount.value || isLoadingGames.value || isLoadingWinPercent.value)
 

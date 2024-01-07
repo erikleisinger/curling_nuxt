@@ -8,13 +8,13 @@
     </div>
     <TeamPageHeader2
         :teamId="teamId"
-        @click="viewing = true"
         style="cursor: pointer"
         @loaded="headerLoaded = true"
         ref="header"
     />
 
-    <q-tabs
+  
+      <q-tabs
         class="team-page__tabs"
         ref="tabs"
         :class="{ dark: darkTabs }"
@@ -30,12 +30,21 @@
         <q-tab label="Leagues" :name="3" :ripple="false" />
         <q-tab label="Game history" :name="4" :ripple="false" />
     </q-tabs>
-    
- <LayoutSection  mainStyle="padding: unset" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}">
-    <TeamPageStatsOverview
+ <LayoutSection  mainStyle="padding-left: unset; padding-right: unset; padding-top: unset; padding-bottom: var(--space-md)" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}" headerStyle="background-color: transparent">
+        <TeamPageLocation :teamId="teamId"  :class="$q.screen.xs ? 'col-12' : 'col-6'" />
+    <div class="row full-width q-mt-md" style="gap: 16px">
+        <div :class="$q.screen.xs ? 'col-12' : 'col-6'" class="row justify-around" style="gap: var(--space-xs)">
+         <TeamPagePlayers :teamId="teamId" />
+        </div>
+
+
+   
+    <!-- <TeamPageStatsOverview
         :teamId="teamId"
         class="stats__overview"
-    />
+        :class="$q.screen.xs ? 'col-12' : 'col-6'"
+    /> -->
+    </div>
  </LayoutSection>
 
 
@@ -200,15 +209,6 @@
             </div>
         </q-card>
     </q-dialog>
-    <DialogPopup :open="viewing" @hide="viewing = false" max-width="500px">
-        <!-- <q-card class="team-details__viewer"> -->
-        <TeamPageDetails
-            @back="viewing = false"
-            v-if="viewing"
-            :teamId="teamId"
-        />
-        <!-- </q-card> -->
-    </DialogPopup>
 </template>
 <style lang="scss" scoped>
 .view-badge-btn {
@@ -335,7 +335,7 @@ const teamId = Number(route.params.id);
 const hasPlayedGames = computed(() => !!team.value?.games?.length);
 
 const team = computed(() =>
-    useRepo(Team).withAll().where("id", teamId).first()
+    useRepo(Team).withAllRecursive().where("id", teamId).first()
 );
 
 const stats = computed(() => team.value?.totalStats ?? {});

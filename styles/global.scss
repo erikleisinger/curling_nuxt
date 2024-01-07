@@ -375,3 +375,28 @@ $help-animation: attention 2s infinite linear;
 .q-dialog__inner  {
     max-height: calc(100 * var(--vh, 1vh))!important;
 }
+
+@mixin chunky-border($px: 4px) {
+    border: $px solid white;
+    
+    &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top:0;
+        bottom: 0;
+        border: 1px solid rgba(0,0,0,0.2);
+        border-radius: inherit;
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        left: calc($px * -1);
+        right: calc($px * -1);
+        top: calc($px * -1);
+        bottom: calc($px * -1);
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: inherit;
+    }
+}

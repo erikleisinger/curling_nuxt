@@ -1,6 +1,6 @@
 <template>
 <section>
-        <header class="section__header">
+        <header class="section__header" :style="headerStyle">
             <div class="rings-icon__wrap">
                 <Rings :size="$q.screen.xs ? '25px' : '32px'" />
             </div>
@@ -103,6 +103,7 @@
 </style>
 <script setup>
 const props = defineProps({
+    headerStyle: String,
     noPadding: Boolean,
     mainStyle: String,
     title: String,

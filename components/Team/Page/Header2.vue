@@ -1,9 +1,9 @@
 <template>
-    <LayoutCircleTitle :title="team.name" :backgroundImage="avatar">
+    <LayoutCircleTitle :title="team.name" :backgroundImage="avatar" ref="header" >
         <template v-slot:prepend>
-             <div class="full-width players__header">
+             <div class="full-width players__header row justify-center">
             
-                <div class="row justify-start players__container reverse" v-if="playersGroupTwo?.length">
+                <!-- <div class="row justify-start players__container" v-if="playersGroupTwo?.length">
                     <div
                         class="player-avatar__container"
                         v-for="player in playersGroupTwo"
@@ -12,11 +12,12 @@
                         <Avataaar v-bind="parseAvatar(player.avatar)" />
                     </div>
                   
-                </div>
-                <div v-else/>
+                </div> -->
+              
 
-                <h2>Team</h2>
-                <div class="row justify-start players__container reverse">
+                <h2 ref="teamHeaderText">Team</h2>
+
+                <!-- <div class="row justify-start players__container reverse">
                     <div
                         class="player-avatar__container"
                         v-for="player in playersGroupOne"
@@ -25,13 +26,15 @@
                         <Avataaar v-bind="parseAvatar(player.avatar)" />
                     </div>
                     
-                </div>
+                </div> -->
             </div> 
             </template>
+        
     </LayoutCircleTitle>
 
 </template>
 <style lang="scss" scoped>
+
 .header__container {
     position: relative;
     width: 100%;
@@ -51,8 +54,7 @@
         flex-direction: column;
     }
     .players__header {
-        display: grid;
-        grid-template-columns: 1fr 50px 1fr;
+ 
         position: relative;
         height: 40px;
         @include sm {
@@ -62,10 +64,10 @@
             width: 25px;
             margin-left: var(--space-xs);
             @include sm {
-                width: 40px;
+                width: 35px;
             }
             @include md {
-                width: 50px;
+                width: 35px;
             }
         }
         .players__container {
@@ -73,7 +75,7 @@
             top: 2px;
             left: 12px;
             flex-wrap: wrap;
-            max-width: 42vw;
+            max-width: v-bind(maxWidth);
             &.reverse {
                 flex-wrap: wrap;
                 right: 12px;
@@ -190,7 +192,7 @@ const { data: avatar } = getTeamAvatar(props.teamId, {
 
 const players = computed(() => {
     const p = useRepo(TP).with("player").where("team_id", props.teamId).get();
-    return p
+    const pyrs = p
         .map(({ player, status, position }) => ({
             ...player,
             status,
@@ -203,6 +205,8 @@ const players = computed(() => {
                 -1
             );
         });
+
+        return [...pyrs, ...pyrs, ...pyrs, ...pyrs]
 });
 
 const requests = computed(() =>
@@ -210,7 +214,7 @@ const requests = computed(() =>
 );
 
 const playersGroupOne = computed(() => [...players.value]?.splice(0, 4))
-const playersGroupTwo = computed(() => [...players.value]?.splice(4, 8))
+const playersGroupTwo = computed(() => [...players.value]?.splice(4, 4))
 
 const { user: userId } = useUser();
 
@@ -230,6 +234,15 @@ const underlay = ref(null);
 const { width: underlayWidth } = useElementSize(underlay);
 
 const header = ref(null);
-const { height: headerHeight } = useElementBounding(header);
+const { width: headerWidth } = useElementBounding(header);
+
+const teamHeaderText = ref(null);
+const {width: teamHeaderTextWidth} = useElementBounding(teamHeaderText);
+
+const maxWidth = computed(() => `${(headerWidth.value / 2) - teamHeaderTextWidth.value}px`)
+
+
+
+
 // const left = computed(() => `${-1 * (underlayWidth.value / 2)}px`)
 </script>
