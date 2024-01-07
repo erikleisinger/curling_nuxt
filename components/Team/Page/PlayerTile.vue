@@ -17,17 +17,57 @@
             </div>
         </div>
         <h3 class="player-name text-center" style="visibility: hidden">
-            {{ player.first_name }}
-            <br />
-            {{ player.last_name }}
+            <div class="player-name__text">
+                <div class="player-text">
+                    {{ player.first_name }}
+                    <br />
+                    {{ player.last_name }}
+                </div>
+            </div>
+
+            <!-- SHADOW VERSION FOR STYLING -->
+            <div class="row justify-center full-width">
+                <q-btn flat round icon="chevron_left" color="white" v-if="editing"/>
+                <div class="text-caption player-position" v-if="playerId">
+                    {{ player.position ?? "member" }}
+                </div>
+                <q-btn flat round icon="chevron_right" v-if="editing"/>
+            </div>
         </h3>
 
         <div class="player-name__float text-center">
             <div class="player-name__float--underlay" />
             <div class="player-name__text">
-                {{ player.first_name }}
-                <br />
-                {{ player.last_name }}
+                <div class="player-text">
+                    {{ player.first_name }}
+                    <br />
+                    {{ player.last_name }}
+                </div>
+            </div>
+            <div class="row justify-center full-width">
+                <q-btn
+                    flat
+                    round
+                    icon="chevron_left"
+                    color="white"
+                    size="0.3em"
+                    dense
+                    v-if="editing"
+                    @click="position = 'bla'"
+                />
+                <div class="text-caption player-position" v-if="playerId">
+                    {{ player.position ?? "member" }}
+                </div>
+                <q-btn
+                    flat
+                    round
+                    icon="chevron_right"
+                    size="0.3em"
+                    dense
+                    @click.stop
+                     v-if="editing"
+                      @click="position = 'ima baby'"
+                />
             </div>
         </div>
         <div v-if="canEdit && !playerId" class="floating--add">
@@ -39,18 +79,14 @@
                 @click="emit('add')"
             />
         </div>
-        <!-- <transition appear enter-active-class="animated fadeIn">
-            <div class="menu" :class="{ reverse }" v-if="selected">
-                <div>
 
-                </div>
-            </div>
-        </transition> -->
+        
     </div>
 </template>
 <style lang="scss" scoped>
 .player-tile {
     padding: var(--space-sm);
+    padding-bottom: 0px;
     background-color: $app-slate;
 
     &.empty {
@@ -139,12 +175,20 @@
             position: relative;
 
             padding: 0px var(--space-sm);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+
             overflow: hidden;
+            .player-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
         }
         padding: var(--space-sm) 0px;
+        padding-bottom: 0px;
+
+        .player-position {
+            color: $app-blue;
+        }
     }
 
     .floating--add {
@@ -238,8 +282,10 @@ import { onClickOutside } from "@vueuse/core";
 
 const props = defineProps({
     canEdit: Boolean,
+    editing: Boolean,
     index: Number,
     columns: Number,
+    modelValue: String,
     playerId: {
         type: String,
         required: false,
@@ -248,7 +294,16 @@ const props = defineProps({
     teamId: Number,
 });
 
-const emit = defineEmits(["deselect"]);
+const emit = defineEmits(["deselect", "update:modelValue"]);
+
+const position = computed({
+    get() {
+        return props.modelValue;
+    },
+     set(val) {
+        emit('update:modelValue', val)
+    }
+})
 
 const player = computed(() => {
     const p = useRepo(TeamPlayer)
@@ -273,6 +328,13 @@ const transform = computed(() => {
             2: `translate(-${amount}px, ${amount}px)`,
             3: `translate(${amount}px, ${amount}px)`,
         };
+    } else {
+        t = {
+            0: `translate(-${amount}px, -${amount}px)`,
+            1: `translate(${amount}px, -${amount}px)`,
+            2: `translate(-${amount}px, ${amount}px)`,
+            3: `translate(${amount}px, ${amount}px)`,
+        };
     }
     return `scale(1.05) ${t[props.index]}`;
 });
@@ -291,16 +353,13 @@ const onOutsideClick = (e) => {
 const playerRef = ref(null);
 onClickOutside(playerRef, onOutsideClick);
 
-
 const $q = useQuasar();
 
 const width = computed(() => {
     if (props.columns === 3) {
-        return $q.screen.xs ? '120px' : '150px'
-        
-        
+        return $q.screen.xs ? "120px" : "150px";
     } else {
-        return $q.screen.xs ? '150px' : '160px';
+        return $q.screen.xs ? "150px" : "160px";
     }
-})
+});
 </script>
