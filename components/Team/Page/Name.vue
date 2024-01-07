@@ -51,7 +51,6 @@ const lines = computed(() => {
             const allClone = [...all];
 
             const lastLine = allClone.splice(allClone.length - 1, 1)[0];
-            console.log("last line: ", lastLine, current, allClone);
             lastLine.push(current);
             return [...allClone, lastLine];
         } else {

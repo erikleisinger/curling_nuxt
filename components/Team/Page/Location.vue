@@ -1,5 +1,6 @@
 <template>
-    <div class="location-container row no-wrap" @click="navigateTo(`/rinks/${team.rink.id}`)">
+    <div class="location-container row no-wrap" >
+        <!-- @click="navigateTo(`/rinks/${team.rink.id}`)" -->
         <div class="province">
             <ProvinceOn v-if="teamProvince === 'ON'" height="100%" />
         </div>

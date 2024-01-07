@@ -386,8 +386,9 @@ $help-animation: attention 2s infinite linear;
         right: 0;
         top:0;
         bottom: 0;
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid rgba(0,0,0,0.08);
         border-radius: inherit;
+        pointer-events: none;
     }
     &:after {
         content: '';
@@ -398,5 +399,6 @@ $help-animation: attention 2s infinite linear;
         bottom: calc($px * -1);
         border: 1px solid rgba(0,0,0,0.1);
         border-radius: inherit;
+        pointer-events: none;
     }
 }

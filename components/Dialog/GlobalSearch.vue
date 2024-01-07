@@ -10,6 +10,7 @@
                     :resourceTypes="options.resourceTypes ?? []"
                     :filterIds="options.filterIds"
                     :restrictIds="options.restrictIds"
+                    :filterIdMsg="options.filterIdMsg"
                 >
                     <template v-slot:before>
                         <q-btn

@@ -52,9 +52,10 @@
                 <q-item
                     v-for="result in results"
                     :key="result.id"
-                    @click="emit('select', { result, event: $event })"
+                    @click="onClick(result, $event)"
                     clickable
                     v-ripple
+
                 >
 
                 <!-- Avatar -->
@@ -90,33 +91,39 @@
                         
                         <q-item-label class="text-bold">{{ result.name }}</q-item-label>
                         <q-item-label caption> {{ `${result.city}, ${result.province}` }}</q-item-label>
+             <q-item-label v-if="filterIdMsg && isDisabled(result)" class="text-caption text-red">{{filterIdMsg(result)}}</q-item-label>
                     </q-item-section>
 
                       <q-item-section v-if="result.resourcetype === 'team'">
     
                         <q-item-label class="text-bold">{{ result.name }}</q-item-label>
                         <q-item-label caption> {{ result.rink_name }}</q-item-label>
+                  <q-item-label v-if="filterIdMsg && isDisabled(result)" class="text-caption text-red">{{filterIdMsg(result)}}</q-item-label>
                     </q-item-section>
 
                          <q-item-section v-if="result.resourcetype === 'event'">
                         <q-item-label class="text-bold">{{ result.name }}</q-item-label>
                         <q-item-label caption> {{ result.loc }}</q-item-label>
+                     <q-item-label v-if="filterIdMsg && isDisabled(result)" class="text-caption text-red">{{filterIdMsg(result)}}</q-item-label>
                     </q-item-section>
 
                           <q-item-section v-if="result.resourcetype === 'profile'">
                         <q-item-label class="text-bold"> {{ result.first_name }} {{ result.last_name }}</q-item-label>
                         <q-item-label caption>   @{{ result.name }}</q-item-label>
+                         <q-item-label v-if="filterIdMsg && isDisabled(result)" class="text-caption text-red">{{filterIdMsg(result)}}</q-item-label>
                     </q-item-section>
 
                          <q-item-section v-if="result.resourcetype === 'league'">
                         <q-item-label class="text-bold"  :style="{color: result.color}"> {{ result.name }} </q-item-label>
                         <q-item-label caption>   @{{ result.rink_name }}</q-item-label>
+                      <q-item-label v-if="filterIdMsg && isDisabled(result)" class="text-caption text-red">{{filterIdMsg(result)}}</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
                         <q-item-label caption>
                             {{formattedType(result.resourcetype)}}
                         </q-item-label>
                     </q-item-section>
+                   
                 </q-item>
             </q-list>
         </transition>
@@ -216,6 +223,7 @@ const props = defineProps({
         type: Array,
         default: [],
     },
+    filterIdMsg: Function,
     globalOnly: Boolean,
     hideHint: Boolean,
     hideIcons: Boolean,
@@ -259,6 +267,7 @@ const useSearch = useThrottleFn(async () => {
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
         if (
+            !props.filterIdMsg && 
             props.filterIds.length &&
             (props.filterIds.includes(current.id) ||
                 (current.resourcetype === "profile" &&
@@ -308,6 +317,15 @@ const { height: searchBarHeight, y: searchBarY } =
             league: 'League',
             event: 'Event',
         }[type]
+    }
+
+    const onClick = (result, event) => {
+        if (props.filterIds.includes(result.id) || props.filterIds.includes(result.profile_id) || props.filterIds.includes(result.team_id)) return;
+        emit('select', { result, event })
+    }
+
+    const isDisabled = (result) => {
+        return props.filterIds.includes(result.id) || props.filterIds.includes(result.profile_id) || props.filterIds.includes(result.team_id)
     }
 </script>
 <script>
