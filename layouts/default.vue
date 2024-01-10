@@ -99,7 +99,8 @@ $footer-height-sm: 4em;
         display: none;
     }
 
-    @include bg-pebble;
+    // @include bg-pebble;
+    background-color: white;
     .q-header {
         background-color: white;
         margin: auto;

@@ -1,124 +1,64 @@
 <template>
-    <div class="linescore-options__container full-height">
-        <div class="column  no-wrap" style="max-width: 100vw">
-            <h2 class="text-xl title text-bold title q-px-md text-center">
-                Edit game
-            </h2>
-            <div class="full-width text-center">
-                Click the rocks to change colors. Press an avatar to select the
-                team with hammer in the first end.
-            </div>
-        </div>
-        <div class="linescore-confirmation__container">
-            <div class="team-option__container">
-                <div class="team__container">
-                    <div class="avatar-container">
-                        <TeamAvatar
-                            :teamId="selections.home?.id"
-                            :color="selections.homeColor"
-                            :viewable="false"
-                        />
-                        <div class="color__container clickable">
-                            <div class="color-selection__wrap">
-                                <SelectRockColor
-                                    v-model="selections.homeColor"
-                                    :prevent="[selections.awayColor]"
-                                />
-                            </div>
-                        </div>
-                        <div class="hammer__container clickable">
-                            <q-icon
-                                clickable
-                                :name="
-                                    selections.hammerFirstEndTeam ===
-                                    selections.home.id
-                                        ? 'hardware'
-                                        : 'o_hardware'
-                                "
-                                :color="
-                                    selections.hammerFirstEndTeam ===
-                                    selections.home.id
-                                        ? 'deep-purple'
-                                        : 'grey-6'
-                                "
-                                @click="setHammer(selections.home.id)"
-                                class="hammer-icon"
-                                :class="{
-                                    selected:
-                                        selections.hammerFirstEndTeam ===
-                                        selections.home.id,
-                                }"
+    <LinescorePageContainer @next="emit('select')">
+        <template v-slot:title> Edit game </template>
+        <template v-slot:subtitle>
+            Click rocks to change colors. Click hammers to set hammer in the
+            first end.
+        </template>
+        <template v-slot:content>
+            <div class="linescore-confirmation__container">
+                <div class="team-option__container">
+                    <div class="team__container">
+                        <div class="avatar-container">
+                            <TeamAvatar
+                                :teamId="selections.home?.id"
+                                :color="selections.homeColor"
+                                :viewable="false"
                             />
+                            <div class="color__container clickable">
+                                <div class="color-selection__wrap">
+                                    <SelectRockColor
+                                        v-model="selections.homeColor"
+                                        :prevent="[selections.awayColor]"
+                                    />
+                                </div>
+                            </div>
+                            <GameHammerIndicator :hasHammer=" selections.hammerFirstEndTeam ===
+                                        selections.home.id" @select="setHammer(selections.home.id)" clickable/>
                         </div>
-                    </div>
-                    <div class="text-center text-bold text-md q-pt-sm">
-                        {{ selections.home?.name || "Opposition team" }}
+                        <div class="text-center text-bold text-md q-pt-sm">
+                            {{ selections.home?.name || "Opposition team" }}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="team-option__container">
-                <div class="team__container">
-                    <div class="avatar-container">
-                        <TeamAvatar
-                            :teamId="selections?.away?.id"
-                            :color="selections.awayColor"
-                            :viewable="false"
-                        />
-                        <div class="color__container clickable">
-                            <div class="color-selection__wrap ">
-                                <SelectRockColor
-                                    v-model="selections.awayColor"
-                                    :prevent="[selections.homeColor]"
-                                />
-                            </div>
-                        </div>
-                        <div class="hammer__container clickable">
-                            <q-icon
-                                clickable
-                                :name="
-                                    selections.hammerFirstEndTeam ===
-                                    selections.away.id
-                                        ? 'hardware'
-                                        : 'o_hardware'
-                                "
-                                :color="
-                                    selections.hammerFirstEndTeam ===
-                                    selections.away.id
-                                        ? 'deep-purple'
-                                        : 'grey-6'
-                                "
-                                @click="setHammer(selections.away.id)"
-                                class="hammer-icon"
-                                :class="{
-                                    selected:
-                                        selections.hammerFirstEndTeam ===
-                                            selections.away.id ||
-                                        selections.hammerFirstEndTeam ===
-                                            undefined,
-                                }"
+                <div class="team-option__container">
+                    <div class="team__container">
+                        <div class="avatar-container">
+                            <TeamAvatar
+                                :teamId="selections?.away?.id"
+                                :color="selections.awayColor"
+                                :viewable="false"
                             />
+                            <div class="color__container clickable">
+                                <div class="color-selection__wrap">
+                                    <SelectRockColor
+                                        v-model="selections.awayColor"
+                                        :prevent="[selections.homeColor]"
+                                    />
+                                </div>
+                            </div>
+                            <GameHammerIndicator :hasHammer="selections.hammerFirstEndTeam ===
+                                        selections.away.id" @select="setHammer(selections.away.id)" clickable/>
                         </div>
-                    </div>
-                    <div class="text-bold text-md text-center q-pt-sm">
-                        {{ selections.away?.name || "Opposition team" }}
+                        <div class="text-bold text-md text-center q-pt-sm">
+                            {{ selections.away?.name || "Opposition team" }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-         <div class="row justify-center items-start">
-            <q-btn
-                icon="check_circle"
-                color="green"
-                size="50px"
-                flat
-                round
-                dense
-                @click="emit('select')"
-               
-            />
-        </div>
-    </div>
+        </template>
+    </LinescorePageContainer>
 </template>
 <style lang="scss" scoped>
 $hammer-container-padding: var(--space-md);
@@ -131,21 +71,20 @@ $color-selection-height: 3em;
 .linescore-confirmation__container {
     width: min(500px, 100vw);
     margin: auto;
-  
+
     display: grid;
     grid-template-columns: repeat(2, 50%);
-    
+
     .team-option__container {
         display: flex;
         flex-direction: column;
         position: relative;
 
-        .color__container,
-        .hammer__container {
+        .color__container {
             z-index: 1;
             transition: transform 0.2s;
             &:hover {
-                transform: scale(1.1)
+                transform: scale(1.1);
             }
         }
 
@@ -160,27 +99,7 @@ $color-selection-height: 3em;
                 width: $color-selection-height;
             }
         }
-        .hammer__container {
-            width: 3em;
-            height: 3em;
-            position: absolute;
-            bottom: -5px;
-            left: -10px;
-            z-index: 3;
-            background-color: white;
-            aspect-ratio: 1/1;
-            border-radius: 50%;
-            border: 1px solid rgba(0, 0, 0, 0.3);
-            padding: 2px;
-            .hammer-icon {
-                transition: all 0.2s linear;
-                font-size: calc(3em - 6px);
-                &.selected {
-                    transform: rotate(45deg);
-                    // font-size: 3em;
-                }
-            }
-        }
+
         .team__container {
             display: flex;
             flex-direction: column;
@@ -191,7 +110,7 @@ $color-selection-height: 3em;
             position: relative;
         }
         .avatar-container {
-            width: 18vh;
+            width: 8rem;
             position: relative;
         }
     }
@@ -212,7 +131,7 @@ const props = defineProps({
     modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue", 'select']);
+const emit = defineEmits(["update:modelValue", "select"]);
 
 const selections = computed({
     get() {

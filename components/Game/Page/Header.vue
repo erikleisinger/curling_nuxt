@@ -26,6 +26,7 @@
             >
                 <TeamGameResultVerification :gameId="Number(gameId)" />
             </div>
+          
         </template>
     </LayoutCircleTitle>
 </template>
@@ -41,5 +42,6 @@ import Game from '@/store/models/game'
     const game = computed(() => useRepo(Game).withAll().where('id', props.gameId).first())
 
     const {toTimezone} = useTime();
+
 </script>
 

@@ -102,7 +102,11 @@
                 width: 100%;
                 height: 100%;
                 margin: auto;
-                font-size: max(1.3em, 2vw);
+               @include reg-text;
+               line-height: 1.5;
+               @include sm {
+               font-size: 1.2rem;
+               }
                 position: relative;
                 display: flex;
                 justify-content: center;
@@ -124,7 +128,11 @@
         &:nth-child(1) {
             .linescore-column--item {
                 font-weight: bold;
-                font-size: max(1.5em, 2vw);
+                 @include reg-text;
+                 line-height: 1.5;
+                  @include sm {
+               font-size: 1.2rem;
+               }
             }
         }
     }

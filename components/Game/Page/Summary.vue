@@ -1,39 +1,101 @@
 <template>
-       <div class="game-summary__container">
-        <div class="avatar-container">
-            <TeamAvatar
-                :teamId="home?.team_id"
-                :color="home?.color"
-                style="height: unset"
+    <div
+        class="game-summary__container"
+        ref="container"
+        :class="{ stickied }"
+        v-if="home?.team"
+    >
+        <div class="stickied-bg" :class="{ stickied }">
+            <div
+                :style="{ backgroundColor: getColor(home?.color) }"
+                class="sticky-bg"
+            />
+            <div
+                :style="{ backgroundColor: getColor(away?.color) }"
+                class="sticky-bg"
             />
         </div>
-        <div class="column justify-center items-center">
+        <div class="row items-center no-wrap team-row">
+            <div class="avatar-container">
+                <TeamAvatar :teamId="home?.team_id" :color="home?.color" />
+            </div>
+            <div
+                v-show="stickied"
+                style="color: white; z-index: 1"
+                data-flip-id="home-name"
+                class="team-name--color"
+            >
+                {{ home.team?.name }}
+            </div>
+        </div>
+        <div
+            class="column justify-center items-center"
+            style="z-index: 1"
+            :class="{ stickied }"
+        >
             <h2 class="score">
                 {{ home?.points_scored ?? 0 }} : {{ away?.points_scored ?? 0 }}
             </h2>
-           
         </div>
-           <div class="avatar-container full-width">
-            <TeamAvatar
-                :teamId="away?.id"
-                :color="away?.color"
-                style="height: unset;"
-            />
-           
+        <div class="row items-center no-wrap team-row">
+            <div
+                v-show="stickied"
+                style="color: white; z-index: 1"
+                class="text-right team-name--color"
+                data-flip-id="away-name"
+            >
+                {{ away.team?.name }}
+            </div>
+            <div class="avatar-container">
+                <TeamAvatar :teamId="away?.id" :color="away?.color" />
+            </div>
         </div>
-          <h3 class="text-center md-text q-pt-md">{{home?.team?.name}}</h3>
+        <h3
+            class="text-center smmd-text q-pt-md team-name"
+            :class="{ 'hide-sticky': stickied }"
+            data-flip-id="home-name"
+        >
+            {{ home?.team?.name }}
+        </h3>
 
-          <div class="full-width text-center text-caption" style="margin-top: -1.5em">After 8</div>
-           <h3 class="text-center md-text q-pt-md">{{ away?.team?.name }}</h3>
+        <div
+            class="full-width text-center text-caption"
+            style="margin-top: -1.5em; z-index: 1"
+        >
+            After 8
+        </div>
+        <h3
+            class="text-center smmd-text q-pt-md team-name"
+            :class="{ 'hide-sticky': stickied }"
+            data-flip-id="away-name"
+        >
+            {{ away?.team?.name }}
+        </h3>
     </div>
 </template>
 <style lang="scss" scoped>
-        .game-summary__container {
+.game-summary__container {
     display: grid;
     grid-template-columns: 30% 40% 30%;
     padding: 0px var(--space-md);
     margin: var(--space-lg) auto;
     max-width: 700px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    &.stickied {
+        padding: 0px var(--space-xs);
+        .team-row {
+            padding: var(--space-md) 0px;
+            gap: 4px;
+            font-family: $font-family-header;
+        }
+    }
+    .team-name--color {
+        line-height: 1;
+        font-size: 1.1rem;
+    }
 
     .score {
         @include lg-text;
@@ -41,24 +103,120 @@
             @include xl-text;
         }
     }
-    .avatar-container {
 
+    .hide-sticky {
+        visibility: hidden;
+        // padding: unset;
+    }
+
+    .avatar-container {
+        width: 100%;
         .avatar-outer__container {
-max-width:175px;
-margin-left: auto;
-margin-right: auto;
+            max-width: 120px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
+    }
+
+    &.stickied {
+        .avatar-container {
+            width: 40px;
+            min-width: 40px;
+            height: 40px;
+        }
+    }
+    .stickied-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 50%);
+        overflow: hidden;
+        height: 92px;
+
+        .sticky-bg {
+            visibility: hidden;
+        }
+        &.stickied {
+            .sticky-bg {
+                visibility: visible;
+            }
+        }
+    }
+    .stickied {
+        color: white;
     }
 }
 </style>
 <script setup>
-   import GameTeam from '@/store/models/game-team';
+import GameTeam from "@/store/models/game-team";
+import { useScroll, useElementBounding } from "@vueuse/core";
+import gsap from "gsap";
+import { Flip } from "gsap/Flip";
+gsap.registerPlugin(Flip);
 
-    const props = defineProps({
-        gameId: Number,
-    })
+const props = defineProps({
+    gameId: Number,
+});
 
-    const home = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).where('home_team', true).first())
-    const away = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).where('home_team', false).first())
+const { getColor } = useColor();
+
+const home = computed(() =>
+    useRepo(GameTeam)
+        .with("team")
+        .where("game_id", props.gameId)
+        .where("home_team", true)
+        .first()
+);
+const away = computed(() =>
+    useRepo(GameTeam)
+        .with("team")
+        .where("game_id", props.gameId)
+        .where("home_team", false)
+        .first()
+);
+
+const container = ref(null);
+const { y: containerY } = useElementBounding(container);
+
+const stickied = ref(false);
+
+const { y: scrollY } = useScroll(document.querySelector(`#global-container`), {
+    onScroll: () => {
+        setSticky();
+    },
+});
+
+const $q = useQuasar();
+
+const setSticky = () => {
+    const newVal = containerY.value <= ($q.screen.xs ? 64 : 80);
+
+    let doAnimation = false;
+    let state;
+    if (newVal !== stickied.value) {
+        doAnimation = true;
+        state = Flip.getState(
+            container.value.querySelectorAll(
+                ".avatar-container, .sticky-bg, .stickied-bg, .team-name, .team-name--color"
+            )
+        );
+    }
+    stickied.value = newVal;
+    if (!doAnimation) return;
+    nextTick(() => {
+        runAnimation(state);
+    });
+};
+
+const runAnimation = (state) => {
+    Flip.from(state, {
+        duration: 0.2,
+        nested: true,
+        scale: true,
+        transformOrigin: "left",
+    });
+};
 </script>

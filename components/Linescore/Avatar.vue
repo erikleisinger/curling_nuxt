@@ -25,7 +25,7 @@
                 ]"
             />
 
-            <div
+            <!-- <div
                 class="hammer-container"
                 ref="hammerContainer"
                 v-if="selectHammer || hasHammer"
@@ -36,7 +36,8 @@
                 @click="onHammerClick"
             >
                 <IconHammer :color="hasHammer ? 'white' : '#36454F'" />
-            </div>
+            </div> -->
+            <GameHammerIndicator :hasHammer="hasHammer" size="2.5em" v-if="showHammer"/>
             <div
                 class="color-container"
                 @click="onColorClick"
@@ -198,6 +199,7 @@ const props = defineProps({
     restrictIds: Array,
     selectColor: Boolean,
     selectHammer: Boolean,
+    showHammer: Boolean,
     showNames: Boolean,
     preventColors: {
         type: Array,
@@ -377,6 +379,8 @@ watch(
         }
     }
 );
+
+
 </script>
 <script>
 export default {

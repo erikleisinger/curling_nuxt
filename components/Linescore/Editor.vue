@@ -134,6 +134,7 @@
                             "
                             :filterIds="[selections.away?.id]"
                             :viewable="summary && canViewTeams"
+                            showHammer
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select your team
@@ -213,6 +214,7 @@
                             :showNames="summary"
                             :filterIds="[selections.home?.id]"
                             :viewable="canViewTeams && summary && selections.away?.id && selections?.away?.id < 100000000"
+                            showHammer
                         >
                             <template v-slot:teamSelectPrompt>
                                 Select opposition

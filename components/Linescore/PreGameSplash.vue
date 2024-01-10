@@ -16,7 +16,7 @@
                         :color="modelValue.homeColor"
                         class="avatar"
                     />
-                    <div
+                    <!-- <div
                         class="hammer__container clickable"
                         v-if="
                             modelValue.hammerFirstEndTeam === modelValue.home.id
@@ -28,7 +28,10 @@
                             color="deep-purple"
                             class="hammer-icon selected"
                         />
-                    </div>
+                    </div> -->
+                    <GameHammerIndicator hasHammer v-if="
+                            modelValue.hammerFirstEndTeam === modelValue.home.id
+                        "/>
                 </div>
             </div>
             <div
@@ -43,7 +46,7 @@
                         :color="modelValue.awayColor"
                         class="avatar"
                     />
-                    <div
+                    <!-- <div
                         class="hammer__container clickable"
                         v-if="
                             modelValue.hammerFirstEndTeam === modelValue.away.id
@@ -55,7 +58,10 @@
                             color="deep-purple"
                             class="hammer-icon selected"
                         />
-                    </div>
+                    </div> -->
+                    <GameHammerIndicator hasHammer v-if="
+                            modelValue.hammerFirstEndTeam === modelValue.away.id
+                        "/>
                 </div>
                 <h2
                     class="text-lg text-right text-bold text-uppercase q-pt-sm text-italic team-name away"
@@ -139,27 +145,7 @@
                 height: fit-content;
                 width: 100%;
             }
-            .hammer__container {
-                width: 3em;
-                height: 3em;
-                position: absolute;
-                bottom: -5px;
-                left: -10px;
-                z-index: 3;
-                background-color: white;
-                aspect-ratio: 1/1;
-                border-radius: 50%;
-                border: 1px solid rgba(0, 0, 0, 0.3);
-                padding: 2px;
-                .hammer-icon {
-                    transition: all 0.2s linear;
-                    font-size: calc(3em - 6px);
-                    &.selected {
-                        transform: rotate(45deg);
-                      
-                    }
-                }
-            }
+
         }
     }
     .team-container {

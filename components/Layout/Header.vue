@@ -40,12 +40,13 @@
         
         // padding-right: var(--space-sm);
         // @include bg-blue-side;
-        background-color: #011936;
+        background-color: $app-royal-blue;
         &.q-toolbar {
-            height: 4em;
+            height: $app-header-height-xs;
             @include sm {
-                height: 4em;
+                height: $app-header-height-sm;
             }
+           
         }
        
     }

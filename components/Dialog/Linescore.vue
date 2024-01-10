@@ -1,6 +1,6 @@
 <template>
         <div
-            style="z-index: 1; transform: translateX(0); position: relative"
+            style="z-index: 1; transform: translateX(0); position: relative; overflow: hidden"
             class="full-height"
         >
             <div class="nav--container row justify-between full-width " style="z-index: 200">
@@ -22,7 +22,7 @@
                     <div>Save game</div>
                 </q-btn>
             </div>
-            <div class="full-height linescore__container" style="z-index: 100">
+            <div class="linescore__container" style="z-index: 100">
                 <div
                     v-if="view === views.NO_TEAM"
                     class="full-height full-width row justify-center q-pa-md"
@@ -56,17 +56,18 @@
                 <LinescoreEndCountSelect
                     v-if="view === views.END_COUNT_SELECT"
                     v-model="endCount"
-                    @update:modelValue="view = views.HOME_SELECT"
+                    @select="view = views.HOME_SELECT"
                 />
+                <!-- @update:modelValue="view = views.HOME_SELECT" -->
                 <LinescoreTeamSelect
                     v-if="view === views.HOME_SELECT"
                     homeTeam
                     v-model="gameParams.home"
                     @select="view = views.AWAY_SELECT"
                 >
-                    <h2 class="text-xl text-bold title text-center">
+                   
                         Select your team
-                    </h2>
+                
                 </LinescoreTeamSelect>
                 <LinescoreTeamSelect
                     v-if="view === views.AWAY_SELECT"
@@ -74,9 +75,9 @@
                     @select="view = views.GAME_PARAMS"
                     :filterIds="[gameParams.home?.id]"
                 >
-                    <h2 class="text-xl text-bold title text-center">
+                   
                         Select opposition
-                    </h2>
+              
                 </LinescoreTeamSelect>
                 <LinescoreColorHammerSelect
                     v-if="view === views.GAME_PARAMS"
@@ -333,6 +334,10 @@ $blob-blur: 32px;
 .linescore__container {
     position: relative;
     overflow-x: hidden;
+    height: calc(100 * var(--vh, 1vh) - $app-header-height-xs);
+    @include sm {
+ height: calc(100 * var(--vh, 1vh) - $app-header-height-sm);
+    }
 
 
 }
@@ -466,10 +471,6 @@ const awayTotal = computed(() =>
 
 const endCount = ref(8);
 
-const setEndCount = (num) => {
-    endCount.value = num;
-    view.value = null;
-};
 
 const endNumbers = computed(() =>
     Object.keys(score.value).map((e) => Number.parseInt(e))

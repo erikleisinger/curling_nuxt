@@ -10,7 +10,7 @@
                    <TeamAvatar
                 :teamId="home?.team_id"
                 :color="home?.color"
-                style="height: unset; width: 30px"
+                class="avatar"
             />
          </template>
            <template v-slot:avatarAway>
@@ -18,12 +18,21 @@
                    <TeamAvatar
                 :teamId="away?.team_id"
                 :color="away?.color"
-                style="height: unset; width: 30px"
+                  class="avatar"
             />
          </template>
                 
       </LinescoreGrid>
 </template>
+<style lang="scss" scoped>
+    .avatar {
+        height: unset;
+        width: 100%;
+        padding: var(--space-xxxs);
+        margin-top: unset;
+    
+    }
+</style>
 <script setup>
     import GameTeam from '@/store/models/game-team';
     import Game from '@/store/models/game'

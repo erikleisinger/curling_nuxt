@@ -16,19 +16,19 @@
             style="position: relative"
             :style="{ height }"
         >
-          <slot name="prepend" />
+            <slot name="prepend" />
             <div class="full-width" style="position: relative">
                 <slot />
                 <div class="percent-wrapper"></div>
             </div>
-               <slot name="append" />
+            <slot name="append" />
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
 .percent-wrapper {
     position: relative;
-    border-radius: 8px;
+    border-radius: v-bind(radius);
     overflow: hidden;
     width: 100%;
     height: v-bind(height);
@@ -38,7 +38,7 @@
     &:after {
         content: "";
         height: 100%;
-        border-radius: 8px;
+        border-radius: inherit;
         background-color: v-bind(bg);
         position: absolute;
         left: v-bind(left);
@@ -78,6 +78,7 @@ const props = defineProps({
     },
     percent: Number,
     label: String,
+    oneWay: Boolean,
     reverse: Boolean,
     showLabel: Boolean,
     showPercent: Boolean,
@@ -102,5 +103,11 @@ onMounted(() => {
 
 const bg = computed(() => {
     return getColor(props.color);
+});
+
+const radius = computed(() => {
+    if (!props.oneWay) return `${props.height}`;
+    if (props.reverse) return `${props.height} 0px 0px ${props.height}`;
+    return `0px ${props.height} ${props.height} 0px`;
 });
 </script>

@@ -8,12 +8,12 @@
             class="stats__container column no-wrap col-12"
         >
             <div
-                class="column no-wrap"
+                class="column no-wrap stat-column"
                 v-for="(stat, index) in statTypes"
                 :key="`percentage-${stat}`"
             >
-                <div class="q-mt-md row no-wrap">
-                    <div class="row col-grow justify-start items-center">
+                <div class=" row no-wrap justify-center">
+                   <!-- <div class="row col-grow justify-start items-center">
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :teamId="teams.home.team_id"
@@ -21,14 +21,14 @@
                                 :viewable="false"
                             />
                         </div>
-                    </div>
+                    </div> -->
                     <div>
-                        <h2 class="text-lg q-mr-md text-center">
+                        <h2 class=" text-center full-width">
                             {{STAT_NAMES[stat]}}
                         </h2>
- 
+                        <h3>{{STAT_DESCRIPTIONS[stat]}}</h3>
                     </div>
-                    <div class="row col-grow justify-end items-center">
+                    <!-- <div class="row col-grow justify-end items-center">
                         <div class="team-avatar__container">
                             <TeamAvatar
                                 :teamId="teams.away.team_id"
@@ -36,7 +36,7 @@
                                 :viewable="false"
                             />
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="row no-wrap" >
@@ -49,7 +49,10 @@
                             dense
                             :color="teams.home.color"
                             prependPercent
+                            reverse
                             :stats="teams.home.stats"
+                            oneWay
+                            height="20px"
                         />
                     </div>
                     <div
@@ -58,13 +61,18 @@
                         <StatsPercent
                             class="full-width"
                             :stat="stat"
-                            reverse
+                          height="20px"
                               :color="teams.away.color"
                              :stats="teams.away.stats"
+                             oneWay
                         />
                     </div>
                 </div>
-                <q-separator v-if="index !== statTypes.length - 1" />
+                <div class="full-width row justify-between text-caption">
+                    <GameAverageComparison v-if="homeTotalStats" :stats="teams.home.stats" :statName="stat"/>
+             <GameAverageComparison v-if="awayTotalStats" :stats="teams.away.stats" :statName="stat" reverse/>
+      
+                </div>
             </div>
         </div>
     </div>
@@ -77,12 +85,25 @@
     padding: 0px var(--space-md);
     border-radius: 8px;
 }
+.stat-column {
+    padding: var(--space-md) 0px;
+    h2 {
+        @include smmd-text;
+    }
+    h3 {
+        font-family: $font-family-secondary;
+        text-align:center;
+        @include text-caption;
+        margin-bottom: var(--space-xs);
+    }
+}
 
 </style>
 <script setup>
-import {STAT_NAMES, STAT_TYPES} from '@/constants/stats'
+import {STAT_DESCRIPTIONS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 import GameTeam from '@/store/models/game-team'
 import TeamStats from '@/store/models/team-stats'
+import TeamStatsTotal from '@/store/models/team-stats-total'
 import {useQuery} from '@tanstack/vue-query'
 
 const props = defineProps({
@@ -98,6 +119,9 @@ const teams = computed(() => {
         away: useRepo(GameTeam).with('stats').where('game_id', props.gameId).where('home_team', false).first()
     }
 })
+
+const homeTotalStats = computed(() => useRepo(TeamStatsTotal).where('team_id', teams.value.home.team_id).first())
+const awayTotalStats = computed(() => useRepo(TeamStatsTotal).where('team_id', teams.value.away.team_id).first())
 
 const getStatsForGame = async () => {
     const { data } = await useSupabaseClient()
@@ -121,8 +145,28 @@ const getStatsForGame = async () => {
             games_played: 1,
         });
     });
+
+    const { data: totalData } = await useSupabaseClient()
+        .from("team_stats_total")
+        .select(
+            `
+            *
+            `
+        )
+        .in("id", [teams.value.home.team_id, teams.value.away.team_id]);
+
+        totalData.forEach((total) => {
+            useRepo(TeamStatsTotal).save({
+                ...total,
+                team_id: total.id,
+            })
+        })
+
+        console.log('got total: ', totalData)
     return data;
 };
+
+
 
 const {isLoading} = useQuery({
     queryKey: ['game', 'stats', props.gameId],
