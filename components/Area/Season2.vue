@@ -20,4 +20,19 @@ const homeRink = computed(() =>
 );
 
 const userTeams = computed(() => useUserTeamStore().userTeams.map(({id}) => id))
+
+onMounted(async () => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('team_stats').select(`
+        id,
+        win,
+        games:game_id!inner (
+            id,
+            home,
+            away
+        )
+    `).or('home.eq.77,away.eq.77', {referencedTable: 'games'})
+
+    console.log('data: ', data)
+})
 </script>

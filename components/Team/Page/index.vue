@@ -1,4 +1,5 @@
 <template>
+<div class="team-page-container">
     <TeamPlayerChangeListener />
     <div :class="{ 'q-mt-lg': route.query.request }">
         <TeamRequestsHandler
@@ -13,8 +14,7 @@
         ref="header"
     />
 
-  
-      <q-tabs
+    <q-tabs
         class="team-page__tabs"
         ref="tabs"
         :class="{ dark: darkTabs }"
@@ -27,39 +27,15 @@
 
         <q-tab label="Badges" :name="1" :ripple="false" />
         <q-tab label="Stats" :name="2" :ripple="false" />
-        <q-tab label="Leagues" :name="3" :ripple="false" />
-        <q-tab label="Game history" :name="4" :ripple="false" />
+        <!-- <q-tab label="Leagues" :name="3" :ripple="false" /> -->
+        <q-tab label="Game history" :name="3" :ripple="false" />
     </q-tabs>
- <LayoutSection  mainStyle="padding-left: unset; padding-right: unset; padding-bottom: var(--space-md)" :style="{marginTop: $q.screen.xs ? '-55px' : '-65px'}" headerStyle="background-color: transparent">
-    <div class="row">
-        <div :class="$q.screen.xs ? 'col-12' : team?.players?.length > 4 ? 'col-5' : 'col-6'">
-        <TeamPageLocation :teamId="teamId"   />
-        </div>
-    <div class="row justify-center players-container" style="gap: 16px" :class="
-        $q.screen.xs ? 'col-12' : team?.players?.length > 4 ? 'col-7' : 'col-6'
-    ">
-        <div  class="row justify-around" style="gap: var(--space-xs)">
-         <TeamPagePlayers :teamId="teamId" />
-        </div>
-    </div>
 
+ 
 
-   
-    <!-- <TeamPageStatsOverview
-        :teamId="teamId"
-        class="stats__overview"
-        :class="$q.screen.xs ? 'col-12' : 'col-6'"
-    /> -->
-    </div>
- </LayoutSection>
-
-
-    <LayoutSection title="Badges" ref="sectionBadges" style="padding-left: unset; padding-right: unset">
-        <div
-            class="team-badges__container"
-            v-if="team?.badges?.length"
-        >
-      
+            <TeamPageOverview :teamId="teamId" v-if="currentIndex === 0" />
+               <div v-else-if="currentIndex === 1">
+            <div class="team-badges__container" v-if="team?.badges?.length">
                 <Badge
                     v-if="featuredBadge"
                     :badge="featuredBadge"
@@ -67,21 +43,21 @@
                 >
                     <template v-slot:underlay> Featured </template>
                 </Badge>
-         
-       
-            <Badge
-                v-for="(badge, index) in badgesLimited" :key="badge.id"
-                :badge="badge"
-                style="margin: auto"
-            >
-                <template v-slot:underlay>
-                    <span v-if="index === 0 && !!team.featured_badge_id"
-                        >Recent</span
-                    >
-                </template>
-            </Badge>
-     
-            <!-- <div
+
+                <Badge
+                    v-for="(badge, index) in badgesLimited"
+                    :key="badge.id"
+                    :badge="badge"
+                    style="margin: auto"
+                >
+                    <template v-slot:underlay>
+                        <span v-if="index === 0 && !!team.featured_badge_id"
+                            >Recent</span
+                        >
+                    </template>
+                </Badge>
+
+                <!-- <div
                 class="text-sm q-mt-xs text-underline"
                 style="cursor: pointer"
                 @click="beginSelectFeatured"
@@ -89,46 +65,95 @@
             >
                 Select featured badge
             </div> -->
-          
+            </div>
+            <div class="full-width row justify-center q-mt-md">
+                <q-btn rounded class="view-badge-btn" @click="badgesOpen = true"
+                    >View all badges</q-btn
+                >
+            </div>
         </div>
-        <div class="full-width row justify-center q-mt-md">
-            <q-btn rounded class="view-badge-btn" @click="badgesOpen = true">View all badges</q-btn>
-        </div>
-    </LayoutSection>
+            <ChartTeamStatsTime
+            v-else-if="currentIndex === 2"
+            :teamId="teamId"
+            :visibleStats="['Hammer efficiency']"
+            class="q-mb-md stats"
+        />
+        <GameResultList :teamId="teamId" v-else-if="currentIndex === 3" />
 
-    <LayoutSection title="stats" ref="sectionStats">
+     
+    
+
+    <!-- 
+    <div class="row">
+        <div
+            :class="
+                $q.screen.xs
+                    ? 'col-12'
+                    : team?.players?.length > 4
+                    ? 'col-5'
+                    : 'col-6'
+            "
+        ></div>
+        <div
+            class="row justify-center players-container"
+            style="gap: 16px"
+            :class="
+                $q.screen.xs
+                    ? 'col-12'
+                    : team?.players?.length > 4
+                    ? 'col-7'
+                    : 'col-6'
+            "
+        >
+            <div class="row justify-around" style="gap: var(--space-xs)">
+                <TeamPagePlayers :teamId="teamId" />
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <LayoutSection
+        title="Badges"
+        ref="sectionBadges"
+        style="padding-left: unset; padding-right: unset"
+    >
+       
+    </LayoutSection> -->
+
+    <!-- <LayoutSection title="stats" ref="sectionStats">
         <ChartTeamStatsTime
             v-if="hasPlayedGames"
             :teamId="teamId"
             :visibleStats="['Hammer efficiency']"
             class="q-mb-md stats"
         />
-    </LayoutSection>
-    <LayoutSection title="Leagues" ref="sectionLeagues">
+    </LayoutSection> -->
+    <!-- <LayoutSection title="Leagues" ref="sectionLeagues">
         <TeamLeagueList
             :teamId="teamId"
             style="margin-top: calc(-1 * var(--space-md); margin-bottom: calc(-1 * var(--space-md)"
         />
-    </LayoutSection>
-  
-        <LayoutSection title="game history" ref="sectionGames" mainStyle="padding-left: unset; padding-right: unset">
-            <GameResultList :teamId="teamId" />
+    </LayoutSection> -->
 
-            <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
-                <div>{{ team.name }} hasn't played any games!</div>
-                <q-btn
-                    icon="add"
-                    color="primary"
-                    rounded
-                    class="q-mt-md"
-                    @click="navigateTo('/games/create')"
-                    >Add game</q-btn
-                >
-            </div>
-        </LayoutSection>
+    <!-- <LayoutSection
+        title="game history"
+        ref="sectionGames"
+        mainStyle="padding-left: unset; padding-right: unset"
+    >
+        <GameResultList :teamId="teamId" />
 
-    
- 
+        <div v-if="!hasPlayedGames" class="full-width text-center q-pa-lg">
+            <div>{{ team.name }} hasn't played any games!</div>
+            <q-btn
+                icon="add"
+                color="primary"
+                rounded
+                class="q-mt-md"
+                @click="navigateTo('/games/create')"
+                >Add game</q-btn
+            >
+        </div>
+    </LayoutSection> -->
+</div>
     <q-dialog
         v-model="badgesOpen"
         v-if="team.badges?.length"
@@ -197,9 +222,7 @@
                 </div>
             </h3>
             <q-separator />
-            <div
-                class="row items-start badges-view"
-            >
+            <div class="row items-start badges-view">
                 <Badge
                     v-for="badge in badgesSorted"
                     :key="badge.id"
@@ -217,6 +240,9 @@
     </q-dialog>
 </template>
 <style lang="scss" scoped>
+.team-page-container {
+    // background-color: $app-slate;
+}
 .players-container {
     margin-top: var(--space-md);
     @include sm {
@@ -257,17 +283,25 @@
     .tab__label {
         font-size: 18px !important;
     }
-
+    :deep(.q-tab) {
+        margin: unset;
+    }
+    :deep(.q-tab--active) {
+        color: white;
+        background-color: $app-yellow;
+        border-radius: 2px;
+    }
     :deep(.q-tab__indicator) {
         bottom: 12px;
         background-color: $app-yellow;
+        display: none;
     }
     :deep(.q-focus-helper) {
         display: none;
     }
     :deep(.q-tab) {
         padding: unset;
-        margin: 0px var(--space-xs);
+        // margin: 0px var(--space-xs);
     }
     &.dark {
         @include bg-slate-texture;
@@ -531,65 +565,60 @@ const preventIntersection = ref(true);
 const changeTab = (newTab) => {
     currentIndex.value = newTab;
 };
-    useIntersectionObserver(
-    header,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(0);
-    },
-    { threshold: 0.5 }
-);
-useIntersectionObserver(
-    sectionBadges,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(1);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionStats,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(2);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionLeagues,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(3);
-    },
-    { threshold: 1 }
-);
-useIntersectionObserver(
-    sectionGames,
-    ([{ isIntersecting }]) => {
-        if (!isIntersecting || preventIntersection.value) return;
-        changeTab(4);
-    },
-    { threshold: 0.7 }
-);
+// useIntersectionObserver(
+//     header,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(0);
+//     },
+//     { threshold: 0.5 }
+// );
+// useIntersectionObserver(
+//     sectionBadges,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(1);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionStats,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(2);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionLeagues,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(3);
+//     },
+//     { threshold: 1 }
+// );
+// useIntersectionObserver(
+//     sectionGames,
+//     ([{ isIntersecting }]) => {
+//         if (!isIntersecting || preventIntersection.value) return;
+//         changeTab(4);
+//     },
+//     { threshold: 0.7 }
+// );
 
-
-
-onMounted(() => {
-    setTimeout(() => {
-        const { y: bY } = useElementBounding(sectionBadges);
-        badgesY.value = bY.value;
-        const { y: stY } = useElementBounding(sectionStats);
-        statsY.value = stY.value;
-        const { y: lY } = useElementBounding(sectionLeagues);
-        leaguesY.value = lY.value;
-        const { y: gY } = useElementBounding(sectionGames);
-        gamesY.value = gY.value;
-        preventIntersection.value = false;
-    }, 1000);
-
-
-
-});
+// onMounted(() => {
+//     setTimeout(() => {
+//         const { y: bY } = useElementBounding(sectionBadges);
+//         badgesY.value = bY.value;
+//         const { y: stY } = useElementBounding(sectionStats);
+//         statsY.value = stY.value;
+//         const { y: lY } = useElementBounding(sectionLeagues);
+//         leaguesY.value = lY.value;
+//         const { y: gY } = useElementBounding(sectionGames);
+//         gamesY.value = gY.value;
+//         preventIntersection.value = false;
+//     }, 1000);
+// });
 
 const yModifier = computed(() => ($q.screen.xs ? -115 : -126));
 

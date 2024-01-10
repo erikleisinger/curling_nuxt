@@ -74,7 +74,7 @@
         // height: 200%;
         aspect-ratio: 1/1;
         width: 150%;
-        @include md {
+        @include sm {
             width: 110%;
             left: -5%;
         }
@@ -134,7 +134,7 @@
 <script setup lang="ts">
 import {useElementSize, useElementBounding} from '@vueuse/core'
 const props = defineProps<{
-    backgroundImage: string;
+    backgroundImage?: string;
     minHeight?: string;
     title: string;
 }>();

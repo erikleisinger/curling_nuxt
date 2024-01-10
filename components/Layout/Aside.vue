@@ -24,7 +24,8 @@
 
     .aside-section {
         padding: var(--space-sm);
-        background-color: white;
+        background-color: $app-slate;
+        color: white;
         box-shadow: $pretty-shadow;
         height: fit-content;
         min-height: 300px;

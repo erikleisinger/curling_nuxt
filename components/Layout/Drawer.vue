@@ -175,7 +175,7 @@
             border-color:  rgb(246, 174, 45, 0.2);
         }
     }
-     @include bg-slate-texture;
+      @include bg-blue-side;
 
      .league-icon {
         width: 40px;

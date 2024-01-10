@@ -122,7 +122,7 @@ const {getColor} = useColor();
 
 
 const verifiedPopup = ref(false);
-const isVerified = computed(() => game.value.isVerified);
+const isVerified = computed(() => game.value?.isVerified);
 
 const { getGameRequestsByUser, updateGameRequestStatus, sendGameRequest } = useGameRequestStore();
 

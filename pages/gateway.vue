@@ -16,7 +16,7 @@ onMounted(async () => {
      const {hash} = route;
     setTimeout(() => {
   if (!!nextPage?.value) {
-        return navigateTo(`${nextPage.value}${hash}`)
+        return navigateTo(`${nextPage.value}${hash ?? ''}`)
     } else {
         return navigateTo(`${hash}`, {replace: true})
 }

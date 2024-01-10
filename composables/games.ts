@@ -37,7 +37,7 @@ export const useGame = () => {
                 league_id: g.league?.id
             });
             
-            useRepo(GameTeam).save({
+            useRepo(GameTeam).save({ 
                 team_id: g.team_id ?? g.game_id + 100000000,
                 game_id: g.game_id,
                 id: g.id,

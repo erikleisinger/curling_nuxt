@@ -53,7 +53,7 @@ html, body, div, span, object, iframe, figure, h1, h2, h3, h4, h5, h6, p, blockq
 
 }
 
-$app-width: min(1300px, 100vw);
+$app-width: min(100vw);
 
 html {
     &::-webkit-scrollbar {

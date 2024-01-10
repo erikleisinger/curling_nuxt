@@ -36,7 +36,8 @@
 <style lang="scss">
 #__nuxt {
     height: inherit;
-    @include bg-white-diagonal;
+    @include bg-blue-side;
+    // background-color: #150578
     
 }
 

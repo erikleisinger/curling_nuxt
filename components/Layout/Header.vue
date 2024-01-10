@@ -5,7 +5,7 @@
                 <slot name="menu"/>
                 <div style="position: absolute; left: 0; right: 0; margin: auto; width: fit-content;" class="row items-center"> 
                     
-                <LogoFull :width="$q.screen.xs ? '75px' : '120px'" class="clickable" @click="navigateTo('/')"/>
+                <LogoFull :width="$q.screen.xs ? '75px' : '75px'" class="clickable" @click="navigateTo('/')"/>
                 
                 </div>
 
@@ -39,11 +39,12 @@
         }
         
         // padding-right: var(--space-sm);
-        @include bg-slate-texture;
+        // @include bg-blue-side;
+        background-color: #011936;
         &.q-toolbar {
             height: 4em;
             @include sm {
-                height: 5em;
+                height: 4em;
             }
         }
        

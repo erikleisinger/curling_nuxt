@@ -31,7 +31,7 @@
     position: fixed;
     top: 0;
     z-index: 100000;
-    @include bg-white-diagonal;
+    @include bg-blue-side;
     left: 0;
     right: 0;
     .global-loading__inner {
@@ -39,7 +39,7 @@
         position: relative;
         margin: auto;
 
-        background-color: $app-slate;
+        @include bg-blue-side;
         height: 100%;
     }
 }
