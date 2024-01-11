@@ -437,6 +437,7 @@ import { generateEnds, createSheet } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
 import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
+import Team from '@/store/models/team';
 import Player from '@/store/models/player'
 
 const dayjs = useDayjs();
@@ -782,7 +783,6 @@ onMounted(async () => {
         editedId.value = editedGame.id;
         await fetchGame(editedGame);
     } else {
-        setPlayerRink();
         if (options?.homeTeam) {
             gameParams.value.home = options.homeTeam;
             view.value = views.HOME_SELECT;
@@ -905,11 +905,31 @@ const goLinescore = () => {
 
 const {user: userId} = useUser();
 
-const setPlayerRink = () => {
-    const rink = useRepo(Player).with('rink').where('id', userId.value).first()?.rink;;
 
-    if (rink?.id) {
-        gameParams.value.rink = rink;
-    }
+
+const getPlayerRink = () => {
+    return useRepo(Player).with('rink').where('id', userId.value).first()?.rink;;
+
+
 }
+
+const getHomeRink = () => {
+    const rink = useRepo(Team).with('rink').where('id', gameParams.value?.home?.id).first()?.rink;
+    return rink;
+}
+
+const setRink = () => {
+    let newRink;
+    const teamRink = getHomeRink();
+    if (teamRink?.id) {
+        newRink = teamRink;
+    } else {
+        newRink = getPlayerRink();
+    }
+    gameParams.value.rink = newRink;
+}
+
+watch(() => gameParams.value.home, (val) => {
+    setRink();
+})
 </script>
