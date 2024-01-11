@@ -15,11 +15,11 @@ export default class GameTeam extends Model {
             team_id: this.number(),
             color: this.string(),
             team: this.belongsTo(Team, 'team_id'),
-            game: this.belongsTo(Game, 'game_id', 'id'),
+            game: this.belongsTo(Game, 'game_id'),
             stats: this.belongsTo(TeamStat, ['team_id', 'game_id']),
             points_scored: this.number(0),
             pending: this.boolean(),
-            home_team: this.boolean()
+            home_team: this.boolean(),
         };
     }
     get isPlaceholder() {

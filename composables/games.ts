@@ -34,13 +34,14 @@ export const useGame = () => {
                 sheet_id: g.sheet?.id,
                 hammer_first_end: g.hammer_first_end,
                 end_count: g.end_count,
-                league_id: g.league?.id
+                league_id: g.league?.id,
+                ends_played: g.ends_played
             });
             
             useRepo(GameTeam).save({ 
                 team_id: g.team_id ?? g.game_id + 100000000,
                 game_id: g.game_id,
-                id: g.id,
+                // id: g.id,
                 color: g.color,
                 points_scored: g.points_scored ?? 0,
                 pending: g.pending,

@@ -68,7 +68,6 @@ export const useNotification = () => {
                             const { new: newData } = e;
                             const { read } = newData;
                             if (read) count.value -= 1;
-                            console.log(count.value)
                         }
                     )
                     .on(
@@ -80,7 +79,7 @@ export const useNotification = () => {
                             filter: `profile_id=eq.${userId.value}`,
                         },
                         (e) => {
-                            console.log('NOTIFICATION UPDATED: ', e)
+
                             const { new: newData } = e;
                             const { read } = newData;
                             if (!read) {
@@ -88,7 +87,6 @@ export const useNotification = () => {
                             } else {
                                 count.value -= 1;
                             }
-                            console.log(count.value)
                         }
                     )
                     .subscribe();

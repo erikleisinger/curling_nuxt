@@ -49,6 +49,7 @@ export const useStats = () => {
         } else {
            total = func(stats);
         }
+        if (Number.isNaN(total)) return 0;
 
         return total * 100;
     }

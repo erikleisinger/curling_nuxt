@@ -75,6 +75,7 @@
 
 const generateScore = async () => {
     const details = await getScoreDetails();
+    console.log(details, Math.max(endCount.value, details?.length), endCount.value)
     const s = Array.from(
         {
             length: Math.max(endCount.value, details?.length),
@@ -82,6 +83,7 @@ const generateScore = async () => {
         (_, i) => i + 1
     ).reduce((all, current, index) => {
         if (!details[index]) {
+            console.log('no index')
             return {
                 ...all,
                 [index + 1]: {

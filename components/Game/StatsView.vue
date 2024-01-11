@@ -162,7 +162,7 @@ const getStatsForGame = async () => {
             })
         })
 
-        console.log('got total: ', totalData)
+
     return data;
 };
 

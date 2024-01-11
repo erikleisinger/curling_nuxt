@@ -585,7 +585,7 @@ const getSheet = async () => {
 const saving = ref(false);
 const saved = ref(false);
 const save = async () => {
-    saved.value = true;
+    saving.value = true;
     const params = { ...gameParams.value };
     const scoreCopy = { ...score.value };
     const rinkCopy = gameParams.value.rink;

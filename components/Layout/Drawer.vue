@@ -281,7 +281,6 @@ watch(isSwiping, (val) => {
 });
 
 const onDrawerClick = () => {
-    console.log('on drawer click')
     if (open.value) return;
     open.value = true;
 }

@@ -299,13 +299,11 @@ export const generateEnds = (ends, hammerFirstEnd, homeId, awayId, gameId) => {
         } else {
             const { scoring_team_id, points_scored, hammer_team_id } =
                 all[index - 1];
-                console.log(points_scored > 0)
             if (scoring_team_id === homeId && points_scored > 0) {
                 end.hammer_team_id = awayId;
             } else if (scoring_team_id === awayId && points_scored > 0) {
                 end.hammer_team_id = homeId;
             } else {
-                console.log('hammer going to : ', hammer_team_id)
                 end.hammer_team_id = hammer_team_id;
             }
         }
