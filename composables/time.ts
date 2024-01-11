@@ -6,11 +6,14 @@ export const useTime = () => {
         const store = useUserStore();
         const timezone = store.timezone;
         let parsed;
-        if (typeof date === 'number') {
+        if (!date) {
+            parsed = dayjs().tz(timezone)
+        } else if (typeof date === 'number') {
             parsed = dayjs.unix(date).utc(date ?? dayjs()).tz(timezone)
         } else {
-            parsed = dayjs.utc(date ?? dayjs()).tz(timezone)
+            parsed = dayjs(date).tz(timezone)
         }
+        
      
         if (raw) return parsed;
         if (toISO) {

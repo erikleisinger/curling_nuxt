@@ -14,6 +14,7 @@
             v-show="selectDate"
             class="relative-position"
             :options="limitDate"
+            color="blue-10"
         >
             <div class="close-button__container">
                 <q-btn
@@ -34,6 +35,7 @@
             :minute-options="[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"
             :options="limitTime"
             class="relative-position"
+             color="blue-10"
         >
             <div class="close-button__container">
                 <q-btn
@@ -79,7 +81,9 @@ const limitDate = (val) => {
     if (!props.limit && !props.limitPast) return true;
     const now = toTimezone(null, null, false, true).unix();
     if (props.limit) {
-
+        console.log('NOW: ', now)
+        console.log('val: ', val)
+        console.log('converted: ', toTimezone(val, null, false, true).unix())
     return toTimezone(val, null, false, true).unix() <= now;
     } 
     return toTimezone(val, null, false, true).unix() >= now;

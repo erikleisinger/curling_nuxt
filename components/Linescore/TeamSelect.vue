@@ -34,7 +34,7 @@
             </div>
         </template>
         <template v-slot:content>
-            <div class="row justify-around items-center no-wrap">
+            <div class="row justify-around items-center no-wrap full-height">
                 <q-btn
                     flat
                     round

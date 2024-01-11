@@ -11,7 +11,7 @@
                     @click="goBack"
                     v-if="currentStep"
                 />
-                <q-btn
+                <!-- <q-btn
                     flat
                     color="green"
                     class="row items-center"
@@ -20,7 +20,7 @@
                 >
                     <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs" />
                     <div>Save game</div>
-                </q-btn>
+                </q-btn> -->
             </div>
             <div class="linescore__container" style="z-index: 100">
                 <div
@@ -103,7 +103,7 @@
                     :canEditDetails="!showLinescore && view === views.DETAILS"
                     @ready="showLinescore = true"
                     :compact="showLinescore && view !== views.DETAILS"
-                    v-if="view === views.LINESCORE || view === views.DETAILS"
+                    v-if="view === views.LINESCORE"
                     @endcount="view = views.END_COUNT_SELECT"
                     style="padding-top: 58px; height: 100%"
                     :inverted="inverted"
@@ -289,6 +289,10 @@
                         </div>
                     </div>
                 </LinescoreEditor>
+                <LinescoreSummary v-model="gameParams" v-if="view === views.DETAILS" :endCount="endCount" :score="score" @save="save" :saving="saving"/>
+                    
+
+           
             </div>
 
             <DialogConfirmation
@@ -448,7 +452,7 @@ const gameParams = ref({
     homeColor: "yellow",
     awayColor: "red",
     hammerFirstEndTeam: null,
-    start_time: dayjs().format("YYYY-MM-DD hh:mm"),
+    start_time: dayjs().format("YYYY-MM-DD HH:mm"),
     rink: {},
     sheet: {},
     league: {},

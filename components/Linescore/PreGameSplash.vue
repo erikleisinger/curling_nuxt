@@ -1,6 +1,7 @@
 <template>
+<LinescorePageContainer @next="emit('next')">
+    <template v-slot:content>
     <div class="pre-game__container">
-        <div />
         <div class="pre-game__wrap">
             <div class="column team-container home">
                 <h2
@@ -16,26 +17,13 @@
                         :color="modelValue.homeColor"
                         class="avatar"
                     />
-                    <!-- <div
-                        class="hammer__container clickable"
-                        v-if="
-                            modelValue.hammerFirstEndTeam === modelValue.home.id
-                        "
-                    >
-                        <q-icon
-                            clickable
-                            name="hardware"
-                            color="deep-purple"
-                            class="hammer-icon selected"
-                        />
-                    </div> -->
                     <GameHammerIndicator hasHammer v-if="
                             modelValue.hammerFirstEndTeam === modelValue.home.id
                         "/>
                 </div>
             </div>
             <div
-                class="column justify-center align-center text-xl text-bold text-uppercase text-italic"
+                class="column justify-center align-center text-xl text-bold text-uppercase text-italic text-center"
             >
                 Vs
             </div>
@@ -46,19 +34,7 @@
                         :color="modelValue.awayColor"
                         class="avatar"
                     />
-                    <!-- <div
-                        class="hammer__container clickable"
-                        v-if="
-                            modelValue.hammerFirstEndTeam === modelValue.away.id
-                        "
-                    >
-                        <q-icon
-                            clickable
-                            name="hardware"
-                            color="deep-purple"
-                            class="hammer-icon selected"
-                        />
-                    </div> -->
+ 
                     <GameHammerIndicator hasHammer v-if="
                             modelValue.hammerFirstEndTeam === modelValue.away.id
                         "/>
@@ -72,29 +48,19 @@
                 </h2>
             </div>
         </div>
-        <div class="row justify-center items-center next-container">
-            <q-btn
-                icon="check_circle"
-                color="green"
-                size="50px"
-                flat
-                round
-                dense
-                @click="emit('next')"
-            />
-        </div>
+
         <div class="backsplash" />
     </div>
+    </template>
+</LinescorePageContainer>
 </template>
 <style lang="scss" scoped>
 .pre-game__container {
-    padding-top: 60px;
-    height: 100%;
     position: relative;
-    display: grid;
-    grid-template-rows: auto min(70%, 450px) 25%;
+    height: 100%;
     z-index: 1;
     pointer-events: none;
+    width: 100%;
     .next-container {
         pointer-events: all;
     }

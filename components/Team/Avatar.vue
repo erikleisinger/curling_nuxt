@@ -1,12 +1,5 @@
 <template>
     <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
-        <q-menu v-if="!disableMenu && Number(route.params.id) !== props.teamId"  :target="el" touch-position  scroll-target="#global-container" transition-show="flip-right" transition-duration="200" style="border-radius:8px" class="shadow-10">
-            <div class="card-menu__container" >
-                
-            <TeamCard :teamId="props.teamId" dense style="min-height: 40px" animated/>
-            </div>
-
-        </q-menu>
         <div
             class="avatar-inner"
             :class="{

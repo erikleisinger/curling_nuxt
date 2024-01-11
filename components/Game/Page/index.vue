@@ -6,9 +6,9 @@
     <GamePageLinescore :gameId="gameId" />
     <GameStatsView :gameId="gameId" />
     </div>
-      <div class="floating" v-if="canEdit">
+      <!-- <div class="floating" v-if="canEdit">
                 <q-btn round icon="edit" :style="{backgroundColor: getColor('mint'), color: 'white'}" :size="$q.screen.xs ? '' : '1em'"/>
-            </div>
+            </div> -->
 </div>
 </template>
 <style lang="scss" scoped>    

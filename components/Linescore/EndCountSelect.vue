@@ -25,11 +25,13 @@
         // max-width: max(300px, 50%);
         padding: var(--space-md);
         box-sizing: border-box;
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: auto!important;
+        margin-right: auto!important;
+        height: 100%;
         .q-btn {
             margin-bottom: var(--space-md);
         }
+        max-width: 300px;
     }
     .end-count {
         $tile-height: 150px;
