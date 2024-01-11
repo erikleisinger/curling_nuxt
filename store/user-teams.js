@@ -68,7 +68,12 @@ export const useUserTeamStore = defineStore("user-teams", {
                    sheets     
                 )
             `).in('id', teamIds)
-          
+            
+            useRepo(Rink).save(data.reduce((all, current) => {
+                if (!current?.rink?.id) return all;
+                return [...all, current.rink]
+            }, []))
+
             useRepo(Team).save(data.map((t) => {
                 return    {
                     id: t.id,
@@ -82,10 +87,7 @@ export const useUserTeamStore = defineStore("user-teams", {
 
           
             ))
-            useRepo(Rink).save(data.reduce((all, current) => {
-                if (!current?.rink?.id) return all;
-                return [...all, current.rink]
-            }, []))
+          
 
 
            

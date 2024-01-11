@@ -19,7 +19,7 @@ export default class Team extends Model {
             games: this.belongsToMany(Game, GameTeam, 'team_id', 'game_id'),
             players: this.belongsToMany(Player, TeamPlayer, 'team_id', 'player_id'),
             rink_id: this.number(),
-            rink: this.hasOne(Rink, 'rink_id'),
+            rink: this.belongsTo(Rink, 'rink_id'),
             stats: this.hasMany(TeamStats, 'team_id'),
             totalStats: this.hasOne(TeamStatsTotal, 'team_id'),
             facebook: this.string(),
