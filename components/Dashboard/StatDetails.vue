@@ -7,7 +7,10 @@
           
         >
             <h4>With hammer in first end</h4>
+            <div class="row items-center">
+                <div class="text-caption q-mr-xs"></div>
             <h5>{{ cleanNumber(withHammerFe) }}</h5>
+            </div>
         </div>
           <div
             class="row__container row justify-between"
@@ -209,7 +212,7 @@ const cleanNumber = (num) => {
     if (isPercent) {
         return `${Number((num * 100).toFixed())}%`;
     }
-    return `${num > 0 ? "+" : "-"}${num.toFixed(1)}`;
+    return `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
 };
 
 

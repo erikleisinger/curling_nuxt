@@ -53,7 +53,9 @@
     }
 
         .filter__container {
+
         padding: var(--space-lg) 0px;
+       
     }
 }
 </style>

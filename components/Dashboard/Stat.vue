@@ -2,10 +2,11 @@
     <DashboardTile
         :type="type"
         :style="{ width: expanded ? '100%' : '' }"
-        :percent="total"
+        :percent="totalTile"
+        :total="totalAll"
     >
         <div class="stat-expanded__container" v-if="expanded">
-            <DashboardStatDetails :type="type" :total="total" :filters="filters"/>
+            <DashboardStatDetails :type="type" :total="totalAll" :filters="filters"/>
         </div>
     </DashboardTile>
 </template>
@@ -44,15 +45,21 @@ const filteredTeamIds = computed(() => {
     return [...userTeamIds.value].filter((id) => props.filters.teams.includes(id))
 })
 
-const total = computed(() => {
+const totalTile = computed(() => {
     const all = useRepo(TeamStats)
         .query()
         .whereIn("team_id", filteredTeamIds.value)
         .get();
-        // if (props.type === STAT_TYPES.POINTS_PER_GAME) {
-        //     console.log(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]))
-        //     console.log(STAT_FIELDS_TOTAL[props.type])
-        // }
+
+    return cleanNumber(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]));
+});
+
+const totalAll = computed(() => {
+    const all = useRepo(TeamStats)
+        .query()
+        .whereIn("team_id", userTeamIds.value)
+        .get();
+
     return cleanNumber(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]));
 });
 </script>

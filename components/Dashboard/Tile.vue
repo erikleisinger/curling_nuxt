@@ -16,6 +16,7 @@
 
             <div class="knob--text text-white">
                 <h2>{{ percent.toFixed(isPercent ? 0 : 1) }}{{isPercent ? '%' : ''}}</h2>
+
             </div>
         </q-knob>
         <h3 class="text-center">{{name}}</h3>
@@ -51,6 +52,7 @@ const props = defineProps({
         type: Number,
         default: 0
     },
+    total: Number,
     type: String,
 });
 
