@@ -1,6 +1,7 @@
 import {CastAttribute, Model} from 'pinia-orm'
 import Team from '@/store/models/team';
 import TeamPlayer from '@/store/models/team-player'
+import Rink from '@/store/models/rink'
 
 class FormatAvatar extends CastAttribute {
     get(value) {
@@ -27,6 +28,7 @@ export default class Player extends Model {
             avatar: this.attr({}),
             teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
             rink_id: this.number(),
+            rink: this.belongsTo(Rink, 'rink_id')
         }
        
     }

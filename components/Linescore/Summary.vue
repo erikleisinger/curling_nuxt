@@ -54,16 +54,7 @@
     />
 <q-separator/>
       <div class="row justify-center items-start confirm__container">
-            <q-btn
-                icon="check_circle"
-                :style="{color: getColor('mint')}"
-                size="50px"
-                flat
-                round
-                dense
-                :disable="saving"
-                @click="emit('save')"
-            />
+            <slot name="save"/>
         </div>
 
 </template>
