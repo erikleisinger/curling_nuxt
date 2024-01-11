@@ -1,18 +1,16 @@
 <template>
     <div
         class="scoreboard__end-row items-end top"
-   
-         :class="isInverted ? 'justify-start ' : 'justify-end '"
-         :style="{order: isInverted ? '1' : '0'}"
-         v-memo="[score.home, isInverted]"
-         :id="`endcol-${endno}-home`"
-        
-
+        :class="isInverted ? 'justify-start ' : 'justify-end '"
+        :style="{ order: isInverted ? '1' : '0',  }"
+        v-memo="[score.home, isInverted]"
+        :id="`endcol-${endno}-home`"
+        ref="row"
     >
         <div
             class="inner row items-center justify-center q-pt-sm"
             :class="{ highlight: !!score.home }"
-                   @click.prevent.stop="setTop"
+            @click.prevent.stop="setTop"
             ref="top"
         >
             <div class="inner-scorecard text-center">
@@ -22,18 +20,17 @@
     </div>
 
     <div
-        class="scoreboard__end-row  items-center bottom"
-      :class="isInverted ? 'justify-end ' : 'justify-start'"
-             :style="{order: isInverted ? '0' : '1'}"
-     
-          v-memo="[score.away, isInverted]"
-             :id="`endcol-${endno}-away`"
+        class="scoreboard__end-row items-center bottom"
+        :class="isInverted ? 'justify-end ' : 'justify-start'"
+        :style="{ order: isInverted ? '0' : '1' }"
+        v-memo="[score.away, isInverted]"
+        :id="`endcol-${endno}-away`"
     >
         <div
             class="inner row items-center justify-center q-pt-sm"
             ref="bottom"
             :class="{ highlight: !!score.away }"
-               @click.prevent.stop="setBottom"
+            @click.prevent.stop="setBottom"
         >
             <div class="inner-scorecard text-center">
                 {{ score.away }}
@@ -47,26 +44,47 @@
         class="shake__container"
         v-if="shakeable || canExtra"
         ref="shaker"
-        :style="shakeStyle"
+
     >
-        <q-btn
-            v-if="shakeable"
+        <Button
+            v-if="shakeable && !isRevealedEndGame"
             :round="!isRevealed"
             rounded
-            :color="isRevealed ? 'primary' : 'white'"
+            :color="isRevealed ? 'mint' : 'white'"
             @click="handleShake"
             no-wrap
             class="shake-button"
-            ><q-icon
-                name="handshake"
-                :color="isRevealed ? 'white' : 'primary'"
-            />
-
+            icon="handshake"
+            :textColor="isRevealed ? null : 'mint'"
+            size="0.9em"
+        >
             <span class="shake-hands__text" :class="{ isRevealed }"
                 >Shake hands?</span
             >
             <q-tooltip v-if="$q.platform.is.desktop"> Shake hands </q-tooltip>
-        </q-btn>
+        </Button>
+        <Button
+            v-if="shakeable && !isRevealed"
+            :round="!isRevealedEndGame"
+            rounded
+            :color="isRevealedEndGame ? 'mint' : 'white'"
+            @click="handleEndGame"
+            no-wrap
+            class="shake-button"
+            icon="fast_forward"
+            :textColor="isRevealedEndGame ? null : 'mint'"
+            size="0.9em"
+        >
+            <span
+                class="shake-hands__text"
+                :class="{ isRevealed: isRevealedEndGame }"
+                >End game early?</span
+            >
+            <q-tooltip v-if="$q.platform.is.desktop">
+                End game early
+            </q-tooltip>
+        </Button>
+
         <q-btn v-if="canExtra" round no-wrap icon="add">
             <q-tooltip> Extra end </q-tooltip>
         </q-btn>
@@ -126,24 +144,34 @@
 }
 .shake__container {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: v-bind(shakeTop);
+
     height: 40px;
-   
-    z-index: 1;
+    left: 0;
+    right: 0;
+    z-index: 2;
     margin: auto;
     display: flex;
+
     justify-content: center;
     align-items: center;
-   
+    .shake-button {
+        &:nth-child(2) {
+            margin-left: var(--space-sm);
+        }
+    }
 }
 </style>
 <script setup>
-import { onClickOutside, useConfirmDialog } from "@vueuse/core";
+import {
+    onClickOutside,
+    useConfirmDialog,
+    useElementBounding,
+} from "@vueuse/core";
 import { triggerClickAnimation } from "@/utils/gsap";
-import gsap from 'gsap';
-import Flip from 'gsap/Flip'
-gsap.registerPlugin(Flip)
+import gsap from "gsap";
+import Flip from "gsap/Flip";
+gsap.registerPlugin(Flip);
 
 const props = defineProps({
     canExtra: Boolean,
@@ -155,7 +183,7 @@ const props = defineProps({
     visible: Boolean,
 });
 
-const emit = defineEmits(["shake", "remove", "update:model-value", "click"]);
+const emit = defineEmits(["shake", "remove", "update:model-value", "click", 'endGame']);
 
 const score = computed({
     get() {
@@ -171,7 +199,7 @@ const reset = () => {
     score.value.away = 0;
 };
 
-const isInverted = ref(props.inverted)
+const isInverted = ref(props.inverted);
 
 const top = ref(null);
 const bottom = ref(null);
@@ -200,6 +228,14 @@ const setBottom = () => {
 
 const { isRevealed, reveal, confirm, cancel, onConfirm } = useConfirmDialog();
 
+const {
+    isRevealed: isRevealedEndGame,
+    reveal: revealEndGame,
+    confirm: confirmEndGame,
+    cancel: cancelEndGame,
+    onConfirm: onConfirmEndGame,
+} = useConfirmDialog();
+
 const handleShake = () => {
     if (!isRevealed.value) {
         reveal();
@@ -208,38 +244,55 @@ const handleShake = () => {
     }
 };
 
+const handleEndGame = () => {
+    if (!isRevealedEndGame.value) {
+        revealEndGame();
+    } else {
+        confirmEndGame();
+    }
+};
+
 onConfirm(() => {
     emit("shake");
 });
 
+onConfirmEndGame(() => {
+    emit("endGame");
+});
+
 const shaker = ref(null);
-onClickOutside(shaker, cancel);
+onClickOutside(shaker, () => {
+    cancel();
+    cancelEndGame();
+});
 
 const $q = useQuasar();
 
-const shakeStyle = computed(() => {
-    if ($q.platform.is.desktop) {
-        return {
-            left: 0,
-            right: 0,
-        };
-    } else {
-        return {
-            right: `-1em`,
-        };
+const { width } = useElementBounding(shaker);
+
+
+watch(
+    () => props.inverted,
+    (val) => {
+        const state = Flip.getState(
+            `#endcol-${props.endno}-home, #endcol-${props.endno}-away`
+        );
+        isInverted.value = val;
+        nextTick(() => {
+            Flip.from(state, {
+                duration: 0.2,
+                nested: true,
+            });
+        });
     }
-});
+);
 
-watch(() => props.inverted, (val) => {
-    const state = Flip.getState(`#endcol-${props.endno}-home, #endcol-${props.endno}-away`)
-    isInverted.value = val
-    nextTick(() => {
-    Flip.from(state, {
-        duration: 0.2,
-        nested: true
-    })
-    })
+const {y:tileY} = useElementBounding(top);
 
+const row = ref(null);
 
-})
+const {y: rowY} = useElementBounding(row);
+
+const shakeTop = computed(() => `${((tileY.value - rowY.value) / 2) - 20}px`)
+
 </script>

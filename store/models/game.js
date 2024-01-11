@@ -22,7 +22,9 @@ export default class Game extends Model {
             start_time: this.number(),
             note: this.string(),
             league_id: this.number(),
-            league: this.belongsTo(League, 'league_id')
+            league: this.belongsTo(League, 'league_id'),
+            end_early: this.boolean(),
+            conceded: this.boolean()
         };
     }
 

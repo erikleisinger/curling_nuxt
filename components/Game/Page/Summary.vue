@@ -62,7 +62,11 @@
             class="full-width text-center text-caption"
             style="margin-top: -1.5em; z-index: 1"
         >
+         <div v-if="conceded">Conceded</div>
+        <div>
             After {{endsPlayed}}
+        </div>
+       
         </div>
         <h3
             class="text-center smmd-text q-pt-md team-name"
@@ -178,8 +182,9 @@ const away = computed(() =>
         .where("home_team", false)
         .first()
 );
-
-const endsPlayed = computed(() => useRepo(Game).where('id', props.gameId).first()?.ends_played)
+const gameParams = computed(() => useRepo(Game).where('id', props.gameId).first())
+const endsPlayed = computed(() => gameParams.value?.ends_played)
+const conceded = computed(() => gameParams.value?.conceded)
 
 const container = ref(null);
 const { y: containerY } = useElementBounding(container);

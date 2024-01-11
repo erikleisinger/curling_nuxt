@@ -157,6 +157,7 @@
                                         minWidth: $q.platform.is.desktop
                                             ? `${colWidth()}`
                                             : '26vh',
+  
                                     }"
                                 >
                                     <LinescoreColumn
@@ -170,6 +171,7 @@
                                             score[end + 1].home !== 'X'
                                         "
                                         @shake="concede(end)"
+                                        @endGame="setOver(end)"
                                         :inverted="inverted"
                                     />
                                 </div>
@@ -604,7 +606,6 @@ const save = async () => {
     // toggleLineScore({ open: false });
     const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
-    const conceded = score.value[Object.keys(score.value).length].home === "X";
     const { toUTC } = useTime();
     const gameToCreate = {
         home: params?.home?.id,
@@ -613,7 +614,8 @@ const save = async () => {
         hammer_first_end: params?.hammerFirstEndTeam,
         end_count: endCount.value,
         completed: false,
-        conceded,
+        conceded: conceded.value,
+        end_early: over.value,
         start_time: toUTC(
             gameParams.value.start_time,
             "YYYY MM DD hh:mm",
@@ -823,9 +825,26 @@ const contentHeight = computed(() => `calc(100% - ${navHeight.value}px)`);
  * scoreboard management
  */
 
+const conceded = ref(false);
+
 const concede = (endNo: number) => {
-    for (
-        let x = Number.parseInt(endNo) + 1;
+    conceded.value = true;
+    over.value = false;
+    setEndsX(endNo)
+    
+};
+
+const over = ref(false)
+
+const setOver = (endNo: number) => {
+ conceded.value = false;
+    over.value = true;
+    setEndsX(endNo)
+}
+
+const setEndsX = (num: number) => {
+for (
+        let x = Number.parseInt(num) + 1;
         x < endNumbers.value.length + 1;
         x++
     ) {
@@ -833,7 +852,7 @@ const concede = (endNo: number) => {
         score.value[x].away = "X";
     }
     scrollTo(endCount.value);
-};
+}
 
 const goExtra = () => {
     const lastEnd = Object.keys(score.value)?.length;

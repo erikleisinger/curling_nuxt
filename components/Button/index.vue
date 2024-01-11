@@ -1,5 +1,5 @@
 <template>
-    <q-btn rounded :style="{backgroundColor: getColor(color), color: 'white'}" :round="round" :icon="icon" :size="size" class="app-button">
+    <q-btn rounded :style="{backgroundColor: textColor ? 'white' : getColor(color), color: getColor(textColor) ?? 'white'}" :round="round" :icon="icon" :size="size" class="app-button">
         <slot/>
     </q-btn>
 </template>
@@ -18,6 +18,7 @@
         round: Boolean,
         icon: String,
         size: String,
+        textColor: String,
     })
 
     const {getColor} = useColor()

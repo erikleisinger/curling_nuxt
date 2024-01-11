@@ -35,7 +35,9 @@ export const useGame = () => {
                 hammer_first_end: g.hammer_first_end,
                 end_count: g.end_count,
                 league_id: g.league?.id,
-                ends_played: g.ends_played
+                ends_played: g.ends_played,
+                end_early: g.end_early,
+                conceded: g.conceded
             });
             
             useRepo(GameTeam).save({ 
