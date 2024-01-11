@@ -4,6 +4,7 @@ export const useColor = () => {
             slate: '#283044',
             yellow: "#f6ae2d",
             blue: "#347fc4",
+            royalBlue: "#011936",
             red: "#ed254e",
             mint: '#00C49A',
             purple: "#ab47bc",

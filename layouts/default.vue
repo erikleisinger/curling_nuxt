@@ -50,11 +50,11 @@
                         v-model="unreadNotificationCount"
                     />
                 </DialogPopup>
-         <div>
+        
                 <slot />
-         </div>
+     
                 
-                     <LayoutAside v-if="!isLoggedOutRoute && $q.screen.gt.sm"/>
+
            
            
             </q-page-container>
@@ -128,11 +128,7 @@ $footer-height-sm: 4em;
         padding-left: 80px;
 
     }
-     @include md {
-
-        display: grid;
-        grid-template-columns: calc(100% - 300px) 300px;
-    }
+     
     .page-container__content {
         overflow: hidden;
         width: 100%;

@@ -212,5 +212,7 @@ export const useTeam = () => {
         const { user: userId } = useUser();
         return useUserTeamStore().userTeams.some(({id}) => teamId === id)
     };
-    return { getTeamPlayers, isOnTeam, getFullTeam };
+
+    const userTeamIds = computed(() => useUserTeamStore().userTeams.map(({id}) => id))
+    return { getTeamPlayers, isOnTeam, getFullTeam, userTeamIds };
 };

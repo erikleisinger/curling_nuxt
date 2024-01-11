@@ -29,7 +29,12 @@ export const useStats = () => {
         }[statName]
     }
 
-    const calcStat = (stats, type) => {
+    // const filterStats = (stats, filter) => {
+    //     if (Array.isArray(stats)) return stats.filter(filter)
+    // }
+
+    const calcStat = (allStats, type, filter) => {
+        const stats = filter ? filter(allStats) : allStats;
         if (!Object.values(STAT_TYPES).includes(type)) {
             console.error(`stat types doesnt include ${type}`)
             return 0;
@@ -54,5 +59,16 @@ export const useStats = () => {
         return total * 100;
     }
 
-    return { calcStat };
+    const getCumulativeStat = (statsArray, val) => { 
+        const cumulative = statsArray.reduce((all, current) => {
+            const value = typeof val === 'function' ? val(current) : current[val]
+            if (!value) return all;
+            return all + value;
+        }, 0)
+
+        return cumulative / statsArray.length;
+        
+    }
+
+    return { calcStat, getCumulativeStat };
 };

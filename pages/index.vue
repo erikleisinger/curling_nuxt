@@ -1,5 +1,5 @@
 <template>
 
-        <AreaSeason2/>
+        <AreaDashboard/>
  
 </template>
