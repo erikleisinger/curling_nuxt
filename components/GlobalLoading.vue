@@ -8,6 +8,7 @@
                 <LogoFull
                     :width="$q.screen.xs ? '150px' : '200px'"
                     ref="logo"
+                    style="overflow: visible"
                 />
             </main>
             <main
@@ -107,68 +108,77 @@ const doAnimation = () => {
     );
     const rock = logo.value.$el.querySelectorAll("path.logo-rock");
     const i = logo.value.$el.querySelector("path.logo-i");
-
-    const tl = gsap.timeline();
+    const xAmount = 40;
+    const tl = gsap.timeline({repeat: -1, repeatDelay: 3});
+    // const ringEls = Array.from(els).splice(0, 4)
+    // const ringElsRed = Array.from(els).splice(4, 4)
+    //   const letterEls = Array.from(els).splice(8, 6)
+    //   const dotEl = Array.from(els).splice(14, 1)
+    //   console.log(letterEls)
     tl.add("start");
-    tl.from(
-        els,
-        {
-            y: (index) => index % 2 === 0 ? 100 : -100,
-            opacity: 0,
-            stagger: 0.1,
-            duration: 0.9,
-        },
-        "start"
-    );
-    // tl.to(
-    //     i,
+    tl.from(els, {
+        y: (index) => index % 2 === 0 ? 100 : -100,
+        // x: () => {
+        //     const random = Math.random() > 0.5 ? 1 : -1;
+        //     return Math.random() * 100 * (random)
+        // },
+        opacity: 0,
+        stagger: 0.1,
+        duration: 1,
+    })
+    // tl.from(
+    //     letterEls,
     //     {
-    //         rotateZ: -16,
-    //         transformOrigin: "center",
-    //         duration: 0,
-    //     },
-    //     "start"
-    // );
-    // tl.from(i, {
-    //     y: 100,
-    //     duration: 0.4,
-    //     delay: 0.4,
-    // }, 'start')
-    // tl.to(
-    //     rock,
-    //     {
-    //         rotateZ: -33,
-    //         duration: 0,
-    //     },
-    //     "start"
-    // );
-    // tl.add('fall')
-    // tl.fromTo(
-    //     rock,
-    //     {
-    //         x: -70,
+    //         y: (index) => {
+
+    //             return index % 2 === 0? xAmount : -1 * xAmount
+    //         },
     //         opacity: 0,
+    //         stagger: 0.09,
+    //         delay: 1,
+    //         duration:5,
     //     },
-    //     {
-    //         opacity: 1,
-    //         x: -7,
-    //         duration: 1,
-    //     }, 'fall'
+    //     "start"
     // );
-    
-    // tl.to(rock, {
-    //     x: 1,
-    //     rotateZ: 4,
-    //     duration: 0.6,
-    //     delay: 0.8,
-    //     ease: 'bounce',
-    // }, 'fall');
-    // tl.to(i, {
-    //     rotateZ: -1,
-    //     delay: 0.8,
-    //     duration: 0.6,
-    //     ease: 'bounce',
-    // }, 'fall')
+    // tl.from(
+    //    ringEls,
+    //     {
+    //         x: (index) => {
+    //             return  -1 * xAmount;
+    //         },
+
+    //         opacity: 0,
+    //         stagger: 1,
+    //         delay: 1,
+    //         duration:5,
+    //     },
+    //     "start"
+    // );
+    //  tl.from(
+    //    ringElsRed,
+    //     {
+    //         x: (index) => {
+    //             return xAmount;
+    //         },
+
+    //         opacity: 0,
+    //         stagger: 1,
+    //         delay: 1,
+    //         duration:5,
+    //     },
+    //     "start"
+    // );
+    //  tl.from(
+    //    dotEl,
+    //     {
+    //         scale: 0,
+    //         ease: 'bounce',
+    //         opacity: 0,
+    //         duration:4,
+    //         delay: 1.5,
+    //     },
+    // );
+
 
     tl.duration(2.1);
 }
