@@ -54,7 +54,7 @@
                 <slot />
          </div>
                 
-                     <LayoutAside v-if="$q.screen.gt.sm"/>
+                     <LayoutAside v-if="!isLoggedOutRoute && $q.screen.gt.sm"/>
            
            
             </q-page-container>

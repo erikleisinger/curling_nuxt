@@ -1,147 +1,183 @@
 <template>
-        <div class="full-width full-height row justify-center items-center login--container">
-            <div class="column justify-end full-height q-pb-md q-pt-lg">
-                <div style="height: 75px">
-                <Logo/>
-                </div>
-            </div>
-            <q-form
-                class="login__form q-pa-md"
-                @submit="onSubmit"
-                ref="loginForm"
-            >
-                <q-card :flat="$q.screen.lt.sm" class="login-card">
-                    <q-tabs
-                        v-model="tab"
-                                   active-bg-color="white"
-            active-color="deep-purple"
-            color="deep-purple"
-                        class="q-px-lg q-px-sm-none text-deep-purple"
-                    >
-                        <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
-                        <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
-                    </q-tabs>
-                    <q-card-section class="q-px-lg">
-                        <q-input
-                            name="first name"
-                            label="First name"
-                            v-model.trim="firstName"
-                            :rules="[
-                                VALIDATION_RULES.REQUIRED,
-                                VALIDATION_RULES.MIN_LENGTH(2),
-                                VALIDATION_RULES.MAX_LENGTH(25),
-                                VALIDATION_RULES.ALPHA_ONLY,
-                            ]"
-                            lazy-rules
-                            v-if="tab === TAB_NAMES.SIGN_UP"
-                            rounded
-                            outlined
-                        />
-                        <q-input
-                            name="last name"
-                            label="Last name"
-                            v-model.trim="lastName"
-                            :rules="[
-                                VALIDATION_RULES.REQUIRED,
-                                VALIDATION_RULES.MIN_LENGTH(2),
-                                VALIDATION_RULES.MAX_LENGTH(25),
-                                VALIDATION_RULES.ALPHA_ONLY,
-                            ]"
-                            lazy-rules
-                            v-if="tab === TAB_NAMES.SIGN_UP"
-                            rounded
-                            outlined
-
-                        />
-                        <q-input
-                            name="username"
-                            label="Username"
-                            v-model.trim="username"
-                            :rules="[
-                                VALIDATION_RULES.REQUIRED,
-                                VALIDATION_RULES.MIN_LENGTH(6),
-                                VALIDATION_RULES.MAX_LENGTH(16),
-                                VALIDATION_RULES.NO_SPECIAL,
-                            ]"
-                            lazy-rules
-                            v-if="tab === TAB_NAMES.SIGN_UP"
-                            rounded
-                            outlined
-                        />
-                        <q-input
-                            name="email"
-                            label="Email"
-                            type="email"
-                            v-model="email"
-                            :rules="[VALIDATION_RULES.REQUIRED]"
-                            lazy-rules
-                            rounded
-                            outlined
-                        />
-                        <q-input
-                            name="password"
-                            label="Password"
-                            type="password"
-                            v-model="password"
-                            :rules="[
-                                VALIDATION_RULES.REQUIRED,
-                                VALIDATION_RULES.MIN_LENGTH(6),
-                            ]"
-                            lazy-rules
-                            rounded
-                            outlined
-                            :error="isError"
-                            :error-message="errorMessage"
-                            @update:modelValue="() => {
-                                isError = false;
-                                errorMessage = null
-                            }"
-                        />
-                        <q-input
-                            name="password verification"
-                            label="Verify your password"
-                            type="password"
-                            v-model="passwordCheck"
-                            :rules="[
-                                VALIDATION_RULES.REQUIRED,
-                                VALIDATION_RULES.MIN_LENGTH(6),
-                                validatePassword,
-                            ]"
-                            lazy-rules
-                            rounded
-                            outlined
-                            v-if="tab === TAB_NAMES.SIGN_UP"
-                        />
-                    </q-card-section>
-                    <q-card-actions
-                        class="row justify-center q-mb-lg q-pb-lg q-px-lg"
-                    >
-                        <q-btn
-                            label="Submit"
-                            color="deep-purple"
-                            type="submit"
-                            :disabled="loading"
-                            :loading="loading"
-                            style="width: 100%"
-                            unelevated
-                            rounded
-                        />
-                    </q-card-actions>
-                </q-card>
-            </q-form>
-<div/>
+    <div
+        class="full-width full-height row justify-center items-center login--container"
+    >
+        <div
+            class="column  items-center full-height q-pb-md q-pt-lg"
+            :class="$q.screen.xs ? 'justify-center' : 'justify-end'"
+        >
+            <LogoFull width="125" />
         </div>
+        <q-form class="login__form q-pa-md" @submit="onSubmit" ref="loginForm">
+            <q-card :flat="$q.screen.lt.sm" class="login-card" >
+                <q-tabs v-model="tab" class=" login-tabs">
+                    <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
+                    <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
+                </q-tabs>
+                <q-card-section class="q-px-lg login-input__container">
+                    <q-input
+                        name="first name"
+                        label="First name"
+                        v-model.trim="firstName"
+                        :rules="[
+                            VALIDATION_RULES.REQUIRED,
+                            VALIDATION_RULES.MIN_LENGTH(2),
+                            VALIDATION_RULES.MAX_LENGTH(25),
+                            VALIDATION_RULES.ALPHA_ONLY,
+                        ]"
+                        lazy-rules
+                        v-if="tab === TAB_NAMES.SIGN_UP"
+                        rounded
+                        outlined
+                        dark
+                    />
+                    <q-input
+                        name="last name"
+                        label="Last name"
+                        v-model.trim="lastName"
+                        :rules="[
+                            VALIDATION_RULES.REQUIRED,
+                            VALIDATION_RULES.MIN_LENGTH(2),
+                            VALIDATION_RULES.MAX_LENGTH(25),
+                            VALIDATION_RULES.ALPHA_ONLY,
+                        ]"
+                        lazy-rules
+                        v-if="tab === TAB_NAMES.SIGN_UP"
+                        rounded
+                        outlined
+                        dark
+                    />
+                    <q-input
+                        name="username"
+                        label="Username"
+                        v-model.trim="username"
+                        :rules="[
+                            VALIDATION_RULES.REQUIRED,
+                            VALIDATION_RULES.MIN_LENGTH(6),
+                            VALIDATION_RULES.MAX_LENGTH(16),
+                            VALIDATION_RULES.NO_SPECIAL,
+                        ]"
+                        lazy-rules
+                        v-if="tab === TAB_NAMES.SIGN_UP"
+                        rounded
+                        outlined
+                        dark
+                    />
+                    <q-input
+                        name="email"
+                        label="Email"
+                        type="email"
+                        v-model="email"
+                        :rules="[VALIDATION_RULES.REQUIRED]"
+                        lazy-rules
+                        standout
+                        filled
+                        dark
+                    />
+                    <q-input
+                        name="password"
+                        label="Password"
+                        type="password"
+                        v-model="password"
+                        :rules="[
+                            VALIDATION_RULES.REQUIRED,
+                            VALIDATION_RULES.MIN_LENGTH(6),
+                        ]"
+                        lazy-rules
+                        standout
+                   
+                        :error="isError"
+                        :error-message="errorMessage"
+                        @update:modelValue="
+                            () => {
+                                isError = false;
+                                errorMessage = null;
+                            }
+                        "
+                        dark
+                        filled
+                         
+
+                    />
+                    <q-input
+                        name="password verification"
+                        label="Verify your password"
+                        type="password"
+                        v-model="passwordCheck"
+                        :rules="[
+                            VALIDATION_RULES.REQUIRED,
+                            VALIDATION_RULES.MIN_LENGTH(6),
+                            validatePassword,
+                        ]"
+                        lazy-rules
+                         standout
+                        outlined
+                        v-if="tab === TAB_NAMES.SIGN_UP"
+                        dark
+                        filled
+                    />
+                </q-card-section>
+                <q-card-actions
+                    class="row justify-center q-pb-lg q-px-lg"
+                >
+                    <Button
+                        type="submit"
+                        :disabled="loading"
+                        style="padding: 0px 32px; min-width: 125px"
+                        color="mint"
+                        :loading="loading"
+                        >Submit</Button
+                    >
+                </q-card-actions>
+            </q-card>
+        </q-form>
+        <div />
+    </div>
 </template>
 
 <style lang="scss">
+.login-tabs {
+    //  background-color: $app-mint;
+
+    font-family: $font-family-header;
+    background-color: transparent;
+    color: white;
+
+    .q-tab--active {
+        // background-color: white;
+        color: white;
+    }
+    .q-tab__label {
+        @include reg-text;
+    }
+    .q-tab__indicator {
+        background-color: white;
+    }
+}
+
+@include styleInput($app-mint, $app-red);
+.login-input__container {
+    padding-top: var(--space-lg);
+}
 .login--container {
     display: grid;
-    grid-auto-rows: 1fr;
+   
+
+   grid-auto-rows: 1fr;
+
+ 
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    @include bg-blue-side;
 }
 .login-card {
     border-radius: 16px;
-    box-shadow: $pretty-shadow;
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: unset;
+    background: rgba(0,0,0,0.1);
+   
+    color: white;
 }
 .login__form {
     width: min(400px, 100vw);
@@ -159,7 +195,7 @@
 import { ref } from "vue";
 import { VALIDATION_RULES } from "@/constants/validation";
 import { useAuthStore } from "@/store/auth";
-import {useNotificationStore} from '@/store/notification'
+import { useNotificationStore } from "@/store/notification";
 
 const TAB_NAMES = ref({
     SIGN_IN: "signin",
@@ -179,7 +215,7 @@ const tab = ref(TAB_NAMES.value.SIGN_IN);
 const loginForm = ref(null);
 const isError = ref(false);
 const errorMessage = ref(null);
-const signUpSuccess = ref(false)
+const signUpSuccess = ref(false);
 
 const authStore = useAuthStore();
 
@@ -197,12 +233,11 @@ const onSubmit = async (e) => {
         });
         if (!error) {
             authStore.setLoggedIn(true);
-            return navigateTo('/gateway')
+            return navigateTo("/gateway");
         } else if (error && error.message) {
             isError.value = true;
-            errorMessage.value = error.message
+            errorMessage.value = error.message;
         } else {
-           
         }
     } else if (tab.value === TAB_NAMES.value.SIGN_UP) {
         const { error } = await client.auth.signUp({
@@ -220,12 +255,11 @@ const onSubmit = async (e) => {
         if (error) return;
         tab.value = TAB_NAMES.SIGN_IN;
         const notStore = useNotificationStore();
-         notStore.addNotification({
-            text: 'Sign up successful! Please check your email to verify your account. Follow the link provided and your account will be good to go.',
-            state: 'completed',
-            timeout: 0
-        })
-
+        notStore.addNotification({
+            text: "Sign up successful! Please check your email to verify your account. Follow the link provided and your account will be good to go.",
+            state: "completed",
+            timeout: 0,
+        });
     }
     loading.value = false;
 };

@@ -1,7 +1,6 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap");
 // @import "breakpoints.scss";
-
 // Small tablets and large smartphones (landscape view)
 $screen-sm-min: 600px;
 
@@ -402,5 +401,24 @@ $help-animation: attention 2s infinite linear;
         border: 1px solid rgba(0,0,0,0.1);
         border-radius: inherit;
         pointer-events: none;
+    }
+}
+
+@mixin styleInput($color, $color2) {
+    .q-field__control {
+        color: $color;
+      &.text-negative {
+        color: $color2!important;
+      }
+    }
+
+    .q-icon {
+        &.text-negative {
+            color: $color2!important;
+        }
+    }
+
+    .q-field--error .q-field__bottom {
+        color: $color2!important;
     }
 }
