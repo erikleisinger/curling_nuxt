@@ -109,7 +109,7 @@ const doAnimation = () => {
     const rock = logo.value.$el.querySelectorAll("path.logo-rock");
     const i = logo.value.$el.querySelector("path.logo-i");
     const xAmount = 40;
-    const tl = gsap.timeline({repeat: -1, repeatDelay: 3});
+    const tl = gsap.timeline();
     // const ringEls = Array.from(els).splice(0, 4)
     // const ringElsRed = Array.from(els).splice(4, 4)
     //   const letterEls = Array.from(els).splice(8, 6)
