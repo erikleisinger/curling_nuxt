@@ -38,10 +38,16 @@ const cleanNumber = (num) => {
 const {userTeamIds} = useTeam();
 
 const { getCumulativeStat } = useStats();
+
+const filteredTeamIds = computed(() => {
+    if (!props.filters?.teams?.length) return userTeamIds.value
+    return [...userTeamIds.value].filter((id) => props.filters.teams.includes(id))
+})
+
 const total = computed(() => {
     const all = useRepo(TeamStats)
         .query()
-        .whereIn("team_id", userTeamIds.value)
+        .whereIn("team_id", filteredTeamIds.value)
         .get();
         // if (props.type === STAT_TYPES.POINTS_PER_GAME) {
         //     console.log(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]))
