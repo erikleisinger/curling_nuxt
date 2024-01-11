@@ -159,6 +159,7 @@ import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
 import Player from "@/store/models/player";
 const props = defineProps({
+    filters: Object,
     total: Number,
     type: String,
 });
@@ -180,11 +181,16 @@ const stats = computed(() => {
         .get();
 });
 
+const filteredTeamIds = computed(() => {
+    if (!props.filters?.teams?.length) return userTeamIds.value
+    return [...userTeamIds.value].filter((id) => props.filters.teams.includes(id))
+})
+
 const statsByGame = computed(() => {
     return (
         useRepo(TeamStats)
             .query()
-            // .whereIn("team_id", userTeamIds.value)
+            .whereIn("team_id", filteredTeamIds.value)
             .get()
     );
 });
@@ -198,6 +204,7 @@ const getPlusMinus = (stat) => {
 const { getCumulativeStat } = useStats();
 
 const cleanNumber = (num) => {
+    if (Number.isNaN(num)) return '-'
 
     if (isPercent) {
         return `${Number((num * 100).toFixed())}%`;

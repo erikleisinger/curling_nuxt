@@ -5,7 +5,7 @@
         :percent="total"
     >
         <div class="stat-expanded__container" v-if="expanded">
-            <DashboardStatDetails :type="type" :total="total" />
+            <DashboardStatDetails :type="type" :total="total" :filters="filters"/>
         </div>
     </DashboardTile>
 </template>
@@ -24,6 +24,7 @@ import {
 import TeamStats from "@/store/models/team-stats";
 const props = defineProps({
     expanded: Boolean,
+    filters: Object,
     percent: Number,
     type: String,
 });

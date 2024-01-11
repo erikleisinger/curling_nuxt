@@ -1,35 +1,106 @@
 <template>
-<div class="full-width filters__container">
-    <div class="full-width row justify-center">
-    <Button @click="revealed = !revealed">Filter</Button>
-    </div>
-    <div v-if="revealed" class="filters__container--inner row justify-between">
-        <div class="row">
-            <Rings size="1.4em" class="q-mr-sm" :twelveft="color" :fourft="color" :eightft="getColor('royalBlue')" :buttonft="getColor('royalBlue')" />
-        <h3>Filter by sheet</h3>
+    <div class="full-width filters__container">
+        <div class="full-width row justify-center">
+            <Button @click="revealed = !revealed">Filter</Button>
         </div>
-        <div class="text-caption">Coming soon</div>
+        <div
+            v-if="revealed"
+            class="filters__container--inner "
+        >
+         <div class="row align-center justify-between full-width filter-row">
+                <div class="row items-center">
+                    <Rings
+                        size="1.4em"
+                        class="q-mr-sm"
+                        :twelveft="color"
+                        :fourft="color"
+                        :eightft="getColor('royalBlue')"
+                        :buttonft="getColor('royalBlue')"
+                    />
+                    <h3>Teams</h3>
+                </div>
+                <div class="row no-wrap avatar-row">
+                    <div class="avatar-container" v-for="team in teams" :key="team.id" @click="selectTeam(team.id)">
+                        <TeamAvatar :teamId="team.id" :color="filters.teams.includes(team.id) ? 'mint': ''" animateRing/>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-center justify-between full-width filter-row">
+                <div class="row items-center">
+                    <Rings
+                        size="1.4em"
+                        class="q-mr-sm"
+                        :twelveft="color"
+                        :fourft="color"
+                        :eightft="getColor('royalBlue')"
+                        :buttonft="getColor('royalBlue')"
+                    />
+                    <h3>Sheet</h3>
+                </div>
+                <div class="text-caption" style="line-height: 1.9">
+                    Coming soon
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 </template>
 <style lang="scss" scoped>
-    .filters__container {
-        // padding: 0px var(--space-md);
-        .filters__container--inner {
-            margin-top: var(--space-sm);
-            background-color: rgba(0,0,0,0.15);
-            padding: var(--space-md) var(--space-md);
+.filters__container {
+    // padding: 0px var(--space-md);
+    .filters__container--inner {
+        margin-top: var(--space-sm);
+        background-color: rgba(0, 0, 0, 0.15);
+        padding: var(--space-md) var(--space-md);
+    }
+    .filter-row {
+        &:not(:first-child) {
+            margin-top: var(--space-md)
         }
     }
+.avatar-row {
+    gap: var(--space-xs);
+   .avatar-container {
+        width: 30px;
+    }
+}
+ 
+}
 </style>
 <script setup>
-import {STAT_COLORS} from '@/constants/stats'
+import { STAT_COLORS } from "@/constants/stats";
+import Team from '@/store/models/team'
 const props = defineProps({
+    modelValue: Object,
     statType: String,
+});
+
+const emit = defineEmits(['update:modelValue'])
+
+const filters = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
 })
-    const revealed = ref(false)
+const revealed = ref(false);
 
-    const {getColor} = useColor();
+const { getColor } = useColor();
 
-    const color = getColor('yellow')
+const color = getColor("yellow");
+
+const {userTeamIds} = useTeam();
+
+const teams = computed(() => useRepo(Team).query().whereIn('id', userTeamIds.value).get())
+
+
+const selectTeam = (teamId) => {
+    const index = filters.value.teams.indexOf(teamId);
+    if (index === - 1) {
+        filters.value.teams.push(teamId)
+    } else {
+        filters.value.teams.splice(index, 1)
+    }
+}
 </script>

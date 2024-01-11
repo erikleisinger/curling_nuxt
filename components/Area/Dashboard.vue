@@ -5,7 +5,7 @@
             <h2>2023-2024</h2>
         </header>
          <div class="filter__container row justify-center">
-            <DashboardFilters :statType="type"/>
+            <DashboardFilters v-model="filters"/>
         </div>
         <main class="tile__container">
             <DashboardStat
@@ -15,6 +15,7 @@
                 @click="setSelected(statType)"
                 :expanded="expanded === statType"
                 :style="{order: expanded === statType ? 0 : 1}"
+                :filters="filters"
  
             >
             </DashboardStat>
@@ -62,6 +63,11 @@ import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
+
+const filters = ref({
+    teams: [],
+    sheet: null,
+})
 
 const teamIds = computed(() =>
     useUserTeamStore().userTeams.map(({ id }) => id)
