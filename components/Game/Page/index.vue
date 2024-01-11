@@ -6,9 +6,7 @@
     <GamePageLinescore :gameId="gameId" />
     <GameStatsView :gameId="gameId" />
     </div>
-      <!-- <div class="floating" v-if="canEdit">
-                <q-btn round icon="edit" :style="{backgroundColor: getColor('mint'), color: 'white'}" :size="$q.screen.xs ? '' : '1em'"/>
-            </div> -->
+    <GamePageDeleteHandler :gameId="gameId"/>
 </div>
 </template>
 <style lang="scss" scoped>    
@@ -40,6 +38,7 @@
         @include sm {
   padding: 0px var(--space-xl);
         }
+        margin-bottom: var(--space-xxl)
       
     }
 </style>

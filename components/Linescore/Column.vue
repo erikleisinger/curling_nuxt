@@ -107,11 +107,17 @@
     overflow: hidden;
 
     transform-origin: bottom;
+
+    &:nth-child(1) {
+        padding-bottom: var(--space-lg);
+    }
     &:nth-child(2) {
         transform-origin: top;
+        padding-top: var(--space-lg);
     }
 
     padding: var(--space-md);
+    
     .inner {
         border: 1px solid $grey-5;
         aspect-ratio: 1/1;
@@ -144,8 +150,8 @@
 }
 .shake__container {
     position: absolute;
-    top: v-bind(shakeTop);
-
+    top: 0;
+    bottom: 0;
     height: 40px;
     left: 0;
     right: 0;

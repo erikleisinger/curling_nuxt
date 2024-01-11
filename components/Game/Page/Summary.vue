@@ -37,7 +37,7 @@
                 {{ home?.points_scored ?? 0 }} : {{ away?.points_scored ?? 0 }}
             </h2>
         </div>
-        <div class="row items-center no-wrap team-row">
+        <div class="row items-center justify-end no-wrap team-row">
             <div
                 v-show="stickied"
                 style="color: white; z-index: 1"
@@ -62,7 +62,7 @@
             class="full-width text-center text-caption"
             style="margin-top: -1.5em; z-index: 1"
         >
-         <div v-if="conceded">Conceded</div>
+         <div v-if="conceded && !stickied">Conceded</div>
         <div>
             After {{endsPlayed}}
         </div>
