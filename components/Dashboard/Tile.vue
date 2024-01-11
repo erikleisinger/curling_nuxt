@@ -24,15 +24,16 @@
     </div>
 </template>
 <style lang="scss" scoped>
+$min-height: min(175px, calc(50% - 12px));
     .tile {
         padding: var(--space-sm);
         background-color: rgba(4, 2, 20, 0.2)!important;
-        min-height: 175px;
+        min-height: $min-height;
         border-radius: 16px;
         
 
         // width: v-bind(tileWidth);
-        min-width: 175px;
+        min-width: $min-height;
         h3 {
             margin-top: var(--space-md);
             line-height: 1;
