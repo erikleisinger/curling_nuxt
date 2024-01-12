@@ -1,6 +1,21 @@
 <template>
+    <div class="row no-wrap justify-center team-filters__container">
+        <div
+            class="avatar-container"
+            v-for="team in teams"
+            :key="team.id"
+            @click="selectTeam(team.id)"
+        >
+            <TeamAvatar
+                :teamId="team.id"
+                :color="filters.teams.includes(team.id) ? 'mint' : ''"
+                animateRing
+            />
+        </div>
+        <Button round icon="add" size="12px" color="white" />
+    </div>
     <div class="full-width filters__container">
-        <div class="full-width row justify-center">
+        <!-- <div class="full-width row justify-center">
             <Button @click="revealed = !revealed">Filter</Button>
         </div>
         <div
@@ -41,66 +56,78 @@
                     Coming soon
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <style lang="scss" scoped>
 .filters__container {
-    // padding: 0px var(--space-md);
     .filters__container--inner {
         margin-top: var(--space-sm);
         background-color: rgba(0, 0, 0, 0.15);
-        padding: var(--space-md) var(--space-md);
     }
     .filter-row {
         &:not(:first-child) {
-            margin-top: var(--space-md)
+            margin-top: var(--space-md);
         }
     }
-.avatar-row {
-    gap: var(--space-xs);
-   .avatar-container {
-        width: 30px;
-    }
 }
- 
+
+.team-filters__container {
+    margin: var(--space-lg) 0px;
+    background-color: $app-royal-blue;
+    padding: var(--space-sm);
+    z-index: 1;
+     gap: var(--space-sm);
+
+       
+        .avatar-container {
+            width: 35px;
+        }
+    
 }
 </style>
 <script setup>
 import { STAT_COLORS } from "@/constants/stats";
-import Team from '@/store/models/team'
+import Team from "@/store/models/team";
 const props = defineProps({
     modelValue: Object,
     statType: String,
 });
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
 const filters = computed({
     get() {
-        return props.modelValue
+        return props.modelValue;
     },
     set(val) {
-        emit('update:modelValue', val)
-    }
-})
+        emit("update:modelValue", val);
+    },
+});
 const revealed = ref(false);
 
 const { getColor } = useColor();
 
 const color = getColor("yellow");
 
-const {userTeamIds} = useTeam();
+const { userTeamIds } = useTeam();
 
-const teams = computed(() => useRepo(Team).query().whereIn('id', userTeamIds.value).get())
-
+const teams = computed(() =>
+    useRepo(Team).query().whereIn("id", userTeamIds.value).get()
+);
 
 const selectTeam = (teamId) => {
-    const index = filters.value.teams.indexOf(teamId);
-    if (index === - 1) {
-        filters.value.teams.push(teamId)
+    if (filters.value.teams.includes(teamId)) {
+        filters.value.teams = [];
     } else {
-        filters.value.teams.splice(index, 1)
+        filters.value.teams = [teamId];
     }
-}
+
+    // const index = filters.value.teams.indexOf(teamId);
+    // if (index === - 1) {
+    //     filters.value.teams.push(teamId)
+    // } else {
+    //     filters.value.teams.splice(index, 1)
+    // }
+};
 </script>

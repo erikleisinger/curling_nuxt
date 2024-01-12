@@ -7,7 +7,7 @@
          <div class="filter__container row justify-center">
             <DashboardFilters v-model="filters"/>
         </div>
-        <main class="tile__container">
+        <main class="tile__container" ref="tileContainer">
             <DashboardStat
                 v-for="statType in stats"
                 :key="statType"
@@ -24,7 +24,8 @@
 </template>
 <style lang="scss" scoped>
 .dashboard__container {
-    background-color: $app-royal-blue;
+    // background-color: $
+    @include bg-blue-side;
     min-height: 100%;
     color: white;
     position: relative;
@@ -52,11 +53,7 @@
         justify-content: space-around;
     }
 
-        .filter__container {
-
-        padding: var(--space-lg) 0px;
-       
-    }
+   
 }
 </style>
 <script setup>
@@ -126,8 +123,7 @@ const stats = [
 ]
 
 
-
-
+const tileContainer = ref(null)
 
 const expanded = ref(null);
 
@@ -136,6 +132,11 @@ const setSelected = (type) => {
         expanded.value = null;
     } else {
         expanded.value = type;
+         const scroller = document.getElementById('global-container')
+    if (scroller.scrollTop < tileContainer.value.offsetTop) return;
+    scroller.scrollTop = tileContainer.value.offsetTop
     }
+
+   
 };
 </script>

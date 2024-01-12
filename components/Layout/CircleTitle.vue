@@ -89,6 +89,8 @@
             height: 50%;
             width: 100%;
             bottom: 0;
+            border-bottom-left-radius: 50%;
+            border-bottom-right-radius: 50%;
         }
         box-shadow: $pretty-shadow;
         .mid-underlay {
@@ -98,7 +100,7 @@
 
             border: 10px solid white;
             background-color: rgba(0, 0, 0, 0.5);
-            top: 0;
+            top:0;
             border-radius: inherit;
             &:before {
                  content: '';

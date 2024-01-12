@@ -70,5 +70,7 @@ export const useStats = () => {
         
     }
 
+
+
     return { calcStat, getCumulativeStat };
 };

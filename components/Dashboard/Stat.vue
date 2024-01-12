@@ -4,10 +4,13 @@
         :style="{ width: expanded ? '100%' : '' }"
         :percent="totalTile"
         :total="totalAll"
+ 
     >
-        <div class="stat-expanded__container" v-if="expanded">
+
+        <div class="stat-expanded__container" v-if="expanded" >
             <DashboardStatDetails :type="type" :total="totalAll" :filters="filters"/>
         </div>
+
     </DashboardTile>
 </template>
 <style lang="scss" scoped>
@@ -23,6 +26,7 @@ import {
     STAT_TYPES,
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
+
 const props = defineProps({
     expanded: Boolean,
     filters: Object,
@@ -62,4 +66,6 @@ const totalAll = computed(() => {
 
     return cleanNumber(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]));
 });
+
+
 </script>

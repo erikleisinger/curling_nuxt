@@ -15,7 +15,8 @@
     />
 
     <q-tabs
-        class="team-page__tabs"
+    v-if="$q.screen.xs"
+        class="team-page__tabs q-mt-lg"
         ref="tabs"
         :class="{ dark: darkTabs }"
         v-model="currentIndex"
@@ -23,64 +24,31 @@
         shrink
         @update:modelValue="onTabChange"
     >
-        <q-tab label="Overview" :name="0" :ripple="false" />
+        <q-tab label="Players" :name="0" :ripple="false" />
 
-        <q-tab label="Badges" :name="1" :ripple="false" />
-        <q-tab label="Stats" :name="2" :ripple="false" />
-        <!-- <q-tab label="Leagues" :name="3" :ripple="false" /> -->
-        <q-tab label="Game history" :name="3" :ripple="false" />
+        <q-tab label="History" :name="1" :ripple="false" />
     </q-tabs>
 
- 
-
-            <TeamPageOverview :teamId="teamId" v-if="currentIndex === 0" />
-               <div v-else-if="currentIndex === 1">
-            <div class="team-badges__container" v-if="team?.badges?.length">
-                <Badge
-                    v-if="featuredBadge"
-                    :badge="featuredBadge"
-                    style="margin: auto"
-                >
-                    <template v-slot:underlay> Featured </template>
-                </Badge>
-
-                <Badge
-                    v-for="(badge, index) in badgesLimited"
-                    :key="badge.id"
-                    :badge="badge"
-                    style="margin: auto"
-                >
-                    <template v-slot:underlay>
-                        <span v-if="index === 0 && !!team.featured_badge_id"
-                            >Recent</span
-                        >
-                    </template>
-                </Badge>
-
-                <!-- <div
-                class="text-sm q-mt-xs text-underline"
-                style="cursor: pointer"
-                @click="beginSelectFeatured"
-                v-if="canEdit"
-            >
-                Select featured badge
-            </div> -->
-            </div>
-            <div class="full-width row justify-center q-mt-md">
-                <q-btn rounded class="view-badge-btn" @click="badgesOpen = true"
-                    >View all badges</q-btn
-                >
-            </div>
+ <div class="row q-mt-lg full-width">
+    <div  v-if="!$q.screen.xs || currentIndex === 0" :class="$q.screen.xs ? 'col-12' : 'col-6'">
+        <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">Players</h2>
+        <div style="width: fit-content; margin: auto">
+    <TeamPagePlayers :teamId="teamId" />
         </div>
+    </div>
+
             <ChartTeamStatsTime
             v-else-if="currentIndex === 2"
             :teamId="teamId"
             :visibleStats="['Hammer efficiency']"
             class="q-mb-md stats"
         />
-        <GameResultList :teamId="teamId" v-else-if="currentIndex === 3" />
+        <div v-if="!$q.screen.xs || currentIndex === 1" :class="$q.screen.xs ? 'col-12' : 'col-6'">
+                <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">Game history</h2>
+        <GameResultList :teamId="teamId" />
+        </div>
 
-     
+ </div>
     
 
     <!-- 
@@ -109,7 +77,7 @@
                 <TeamPagePlayers :teamId="teamId" />
             </div>
         </div>
-    </div> -->
+    </div> 
 
     <!-- <LayoutSection
         title="Badges"
@@ -241,7 +209,10 @@
 </template>
 <style lang="scss" scoped>
 .team-page-container {
-    // background-color: $app-slate;
+    // @include $bg-blue-side;
+    position: relative;
+    @include lines;
+    height: 100%;
 }
 .players-container {
     margin-top: var(--space-md);
@@ -302,6 +273,9 @@
     :deep(.q-tab) {
         padding: unset;
         // margin: 0px var(--space-xs);
+        @include sm {
+            padding: 0px var(--space-lg);
+        }
     }
     &.dark {
         @include bg-slate-texture;

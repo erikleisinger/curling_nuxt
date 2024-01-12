@@ -2,99 +2,34 @@
     <div class="details__container">
        
         <div   v-if="shouldShowHammerStats">
-        <div
-            class="row__container row justify-between"
-          
-        >
-            <h4>With hammer in first end</h4>
-            <div class="row items-center">
-                <div class="text-caption q-mr-xs"></div>
-            <h5>{{ cleanNumber(withHammerFe) }}</h5>
-            </div>
-        </div>
-          <div
-            class="row__container row justify-between"
-           
-        >
-            <h4>Without hammer in first end</h4>
-            <h5>{{ cleanNumber(withoutHammerFe) }}{{}}</h5>
-        </div>
-        <div
-            class="row__container row justify-between"
+         <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.WITH_HAMMER_FE" :filters="filters"/>
+          <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.WITHOUT_HAMMER_FE" :filters="filters"/>
+           <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.WITH_HAMMER_LE" :filters="filters"/>
+            <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.WITHOUT_HAMMER_LE" :filters="filters"/>
          
-        >
-            <h4>With hammer in last end</h4>
-            <h5>{{ cleanNumber(withHammerLe) }}{{}}</h5>
-        </div>
-      
-
-            <div
-            class="row__container row justify-between"
-          
-        >
-            <h4>Without hammer in last end</h4>
-            <h5>{{ cleanNumber(withoutHammerLe) }}{{}}</h5>
-        </div>
 
          <q-separator class="separator" />
         </div>
 
-        <div class="row__container row justify-between">
-            <h4>
-                <q-icon
-                    name="circle"
-                    size="0.7em"
-                    :style="{ color: getColor('red') }"
-                    class="q-mr-xs"
-                />Red rocks
-            </h4>
-            <h5>
-                <span class="plus-minus__text"> </span>
-                {{ cleanNumber(withRed) }}
-            </h5>
-        </div>
-        <div class="row__container row justify-between">
-            <h4>
-                <q-icon
-                    name="circle"
-                    size="0.7em"
-                    :style="{ color: getColor('yellow') }"
-                    class="q-mr-xs"
-                />Yellow rocks
-            </h4>
-            <h5>{{ cleanNumber(withYellow) }}</h5>
-        </div>
-        <div class="row__container row justify-between">
-            <h4>
-                <q-icon
-                    name="circle"
-                    size="0.7em"
-                    :style="{ color: getColor('blue') }"
-                    class="q-mr-xs"
-                />Blue rocks
-            </h4>
-            <h5>{{ cleanNumber(withBlue) }}</h5>
-        </div>
-
+        <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.YELLOW" :filters="filters"/>
+        <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.BLUE" :filters="filters"/>
+         <DashboardStatDetailsItem :statType="props.type" :statField="STAT_FIELDS.RED" :filters="filters"/>
+       
         <q-separator class="separator"/>
 
-        <div class="row__container row justify-between upcoming">
+        <div class="row__container row justify-between " v-if="!DISABLE_HIGHEST_LOWEST.includes(props.type)">
             <div>
                 <h4>Season high</h4>
-                <caption class="text-caption">
-                    Coming soon
-                </caption>
+           
             </div>
-            <h5>-</h5>
+            <h5 >{{cleanNumber(highest)}}</h5>
         </div>
-        <div class="row__container row justify-between upcoming">
+        <div class="row__container row justify-between " v-if="!DISABLE_HIGHEST_LOWEST.includes(props.type)">
             <div>
                 <h4>Season low</h4>
-                <caption class="text-caption">
-                    Coming soon
-                </caption>
+               
             </div>
-            <h5>-</h5>
+            <h5>{{cleanNumber(lowest)}}</h5>
         </div>
         <div
             class="row__container row justify-between upcoming"
@@ -157,7 +92,7 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 }
 </style>
 <script setup>
-import { NON_PERCENT_STATS, STAT_COLORS, STAT_TYPES, STAT_FIELDS_TOTAL } from "@/constants/stats";
+import { NON_PERCENT_STATS, STAT_COLORS, STAT_FIELDS, STAT_FIELDS_TOTAL, STAT_TYPES } from "@/constants/stats";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
 import Player from "@/store/models/player";
@@ -215,62 +150,15 @@ const cleanNumber = (num) => {
     return `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
 };
 
-
-
 const SHOW_HAMMER_STATS = [STAT_TYPES.WINS];
 const shouldShowHammerStats = SHOW_HAMMER_STATS.includes(props.type);
 
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
-const withHammerFe = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(
-            ({ hammer_first_end_count }) => !!hammer_first_end_count
-        ),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
-const withoutHammerFe = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(
-            ({ hammer_first_end_count }) => !hammer_first_end_count
-        ),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
+const DISABLE_HIGHEST_LOWEST = [
+    STAT_TYPES.WINS
+]
 
-const withoutHammerLe = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(
-            ({ hammer_last_end_count }) => !hammer_last_end_count
-        ),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
-const withHammerLe = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(
-            ({ hammer_last_end_count }) => !!hammer_last_end_count
-        ),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
-const withRed = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(({ color }) => color === "red"),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
-const withYellow = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(({ color }) => color === "yellow"),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
-const withBlue = computed(() =>
-    getCumulativeStat(
-        statsByGame.value.filter(({ color }) => color === "blue"),
-        STAT_FIELDS_TOTAL[props.type]
-    )
-);
+const highest = computed(() => Math.max(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])));
+const lowest = computed(() => Math.min(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])))
 </script>

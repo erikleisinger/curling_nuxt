@@ -1,11 +1,11 @@
 <template>
 <div class="player-tile__container--outer">
-    <div class="player-tiles__header full-width row justify-center">
+    <!-- <div class="player-tiles__header full-width row justify-center">
         <div class="player-tiles__header--inner">
             Players
         </div>
 
-    </div>
+    </div> -->
     <div class="player-tile__container">
         <TeamPagePlayerTile
             v-for="(player, index) in teamPlayers"
