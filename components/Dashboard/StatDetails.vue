@@ -112,7 +112,7 @@
 <style lang="scss" scoped>
 
 .details__container {
-    margin-top: var(--space-xl);
+    margin-top: var(--space-MD);
     .row__container {
         margin-bottom: var(--space-sm);
         h5 {

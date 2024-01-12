@@ -56,18 +56,13 @@ $min-height: min(175px, calc(50% - 12px));
     }
     color: $app-royal-blue;
     &:hover:not(.expanded) {
-        // background-color: rgba(4, 2, 20, 0.2) !important;
+
       
         background-color: rgba(225, 225, 225, 0.5);
     }
-    // &.expanded {
-    //     background-color: rgba(0, 0, 0, 0.708);
-    //         color: white;
-
-    //           .knob--text {
-    //    color: white;
-    // }
-    // }
+    &.expanded {
+        padding-top: var(--space-lg);
+    }
 
     cursor: pointer;
     // min-height: $min-height;

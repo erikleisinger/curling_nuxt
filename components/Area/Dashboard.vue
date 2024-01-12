@@ -60,6 +60,7 @@
     .tile__container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        // margin-top: var(--space-md);
         column-gap: 2px;
         row-gap: 2px;
         // gap: var(--space-sm);
@@ -142,11 +143,13 @@ const stats = [
     STAT_TYPES.WINS,
     STAT_TYPES.POINTS_PER_GAME,
     STAT_TYPES.ENDS_PER_GAME,
+      STAT_TYPES.HAMMER_LAST_END,
     STAT_TYPES.HAMMER_EFFICIENCY,
     STAT_TYPES.STEAL_EFFICIENCY,
     STAT_TYPES.FORCE_EFFICIENCY,
     STAT_TYPES.STEAL_DEFENSE,
-    STAT_TYPES.BLANK_ENDS
+    STAT_TYPES.BLANK_ENDS,
+  
 ]
 
 

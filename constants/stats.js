@@ -8,7 +8,7 @@ export const STAT_TYPES = {
     HAMMER_LAST_END:'hammer_le',
     WINS: 'wins',
     POINTS_PER_GAME: 'ppg',
-    ENDS_PER_GAME: 'epg'
+    ENDS_PER_GAME: 'epg',
 }
 
 export const STAT_NAMES = {
@@ -65,6 +65,7 @@ export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.STEAL_DEFENSE]: ({hammer_end_count, hammer_steal_count}) => 1 - (hammer_steal_count / hammer_end_count || 0),
     [STAT_TYPES.BLANK_ENDS]: ({hammer_end_count, hammer_blank_count}) => hammer_blank_count / hammer_end_count || 0,
     [STAT_TYPES.ENDS_PER_GAME]: ({ends_for, ends_against}) => ends_for - ends_against,
+    [STAT_TYPES.HAMMER_LAST_END]: ({hammer_last_end_count}) => hammer_last_end_count / 1,
 }
 
 export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_PER_GAME, STAT_TYPES.ENDS_PER_GAME];

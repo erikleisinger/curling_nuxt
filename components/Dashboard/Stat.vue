@@ -72,11 +72,13 @@ const STAT_RANK_ORDER = {
     [STAT_TYPES.WINS]: 'wins_average',
     [STAT_TYPES.BLANK_ENDS]: '',
     [STAT_TYPES.ENDS_PER_GAME]: '',
+    [STAT_TYPES.HAMMER_LAST_END]: 'hammer_last_end',
     [STAT_TYPES.FORCE_EFFICIENCY]: 'force_efficiency',
     [STAT_TYPES.HAMMER_EFFICIENCY]: 'hammer_conversion_average',
     [STAT_TYPES.POINTS_PER_GAME]: 'points_for',
     [STAT_TYPES.STEAL_DEFENSE]: 'steal_defense',
-    [STAT_TYPES.STEAL_EFFICIENCY]: 'steal_efficiency'
+    [STAT_TYPES.STEAL_EFFICIENCY]: 'steal_efficiency',
+    
 }
 
 
@@ -87,12 +89,9 @@ const average = computed(() => {
         return all + current[STAT_RANK_ORDER[props.type]]
 }, 0)
 
-
-
 return total / all.length;
 })
 
-const allStats = computed(() => useRepo(TeamStatsTotal).query().get())
 
 const betterThanAverage = computed(() => {
     
