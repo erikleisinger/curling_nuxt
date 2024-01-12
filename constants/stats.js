@@ -43,7 +43,10 @@ export const STAT_COLORS = {
     [STAT_TYPES.POINTS_PER_GAME]: 'mint',
     [STAT_TYPES.HAMMER_EFFICIENCY]: 'blue',
     [STAT_TYPES.STEAL_EFFICIENCY]: 'red',
-    [STAT_TYPES.FORCE_EFFICIENCY]: 'pink'
+    [STAT_TYPES.FORCE_EFFICIENCY]: 'pink',
+    [STAT_TYPES.STEAL_DEFENSE]: 'blue-grey',
+    [STAT_TYPES.BLANK_ENDS]: 'white',
+    [STAT_TYPES.ENDS_PER_GAME]: 'orange',
 }
 
 export const STAT_FIELDS_TOTAL = {
@@ -58,10 +61,13 @@ export const STAT_FIELDS_TOTAL = {
         non_hammer_steal_count,
         non_hammer_end_count,
     }) => non_hammer_steal_count / non_hammer_end_count || 0,
-    [STAT_TYPES.FORCE_EFFICIENCY]: ({non_hammer_force_count, non_hammer_end_count}) => non_hammer_force_count / non_hammer_end_count || 0
+    [STAT_TYPES.FORCE_EFFICIENCY]: ({non_hammer_force_count, non_hammer_end_count}) => non_hammer_force_count / non_hammer_end_count || 0,
+    [STAT_TYPES.STEAL_DEFENSE]: ({hammer_end_count, hammer_steal_count}) => 1 - (hammer_steal_count / hammer_end_count || 0),
+    [STAT_TYPES.BLANK_ENDS]: ({hammer_end_count, hammer_blank_count}) => hammer_blank_count / hammer_end_count || 0,
+    [STAT_TYPES.ENDS_PER_GAME]: ({ends_for, ends_against}) => ends_for - ends_against,
 }
 
-export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_PER_GAME];
+export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_PER_GAME, STAT_TYPES.ENDS_PER_GAME];
 
 export const STAT_FIELDS = {
     YELLOW: "yellow",
@@ -87,9 +93,9 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.BLUE]: 'Blue rocks',
     [STAT_FIELDS.YELLOW]: 'Yellow rocks',
     [STAT_FIELDS.RED]: 'Red rocks',
-    [STAT_FIELDS.WITH_HAMMER_FE]: 'With hammer in first end',
-    [STAT_FIELDS.WITHOUT_HAMMER_FE]: 'Without hammer in first end',
-    [STAT_FIELDS.WITH_HAMMER_LE]: 'With hammer in last end',
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without hammer in last end'
+    [STAT_FIELDS.WITH_HAMMER_FE]: 'With HFE',
+    [STAT_FIELDS.WITHOUT_HAMMER_FE]: 'Without HFE',
+    [STAT_FIELDS.WITH_HAMMER_LE]: 'With HLE',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without HLE'
 
 }

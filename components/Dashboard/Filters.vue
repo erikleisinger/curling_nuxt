@@ -12,7 +12,7 @@
                 animateRing
             />
         </div>
-        <Button round icon="add" size="12px" color="white" />
+        <Button round icon="add" size="15px" color="white" text-color="mint" />
     </div>
     <div class="full-width filters__container">
         <!-- <div class="full-width row justify-center">
@@ -74,14 +74,14 @@
 
 .team-filters__container {
     margin: var(--space-lg) 0px;
-    background-color: $app-royal-blue;
+    // background-color: $app-royal-blue;
     padding: var(--space-sm);
     z-index: 1;
      gap: var(--space-sm);
 
        
         .avatar-container {
-            width: 35px;
+            width: 45px;
         }
     
 }

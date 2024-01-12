@@ -16,7 +16,7 @@
         <div class="header--content">
            
             <slot name="prepend">
-                <div style="height: 1em"/>
+                <div style="height: 1em" />
             </slot>
    
             <div class="title-container">
@@ -148,6 +148,7 @@ const header = ref(null)
 const {height:headerHeight} = useElementBounding(header)
 
 const $q = useQuasar();
+const slots = useSlots()
 
 const minimumHeight = computed(() => {
     if (props.minHeight) return props.minHeight;

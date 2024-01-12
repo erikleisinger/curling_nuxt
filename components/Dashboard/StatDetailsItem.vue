@@ -1,5 +1,5 @@
 <template>
-    <div class="row__container row justify-between">
+    <div class="row__container row justify-between items-center">
         <h4 >
             <q-icon
                 name="circle"
@@ -12,7 +12,7 @@
             {{STAT_FIELD_TITLES[statField]}}
 
         </h4>
-        <h5>{{ cleanNumber(value) }}</h5>
+        <h5     :style="{ color }">{{ cleanNumber(value) }}</h5>
     </div>
     <!-- <div
         class="row__container row justify-between upcoming"
@@ -34,7 +34,7 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 .row__container {
     margin-bottom: var(--space-sm);
     h5 {
-        color: v-bind(color);
+
         @include md-text;
     }
     &.upcoming {
@@ -59,13 +59,14 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 import {STAT_FIELDS_TOTAL, STAT_FIELDS, STAT_FIELD_FILTER_FUNCTIONS, STAT_COLORS, NON_PERCENT_STATS, STAT_FIELD_TITLES} from '@/constants/stats'
 import TeamStats from "@/store/models/team-stats";
 const props = defineProps({
+    average: Number,
     filters: Object,
     statField: String,
     statType: String,
 });
 
 const { getColor } = useColor();
-const color = getColor(STAT_COLORS[props.statType]);
+
 
 const COLOR_STATS = [
     STAT_FIELDS.YELLOW,
@@ -94,6 +95,7 @@ const stats = computed(() => {
 const {getCumulativeStat} = useStats()
 
 const value = computed(() => getCumulativeStat(stats.value.filter(STAT_FIELD_FILTER_FUNCTIONS[props.statField]), STAT_FIELDS_TOTAL[props.statType]))
+const color = computed(() => Number.isNaN(value.value) ? getColor('slate') : value.value > props.average ? getColor('slate') : getColor('slate'));
 
 const isPercent = !NON_PERCENT_STATS.includes(props.statType);
 

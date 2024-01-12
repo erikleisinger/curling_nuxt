@@ -13,6 +13,14 @@ $screen-lg-min: 1440px;
 // Large tablets and desktops
 $screen-xl-min: 1920px;
 
+
+@font-face {
+    font-family: 'Claris';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/fonts/clarissans.ttf') format('woff2'), 
+  }
+
 @mixin sm {
     @media (min-width: #{$screen-sm-min}) {
         @content;
