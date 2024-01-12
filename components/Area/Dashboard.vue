@@ -1,5 +1,5 @@
 <template>
-    <div class="dashboard__container">
+    <div class="dashboard__container" id="dashboard">
           
     <LayoutCircleTitle title="Season Overview 2023-2024" minHeight="225px">
         <template v-slot:underlay>

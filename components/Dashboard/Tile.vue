@@ -1,63 +1,97 @@
 <template>
     <div class="tile" :class="{ highlight: betterThanAverage, expanded }">
-        <header class="column items-center no-wrap">
-            <h3 class="position-relative">
+        <header
+            class="row items-center no-wrap justify-between q-mb-md"
+            v-if="!expanded"
+        >
+            <h3 class="position-relative row no-wrap">
+                <q-icon
+                    v-if="betterThanAverage"
+                    size="0.9em"
+                    class="q-mr-xs"
+                    name="stars"
+                    :style="{ color: getColor('yellow') }"
+                />
                 {{ name }}
-                <div class="better--floating" v-if="betterThanAverage">
-                    <q-icon
-                        name="stars"
-                        :style="{ color: getColor(color) }"
-                    />
-                </div>
             </h3>
-
-            <q-knob
-                show-value
-                :model-value="isPercent ? percent : 100"
-                size="100px"
-                :thickness="0.15"
-                :angle="70"
-                style="margin: unset"
-                class="percent"
-                readonly
-                track-color="grey-9"
-                :style="{ color: getColor(color) }"
-            >
-                <div class="knob--text">
-                    <h2>
-                        {{ percent.toFixed(isPercent ? 0 : 1) }}
-                    </h2>
-                </div>
-            </q-knob>
-            <h4 v-if="betterThanAverage && expanded">
-                <div
-                    class="better--floating"
-                    style="right: unset; left: -1.2em"
-                   
-                >
-                    <q-icon
-                        name="stars"
-                        :style="{ color: getColor(color) }"
-                    />
-                </div>
-                Better than the worldwide average
-            </h4>
+            <h2 :class="{green: betterThanAverage}">
+                {{ percent.toFixed(isPercent ? 0 : 1) }}
+            </h2>
         </header>
+        <header v-else class="full-width header-expanded">
+            <div class="column items-center justify-center">
+                <h3 class="position-relative">
+                    <q-icon
+                        v-if="betterThanAverage"
+                        size="0.9em"
+                        class="q-mr-xs"
+                        name="stars"
+                        :style="{ color: getColor('yellow') }"
+                    />
+                    {{ name }}
+                </h3>
+                <q-knob
+                    show-value
+                    :model-value="isPercent ? percent : 100"
+                    size="150px"
+                    :thickness="0.15"
+                    :angle="70"
+                    style="margin: unset"
+                    class="percent q-mt-md"
+                    readonly
+                    track-color="grey-9"
+                    :style="{ color: getColor('blue') }"
+                >
+                    <div class="knob--text">
+                        <h2 >
+                            {{ percent.toFixed(isPercent ? 0 : 1) }}
+                        </h2>
+                    </div>
+                </q-knob>
+                <div class="row justify-center full-width">
+                    <h4 v-if="betterThanAverage && expanded">
+                        <div
+                            class="better--floating"
+                            style="right: unset; left: -1.2em"
+                        >
+                            <q-icon
+                                name="stars"
+                                :style="{ color: getColor('yellow') }"
+                            />
+                        </div>
+                        Better than the worldwide average
+                    </h4>
+                </div>
+            </div>
+            <div>
+                <slot name="stat-expanded" />
+            </div>
+        </header>
+
+        <slot name="stat" v-if="!expanded" />
+
         <slot />
     </div>
 </template>
 <style lang="scss" scoped>
 $min-height: min(175px, calc(50% - 12px));
+.header-expanded {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    row-gap: var(--space-lg);
+    @include sm {
+        grid-template-rows: unset;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 .tile {
     padding: var(--space-sm);
-      background-color: rgba(240, 238, 238, 0.5);
+    background-color: rgba(240, 238, 238, 0.5);
     .knob--text {
         color: $app-royal-blue;
     }
     color: $app-royal-blue;
     &:hover:not(.expanded) {
-
-      
         background-color: rgba(225, 225, 225, 0.5);
     }
     &.expanded {
@@ -65,11 +99,11 @@ $min-height: min(175px, calc(50% - 12px));
     }
 
     cursor: pointer;
-    // min-height: $min-height;
+    min-height: $min-height;
     border-radius: 4px;
     padding-bottom: var(--space-md);
 
-    // min-width: $min-height;
+    min-width: $min-height;
     position: relative;
 
     &.highlight {
@@ -81,17 +115,25 @@ $min-height: min(175px, calc(50% - 12px));
         top: 0;
         @include reg-text;
         line-height: 0.8;
-        padding: 0px var(--space-sm);
+        // padding: 0px var(--space-sm);
+        padding-right: var(--space-sm);
         // color: rgba(255, 255, 255, 0.782);
 
         z-index: 1;
         position: relative;
     }
+    &.expanded {
+        h3 {
+            @include smmd-text;
+            margin-bottom: var(--space-md);
+        }
+    }
     :deep(.q-circular-progress__track) {
         color: rgba(211, 211, 211, 0.7) !important;
     }
     h2 {
-        @include lg-text;
+        @include xl-text;
+       
     }
     .percent {
         z-index: 1;
@@ -108,7 +150,7 @@ $min-height: min(175px, calc(50% - 12px));
     }
     .better--floating {
         position: absolute;
-        right: -0.5em;
+        left: -0.5em;
         top: -0.1em;
         // color: $app-royal-blue;
     }
@@ -140,10 +182,6 @@ const { getColor } = useColor();
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
 const name = STAT_NAMES[props.type];
-
-const tile = ref(null);
-const { height } = useElementBounding(tile);
-const tileWidth = computed(() => `${height.value}px`);
 
 const color = computed(() => (props.betterThanAverage ? "mint" : "yellow"));
 </script>

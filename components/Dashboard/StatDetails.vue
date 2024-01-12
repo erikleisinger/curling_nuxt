@@ -136,7 +136,7 @@
         }
     }
     .separator {
-        background-color: v-bind(color);
+        background-color: $app-blue;
         margin-bottom: var(--space-lg);
         margin-top: calc(var(--space-lg) - 4px);
     }

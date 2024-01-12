@@ -19,7 +19,7 @@ export const STAT_NAMES = {
     [STAT_TYPES.BLANK_ENDS]: 'Blank ends',
     [STAT_TYPES.HAMMER_FIRST_END]: 'Hammer in first end',
     [STAT_TYPES.HAMMER_LAST_END]: 'Hammer in last end',
-    [STAT_TYPES.WINS]: 'Wins',
+    [STAT_TYPES.WINS]: 'Win %',
     [STAT_TYPES.POINTS_PER_GAME]: 'Points per game',
     [STAT_TYPES.ENDS_PER_GAME]: 'Ends per game',
 
