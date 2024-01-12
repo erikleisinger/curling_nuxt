@@ -15,7 +15,7 @@
                     v-if="!expanded"
                 >
                     <DashboardLineChart
-                        :data="[...chartPoints].slice(chartPoints.length - 5)"
+                        :data="[...chartPoints].slice(chartPoints.length < 5 ? 0 : chartPoints.length - 5)"
                         :maintain="false"
                     />
                 </div>
