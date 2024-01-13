@@ -7,8 +7,12 @@ export default class TeamStatsTotal extends Model {
 
     static fields() {
         return {
-            ends_for_average: this.number(0),
+            ends_for: this.number(0),
+            ends_against: this.number(0),
+            ends_difference: this.number(0),
             ends_for_percentile: this.number(0),
+            ends_against_percentile: this.number(0),
+            ends_difference_percentile: this.number(0),
             force_efficiency: this.number(0),
             force_efficiency_percentile: this.number(0),
             games_played: this.number(0),
@@ -21,6 +25,10 @@ export default class TeamStatsTotal extends Model {
             team_id: this.number(0),
             points_for: this.number(0),
             points_for_percentile: this.number(0),
+            points_against: this.number(0),
+            points_against_percentile: this.number(0),
+            points_difference: this.number(0),
+            points_difference_percentile: this.number(0),
             steal_defense: this.number(0),
             steal_defense_percentile: this.number(0),
             steal_efficiency: this.number(0),

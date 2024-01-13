@@ -175,6 +175,9 @@ const STAT_RANK_ORDER = {
     [STAT_TYPES.FORCE_EFFICIENCY]: "force_efficiency",
     [STAT_TYPES.HAMMER_EFFICIENCY]: "hammer_conversion_average",
     [STAT_TYPES.POINTS_FOR_PER_GAME]: "points_for",
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: "points_against",
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: "ends_for",
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: "ends_against",
     [STAT_TYPES.STEAL_DEFENSE]: "steal_defense",
     [STAT_TYPES.STEAL_EFFICIENCY]: "steal_efficiency",
 };
@@ -190,8 +193,11 @@ const average = computed(() => {
     return total / all.length;
 });
 
+const LESS_THAN_STATS = [STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME]
+
 const betterThanAverage = computed(() => {
-    return totalTile.value / 100 > average.value;
+    if (LESS_THAN_STATS.includes(props.type)) return totalTile.value / (isPercent ? 100 : 1) < average.value;
+    return totalTile.value / (isPercent ? 100 : 1) > average.value;
 });
 
 const tile = ref(null);
