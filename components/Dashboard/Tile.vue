@@ -14,11 +14,15 @@
                 />
                 {{ name }}
             </h3>
-            <h2 :class="{green: betterThanAverage}">
+            <h2 :class="{green: betterThanAverage}" style="white-space: nowrap">
                 {{ percent.toFixed(isPercent ? 0 : 1) }}
+                <span class="text-caption" style="margin-left: -1.3em" v-if="isPercent">%</span>
             </h2>
         </header>
         <header v-else class="full-width header-expanded">
+            <div class="close-container__floating">
+                <q-btn icon="close" flat round @click="emit('close')"/>
+            </div>
             <div class="column items-center justify-center">
                 <h3 class="position-relative">
                     <q-icon
@@ -30,6 +34,7 @@
                     />
                     {{ name }}
                 </h3>
+                <h4>{{STAT_DESCRIPTIONS[type]}}</h4>
                 <q-knob
                     show-value
                     :model-value="isPercent ? percent : 100"
@@ -40,7 +45,7 @@
                     class="percent q-mt-md"
                     readonly
                     track-color="grey-9"
-                    :style="{ color: getColor('blue') }"
+                    :style="{ color: getColor(STAT_COLORS[type]) }"
                 >
                     <div class="knob--text">
                         <h2 >
@@ -49,7 +54,7 @@
                     </div>
                 </q-knob>
                 <div class="row justify-center full-width">
-                    <h4 v-if="betterThanAverage && expanded">
+                    <h5 v-if="betterThanAverage && expanded">
                         <div
                             class="better--floating"
                             style="right: unset; left: -1.2em"
@@ -60,7 +65,7 @@
                             />
                         </div>
                         Better than the worldwide average
-                    </h4>
+                    </h5>
                 </div>
             </div>
             <div>
@@ -106,8 +111,6 @@ $min-height: min(175px, calc(50% - 12px));
     min-width: $min-height;
     position: relative;
 
-    &.highlight {
-    }
     h3 {
         margin-bottom: var(--space-xs);
 
@@ -125,8 +128,24 @@ $min-height: min(175px, calc(50% - 12px));
     &.expanded {
         h3 {
             @include smmd-text;
-            margin-bottom: var(--space-md);
+            margin-bottom: unset;
+            padding-right: unset;
         }
+        h4 {
+            margin-top: var(--space-xxxs);
+            margin-bottom: calc(var(--space-xl) - 8px)
+        }
+        h5 {
+            font-family: $font-family-secondary;
+            @include text-caption;
+            margin-top: var(--space-lg);
+            position: relative;
+        }
+    }
+    .close-container__floating {
+        position: absolute;
+        top: var(--space-sm);
+        right: 0;
     }
     :deep(.q-circular-progress__track) {
         color: rgba(211, 211, 211, 0.7) !important;
@@ -159,6 +178,7 @@ $min-height: min(175px, calc(50% - 12px));
 <script setup>
 import {
     NON_PERCENT_STATS,
+    STAT_DESCRIPTIONS,
     STAT_NAMES,
     STAT_COLORS,
     STAT_TYPES,
@@ -176,6 +196,8 @@ const props = defineProps({
     total: Number,
     type: String,
 });
+
+const emit = defineEmits(['close'])
 
 const { getColor } = useColor();
 

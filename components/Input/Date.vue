@@ -81,9 +81,6 @@ const limitDate = (val) => {
     if (!props.limit && !props.limitPast) return true;
     const now = toTimezone(null, null, false, true).unix();
     if (props.limit) {
-        console.log('NOW: ', now)
-        console.log('val: ', val)
-        console.log('converted: ', toTimezone(val, null, false, true).unix())
     return toTimezone(val, null, false, true).unix() <= now;
     } 
     return toTimezone(val, null, false, true).unix() >= now;

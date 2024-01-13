@@ -1,32 +1,30 @@
 <template>
     <div class="dashboard__container" id="dashboard">
-          
-    <LayoutCircleTitle title="Season Overview 2023-2024" minHeight="225px">
-        <template v-slot:underlay>
-            <Rings size="100%" />
-        </template>
-        <template v-slot:append>
-            <!-- <h2>2023-2024</h2> -->
-          
-        </template>
-    </LayoutCircleTitle>
+        <LayoutCircleTitle title="Season Overview 2023-2024" minHeight="225px">
+            <template v-slot:underlay>
+                <Rings size="100%" />
+            </template>
+            <template v-slot:append>
+                <!-- <h2>2023-2024</h2> -->
+            </template>
+        </LayoutCircleTitle>
         <!-- <header>
             <h1>Dashboard</h1>
             <h2>2023-2024</h2>
         </header> -->
-         <div class="filter__container row justify-center">
-            <DashboardFilters v-model="filters"/>
+        <div class="filter__container row justify-center">
+            <DashboardFilters v-model="filters" />
         </div>
-        <main class="tile__container" :class="{expanded}" ref="tileContainer">
+        <main class="tile__container" :class="{ expanded }" ref="tileContainer">
             <DashboardStat
                 v-for="statType in stats"
                 :key="statType"
                 :type="statType"
                 @click="setSelected(statType)"
                 :expanded="expanded === statType"
-                :style="{order: expanded === statType ? 0 : 1}"
+                :style="{ order: expanded === statType ? 0 : 1 }"
                 :filters="filters"
- 
+                @close="endView"
             >
             </DashboardStat>
         </main>
@@ -72,17 +70,19 @@
         }
         &.expanded {
             grid-template-columns: 1fr;
-            
         }
     }
-
-   
 }
 </style>
 <script setup>
-import { NON_PERCENT_STATS, STAT_FIELDS_TOTAL, STAT_TYPES } from "@/constants/stats";
+import {
+    NON_PERCENT_STATS,
+    STAT_FIELDS_TOTAL,
+    STAT_TYPES,
+} from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";
+import { useEventListener, useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
 import Team from "@/store/models/team";
@@ -90,7 +90,7 @@ import Team from "@/store/models/team";
 const filters = ref({
     teams: [],
     sheet: null,
-})
+});
 
 const teamIds = computed(() =>
     useUserTeamStore().userTeams.map(({ id }) => id)
@@ -98,10 +98,8 @@ const teamIds = computed(() =>
 
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
-    const { data } = await client
-        .from("team_stats_total")
-        .select(`*`)
-        // .in("id", teamIds.value);
+    const { data } = await client.from("team_stats_total").select(`*`);
+    // .in("id", teamIds.value);
     data.forEach((totalStat) => {
         useRepo(TeamStatsTotal).save({
             ...totalStat,
@@ -126,12 +124,10 @@ const getAllTeamStats = async () => {
         .select("*")
         .in("team_id", teamIds.value);
     data.forEach((stat) => {
-       
         useRepo(TeamStats).save(stat);
     });
     return data;
 };
-
 
 const { isLoading: isLoadingSingleStats, data: singleStats } = useQuery({
     queryKey: ["stats", "singletotal", userId.value],
@@ -139,34 +135,91 @@ const { isLoading: isLoadingSingleStats, data: singleStats } = useQuery({
     refetchOnWindowFocus: false,
 });
 
-const stats = [
+const $q = useQuasar();
+
+const stats = computed(() => {
+    if ($q.screen.xs) return [
     STAT_TYPES.WINS,
-    STAT_TYPES.POINTS_PER_GAME,
-    STAT_TYPES.ENDS_PER_GAME,
-      STAT_TYPES.HAMMER_LAST_END,
+    STAT_TYPES.HAMMER_LAST_END,
+    STAT_TYPES.POINTS_FOR_PER_GAME,
+    STAT_TYPES.POINTS_AGAINST_PER_GAME,
+    STAT_TYPES.ENDS_FOR_PER_GAME,
+    STAT_TYPES.ENDS_AGAINST_PER_GAME,
+
     STAT_TYPES.HAMMER_EFFICIENCY,
     STAT_TYPES.STEAL_EFFICIENCY,
     STAT_TYPES.FORCE_EFFICIENCY,
     STAT_TYPES.STEAL_DEFENSE,
     STAT_TYPES.BLANK_ENDS,
-  
-]
+];
 
-
-const tileContainer = ref(null)
-
-const expanded = ref(null);
-
-const setSelected = (type) => {
-    if (expanded.value === type) {
-        expanded.value = null;
-    } else {
-        expanded.value = type;
-         const scroller = document.getElementById('global-container')
-    if (scroller.scrollTop < tileContainer.value.offsetTop) return;
-    scroller.scrollTop = tileContainer.value.offsetTop
-    }
+return [
+    STAT_TYPES.WINS,
+    STAT_TYPES.HAMMER_LAST_END,
+     STAT_TYPES.HAMMER_EFFICIENCY,
+    STAT_TYPES.POINTS_FOR_PER_GAME,
+    STAT_TYPES.ENDS_FOR_PER_GAME,
+    STAT_TYPES.STEAL_EFFICIENCY,
+    STAT_TYPES.POINTS_AGAINST_PER_GAME,
+    
+    STAT_TYPES.ENDS_AGAINST_PER_GAME,
 
    
+    
+    STAT_TYPES.FORCE_EFFICIENCY,
+    STAT_TYPES.STEAL_DEFENSE,
+    STAT_TYPES.BLANK_ENDS,
+];
+})
+
+
+
+const tileContainer = ref(null);
+
+const expanded = ref(null);
+const preventExpand = ref(false);
+
+const setSelected = (type) => {
+    if (preventExpand.value) {
+        preventExpand.value = false;
+        return;
+    }
+    if (expanded.value === type) {
+        // expanded.value = null;
+    } else {
+        expanded.value = type;
+        const scroller = document.getElementById("global-container");
+        if (scroller.scrollTop < tileContainer.value.offsetTop) return;
+        scroller.scrollTop = tileContainer.value.offsetTop;
+    }
 };
+
+const endView = (e) => {
+    preventExpand.value = true;
+    expanded.value = null;
+};
+
+onBeforeRouteLeave(() => {
+    if (expanded.value) {
+        expanded.value = null;
+        return false;
+    }
+    return true;
+});
+
+const dashboard = ref(null);
+
+const { direction } = useSwipe(tileContainer, {
+    onSwipe: () => {
+        if (!expanded.value) return;
+        const index = stats.value.indexOf(expanded.value);
+        if (direction.value === "right") {
+            if (index === 0) return;
+            expanded.value = stats.value[index - 1];
+        } else if (direction.value === "left") {
+            if (index === stats.value.length - 1) return;
+            expanded.value = stats.value[index + 1];
+        }
+    },
+});
 </script>

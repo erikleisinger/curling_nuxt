@@ -79,23 +79,23 @@ const leftVal = ref('unset');
 const rightVal = ref('unset')
 
 const getXVal = () => {
-    leftVal.value = x.value - (width.value / 2)
-    // if (x.value + (width.value / 2) >= window.innerWidth) {
-    //     leftVal.value = 0;
-    // } else {
-    //     leftVal.value = 'unset'
-    // }
-    // if (x.value - width.value < 0) {
-    //     rightVal.value = 0;
-    // } else {
-    //     rightVal.value = 'unset'
-    // }
-    // if (x.value <= 0) return 0;
-    // if (x.value >= window.innerWidth) return window.innerWidth - width.value;
-    // if (x.value + (width.value / 2) > window.innerWidth) {
-    //     return x.value - width.value;
-    // }
-    // return x.value - width.value / 2;
+    // leftVal.value = x.value - (width.value / 2)
+    if (x.value + (width.value / 2) >= window.innerWidth) {
+        leftVal.value = 0;
+    } else {
+        leftVal.value = 'unset'
+    }
+    if (x.value - width.value < 0) {
+        rightVal.value = 0;
+    } else {
+        rightVal.value = 'unset'
+    }
+    if (x.value <= 0) return 0;
+    if (x.value >= window.innerWidth) return window.innerWidth - width.value;
+    if (x.value + (width.value / 2) > window.innerWidth) {
+        return x.value - width.value;
+    }
+    return x.value - width.value / 2;
 };
 const getYVal = () => {
     if (y.value >= window.innerHeight / 2) {

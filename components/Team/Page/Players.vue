@@ -553,7 +553,6 @@ const endEdit = () => {
     showMenu.value = false;
 
     updatePlayerPosition(newPosition, playerId);
-    console.log(state);
 };
 
 const updatePlayerPosition = async (position, playerId) => {

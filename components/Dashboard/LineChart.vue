@@ -4,10 +4,17 @@
 <script setup>
 import Chart from "chart.js/auto";
 const props = defineProps({
+    color: {
+        type: String,
+        default: "#347fc4"
+    },
     data: Array,
     maintain: Boolean,
     labels: Boolean,
+    clickable: Boolean,
 });
+
+const emit = defineEmits(['click'])
 let myChart;
 const chart = ref(null);
 
@@ -21,8 +28,8 @@ const setChartData = () => {
             data: props.data,
             label: "data",
             fill: true,
-            borderColor: "#347fc4",
-            backgroundColor: (context) => setBgGradient(context, "#347fc4"),
+            borderColor: props.color,
+            backgroundColor: (context) => setBgGradient(context, props.color),
             tension: 0.4,
             pointRadius: 0,
         },
@@ -38,11 +45,23 @@ onMounted(() => {
         options: {
             responsive: true,
             maintainAspectRatio: props.maintain,
-            
+            onClick: (e) => {
+                if (!props.clickable) return;
+                const [point] = myChart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, false) ?? [];
+                if (!point)return;
+                const {index, element} = point;
+                const {x,y} = element;
+
+                emit('click', {index, x, y})
+            },
             plugins: {
                 legend: {
                     display: false,
                 },
+                tooltips: {
+                    enabled: false,
+                }
+               
             },
             scales: {
                 x: {

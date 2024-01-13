@@ -7,8 +7,10 @@ export const STAT_TYPES = {
     HAMMER_FIRST_END: 'hammer_fe',
     HAMMER_LAST_END:'hammer_le',
     WINS: 'wins',
-    POINTS_PER_GAME: 'ppg',
-    ENDS_PER_GAME: 'epg',
+    POINTS_FOR_PER_GAME: 'pfg',
+    POINTS_AGAINST_PER_GAME: 'pag',
+    ENDS_FOR_PER_GAME: 'efg',
+    ENDS_AGAINST_PER_GAME: 'eag'
 }
 
 export const STAT_NAMES = {
@@ -20,8 +22,10 @@ export const STAT_NAMES = {
     [STAT_TYPES.HAMMER_FIRST_END]: 'Hammer in first end',
     [STAT_TYPES.HAMMER_LAST_END]: 'Hammer in last end',
     [STAT_TYPES.WINS]: 'Win %',
-    [STAT_TYPES.POINTS_PER_GAME]: 'Points per game',
-    [STAT_TYPES.ENDS_PER_GAME]: 'Ends per game',
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: 'Points for / PG',
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Points against / PG',
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends for / PG',
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends against / PG',
 
 }
 
@@ -33,25 +37,32 @@ export const STAT_DESCRIPTIONS = {
     [STAT_TYPES.BLANK_ENDS]: 'Score 0 points with hammer.',
     [STAT_TYPES.HAMMER_FIRST_END]: 'Possess hammer in end #1.',
     [STAT_TYPES.HAMMER_LAST_END]: 'Possess hammer in the last end.',
-    [STAT_TYPES.WINS]: 'Win a game',
-    [STAT_TYPES.POINTS_PER_GAME]: 'Points scored minus points conceded',
-    [STAT_TYPES.ENDS_PER_GAME]: 'Ends won minus ends lost',
+    [STAT_TYPES.WINS]: '',
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: 'Average points scored per game',
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Average points conceded per game',
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends won per game',
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends conceded per game',
 }
 
 export const STAT_COLORS = {
-    [STAT_TYPES.WINS]: 'yellow',
-    [STAT_TYPES.POINTS_PER_GAME]: 'mint',
+    [STAT_TYPES.WINS]: 'blue',
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: 'mint',
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'red',
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: 'mint',
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'red',
     [STAT_TYPES.HAMMER_EFFICIENCY]: 'blue',
-    [STAT_TYPES.STEAL_EFFICIENCY]: 'red',
-    [STAT_TYPES.FORCE_EFFICIENCY]: 'pink',
-    [STAT_TYPES.STEAL_DEFENSE]: 'blue-grey',
-    [STAT_TYPES.BLANK_ENDS]: 'white',
-    [STAT_TYPES.ENDS_PER_GAME]: 'orange',
+    [STAT_TYPES.STEAL_EFFICIENCY]: 'blue',
+    [STAT_TYPES.FORCE_EFFICIENCY]: 'blue',
+    [STAT_TYPES.STEAL_DEFENSE]: 'blue',
+    [STAT_TYPES.BLANK_ENDS]: 'blue',
+
 }
 
 export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.WINS]: ({win}) => win,
-    [STAT_TYPES.POINTS_PER_GAME]: ({points_for, points_against}) => points_for - points_against,
+    // [STAT_TYPES.POINTS_FOR_PER_GAME]: ({points_for, points_against}) => points_for - points_against,
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: ({points_for}) => points_for,
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: ({points_against}) => points_against,
     [STAT_TYPES.HAMMER_EFFICIENCY]: ({
         hammer_conversion_count,
         hammer_blank_count,
@@ -64,11 +75,12 @@ export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.FORCE_EFFICIENCY]: ({non_hammer_force_count, non_hammer_end_count}) => non_hammer_force_count / non_hammer_end_count || 0,
     [STAT_TYPES.STEAL_DEFENSE]: ({hammer_end_count, hammer_steal_count}) => 1 - (hammer_steal_count / hammer_end_count || 0),
     [STAT_TYPES.BLANK_ENDS]: ({hammer_end_count, hammer_blank_count}) => hammer_blank_count / hammer_end_count || 0,
-    [STAT_TYPES.ENDS_PER_GAME]: ({ends_for, ends_against}) => ends_for - ends_against,
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: ({ends_for}) => ends_for,
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: ({ends_against}) => ends_against,
     [STAT_TYPES.HAMMER_LAST_END]: ({hammer_last_end_count}) => hammer_last_end_count / 1,
 }
 
-export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_PER_GAME, STAT_TYPES.ENDS_PER_GAME];
+export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME];
 
 export const STAT_FIELDS = {
     YELLOW: "yellow",
