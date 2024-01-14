@@ -27,7 +27,8 @@ import { useParentElement, useElementBounding } from "@vueuse/core";
 const props = defineProps({
     name: String,
 });
-const words = computed(() => props.name.split(" "));
+
+const words = computed(() => props.name?.split(" "));
 
 const wordLengths = computed(() => {
     const maxLength = Math.max(...words.value.map((w) => w.length));
@@ -37,10 +38,12 @@ const wordLengths = computed(() => {
     });
 });
 
-const maxWordLength = computed(() => Math.max(...words.value.map((w) => w.length)))
+const maxWordLength = computed(() =>
+    Math.max(...words.value.map((w) => w.length))
+);
 
 const lines = computed(() => {
-    return words.value.reduce((all, current) => {
+    return words.value?.reduce((all, current) => {
         if (!all?.length) return [[current]];
         const isCurrentLowerCase = !containsUppercase(current);
         const isLastWordLowerCase = !containsUppercase(
@@ -68,8 +71,8 @@ const { width: parentWidth, height: parentHeight } = useElementBounding(
 );
 
 const MAX_FONT_SIZE = computed(() => {
-    return Math.min((parentWidth.value * 1.5) / (maxWordLength.value), 85)
-})
+    return Math.min((parentWidth.value * 1.5) / maxWordLength.value, 85);
+});
 
 const fontSize = computed(() => {
     return lines.value.map((l, i) => {
@@ -77,14 +80,14 @@ const fontSize = computed(() => {
         if (containsUppercase(l[0])) {
             const word = l[0];
             size = parentWidth.value / (word.length / 2);
-             if (size > MAX_FONT_SIZE.value) return MAX_FONT_SIZE.value;
+            if (size > MAX_FONT_SIZE.value) return MAX_FONT_SIZE.value;
         } else {
             const totalWord = l.join(" ");
-            size = (parentWidth.value / 2) / (totalWord.length);
-            if (size > MAX_FONT_SIZE.value * 0.7) return Number((MAX_FONT_SIZE.value * 0.7).toFixed())
+            size = parentWidth.value / 2 / totalWord.length;
+            if (size > MAX_FONT_SIZE.value * 0.7)
+                return Number((MAX_FONT_SIZE.value * 0.7).toFixed());
         }
 
-       
         return size;
     });
 });

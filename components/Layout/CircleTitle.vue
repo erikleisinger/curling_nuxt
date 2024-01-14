@@ -20,7 +20,9 @@
             </slot>
    
             <div class="title-container">
+                <slot name="title">
                 <TeamPageName :name="title"/>
+                </slot>
             </div>
             <slot name="append"/>
         </div>
@@ -141,6 +143,9 @@ const props = defineProps<{
     title: string;
 }>();
 const emit = defineEmits(["loaded"]);
+
+
+
 const { truncateWords } = useText();
 const underlay = ref(null);
 const {width: underlayWidth} = useElementSize(underlay);

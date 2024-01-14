@@ -12,7 +12,7 @@
                 animateRing
             />
         </div>
-        <Button round icon="add" size="15px" color="white" text-color="mint" />
+        <Button round icon="add" size="15px" color="white" text-color="mint" @click="navigateTo('/teams/create')"/>
     </div>
     <div class="full-width filters__container">
         <!-- <div class="full-width row justify-center">

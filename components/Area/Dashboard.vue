@@ -167,7 +167,6 @@ const getAllTeamStats = async () => {
     data.forEach((stat) => {
         if (stat.rink) useRepo(Rink).save(stat.rink);
         if (stat.sheet) useRepo(Sheet).save(stat.sheet);
-        console.log(stat);
         useRepo(TeamStats).save({
             ...stat,
             rink_id: stat.rink?.id,

@@ -39,5 +39,5 @@ export const useAvatar = () => {
         });
     };
 
-    return { getTeamAvatar };
+    return { getTeamAvatar, defaultAvatar };
 };

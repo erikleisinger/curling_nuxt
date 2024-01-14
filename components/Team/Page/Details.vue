@@ -60,7 +60,7 @@
                 @click="goSocial(team.twitter)"
             />
         </div>
-        <q-input
+        <!-- <q-input
             v-if="editing || create"
             placeholder="Facebook"
             dense
@@ -95,7 +95,7 @@
             <template v-slot:prepend>
                 <IconTwitter color="rgba(0,0,0,0.3)" />
             </template>
-        </q-input>
+        </q-input> -->
     </header>
     <section class="team-players__section" v-if="props.teamId">
         <div

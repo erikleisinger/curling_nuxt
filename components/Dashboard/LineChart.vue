@@ -43,6 +43,7 @@ onMounted(() => {
     myChart = new Chart(chart.value, {
         type: "line",
         options: {
+
             responsive: true,
             maintainAspectRatio: props.maintain,
             onClick: (e) => {

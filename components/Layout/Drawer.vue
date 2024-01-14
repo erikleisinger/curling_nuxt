@@ -112,7 +112,7 @@
     }
     height: calc(100 * var(--vh, 1vh));
     overflow: auto;
-    z-index: 10;
+    z-index: 11;
   
     .logout--container {
         position: absolute;
