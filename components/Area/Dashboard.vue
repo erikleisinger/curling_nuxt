@@ -14,6 +14,32 @@
         </header> -->
         <div class="filter__container row justify-center">
             <DashboardFilters v-model="filters" />
+            <!-- <div>
+                <div
+                    class="full-width row justify-center text-caption text-black q-mt-sm"
+                >
+                    <div
+                        class="row clickable"
+                        @click="filterBySheet = !filterBySheet"
+                    >
+                        <Rings
+                            :twelveft="
+                                filterBySheet
+                                    ? getColor('mint')
+                                    : getColor('slate')
+                            "
+                            :fourft="
+                                filterBySheet
+                                    ? getColor('mint')
+                                    : getColor('slate')
+                            "
+                            size="1.5em"
+                            class="q-mr-xs"
+                        />Filter by sheet
+                    </div>
+                </div>
+                <div v-if="filterBySheet">Filter</div>
+            </div> -->
         </div>
         <main class="tile__container" :class="{ expanded }" ref="tileContainer">
             <DashboardStat
@@ -72,6 +98,10 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .filter__container {
+        margin: var(--space-lg) 0px;
+    }
 }
 </style>
 <script setup>
@@ -86,6 +116,11 @@ import { useEventListener, useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
 import Team from "@/store/models/team";
+import Rink from "@/store/models/rink";
+import Sheet from "@/store/models/sheet";
+import { useDialogStore } from "@/store/dialog";
+
+const { getColor } = useColor();
 
 const filters = ref({
     teams: [],
@@ -123,8 +158,21 @@ const getAllTeamStats = async () => {
         .from("team_stats_with_params")
         .select("*")
         .in("team_id", teamIds.value);
+
+    //       sheet_id (
+    //     id,
+    //     number,
+    //     rink_id
+    // ),
     data.forEach((stat) => {
-        useRepo(TeamStats).save(stat);
+        if (stat.rink) useRepo(Rink).save(stat.rink);
+        if (stat.sheet) useRepo(Sheet).save(stat.sheet);
+        console.log(stat);
+        useRepo(TeamStats).save({
+            ...stat,
+            rink_id: stat.rink?.id,
+            sheet_id: stat.sheet?.id,
+        });
     });
     return data;
 };
@@ -138,41 +186,38 @@ const { isLoading: isLoadingSingleStats, data: singleStats } = useQuery({
 const $q = useQuasar();
 
 const stats = computed(() => {
-    if ($q.screen.xs) return [
-    STAT_TYPES.WINS,
-    STAT_TYPES.HAMMER_LAST_END,
-    STAT_TYPES.POINTS_FOR_PER_GAME,
-    STAT_TYPES.POINTS_AGAINST_PER_GAME,
-    STAT_TYPES.ENDS_FOR_PER_GAME,
-    STAT_TYPES.ENDS_AGAINST_PER_GAME,
+    if ($q.screen.xs)
+        return [
+            STAT_TYPES.WINS,
+            STAT_TYPES.HAMMER_LAST_END,
+            STAT_TYPES.POINTS_FOR_PER_GAME,
+            STAT_TYPES.POINTS_AGAINST_PER_GAME,
+            STAT_TYPES.ENDS_FOR_PER_GAME,
+            STAT_TYPES.ENDS_AGAINST_PER_GAME,
 
-    STAT_TYPES.HAMMER_EFFICIENCY,
-    STAT_TYPES.STEAL_EFFICIENCY,
-    STAT_TYPES.FORCE_EFFICIENCY,
-    STAT_TYPES.STEAL_DEFENSE,
-    STAT_TYPES.BLANK_ENDS,
-];
+            STAT_TYPES.HAMMER_EFFICIENCY,
+            STAT_TYPES.STEAL_EFFICIENCY,
+            STAT_TYPES.FORCE_EFFICIENCY,
+            STAT_TYPES.STEAL_DEFENSE,
+            STAT_TYPES.BLANK_ENDS,
+        ];
 
-return [
-    STAT_TYPES.WINS,
-    STAT_TYPES.HAMMER_LAST_END,
-     STAT_TYPES.HAMMER_EFFICIENCY,
-    STAT_TYPES.POINTS_FOR_PER_GAME,
-    STAT_TYPES.ENDS_FOR_PER_GAME,
-    STAT_TYPES.STEAL_EFFICIENCY,
-    STAT_TYPES.POINTS_AGAINST_PER_GAME,
-    
-    STAT_TYPES.ENDS_AGAINST_PER_GAME,
+    return [
+        STAT_TYPES.WINS,
+        STAT_TYPES.HAMMER_LAST_END,
+        STAT_TYPES.HAMMER_EFFICIENCY,
+        STAT_TYPES.POINTS_FOR_PER_GAME,
+        STAT_TYPES.ENDS_FOR_PER_GAME,
+        STAT_TYPES.STEAL_EFFICIENCY,
+        STAT_TYPES.POINTS_AGAINST_PER_GAME,
 
-   
-    
-    STAT_TYPES.FORCE_EFFICIENCY,
-    STAT_TYPES.STEAL_DEFENSE,
-    STAT_TYPES.BLANK_ENDS,
-];
-})
+        STAT_TYPES.ENDS_AGAINST_PER_GAME,
 
-
+        STAT_TYPES.FORCE_EFFICIENCY,
+        STAT_TYPES.STEAL_DEFENSE,
+        STAT_TYPES.BLANK_ENDS,
+    ];
+});
 
 const tileContainer = ref(null);
 
@@ -222,4 +267,6 @@ const { direction } = useSwipe(tileContainer, {
         }
     },
 });
+
+const filterBySheet = ref(false);
 </script>

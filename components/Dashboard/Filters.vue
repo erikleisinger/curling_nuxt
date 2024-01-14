@@ -73,7 +73,7 @@
 }
 
 .team-filters__container {
-    margin: var(--space-lg) 0px;
+
     // background-color: $app-royal-blue;
     padding: var(--space-sm);
     z-index: 1;

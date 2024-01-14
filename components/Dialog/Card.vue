@@ -1,6 +1,6 @@
 <template>
     <q-card class="dialog-card__container" >
-        <h3>
+        <h3 v-if="slots.title">
             <slot name="title"> </slot>
         </h3>
         <p v-if="slots.content">
@@ -26,14 +26,14 @@
     h3 {
         @include smmd-text;
         padding: var(--space-sm) var(--space-xs);
-        background-color: $app-slate;
+        background-color: v-bind(titleColor);
         color: white;
     }
     p {
         padding: var(--space-xs);
+        margin: unset;
     }
 
-    padding-bottom: var(--space-sm);
 }
 </style>
 <script setup>
@@ -42,6 +42,10 @@
         maxWidth: {
             type: String,
             default: '300px'
-        }
+        },
+        titleColor: {
+            type: String,
+            default: '#283044'
+        },
     })
 </script>

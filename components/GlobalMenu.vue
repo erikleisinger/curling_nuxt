@@ -50,6 +50,10 @@ import {
 import gsap from "gsap";
 
 const props = defineProps({
+    closeOnOutsideClick: {
+        type: Boolean,
+        default: true
+    },
     modelValue: Boolean,
 });
 
@@ -172,7 +176,7 @@ const close = () => {
 };
 
 onClickOutside(menu, () => {
-    if (!open.value) return;
+    if (!open.value || !props.closeOnOutsideClick) return;
     close();
     maxHeight.value = "unset";
 });

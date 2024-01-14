@@ -55,6 +55,7 @@ export const STAT_COLORS = {
     [STAT_TYPES.FORCE_EFFICIENCY]: 'blue',
     [STAT_TYPES.STEAL_DEFENSE]: 'blue',
     [STAT_TYPES.BLANK_ENDS]: 'blue',
+    [STAT_TYPES.HAMMER_LAST_END]: 'blue',
 
 }
 

@@ -30,30 +30,29 @@
                 style="width: 100%; height: 100%"
                 class="line-chart__container"
             >
-                <!-- <GlobalMenu v-model="showGameInfo">
-                    <DialogCard maxWidth="95vw" minWidth="200px">
-                        <template v-slot:title> Game info</template>
-
-                        <template v-slot:content>
-                            <DashboardLineChartGameInfo
-                                :data="gameInfo"
-                                :type="type"
-                            />
-                        </template>
-                    </DialogCard>
-                </GlobalMenu> -->
-
-                <DashboardLineChart
-                    :data="chartPoints"
-                    :maintain="true"
-                    labels
-                    clickable
-                    @click="onClick"
-                    ref="chart"
-                    :color="getColor(STAT_COLORS[type])"
+                <DashboardStatGameDetails
+                    v-model="showGameInfo"
+                    :data="gameInfo"
+                    :type="type"
                 />
+                <div style="height: 250px">
+                    <div
+                        class="game-line__indicator"
+                        v-if="showGameInfo"
+                        :style="{ left: `${leftPoint}px`, borderColor: getColor(STAT_COLORS[type]) }"
+                    />
+                    <DashboardLineChart
+                        :data="chartPoints"
+                        :maintain="false"
+                        labels
+                        clickable
+                        @click="onClick"
+                        ref="chart"
+                        :color="getColor(STAT_COLORS[type] ?? 'blue')"
+                    />
+                </div>
                 <div
-                    class="full-width row justify-center clickable q-py-sm text-caption"
+                    class="full-width row justify-center clickable q-pt-lg text-caption"
                     v-if="!isCumulative"
                     @click="showCumulative = !showCumulative"
                 >
@@ -69,7 +68,7 @@
                                 : getColor('slate')
                         "
                         size="1.5em"
-                        class="q-mr-xs "
+                        class="q-mr-xs"
                     />Cumulative
                 </div>
             </div>
@@ -92,6 +91,22 @@
 }
 .line-chart__container {
     position: relative;
+}
+.game-line__indicator {
+    position: absolute;
+    height: 100%;
+    width: 3px;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    animation: scale 0.2s forwards;
+}
+@keyframes scale {
+    0% {
+        transform: scaleY(0);
+    }
+    100% {
+        transform: scaleY(1);
+    }
 }
 </style>
 <script setup>
@@ -131,7 +146,11 @@ const filteredTeamIds = computed(() => {
 });
 
 const allStats = computed(() =>
-    useRepo(TeamStats).query().whereIn("team_id", filteredTeamIds.value).get()
+    useRepo(TeamStats)
+        .query()
+        .whereIn("team_id", filteredTeamIds.value)
+        .orderBy("start_time")
+        .get()
 );
 
 const CUMULATIVE_CHART_STATS = [STAT_TYPES.WINS, STAT_TYPES.HAMMER_LAST_END];
@@ -193,10 +212,14 @@ const average = computed(() => {
     return total / all.length;
 });
 
-const LESS_THAN_STATS = [STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME]
+const LESS_THAN_STATS = [
+    STAT_TYPES.ENDS_AGAINST_PER_GAME,
+    STAT_TYPES.POINTS_AGAINST_PER_GAME,
+];
 
 const betterThanAverage = computed(() => {
-    if (LESS_THAN_STATS.includes(props.type)) return totalTile.value / (isPercent ? 100 : 1) < average.value;
+    if (LESS_THAN_STATS.includes(props.type))
+        return totalTile.value / (isPercent ? 100 : 1) < average.value;
     return totalTile.value / (isPercent ? 100 : 1) > average.value;
 });
 
@@ -212,15 +235,18 @@ const tileWidth = computed(
 
 const topPoint = ref(0);
 const leftPoint = ref(0);
-const gameInfo = ref(false);
+const gameInfo = ref(null);
 const showGameInfo = ref(false);
 
 const onClick = (e) => {
-    const { x, y, index } = e;
-    topPoint.value = y;
-    leftPoint.value = x;
-    gameInfo.value = allStats.value[index];
-    showGameInfo.value = true;
+    showGameInfo.value = false;
+    setTimeout(() => {
+        const { x, y, index } = e;
+        topPoint.value = y;
+        leftPoint.value = x;
+        gameInfo.value = allStats.value[index];
+        showGameInfo.value = true;
+    }, 200);
 };
 
 const chart = ref(null);

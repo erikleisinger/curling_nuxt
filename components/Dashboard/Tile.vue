@@ -45,7 +45,7 @@
                     class="percent q-mt-md"
                     readonly
                     track-color="grey-9"
-                    :style="{ color: getColor(STAT_COLORS[type]) }"
+                    :style="{ color: getColor(STAT_COLORS[type] ?? 'blue') }"
                 >
                     <div class="knob--text">
                         <h2 >
