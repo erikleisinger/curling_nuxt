@@ -23,22 +23,7 @@
         </template>
     </LayoutCircleTitle>
 
-    <div class="rink__container" ref="rinkContainer">
-        <div class="row justify-center">
-            <q-icon
-                name="location_on"
-                color="red"
-                size="1.7em"
-                class="q-mr-md"
-            />
-            <div>
-                <h2>{{ editedRink?.name ?? 'Rink name' }}</h2>
-                <div class="text-caption">
-                    {{ editedRink?.city ?? 'City' }}, {{ editedRink?.province ?? 'Province' }}
-                </div>
-            </div>
-        </div>
-    </div>
+    <RinkCard :rink="editedRink"/>
     <TeamEditOverlay
         v-if="editing"
         @close="editing = false"
@@ -70,20 +55,7 @@
         line-height: 50px;
     }
 }
-.rink__container {
-    padding: var(--space-sm);
-    @include chunky-border(6px);
-    position: relative;
-    border-radius: 24px;
-    margin: var(--space-md);
-    z-index: 0;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: $app-slate;
-    color: white;
-    @include smmd-text;
-}
+
 </style>
 
 <script setup lang="ts">

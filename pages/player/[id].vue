@@ -2,64 +2,28 @@
         <div class="logout-container--floating" v-if="canEdit">
             <q-btn flat round icon="logout" @click="logout" />
         </div>
-        <header class="player-page__header column justify-center items-center">
-            <div
-                class="player-avatar__wrap"
-                :class="{ clickable: canEdit }"
-                @click="onClickAvatar"
-            >
-                <Avataaar v-bind="parseAvatar(player?.avatar ?? {})" v-if="!isLoading || !player" />
-                <q-skeleton type="circle" height="inherit" width="inherit" style="aspect-ratio: 1/1; margin-top: 18%" v-else/>
-                <div class="avatar-edit__helper" v-if="!Object.keys(player?.avatar ?? {})?.length">
-                    <q-chip color="white" >
-                        Click to set avatar
-                    </q-chip>
-                </div>  
-            </div>
-            <h2 class="text-lg text-bold text-center" v-if="!isLoading && !!player">
-                {{ player?.first_name }} {{ player?.last_name }}
-            </h2>
-            <q-skeleton v-else height="1.5em" width="200px"/>
-            <h3 class="text-sm" v-if="!isLoading && !!player">@{{ player?.username }}</h3>
-             <q-skeleton v-else height="1em" width="100px" style="margin-top: 4px"/>
-            <RinkChip
-                :rinkId="rink?.id"
-                :canEdit="canEdit"
-                noRinkEditText="Click to select home rink"
-                @update="updateHomeRink($event?.id)"
-                v-if="!isLoading"
-                editText="Select home rink"
-            />
-              <q-skeleton v-else height="1em" width="100px" style="margin-top: 4px" type="QChip"/>
-        </header>
-        <main class="player--info">
-            <section
-                class="player-teams--section hide-scroll"
-                :class="{ 'col-6': !$q.screen.xs }"
-                v-if="!isLoading"
-             
-            >
+        <PlayerPageHeader :playerId="player?.id"/>
+          <q-tabs
+           
+            class="tabs"
+            ref="tabs"
+            v-model="currentIndex"
+            outside-arrows
+            shrink
+            v-if="canEdit"
+        >
+            <q-tab label="Teams" :name="0" :ripple="false" />
+
+            <q-tab label="Settings" :name="1" :ripple="false" />
+        </q-tabs>
+        <q-separator v-else class="q-my-lg"/>
+        <main >
           
-                <div
-                    v-for="team in teams"
-                    :key="team.id"
-                    class="player-team__container"
-                    @click="navigateTo(`/teams/${team.id}`)"
-                >
-                    <div class="player-team__avatar">
-                        <LazyTeamAvatarBadge :teamId="team.id" />
-                    </div>
-                    <h3
-                        class="text-sm text-center truncate-text"
-                        style="max-width: 100px"
-                    >
-                        {{ team.name }}
-                    </h3>
-                </div>
-             
-            
-            </section>
-                <section
+            <section class="player-teams__section" v-if="currentIndex === 0">
+          <PlayerPageTeams :playerId="player?.id" @loaded="onLoaded"/>
+          </section>
+          <PlayerPageSettings :playerId="player?.id" v-if="currentIndex === 1"/>
+                <!-- <section
                 class="player-teams--section hide-scroll justify-center"
                 :class="{ 'col-6': !$q.screen.xs }"
                 v-else
@@ -71,11 +35,11 @@
                    <q-skeleton height="1em" width="75px" style="margin-top: 4px"/>
     
             </div>
-            </section>
+            </section> -->
 
 
 
-            <section
+            <!-- <section
                 class="player-badges--section"
                 :class="{ 'col-6': !$q.screen.xs }"
                 v-if="!isLoading"
@@ -95,7 +59,7 @@
             >
                     <q-skeleton type="rect" width="150px" height="100px"/>
                      <q-skeleton type="rect" width="150px" height="100px"/>
-            </section>
+            </section> -->
         </main>
         <q-dialog v-model="editing" persistent v-if="!isLoading">
             <q-card style="width: 100%">
@@ -108,6 +72,48 @@
         </q-dialog>
 </template>
 <style lang="scss" scoped>
+.tabs {
+    margin-top: var(--space-md);
+    position: sticky;
+    top: 0;
+    background-color: transparent;
+    transition: all 0.2s;
+    font-family: $font-family-header;
+
+    :deep(.q-tab__label) {
+        font-size: 18px !important;
+    }
+    .tab__label {
+        font-size: 18px !important;
+    }
+    :deep(.q-tab) {
+        margin: unset;
+    }
+    :deep(.q-tab--active) {
+        color: white;
+        background-color: $app-mint;
+        border-radius: 2px;
+    }
+    :deep(.q-tab__indicator) {
+        bottom: 12px;
+        background-color: $app-mint;
+        display: none;
+    }
+    :deep(.q-focus-helper) {
+        display: none;
+    }
+    :deep(.q-tab) {
+        padding: unset;
+        // margin: 0px var(--space-xs);
+        @include sm {
+            padding: 0px var(--space-lg);
+        }
+    }
+
+}
+.player-teams__section {
+    padding: var(--space-md);
+}
 .logout-container--floating {
     position: absolute;
     top: 0;
@@ -132,6 +138,9 @@
     }
 }
 .player--info {
+    h3 {
+        @include smmd-text;
+    }
     padding: 0px var(--space-md);
     display: flex;
     flex-direction: column;
@@ -189,6 +198,7 @@ import {parseAvatar} from '@/utils/avatar'
 const { logout } = useSession();
 const { sortBadges } = useBadge();
 
+const currentIndex = ref(0)
 const route = useRoute();
 const client = useSupabaseClient();
 const $q = useQuasar();
@@ -214,55 +224,11 @@ const {isLoading} = useQuery({
     queryFn: getPlayer,
 });
 
-// PLAYER TEAMS
 
-const teams = computed(() =>
-    useRepo(TeamPlayer)
-        .with("team")
-        .where("player_id", route.params.id)
-        .get()
-        .map(({ team }) => team)
-        .sort((a, b) => sortAlphabetically(a.name, b.name))
-);
 
 const { sortAlphabetically } = useSort();
 
-const getPlayerTeams = async () => {
-    const { data } = await client
-        .from("team_profile_junction")
-        .select(
-            `
-        id,
-        team:team_id (
-            id,
-            name,
-            avatar_url,
-            rink_id
-        )
-        `
-        )
-        .eq("profile_id", route.params.id);
-    const teams = data.filter(({ team }) => !!team).map(({ team }) => team);
-    useRepo(Team).save(teams);
-    useRepo(TeamPlayer).save(
-        teams.map((t) => ({
-            team_id: t.id,
-            player_id: route.params.id,
-        }))
-    );
-    return teams;
-};
 
-const teamsDone = ref(false);
-
-const { isLoading: isLoadingTeams } = useQuery({
-    queryKey: ["player", "teams", route.params.id],
-    queryFn: getPlayerTeams,
-    select: (val) => {
-        teamsDone.value = true;
-        return val;
-    },
-});
 
 //BADGES
 
@@ -319,35 +285,31 @@ const getBadges = async () => {
     return e;
 };
 
-const badgesEnabled = computed(() => !!teamsDone.value);
-const badgesDone = ref(false);
+// const badgesEnabled = computed(() => !!teamsDone.value);
+// const badgesDone = ref(false);
 
-const { isLoading: isLoadingBadges, data: badges } = useQuery({
-    queryKey: ["player", "team", "badges", route.params.id],
-    queryFn: getBadges,
-    enabled: badgesEnabled,
-    select: (val) => {
-        badgesDone.value = true;
-        return val;
-    },
-    refetchOnWindowFocus: false,
-});
+// const { isLoading: isLoadingBadges, data: badges } = useQuery({
+//     queryKey: ["player", "team", "badges", route.params.id],
+//     queryFn: getBadges,
+//     enabled: badgesEnabled,
+//     select: (val) => {
+//         badgesDone.value = true;
+//         return val;
+//     },
+//     refetchOnWindowFocus: false,
+// });
 
-const pageLoaded = computed(
-    () => (!badgesEnabled.value || !!badgesDone.value) && !!teamsDone.value
-);
+// const pageLoaded = computed(
+//     () => !!teamsDone.value
+// );
 
-watch(
-    pageLoaded,
-    (val) => {
-        if (!val) return;
-        const { setLoading } = useLoading();
+const onLoaded = () => {
+const { setLoading } = useLoading();
         setTimeout(() => {
             setLoading(false);
         }, 50);
-    },
-    { immediate: true }
-);
+}
+
 
 const canEdit = computed(() => useUserStore().id === route.params.id);
 const editing = ref(false);
