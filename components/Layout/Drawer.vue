@@ -9,15 +9,18 @@
             :style="{ opacity: open || !$q.screen.xs ? 1 : 0 }"
             class="nav-drawer--content"
         >
-            <div class="row items-center">
+            <div class="row items-center no-wrap">
                 <div style="width: 50px" class="clickable" @click="navigateTo(`/player/${user?.id}`)">
                     <Avataaar v-bind="parseAvatar(user?.avatar)" />
                 </div>
-                <div  class="q-ml-md q-pt-xs">
-                    <div class="smmd-text text-bold">
-                        {{ user?.first_name }} {{ user?.last_name }}
+                <div  class="q-ml-md q-pt-xs" style="max-width: 70%">
+                    <div class="smmd-text text-bold font-header player-name__text">
+                        {{ user?.first_name }} {{ user?.last_name }}sdsdfsfsfsdfsdf
                     </div>
-                    <div class="text-caption" >{{ rink?.name }}</div>
+                    <div class="row items-center no-wrap">
+                        <q-icon color="red" name="location_on" size="1.1em" class="q-mr-xs"/>
+                    <div class="text-caption" style="line-height:1; margin-top: 2px" >{{ rink?.name }}</div>
+                    </div>
                 </div>
             </div>
             <q-separator
@@ -26,10 +29,10 @@
                 class="separator-yellow q-mt-md"
                   :style="{ opacity: open ? 1 : 0 }"
             />
-            <div class="drawer-header " :class="{ dark: !open }">
+            <!-- <div class="drawer-header " :class="{ dark: !open }">
                 Teams
-                <!-- <q-btn flat round dense icon="arrow_drop_down" v-if="open" /> -->
-            </div>
+             
+            </div> -->
             <q-list  class="nav-drawer__list">
             <q-item
             clickable v-ripple
@@ -51,7 +54,7 @@
             </q-item-section>
             </q-item>
             </q-list>
-            <div class="drawer-header" :class="{ dark: !open }">Leagues</div>
+            <!-- <div class="drawer-header" :class="{ dark: !open }">Leagues</div>
             <q-list>
                 <q-item v-for="league in leagues" :key="league.id" class="list-item" clickable v-ripple @click="navigateTo(`/leagues/${league.id}`)">
                     <q-item-section avatar>
@@ -70,7 +73,7 @@
                 </q-item-label>
             </q-item-section>
                 </q-item>
-            </q-list>
+            </q-list> -->
           <div class="drawer-header dark" v-if="open">Bye Bye</div>
           <q-list v-if="open">
             <q-item clickable v-ripple @click="logout">
@@ -87,6 +90,11 @@
     </div>
 </template>
 <style lang="scss" scoped>
+.player-name__text {
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
 .nav-drawer {
     position: absolute;
     left: 0;
@@ -112,7 +120,7 @@
     }
     height: calc(100 * var(--vh, 1vh));
     overflow: auto;
-    z-index: 11;
+    z-index: 13;
   
     .logout--container {
         position: absolute;
@@ -126,9 +134,10 @@
         top: 0;
         left: 16px;
         top: calc(4em + var(--space-sm));
+         width: 300px;
         @include sm {
             top: calc(5em + var(--space-sm));
-            width: 300px;
+         
         }
           padding-bottom: var(--space-md);
     }
@@ -151,7 +160,7 @@
         }
     }
     .separator-yellow {
-        background-color: $app-yellow;
+        background-color: $app-mint;
         box-sizing:content-box;
         margin-left: 0px;
         margin-right: 36px;
@@ -160,6 +169,9 @@
         margin-left: -12px;
         .q-item__label--caption {
             color: rgb(227, 226, 226);
+        }
+        .q-item__section {
+            font-family: $font-family-header;
         }
     }
     .click-overlay {
@@ -171,6 +183,7 @@
 
     }
     .nav-drawer__list {
+        margin-top: var(--space-sm);
         :deep(.q-item) {
             border-color:  rgb(246, 174, 45, 0.2);
         }
@@ -285,48 +298,48 @@ const onDrawerClick = () => {
     open.value = true;
 }
 
-const getUserLeagues = async () => {
-    const client = useSupabaseClient();
+// const getUserLeagues = async () => {
+//     const client = useSupabaseClient();
 
-    const { data } = await client
-        .from("league_teams")
-        .select(
-            `
-            team_id,
-            league:league_id (
-                id,
-                name,
-                color,
-                font_color,
-                icon,
-                rink:rink_id (
-                    id,
-                    name,
-                    city,
-                    province,
-                    sheets
-                )
-            )
-        `
-        )
-        .in(
-            "team_id",
-            userTeams.value.map(({ id }) => id)
-        );
+//     const { data } = await client
+//         .from("league_teams")
+//         .select(
+//             `
+//             team_id,
+//             league:league_id (
+//                 id,
+//                 name,
+//                 color,
+//                 font_color,
+//                 icon,
+//                 rink:rink_id (
+//                     id,
+//                     name,
+//                     city,
+//                     province,
+//                     sheets
+//                 )
+//             )
+//         `
+//         )
+//         .in(
+//             "team_id",
+//             userTeams.value.map(({ id }) => id)
+//         );
 
-    return data.reduce((all, current) => {
-        if (all.some(({league}) => league.id === current.league?.id)) return all;
-        return [...all, current]
-    }, []).map(({league}) => ({
-        ...league
-    }))
-};
+//     return data.reduce((all, current) => {
+//         if (all.some(({league}) => league.id === current.league?.id)) return all;
+//         return [...all, current]
+//     }, []).map(({league}) => ({
+//         ...league
+//     }))
+// };
 
-const {isLoading: isLoadingLeagues, data: leagues} = useQuery({
-    queryKey: ['user', 'leagues', userId.value],
-    queryFn: getUserLeagues,
-    refetchOnWindowFocus: false,
-})
+// const {isLoading: isLoadingLeagues, data: leagues} = useQuery({
+//     queryKey: ['user', 'leagues', userId.value],
+//     queryFn: getUserLeagues,
+//     refetchOnWindowFocus: false,
+// })
 
 
 </script>

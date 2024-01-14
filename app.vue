@@ -9,27 +9,6 @@
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
-        <DialogPopup
-        maxWidth="500px"
-            :open="isTeamCreatorOpen"
-            @hide="
-                dialogStore.toggleTeamCreator({
-                    open: false,
-                })
-            "
-        >
- 
-                <TeamPageDetails
-                    v-if="isTeamCreatorOpen"
-                    @back="
-                        dialogStore.toggleTeamCreator({
-                            open: false,
-                        })
-                    "
-                    create
-                />
-       
-        </DialogPopup>
        
  </div>
 </template>

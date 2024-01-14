@@ -21,7 +21,7 @@
             </q-item>
         </div>
         <div v-else-if="!isLoading && isOpen">
-            <transition-group appear tag="div" @enter="onEnter">
+            <!-- <transition-group appear tag="div" @enter="onEnter"> -->
             <div
                 v-for="(a, i) in notificationsPaginated"
                 :key="a.id"
@@ -32,7 +32,7 @@
 
                 <q-separator />
             </div>
-            </transition-group>
+            <!-- </transition-group> -->
         </div>
         <div
             class="row justify-center show-more__container"
@@ -122,7 +122,7 @@ const { isLoading, data: notifications, isSuccess } = useQuery({
 
 // PAGINATION
 
-const CURSOR_INCREMENT = 10;
+const CURSOR_INCREMENT = 6;
 const cursor = ref(CURSOR_INCREMENT);
 
 const notificationsPaginated = computed(() =>

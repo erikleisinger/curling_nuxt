@@ -18,7 +18,7 @@ $z-tabs: $below + $z-footer;
     z-index: $z-header!important;
 }
 .q-header {
-    z-index: $z-header!important;
+    z-index: 15!important;
 }
 .q-fab {
     z-index: $z-tools!important;

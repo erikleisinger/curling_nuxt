@@ -11,7 +11,7 @@
         >
             <h1>{{ player?.first_name }}</h1>
             <h1 >{{ player?.last_name }}</h1>
-            <div class="row no-wrap items-center">
+            <div class="row no-wrap " style="line-height:1">
                 <q-icon color="red" name="location_on" />
                 <h2>{{ player?.rink?.name ?? 'No home rink' }}</h2>
             </div>

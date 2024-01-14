@@ -7,7 +7,8 @@
         </div>
         <q-separator />
         <div class="popup-container--slot-content"  :id="`content-${uniqueId}`">
-            <slot v-if="ready"/>
+            <slot />
+            <!-- v-if="ready" -->
         </div>
     </div>
     <div class="popup--overlay" :id="`overlay-${uniqueId}`" v-show="!hideOverlay" :style="{pointerEvents: hideOverlay || !isOpen ? 'none' : 'all'}">
@@ -60,11 +61,14 @@
     }
     .popup-container--header {
         padding: var(--space-sm);
+        background-color: $app-mint;
+        color: white;
+        font-size: 1.2rem;
     }
     .popup-container--slot-content {
         height: v-bind(contentHeight);
         overflow: auto;
-        margin-top: -1px;
+       
     }
 }
 .popup--overlay {
@@ -75,7 +79,7 @@
     left: 0;
     background-color:rgba(0,0,0,0.2);
     opacity: 0;
-    z-index:1;
+    z-index:0;
 }
 </style>
 <script setup>
@@ -137,6 +141,7 @@ timeline.value = tl
             scaleY: 1,
             transformOrigin: `${percentX.value}% ${percentY.value}%  `,
             duration: 0.2,
+            simple: true,
             ease: "power",
             onComplete: () => {
 ready.value = true;
@@ -205,7 +210,7 @@ onMounted(() => {
     }
 });
 
-const zIndex = ref(10)
+const zIndex = ref(12)
 
 const calculateZIndex = () => {
     const containers = document.querySelectorAll('.popup-container')
@@ -216,7 +221,7 @@ const calculateZIndex = () => {
         return all;
       
     }, 0)
-    zIndex.value = maxZIndex + 1;
+    zIndex.value = maxZIndex < 12 ? 12 : maxZIndex + 1;
 }
 
 
