@@ -1,7 +1,7 @@
 <template>
     <header class="player-page__header">
         <section name="avatar" class="avatar__section row">
-            <div class="avatar-container">
+            <div class="avatar-container" :class="{clickable: canEdit}" @click="onAvatarClick">
                 <Avataaar v-bind="parseAvatar(player?.avatar)" />
             </div>
         </section>
@@ -17,6 +17,15 @@
             </div>
         </section>
     </header>
+       <q-dialog v-model="editing" persistent v-if="canEdit">
+            <q-card style="width: 100%">
+                <AvataaarGenerator
+                    role="main"
+                    v-model="player.avatar"
+                    @close="editing = false"
+                />
+            </q-card>
+        </q-dialog>
 </template>
 <style lang="scss" scoped>
 .player-page__header {
@@ -50,10 +59,18 @@
 import Player from "@/store/models/player";
 import { parseAvatar } from "@/utils/avatar";
 const props = defineProps({
+    canEdit: Boolean,
     playerId: String,
 });
 
 const player = computed(() =>
     useRepo(Player).with("rink").where("id", props.playerId).first()
 );
+
+
+const editing = ref(false)
+const onAvatarClick = () => {
+    if (!props.canEdit) return;
+    editing.value = true;
+}
 </script>

@@ -2,7 +2,7 @@
         <div class="logout-container--floating" v-if="canEdit">
             <q-btn flat round icon="logout" @click="logout" />
         </div>
-        <PlayerPageHeader :playerId="player?.id"/>
+        <PlayerPageHeader :playerId="player?.id" :canEdit="canEdit"/>
           <q-tabs
            
             class="tabs"
@@ -61,15 +61,7 @@
                      <q-skeleton type="rect" width="150px" height="100px"/>
             </section> -->
         </main>
-        <q-dialog v-model="editing" persistent v-if="!isLoading">
-            <q-card style="width: 100%">
-                <AvataaarGenerator
-                    role="main"
-                    v-model="player.avatar"
-                    @close="editing = false"
-                />
-            </q-card>
-        </q-dialog>
+     
 </template>
 <style lang="scss" scoped>
 .tabs {
