@@ -13,7 +13,7 @@
                 <div style="width: 50px" class="clickable" @click="navigateTo(`/player/${user?.id}`)">
                     <Avataaar v-bind="parseAvatar(user?.avatar)" />
                 </div>
-                <div  class="q-ml-md q-pt-xs" style="max-width: 70%">
+                <div  class="q-ml-md q-pt-xs" style="max-width: 68%">
                     <div class="smmd-text text-bold font-header player-name__text">
                         {{ user?.first_name }} {{ user?.last_name }}sdsdfsfsfsdfsdf
                     </div>
