@@ -1,30 +1,38 @@
 <template>
     <div class="profile__generator--wrap row" ref="container">
         <div
-            class="row justify-center items-center avatar__container col-12 col-sm-6"
+            class="row justify-center items-center avatar__container col-12"
             ref="avatarContainer"
         >
             <div class="col-12 row justify-between toolbar">
+                <div>
                 <q-btn
                     @click="emit('close')"
                     :disable="readOnly || saving"
                     flat
                     round
                     icon="west"
+                    size="0.9em"
                 />
+                </div>
+                <div>
                 <q-btn
                     @click="randomize"
                     :disable="readOnly || saving"
                     icon="casino"
+
+                    :style="{color: getColor('mint')}"
+                    size="0.9em"
                     flat
                     round
                 />
+                </div>
             </div>
             <div class="avatar__wrap">
                 <Avataaar v-if="!loading" v-bind="avatar" />
             </div>
         </div>
-        <div class="row q-py-md col-12 col-sm-6 features__container">
+        <div class="row q-py-md col-12 features__container">
 
             <AvataaarFeatureSelector
                 :features="skinColors"
@@ -186,16 +194,16 @@
             </q-select>
 
             <div class="col-12 row justify-between q-my-lg">
-                <q-btn
+                <Button
                     @click="handleSave"
                     :disable="readOnly || saving"
-                    color="positive"
+                    color="mint"
                     :loading="saving"
                     block
                     class="col-grow"
                 >
                     Save
-                </q-btn>
+                </Button>
             </div>
         </div>
     </div>
@@ -211,10 +219,7 @@
         padding-top: 0px;
         height: max-content;
         max-width: inherit;
-        @include sm {
-            margin-top: 20vh;
-            background-color: unset;
-        }
+        
         margin: auto;
         position: sticky;
         top: 0;
@@ -257,8 +262,6 @@ import {
     skinColors,
     hatAndShirtColors,
 } from "@/assets/avataaars/colors";
-import Player from "@/types/player";
-import Json from "@/types/json";
 
 import { usePlayerStore } from "@/store/players";
 
@@ -268,6 +271,8 @@ const props = defineProps<{
     modelValue: Object | String;
     readOnly?: boolean;
 }>();
+
+const {getColor} = useColor();
 
 const saving = ref(false);
 const handleSave = async () => {

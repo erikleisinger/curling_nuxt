@@ -1,67 +1,38 @@
 <template>
-        <div class="logout-container--floating" v-if="canEdit">
-            <q-btn flat round icon="logout" @click="logout" />
-        </div>
-        <PlayerPageHeader :playerId="player?.id" :canEdit="canEdit"/>
-          <q-tabs
-           
-            class="tabs"
-            ref="tabs"
-            v-model="currentIndex"
-            outside-arrows
-            shrink
-            v-if="canEdit"
-        >
-            <q-tab label="Teams" :name="0" :ripple="false" />
+    <div class="logout-container--floating" v-if="canEdit">
+        <q-btn flat round icon="logout" @click="logout" />
+    </div>
+    <PlayerPageHeader :playerId="player?.id" :canEdit="canEdit" @editAvatar="editingAvatar = true" />
+    <q-tabs
+        class="tabs"
+        ref="tabs"
+        v-model="currentIndex"
+        outside-arrows
+        shrink
+       
+    >
+        <q-tab label="Teams" :name="0" :ripple="false" />
 
-            <q-tab label="Settings" :name="1" :ripple="false" />
-        </q-tabs>
-        <q-separator v-else class="q-my-lg"/>
-        <main >
-          
-            <section class="player-teams__section" v-if="currentIndex === 0">
-          <PlayerPageTeams :playerId="player?.id" @loaded="onLoaded"/>
-          </section>
-          <PlayerPageSettings :playerId="player?.id" v-if="currentIndex === 1"/>
-                <!-- <section
-                class="player-teams--section hide-scroll justify-center"
-                :class="{ 'col-6': !$q.screen.xs }"
-                v-else
-                 style="gap: 4px"
-                
-            >
-            <div class="column items-center"  v-for="i in Array.from(Array(3).keys())" :key="i">
-                <q-skeleton type="rect" width="100px" height="50px"/>
-                   <q-skeleton height="1em" width="75px" style="margin-top: 4px"/>
-    
-            </div>
-            </section> -->
+        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit"/>
 
+    </q-tabs>
+   
+    <main>
+        <section class="player-teams__section" v-if="currentIndex === 0">
+            <PlayerPageTeams :playerId="player?.id" @loaded="onLoaded" />
+        </section>
+        <PlayerPageSettings :playerId="player?.id" v-if="currentIndex === 1" @editAvatar="editingAvatar = true"/>
+    </main>
 
-
-            <!-- <section
-                class="player-badges--section"
-                :class="{ 'col-6': !$q.screen.xs }"
-                v-if="!isLoading"
-            >
-                <LazyBadge
-                    :badge="badge"
-                    v-for="badge in [...(badges ?? [])].sort(sortBadges)"
-                    :key="badge.id"
-                    :showTeam="true"
-                />
-            </section>
-              <section
-                class="player-badges--section justify-center"
-                :class="{ 'col-6': !$q.screen.xs }"
-                v-else
-                  style="gap: 4px"
-            >
-                    <q-skeleton type="rect" width="150px" height="100px"/>
-                     <q-skeleton type="rect" width="150px" height="100px"/>
-            </section> -->
-        </main>
-     
+    <q-dialog v-model="editingAvatar" persistent v-if="canEdit">
+        <q-card style="width: 100%">
+            <AvataaarGenerator
+                role="main"
+                v-model="player.avatar"
+                @close="editingAvatar = false"
+            />
+        </q-card>
+    </q-dialog>
 </template>
 <style lang="scss" scoped>
 .tabs {
@@ -101,7 +72,6 @@
             padding: 0px var(--space-lg);
         }
     }
-
 }
 .player-teams__section {
     padding: var(--space-md);
@@ -124,8 +94,8 @@
             margin: auto;
             left: 0;
             right: 0;
-            height:fit-content;
-            width: fit-content
+            height: fit-content;
+            width: fit-content;
         }
     }
 }
@@ -185,12 +155,12 @@ import Rink from "@/store/models/rink";
 import { useUserStore } from "@/store/user";
 import { useQuery } from "@tanstack/vue-query";
 import { useDialogStore } from "@/store/dialog";
-import {parseAvatar} from '@/utils/avatar'
+import { parseAvatar } from "@/utils/avatar";
 
 const { logout } = useSession();
 const { sortBadges } = useBadge();
 
-const currentIndex = ref(0)
+const currentIndex = ref(0);
 const route = useRoute();
 const client = useSupabaseClient();
 const $q = useQuasar();
@@ -210,17 +180,12 @@ const getPlayer = async () => {
     return data;
 };
 
-
-const {isLoading} = useQuery({
+const { isLoading } = useQuery({
     queryKey: ["player", route.params.id],
     queryFn: getPlayer,
 });
 
-
-
 const { sortAlphabetically } = useSort();
-
-
 
 //BADGES
 
@@ -277,49 +242,25 @@ const getBadges = async () => {
     return e;
 };
 
-// const badgesEnabled = computed(() => !!teamsDone.value);
-// const badgesDone = ref(false);
 
-// const { isLoading: isLoadingBadges, data: badges } = useQuery({
-//     queryKey: ["player", "team", "badges", route.params.id],
-//     queryFn: getBadges,
-//     enabled: badgesEnabled,
-//     select: (val) => {
-//         badgesDone.value = true;
-//         return val;
-//     },
-//     refetchOnWindowFocus: false,
-// });
-
-// const pageLoaded = computed(
-//     () => !!teamsDone.value
-// );
 
 const onLoaded = () => {
-const { setLoading } = useLoading();
-        setTimeout(() => {
-            setLoading(false);
-        }, 50);
-}
-
+    const { setLoading } = useLoading();
+    setTimeout(() => {
+        setLoading(false);
+    }, 50);
+};
 
 const canEdit = computed(() => useUserStore().id === route.params.id);
-const editing = ref(false);
 
 const rink = computed(() =>
     useRepo(Rink).where("id", player.value?.rink_id).first()
 );
-
 const { toggleGlobalSearch } = useDialogStore();
 
-const {updateHomeRink} = useUserStore();
+const { updateHomeRink } = useUserStore();
 
-
-
-const onClickAvatar = () => {
-    if (!canEdit.value) return;
-    editing.value = true;
-};
+const editingAvatar = ref(false)
 </script>
 <script>
 export default {

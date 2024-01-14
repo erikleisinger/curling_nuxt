@@ -429,6 +429,26 @@ $help-animation: attention 2s infinite linear;
     .q-field--error .q-field__bottom {
         color: $color2!important;
     }
+    .q-field {
+        color: $color !important;
+        font-size: 1rem !important;
+        padding: unset;
+        :deep(.q-field__control) {
+            color: $color!important;
+        }
+        :deep(.q-field__native) {
+            padding: unset;
+            line-height: 1;
+        }
+        :deep(.q-field__control) {
+            height: unset;
+        }
+    }
+    .q-virtual-scroll__content {
+        .q-item--active {
+            color: $color!important;
+        }
+    }
 }
 
 @mixin lines {

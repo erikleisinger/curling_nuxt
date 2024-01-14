@@ -22,13 +22,14 @@ export default class Player extends Model {
     static fields() {
         return {
             id: this.string(),
+            avatar: this.attr({}),
             first_name: this.string(),
             last_name: this.string(),
-            username: this.string(),
-            avatar: this.attr({}),
-            teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
             rink_id: this.number(),
-            rink: this.belongsTo(Rink, 'rink_id')
+            rink: this.belongsTo(Rink, 'rink_id'),
+            teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
+            timezone: this.string(),
+            username: this.string(),
         }
        
     }

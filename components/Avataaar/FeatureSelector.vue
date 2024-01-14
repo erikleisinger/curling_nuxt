@@ -1,5 +1,5 @@
 <template>
-      <q-select :options="options" behavior="menu" v-model="feature" >
+      <q-select :options="options" behavior="menu" v-model="feature" class="feature-select" >
        
         <template v-slot:selected-item="{opt}">
           
@@ -18,6 +18,9 @@
         </template>
       </q-select>
 </template>
+<style lang="scss" scoped>
+     @include styleInput($app-mint, 'white')
+</style>
 <script setup>
 const props = defineProps({
     disabled: Boolean,

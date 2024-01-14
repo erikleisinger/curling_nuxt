@@ -1,6 +1,6 @@
 <template>
     <header class="player-page__header">
-        <section name="avatar" class="avatar__section row">
+        <section name="avatar" class="avatar__section row items-center">
             <div class="avatar-container" :class="{clickable: canEdit}" @click="onAvatarClick">
                 <Avataaar v-bind="parseAvatar(player?.avatar)" />
             </div>
@@ -10,22 +10,14 @@
             class="column justify-center player-info__section"
         >
             <h1>{{ player?.first_name }}</h1>
-            <h1>{{ player?.last_name }}</h1>
+            <h1 >{{ player?.last_name }}</h1>
             <div class="row no-wrap items-center">
                 <q-icon color="red" name="location_on" />
-                <h2>{{ player?.rink?.name }}</h2>
+                <h2>{{ player?.rink?.name ?? 'No home rink' }}</h2>
             </div>
         </section>
     </header>
-       <q-dialog v-model="editing" persistent v-if="canEdit">
-            <q-card style="width: 100%">
-                <AvataaarGenerator
-                    role="main"
-                    v-model="player.avatar"
-                    @close="editing = false"
-                />
-            </q-card>
-        </q-dialog>
+   
 </template>
 <style lang="scss" scoped>
 .player-page__header {
@@ -33,7 +25,6 @@
     display: flex;
     justify-content: center;
     gap: var(--space-md);
-    // color: white;
     .avatar__section {
         justify-content: center;
         .avatar-container {
@@ -45,12 +36,17 @@
     }
     .player-info__section {
         padding-top: 2em;
+        max-width: 50%;
         h1 {
             @include lg-text;
             &:first-child {
                 @include md-text;
             }
-            line-height: 0.7;
+            line-height: 0.8;
+            
+            max-width: 100%;
+            white-space: pre-wrap;
+
         }
     }
 }
@@ -63,6 +59,8 @@ const props = defineProps({
     playerId: String,
 });
 
+const emit = defineEmits(['editAvatar'])
+
 const player = computed(() =>
     useRepo(Player).with("rink").where("id", props.playerId).first()
 );
@@ -71,6 +69,6 @@ const player = computed(() =>
 const editing = ref(false)
 const onAvatarClick = () => {
     if (!props.canEdit) return;
-    editing.value = true;
+    emit('editAvatar')
 }
 </script>
