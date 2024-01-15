@@ -22,7 +22,7 @@ $screen-xl-min: 1920px;
   }
 
 @mixin xxs {
-    @media (max-width: 374px) {
+    @media (max-width: 350px) {
         @content;
     }
 }
