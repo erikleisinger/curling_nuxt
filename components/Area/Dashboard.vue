@@ -65,6 +65,7 @@
     min-height: 100%;
     color: white;
     position: relative;
+    width: 100%;
     // padding-top: var(--space-lg);
     h1 {
         @include lg-text;
@@ -188,6 +189,7 @@ const stats = computed(() => {
     if ($q.screen.xs)
         return [
             STAT_TYPES.WINS,
+            STAT_TYPES.POINTS_PER_END,
             STAT_TYPES.HAMMER_LAST_END,
             STAT_TYPES.POINTS_FOR_PER_GAME,
             STAT_TYPES.POINTS_AGAINST_PER_GAME,
@@ -203,6 +205,7 @@ const stats = computed(() => {
 
     return [
         STAT_TYPES.WINS,
+        STAT_TYPES.POINTS_PER_END,
         STAT_TYPES.HAMMER_LAST_END,
         STAT_TYPES.HAMMER_EFFICIENCY,
         STAT_TYPES.POINTS_FOR_PER_GAME,

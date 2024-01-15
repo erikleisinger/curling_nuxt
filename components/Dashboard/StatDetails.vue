@@ -15,13 +15,25 @@
                 :statType="props.type"
                 :statField="STAT_FIELDS.BLUE"
                 :filters="filters"
-                 :average="average"
+                :average="average"
             />
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.RED"
                 :filters="filters"
-          :average="average"
+                :average="average"
+            />
+        </section>
+
+        <!-- END SPECIFIC -->
+
+        <section v-if="shouldShowEndStats" name="end stats">
+            <q-separator class="separator" />
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER"
+                :filters="filters"
+                :average="average"
             />
         </section>
 
@@ -33,45 +45,42 @@
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITH_HAMMER_FE"
                 :filters="filters"
-      :average="average"
+                :average="average"
             />
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITHOUT_HAMMER_FE"
                 :filters="filters"
-   :average="average"
+                :average="average"
             />
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITH_HAMMER_LE"
                 :filters="filters"
-          :average="average"
+                :average="average"
             />
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITHOUT_HAMMER_LE"
                 :filters="filters"
-               :average="average"
+                :average="average"
             />
         </section>
         <!--  -->
 
         <!-- SEASON HIGH/LOW -->
-        <section name="season high and low"    v-if="!DISABLE_HIGHEST_LOWEST.includes(props.type)">
+        <section
+            name="season high and low"
+            v-if="!DISABLE_HIGHEST_LOWEST.includes(props.type)"
+        >
             <q-separator class="separator" />
-            <div
-                class="row__container row justify-between items-center"
-             
-            >
+            <div class="row__container row justify-between items-center">
                 <div>
                     <h4>Season high</h4>
                 </div>
                 <h5>{{ cleanNumber(highest) }}</h5>
             </div>
-            <div
-                class="row__container row justify-between items-center"
-        
-            >
+            <div class="row__container row justify-between items-center">
                 <div>
                     <h4>Season low</h4>
                 </div>
@@ -110,7 +119,6 @@
     </div>
 </template>
 <style lang="scss" scoped>
-
 .details__container {
     margin-top: var(--space-MD);
     .row__container {
@@ -121,7 +129,6 @@
             @include md-text;
         }
         &.upcoming {
-          
         }
         caption {
             line-height: 1;
@@ -132,7 +139,6 @@
         .plus-minus__text {
             @include text-caption;
             font-family: $font-family-secondary;
-       
         }
     }
     .separator {
@@ -161,7 +167,9 @@ const props = defineProps({
     type: String,
 });
 const { getColor } = useColor();
-const color = computed(() => props.betterThanAverage ? getColor('mint') : getColor('yellow'))
+const color = computed(() =>
+    props.betterThanAverage ? getColor("mint") : getColor("yellow")
+);
 
 const { userTeamIds } = useTeam();
 
@@ -209,8 +217,11 @@ const cleanNumber = (num) => {
     return `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
 };
 
-const SHOW_HAMMER_STATS = [STAT_TYPES.WINS];
+const SHOW_HAMMER_STATS = [STAT_TYPES.WINS, STAT_TYPES.POINTS_PER_END];
 const shouldShowHammerStats = SHOW_HAMMER_STATS.includes(props.type);
+
+const SHOW_END_STATS = [STAT_TYPES.POINTS_PER_END];
+const shouldShowEndStats = SHOW_END_STATS.includes(props.type)
 
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 

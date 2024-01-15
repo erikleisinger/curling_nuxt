@@ -10,7 +10,8 @@ export const STAT_TYPES = {
     POINTS_FOR_PER_GAME: 'pfg',
     POINTS_AGAINST_PER_GAME: 'pag',
     ENDS_FOR_PER_GAME: 'efg',
-    ENDS_AGAINST_PER_GAME: 'eag'
+    ENDS_AGAINST_PER_GAME: 'eag',
+    POINTS_PER_END: 'ppe',
 }
 
 export const STAT_NAMES = {
@@ -26,6 +27,7 @@ export const STAT_NAMES = {
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Points against / PG',
     [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends for / PG',
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends against / PG',
+    [STAT_TYPES.POINTS_PER_END]: 'Points per end'
 
 }
 
@@ -42,6 +44,7 @@ export const STAT_DESCRIPTIONS = {
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Average points conceded per game',
     [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends won per game',
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends conceded per game',
+    [STAT_TYPES.POINTS_PER_END]: 'Average points scored per end'
 }
 
 export const STAT_COLORS = {
@@ -56,6 +59,7 @@ export const STAT_COLORS = {
     [STAT_TYPES.STEAL_DEFENSE]: 'blue',
     [STAT_TYPES.BLANK_ENDS]: 'blue',
     [STAT_TYPES.HAMMER_LAST_END]: 'blue',
+    [STAT_TYPES.POINTS_PER_END]: 'blue'
 
 }
 
@@ -79,9 +83,10 @@ export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.ENDS_FOR_PER_GAME]: ({ends_for}) => ends_for,
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: ({ends_against}) => ends_against,
     [STAT_TYPES.HAMMER_LAST_END]: ({hammer_last_end_count}) => hammer_last_end_count / 1,
+    [STAT_TYPES.POINTS_PER_END]: ({points_for, ends_played}) => points_for / ends_played,
 }
 
-export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME];
+export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_PER_END];
 
 export const STAT_FIELDS = {
     YELLOW: "yellow",
@@ -90,7 +95,8 @@ export const STAT_FIELDS = {
     WITH_HAMMER_FE: 'with_hammer_fe',
     WITHOUT_HAMMER_FE: 'without_hammer_fe',
     WITH_HAMMER_LE: 'with_hammer_le',
-    WITHOUT_HAMMER_LE: 'without_hammer_le'
+    WITHOUT_HAMMER_LE: 'without_hammer_le',
+    WITH_HAMMER: 'with_hammer'
 };
 
 export const STAT_FIELD_FILTER_FUNCTIONS = {
@@ -101,6 +107,7 @@ export const STAT_FIELD_FILTER_FUNCTIONS = {
     [STAT_FIELDS.WITHOUT_HAMMER_FE]:({ hammer_first_end_count }) => !hammer_first_end_count,
     [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_last_end_count }) => !!hammer_last_end_count,
     [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_last_end_count }) => !hammer_last_end_count,
+    [STAT_FIELDS.WITH_HAMMER]: ({hammer_end_count}) => !!hammer_end_count,
 };
 
 export const STAT_FIELD_TITLES = {
@@ -110,6 +117,7 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.WITH_HAMMER_FE]: 'With HFE',
     [STAT_FIELDS.WITHOUT_HAMMER_FE]: 'Without HFE',
     [STAT_FIELDS.WITH_HAMMER_LE]: 'With HLE',
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without HLE'
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without HLE',
+    [STAT_FIELDS.WITH_HAMMER]: 'With hammer'
 
 }

@@ -1,5 +1,6 @@
 <template>
-    <div class="row no-wrap justify-center team-filters__container">
+<div class="team-filters__scroller hide-scroll">
+    <div class="row no-wrap  team-filters__container">
         <div
             class="avatar-container"
             v-for="team in teams"
@@ -14,6 +15,7 @@
         </div>
         <Button round icon="add" size="15px" color="white" text-color="mint" @click="navigateTo('/teams/create')"/>
     </div>
+</div>
     <div class="full-width filters__container">
         <!-- <div class="full-width row justify-center">
             <Button @click="revealed = !revealed">Filter</Button>
@@ -61,6 +63,8 @@
 </template>
 <style lang="scss" scoped>
 .filters__container {
+    max-width: 100%;
+    
     .filters__container--inner {
         margin-top: var(--space-sm);
         background-color: rgba(0, 0, 0, 0.15);
@@ -71,17 +75,22 @@
         }
     }
 }
-
+.team-filters__scroller {
+max-width: 100%;
+overflow: auto;
+ padding: var(--space-sm);
+}
 .team-filters__container {
 
     // background-color: $app-royal-blue;
-    padding: var(--space-sm);
+   
     z-index: 1;
      gap: var(--space-sm);
 
        
         .avatar-container {
             width: 45px;
+            min-width: 45px;
         }
     
 }

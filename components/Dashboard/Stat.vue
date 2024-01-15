@@ -131,6 +131,7 @@ const emit = defineEmits(["close"]);
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
 const cleanNumber = (num) => {
+    if (Number.isNaN(num)) return 0;
     return Number((num * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1));
 };
 
