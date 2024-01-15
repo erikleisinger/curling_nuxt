@@ -17,7 +17,7 @@
         </div>
         <div class="row items-center no-wrap team-row">
             <div class="avatar-container">
-                <TeamAvatar :teamId="home?.team_id" :color="home?.color" />
+                <TeamAvatar :teamId="home?.team_id" :color="home?.color" :hammer="gameParams.hammer_first_end === home?.team_id" />
             </div>
             <div
                 v-show="stickied"
@@ -47,7 +47,7 @@
                 {{ away.team?.name }}
             </div>
             <div class="avatar-container">
-                <TeamAvatar :teamId="away?.id" :color="away?.color" />
+                <TeamAvatar :teamId="away?.id" :color="away?.color" :hammer="gameParams.hammer_first_end === away?.team_id || !gameParams.hammer_first_end"  />
             </div>
         </div>
         <h3

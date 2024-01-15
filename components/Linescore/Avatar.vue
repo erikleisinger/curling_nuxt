@@ -23,6 +23,7 @@
                     !!selections.name,
                     editing,
                 ]"
+                :hammer="hasHammer"
             />
 
             <!-- <div

@@ -175,7 +175,7 @@ const generateScore = async () => {
                             ? "X"
                             : details[index]?.scoring_team_id ===
                                   gameData.value?.away?.id ||
-                              !gameData.value?.away?.id
+                              !details[index]?.scoring_team_id
                             ? details[index]?.points_scored
                             : 0,
                     ...details[index],

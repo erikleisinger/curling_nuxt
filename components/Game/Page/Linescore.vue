@@ -11,6 +11,7 @@
                 :teamId="home?.team_id"
                 :color="home?.color"
                 class="avatar"
+                :hammer="hammerFirstEnd === home?.team_id"
             />
          </template>
            <template v-slot:avatarAway>
@@ -19,6 +20,7 @@
                 :teamId="away?.team_id"
                 :color="away?.color"
                   class="avatar"
+                  :hammer="!hammerFirstEnd || hammerFirstEnd === away?.team_id"
             />
          </template>
                 
@@ -45,6 +47,7 @@
     const away = computed(() => useRepo(GameTeam).where('game_id', props.gameId).where('home_team', false).first())
 
     const endCount = computed(() => useRepo(Game).where('id', props.gameId).first()?.end_count)
+    const hammerFirstEnd = computed(() => useRepo(Game).where('id', props.gameId).first()?.hammer_first_end)
 
     const score = ref({})
 

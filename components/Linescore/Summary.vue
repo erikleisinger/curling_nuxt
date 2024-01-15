@@ -12,6 +12,7 @@
                 <TeamAvatar
                     :teamId="selections.home?.id"
                     :color="selections.homeColor"
+                    :hammer="selections.hammerFirstEndTeam === selections.home?.id"
                 />
             </div>
         </div>
@@ -25,6 +26,7 @@
                 <TeamAvatar
                     :teamId="selections.away?.id"
                     :color="selections.awayColor"
+                     :hammer="!selections.hammerFirstEndTeam || selections.hammerFirstEndTeam === selections.away?.id"
                 />
             </div>
         </div>

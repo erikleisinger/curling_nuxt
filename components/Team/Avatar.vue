@@ -1,7 +1,7 @@
 <template>
     <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
-        <div class="hammer__container--floating" :style="{height: `calc(${hammerSize} + 4px)`, width: `calc(${hammerSize} + 4px)`}" v-if="hammer">
-            <q-icon name="o_hardware" color="white" :style="{fontSize: hammerSize}"/>
+        <div class="hammer__container--floating" :style="{height: `calc(${hammerSize}px + 4px)`, width: `calc(${hammerSize}px + 4px)`, bottom: `${hammerMargin}px`, right: `${hammerMargin / 2}px`,}" v-if="hammer">
+            <q-icon name="o_hardware" color="white" :style="{fontSize: `${hammerSize}px`}"/>
         </div>
         <div
             class="avatar-inner"
@@ -120,17 +120,15 @@
     }
     .hammer__container--floating {
         position: absolute;
-        right: -10%;
+ 
         background-color: $app-mint;
         // border-radius: 50%;
         z-index: 1;
         // aspect-ratio: 1/1;
-        height: v-bind(hammerSize);
-        width: v-bind(hammerSize);
         padding: 2px;
         border-radius: 50%;
         // padding-top: 3px;
-        bottom: -30%;
+
         .q-icon {
             position: absolute;
             top: 0;
@@ -291,7 +289,11 @@ const styleObj = computed(() => {
 
 const {width: elSize} = useElementSize(el);
 
-const hammerSize = computed(() => `${elSize.value / 2}px`)
+const MAX_HAMMER_SIZE = 24
+
+const hammerSize = computed(() => Math.min(elSize.value / 2, MAX_HAMMER_SIZE))
+
+const hammerMargin = computed(() => (hammerSize.value / 2) * -1)
 </script>
 <script>
 export default {
