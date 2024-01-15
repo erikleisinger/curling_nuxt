@@ -17,6 +17,7 @@
 <style lang="scss" scoped>
 .dialog-card__container {
     max-width: v-bind(maxWidth);
+    min-width: v-bind(minWidth);
     border-radius: 16px;
     color: $app-slate;
     overflow: hidden;
@@ -39,6 +40,10 @@
 <script setup>
     const slots = useSlots()
     const props = defineProps({
+        minWidth: {
+            type: String,
+            default: '100px'
+        },
         maxWidth: {
             type: String,
             default: '300px'

@@ -1,5 +1,43 @@
 <template>
     <div class="details__container">
+        <!-- GAMES PLAYED -->
+        <q-separator class="separator" />
+        <div class="row__container row justify-between items-center">
+            <div class="row items-center">
+                <!-- <q-icon
+                name="format_list_numbered"
+                size="1em"
+                :style="{ color: getColor(STAT_COLORS[type]) }"
+                class="q-mr-sm"
+            
+            /> -->
+                <h4>Games played</h4>
+            </div>
+            <h5>{{ statsByGame?.length ?? 0 }}</h5>
+        </div>
+
+        <!-- END SPECIFIC -->
+
+        <section v-if="shouldShowEndStats" name="end stats">
+            <q-separator class="separator" />
+            <DashboardStatDetailsItem
+                :statType="type"
+                :statField="STAT_FIELDS.WITH_HAMMER"
+                :filters="filters"
+                :average="average"
+                v-if="shouldShowWithHammerStats"
+                alwaysNumber
+            />
+            <DashboardStatDetailsItem
+                :statType="type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER"
+                :filters="filters"
+                :average="average"
+                v-if="shouldShowWithoutHammerStats"
+                alwaysNumber
+            />
+        </section>
+
         <!-- COLORS -->
 
         <section name="color stats">
@@ -20,24 +58,6 @@
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.RED"
-                :filters="filters"
-                :average="average"
-            />
-        </section>
-
-        <!-- END SPECIFIC -->
-
-        <section v-if="shouldShowEndStats" name="end stats">
-            <q-separator class="separator" />
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER"
-                :filters="filters"
-                :average="average"
-            />
-             <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER"
                 :filters="filters"
                 :average="average"
             />
@@ -82,29 +102,65 @@
             <q-separator class="separator" />
             <div class="row__container row justify-between items-center">
                 <div class="row items-center">
-                     <q-icon
-                name="trending_up"
-                size="1em"
-                :style="{ color: getColor(STAT_COLORS[type]) }"
-                class="q-mr-sm"
-            
-            />
+                    <q-icon
+                        name="trending_up"
+                        size="1em"
+                        :style="{ color: getColor(STAT_COLORS[type]) }"
+                        class="q-mr-sm"
+                    />
                     <h4>Season high</h4>
                 </div>
-                <h5>{{ cleanNumber(highest) }}</h5>
+                <div class="row items-end">
+                    <div class="text-caption q-mr-sm">
+                        <q-icon
+                            :name="
+                                highestDiff > 0
+                                    ? 'arrow_drop_up'
+                                    : 'arrow_drop_down'
+                            "
+                            :style="{
+                                color:
+                                    highestDiff > 0
+                                        ? getColor('mint')
+                                        : getColor('red'),
+                            }"
+                        />
+
+                        {{ highestDiff }}{{ isPercent ? "%" : "" }}
+                    </div>
+                    <h5>{{ cleanNumber(highest) }}</h5>
+                </div>
             </div>
             <div class="row__container row justify-between items-center">
                 <div class="row items-center">
-                        <q-icon
-                name="trending_down"
-                size="1em"
-                :style="{ color: getColor('red') }"
-                class="q-mr-sm"
-            
-            />
+                    <q-icon
+                        name="trending_down"
+                        size="1em"
+                        :style="{ color: getColor('red') }"
+                        class="q-mr-sm"
+                    />
                     <h4>Season low</h4>
                 </div>
-                <h5>{{ cleanNumber(lowest) }}</h5>
+                <div class="row items-end">
+                    <div class="text-caption q-mr-sm">
+                        <q-icon
+                            :name="
+                                lowestDiff > 0
+                                    ? 'arrow_drop_up'
+                                    : 'arrow_drop_down'
+                            "
+                            :style="{
+                                color:
+                                    lowestDiff > 0
+                                        ? getColor('mint')
+                                        : getColor('red'),
+                            }"
+                        />
+
+                        {{ lowestDiff }}{{ isPercent ? "%" : "" }}
+                    </div>
+                    <h5>{{ cleanNumber(lowest) }}</h5>
+                </div>
             </div>
         </section>
 
@@ -119,7 +175,26 @@
                         Average among all teams
                     </caption>
                 </div>
-                <h5>{{ cleanNumber(average) }}</h5>
+                <div class="row items-end">
+                    <div class="text-caption q-mr-sm">
+                        <q-icon
+                            :name="
+                                worldwideDiff > 0
+                                    ? 'arrow_drop_up'
+                                    : 'arrow_drop_down'
+                            "
+                            :style="{
+                                color:
+                                    worldwideDiff > 0
+                                        ? getColor('mint')
+                                        : getColor('red'),
+                            }"
+                        />
+
+                        {{ worldwideDiff }}{{ isPercent ? "%" : "" }}
+                    </div>
+                    <h5>{{ cleanNumber(worldwide) }}</h5>
+                </div>
             </div>
             <div
                 class="row__container row justify-between upcoming items-center"
@@ -145,7 +220,7 @@
         margin-bottom: var(--space-sm);
         h5 {
             // color: v-bind(color);
-            color: $app-slate;
+            // color: white;
             @include md-text;
         }
         &.upcoming {
@@ -185,11 +260,12 @@ const props = defineProps({
     filters: Object,
     total: Number,
     type: String,
+    worldwide: Number,
 });
 const { getColor } = useColor();
-const color = computed(() =>
-    props.betterThanAverage ? getColor("mint") : getColor("yellow")
-);
+// const color = computed(() =>
+//     props.betterThanAverage ? getColor("mint") : getColor("yellow")
+// );
 
 const { userTeamIds } = useTeam();
 
@@ -234,14 +310,28 @@ const cleanNumber = (num) => {
     if (isPercent) {
         return `${Number((num * 100).toFixed())}%`;
     }
-    return `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
+    return `${num > 0 ? "" : ""}${num.toFixed(1)}`;
 };
 
 const SHOW_HAMMER_STATS = [STAT_TYPES.WINS, STAT_TYPES.POINTS_PER_END];
 const shouldShowHammerStats = SHOW_HAMMER_STATS.includes(props.type);
 
-const SHOW_END_STATS = [STAT_TYPES.POINTS_PER_END];
-const shouldShowEndStats = SHOW_END_STATS.includes(props.type)
+const SHOW_END_STATS = [
+    STAT_TYPES.POINTS_PER_END,
+    STAT_TYPES.HAMMER_EFFICIENCY,
+];
+const shouldShowEndStats = SHOW_END_STATS.includes(props.type);
+
+const SHOW_WITH_HAMMER_STATS = [
+    STAT_TYPES.POINTS_PER_END,
+    STAT_TYPES.HAMMER_EFFICIENCY,
+];
+const shouldShowWithHammerStats = SHOW_WITH_HAMMER_STATS.includes(props.type);
+
+const SHOW_WITHOUT_HAMMER_STATS = [STAT_TYPES.POINTS_PER_END];
+const shouldShowWithoutHammerStats = SHOW_WITHOUT_HAMMER_STATS.includes(
+    props.type
+);
 
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
@@ -250,7 +340,12 @@ const DISABLE_HIGHEST_LOWEST = [STAT_TYPES.WINS];
 const highest = computed(() =>
     Math.max(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
 );
+
+const highestDiff = computed(() => highest.value - props.average);
 const lowest = computed(() =>
     Math.min(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
 );
+const lowestDiff = computed(() => lowest.value - props.average);
+
+const worldwideDiff = computed(() => (props.average - (props.worldwide * (isPercent ? 100 : 1))).toFixed(1))
 </script>

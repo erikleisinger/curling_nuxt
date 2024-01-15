@@ -46,9 +46,9 @@ onMounted(() => {
 
             responsive: true,
             maintainAspectRatio: props.maintain,
-            onClick: (e) => {
+            onHover: (e) => {
                 if (!props.clickable) return;
-                const [point] = myChart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, false) ?? [];
+                const [point] = myChart.getElementsAtEventForMode(e, 'index', { intersect: false }, false) ?? [];
                 if (!point)return;
                 const {index, element} = point;
                 const {x,y} = element;

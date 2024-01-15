@@ -30,17 +30,22 @@
                 style="width: 100%; height: 100%"
                 class="line-chart__container"
             >
+                <!--  -->
                 <DashboardStatGameDetails
-                    v-model="showGameInfo"
                     :data="gameInfo"
                     :type="type"
+                    v-model="showGameInfo"
                 />
                 <div style="height: 250px">
                     <div
                         class="game-line__indicator"
                         v-if="showGameInfo"
-                        :style="{ left: `${leftPoint}px`, borderColor: getColor(STAT_COLORS[type]) }"
+                        :style="{
+                            left: `${leftPoint}px`,
+                            borderColor: 'rgba(255,255,255,0.6)'
+                        }"
                     />
+                    <!-- borderColor: getColor(STAT_COLORS[type]), -->
                     <DashboardLineChart
                         :data="chartPoints"
                         :maintain="false"
@@ -79,8 +84,9 @@
                 :type="type"
                 :total="totalAll"
                 :filters="filters"
-                :average="average"
+                :average="totalTile"
                 :betterThanAverage="betterThanAverage"
+                :worldwide="average"
             />
         </div>
     </DashboardTile>
@@ -118,7 +124,7 @@ import {
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
 import TeamStatsTotal from "@/store/models/team-stats-total";
-import { useElementSize, onClickOutside } from "@vueuse/core";
+import { useElementSize, onClickOutside, useDebounceFn } from "@vueuse/core";
 const props = defineProps({
     expanded: Boolean,
     filters: Object,
@@ -200,13 +206,21 @@ const STAT_RANK_ORDER = {
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: "ends_against",
     [STAT_TYPES.STEAL_DEFENSE]: "steal_defense",
     [STAT_TYPES.STEAL_EFFICIENCY]: "steal_efficiency",
+    [STAT_TYPES.POINTS_PER_END]: (data) => {
+        const { points_for, ends_played } = data;
+
+        return points_for / ends_played;
+    },
 };
 
 const average = computed(() => {
-    const all = useRepo(TeamStatsTotal)
-        .orderBy(STAT_RANK_ORDER[props.type], "desc")
-        .get();
+    const all = useRepo(TeamStatsTotal).query().get();
+    // .orderBy(STAT_RANK_ORDER[props.type], "desc")
+
     const total = all.reduce((all, current) => {
+        if (typeof STAT_RANK_ORDER[props.type] === "function") {
+            return all + STAT_RANK_ORDER[props.type](current);
+        }
         return all + current[STAT_RANK_ORDER[props.type]];
     }, 0);
 
@@ -239,16 +253,17 @@ const leftPoint = ref(0);
 const gameInfo = ref(null);
 const showGameInfo = ref(false);
 
-const onClick = (e) => {
+const onClick = useDebounceFn((e) => {
+    const { x, y, index } = e;
+    if (x - 1.5 === leftPoint.value) return;
     showGameInfo.value = false;
-    setTimeout(() => {
-        const { x, y, index } = e;
+    nextTick(() => {
         topPoint.value = y;
-        leftPoint.value = x;
+        leftPoint.value = x - 1.5;
         gameInfo.value = allStats.value[index];
         showGameInfo.value = true;
-    }, 200);
-};
+    });
+},50);
 
 const chart = ref(null);
 

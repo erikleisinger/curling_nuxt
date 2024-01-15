@@ -117,14 +117,14 @@ export const STAT_FIELD_FILTER_FUNCTIONS = {
 };
 
 export const STAT_FIELD_TITLES = {
-    [STAT_FIELDS.BLUE]: 'Blue rocks',
-    [STAT_FIELDS.YELLOW]: 'Yellow rocks',
-    [STAT_FIELDS.RED]: 'Red rocks',
-    [STAT_FIELDS.WITH_HAMMER_FE]: 'With HFE',
-    [STAT_FIELDS.WITHOUT_HAMMER_FE]: 'Without HFE',
-    [STAT_FIELDS.WITH_HAMMER_LE]: 'With HLE',
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without HLE',
-    [STAT_FIELDS.WITH_HAMMER]: 'With hammer',
-    [STAT_FIELDS.WITHOUT_HAMMER]: 'Without hammer',
+    [STAT_FIELDS.BLUE]: () => 'Blue rocks',
+    [STAT_FIELDS.YELLOW]: () => 'Yellow rocks',
+    [STAT_FIELDS.RED]: () => 'Red rocks',
+    [STAT_FIELDS.WITH_HAMMER_FE]: () => 'With HFE',
+    [STAT_FIELDS.WITHOUT_HAMMER_FE]: () => 'Without HFE',
+    [STAT_FIELDS.WITH_HAMMER_LE]: () => 'With HLE',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Without HLE',
+    [STAT_FIELDS.WITH_HAMMER]: (type) => type === STAT_TYPES.HAMMER_EFFICIENCY ? 'Average points scored' : 'With hammer',
+    [STAT_FIELDS.WITHOUT_HAMMER]: () => 'Without hammer',
 
 }

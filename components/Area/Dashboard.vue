@@ -1,20 +1,23 @@
 <template>
     <div class="dashboard__container" id="dashboard">
-        <LayoutCircleTitle title="Season Overview 2023-2024" minHeight="225px">
+        <!-- <LayoutCircleTitle title="" minHeight="225px" class="circle-header">
             <template v-slot:underlay>
                 <Rings size="100%" />
             </template>
             <template v-slot:append>
-                <!-- <h2>2023-2024</h2> -->
+         
             </template>
-        </LayoutCircleTitle>
+        </LayoutCircleTitle> -->
         <!-- <header>
             <h1>Dashboard</h1>
             <h2>2023-2024</h2>
         </header> -->
-        <div class="filter__container row justify-center">
+        <main class="main-content">
+        <section class="filter__container row justify-center">
             <DashboardFilters v-model="filters" />
-            <!-- <div>
+
+        </section>
+                    <!-- <div>
                 <div
                     class="full-width row justify-center text-caption text-black q-mt-sm"
                 >
@@ -40,8 +43,8 @@
                 </div>
                 <div v-if="filterBySheet">Filter</div>
             </div> -->
-        </div>
-        <main class="tile__container" :class="{ expanded }" ref="tileContainer">
+
+        <section class="tile__container" :class="{ expanded }" ref="tileContainer">
             <DashboardStat
                 v-for="statType in stats"
                 :key="statType"
@@ -53,17 +56,40 @@
                 @close="endView"
             >
             </DashboardStat>
+        </section>
+     
         </main>
     </div>
 </template>
 <style lang="scss" scoped>
 .dashboard__container {
-    // background-color: $
-    // @include bg-blue-side;
-    background-color: white;
+    // .circle-header {
+    //     position: fixed;
+    //     top:64px;
+    //     @include sm {
+    //         top: 75px;
+    //     }
+    //     // bottom: -50%;
+    //     opacity: 1;
+    // }
+    // background-color: $app-royal-blue;
+    @include bg-blue-side;
+    .main-content {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        // .filter__container {
+        //     position: sticky;
+        //     top: 0;
+        // }
+       
+    }
+    // background-color: white;
     @include lines;
     min-height: 100%;
-    color: white;
+    color: rgb(250, 250, 250);
     position: relative;
     width: 100%;
     // padding-top: var(--space-lg);
@@ -82,9 +108,13 @@
         z-index: 100;
     }
 
+
     .tile__container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        @include xxs {
+           grid-template-columns: repeat(1, 1fr); 
+        }
         // margin-top: var(--space-md);
         column-gap: 2px;
         row-gap: 2px;
@@ -98,6 +128,7 @@
         &.expanded {
             grid-template-columns: 1fr;
         }
+       
     }
 
     .filter__container {
@@ -257,8 +288,10 @@ onBeforeRouteLeave(() => {
 const dashboard = ref(null);
 
 const { direction } = useSwipe(tileContainer, {
-    onSwipe: () => {
+    onSwipe: (e) => {
+  
         if (!expanded.value) return;
+        if (Array.from(e.composedPath()).map(({tagName}) => tagName).includes('CANVAS')) return;
         const index = stats.value.indexOf(expanded.value);
         if (direction.value === "right") {
             if (index === 0) return;

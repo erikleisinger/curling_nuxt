@@ -1,20 +1,12 @@
 <template>
     <GlobalMenu v-model="showGameInfo" :closeOnOutsideClick="false">
-        <DialogCard maxWidth="95vw" minWidth="200px" :titleColor="getColor(STAT_COLORS[type])">
-            <template v-slot:title>
-                {{ props.data?.points_for }}-{{ props.data?.points_against }}
-                {{ props.data?.win ? "win" : props.data?.tie ? "tie" : "loss" }}
-            </template>
-
-            <template v-slot:content>
-                <DashboardLineChartGameInfo
+        <DashboardLineChartGameInfo
                     :data="data"
                     :type="type"
                     :gameId="gameId"
                     v-if="gameId"
                 />
-            </template>
-        </DialogCard>
+       
     </GlobalMenu>
 </template>
 <script setup>
@@ -39,4 +31,9 @@ const showGameInfo = computed({
         emit("update:modelValue", val);
     },
 });
+
+const show = ref(false)
+onMounted(() => {
+    show.value = true;
+})
 </script>

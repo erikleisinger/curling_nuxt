@@ -11,15 +11,21 @@
              <q-icon
                 name="o_hardware"
                 size="0.9em"
-                :style="{ color: statField === STAT_FIELDS.WITH_HAMMER ? getColor('blue') : getColor('slate'), transform: statField === STAT_FIELDS.WITH_HAMMER ? '' : 'rotate(180deg)' }"
+                :style="{ color: statField === STAT_FIELDS.WITH_HAMMER ? getColor('blue') : 'inherit', transform: statField === STAT_FIELDS.WITH_HAMMER ? '' : 'rotate(180deg)' }"
                 class="q-mr-xs"
                 v-if="HAMMER_STATS.includes(statField)"
             />
 
-            {{STAT_FIELD_TITLES[statField]}}
+            {{STAT_FIELD_TITLES[statField](statType)}}
 
         </h4>
+        <div class="row items-end">
+            <div class="text-caption q-mr-sm" v-if="hasValue">
+                <q-icon :name="avgDiff > 0 ? 'arrow_drop_up' : 'arrow_drop_down'" :style="{color: avgDiff > 0 ? getColor('mint') : getColor('red')}"/>
+                
+                {{avgDiff}}{{isPercent ? '%' : ''}}</div>
         <h5     :style="{ color }">{{ cleanNumber(value) }}</h5>
+        </div>
     </div>
     <!-- <div
         class="row__container row justify-between upcoming"
@@ -66,6 +72,7 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 import {STAT_FIELDS_TOTAL, STAT_FIELDS, STAT_FIELD_FILTER_FUNCTIONS, STAT_COLORS, NON_PERCENT_STATS, STAT_FIELD_TITLES} from '@/constants/stats'
 import TeamStats from "@/store/models/team-stats";
 const props = defineProps({
+    alwaysNumber: Boolean,
     average: Number,
     filters: Object,
     statField: String,
@@ -109,16 +116,20 @@ const {getCumulativeStat} = useStats()
 
 
 const value = computed(() => getCumulativeStat(stats.value.filter(STAT_FIELD_FILTER_FUNCTIONS[props.statField]), STAT_FIELDS_TOTAL[props.statField] ?? STAT_FIELDS_TOTAL[props.statType]))
-const color = computed(() => Number.isNaN(value.value) ? getColor('slate') : value.value > props.average ? getColor('slate') : getColor('slate'));
+const color = computed(() => Number.isNaN(value.value) ? 'inherit' : value.value > props.average ? 'inherit' : 'inherit');
 
-const isPercent = !NON_PERCENT_STATS.includes(props.statType);
+const isPercent = !props.alwaysNumber && !NON_PERCENT_STATS.includes(props.statType);
+
+const hasValue = computed(() => !Number.isNaN(value.value))
+
+const avgDiff = computed(() => (value.value * (isPercent ? 100 : 1) - props.average).toFixed(1))
 
 const cleanNumber = (num) => {
-    if (Number.isNaN(num)) return '-'
+    if (!hasValue.value) return '-'
     if (isPercent) {
         return `${Number((num * 100).toFixed())}%`;
     }
 
-    return `${num > 0 ? "+" : ""}${num.toFixed(1)}`;
+    return `${num > 0 ? "" : ""}${num.toFixed(1)}`;
 };
 </script>

@@ -23,7 +23,7 @@
             <div class="close-container__floating">
                 <q-btn icon="close" flat round @click="emit('close')"/>
             </div>
-            <div class="column items-center justify-center">
+            <div class="column items-center justify-center q-py-md">
                 <h3 class="position-relative">
                     <q-icon
                         v-if="betterThanAverage"
@@ -53,7 +53,16 @@
                         </h2>
                     </div>
                 </q-knob>
-                <div class="row justify-center full-width">
+               
+            </div>
+            <div>
+                <slot name="stat-expanded" />
+            </div>
+        </header>
+
+        <slot name="stat" v-if="!expanded" />
+
+         <div class="row justify-center full-width">
                     <h5 v-if="betterThanAverage && expanded">
                         <div
                             class="better--floating"
@@ -67,13 +76,6 @@
                         Better than the worldwide average
                     </h5>
                 </div>
-            </div>
-            <div>
-                <slot name="stat-expanded" />
-            </div>
-        </header>
-
-        <slot name="stat" v-if="!expanded" />
 
         <slot />
     </div>
@@ -82,8 +84,9 @@
 $min-height: min(175px, calc(50% - 12px));
 .header-expanded {
     display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    row-gap: var(--space-lg);
+    grid-template-rows: auto auto;
+ 
+    row-gap: var(--space-sm);
     @include sm {
         grid-template-rows: unset;
         grid-template-columns: repeat(2, 1fr);
@@ -91,16 +94,17 @@ $min-height: min(175px, calc(50% - 12px));
 }
 .tile {
     padding: var(--space-sm);
-    background-color: rgba(240, 238, 238, 0.5);
+    background-color: rgba(240, 238, 238, 0.1);
+
     .knob--text {
-        color: $app-royal-blue;
+        color: rgb(250, 250, 250);
     }
-    color: $app-royal-blue;
+    // color: $app-royal-blue;
     &:hover:not(.expanded) {
         background-color: rgba(225, 225, 225, 0.5);
     }
     &.expanded {
-        padding-top: var(--space-lg);
+        padding-top: var(--space-sm);
     }
 
     cursor: pointer;
@@ -116,7 +120,8 @@ $min-height: min(175px, calc(50% - 12px));
 
         // position: absolute;
         top: 0;
-        @include reg-text;
+        // @include reg-text;
+        font-size: 1.1rem;
         line-height: 0.8;
         // padding: 0px var(--space-sm);
         padding-right: var(--space-sm);

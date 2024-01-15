@@ -1,5 +1,8 @@
 <template>
     <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
+        <div class="hammer__container--floating" :style="{height: `calc(${hammerSize} + 4px)`, width: `calc(${hammerSize} + 4px)`}" v-if="hammer">
+            <q-icon name="o_hardware" color="white" :style="{fontSize: hammerSize}"/>
+        </div>
         <div
             class="avatar-inner"
             :class="{
@@ -115,6 +118,30 @@
             }
         }
     }
+    .hammer__container--floating {
+        position: absolute;
+        right: -10%;
+        background-color: $app-mint;
+        // border-radius: 50%;
+        z-index: 1;
+        // aspect-ratio: 1/1;
+        height: v-bind(hammerSize);
+        width: v-bind(hammerSize);
+        padding: 2px;
+        border-radius: 50%;
+        // padding-top: 3px;
+        bottom: -30%;
+        .q-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: fit-content;
+            height: fit-content;
+            margin: auto;
+        }
+    }
 }
 
 .uploaded-avatar__container {
@@ -165,7 +192,7 @@
 }
 </style>
 <script setup>
-import { onClickOutside, useElementHover, useImage } from "@vueuse/core";
+import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
 import { useQuery} from '@tanstack/vue-query'
 
 
@@ -178,6 +205,7 @@ const props = defineProps({
     disableMenu: Boolean,
     editable: Boolean,
     emitOnly: Boolean,
+    hammer: Boolean,
     highlight: Boolean,
     invitable: Boolean,
     teamId: Number,
@@ -260,6 +288,10 @@ const styleObj = computed(() => {
         left: "0",
     };
 });
+
+const {width: elSize} = useElementSize(el);
+
+const hammerSize = computed(() => `${elSize.value / 2}px`)
 </script>
 <script>
 export default {

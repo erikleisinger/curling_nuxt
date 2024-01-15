@@ -35,7 +35,8 @@ export default class TeamStatsTotal extends Model {
             steal_efficiency_percentile: this.number(0),
             wins: this.number(0),
             wins_average: this.number(0),
-            wins_percentile: this.number(0)
+            wins_percentile: this.number(0),
+            ends_played: this.number(0)
         };
     }
     get winPercent () {
