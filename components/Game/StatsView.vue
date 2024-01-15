@@ -110,7 +110,7 @@ const props = defineProps({
     gameId: Number,
 });
 
-const EXCLUDE = [STAT_TYPES.HAMMER_FIRST_END, STAT_TYPES.HAMMER_LAST_END, STAT_TYPES.WINS, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME]
+const EXCLUDE = [STAT_TYPES.HAMMER_FIRST_END, STAT_TYPES.HAMMER_LAST_END, STAT_TYPES.WINS, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_PER_END]
 const statTypes = Object.values(STAT_TYPES).filter((type) => !EXCLUDE.includes(type))
 
 const teams = computed(() => {
@@ -138,11 +138,11 @@ const getStatsForGame = async () => {
         .eq("game_id", props.gameId);
     if (!data?.length) return null;
     data.forEach((stat) => {
+        console.log(stat)
         if (!stat.team_id) cleanupOpposition.value = true;
         useRepo(TeamStats).save({
             ...stat,
             team_id: stat.team_id ?? teams.value?.away?.team_id,
-            games_played: 1,
         });
     });
 
