@@ -32,7 +32,11 @@ export default class TeamStats extends Model {
             game_id: this.number(),
             start_time: this.string(),
             color: this.string(),
-            sheet_id: this.number()
+            sheet_id: this.number(),
+            points_with_hammer: this.number(),
+            points_without_hammer: this.number(),
+            opposition_points_with_hammer: this.number(),
+            opposition_points_without_hammer: this.number()
         }
        
     }

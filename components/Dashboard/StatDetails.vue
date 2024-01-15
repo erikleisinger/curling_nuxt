@@ -35,6 +35,12 @@
                 :filters="filters"
                 :average="average"
             />
+             <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER"
+                :filters="filters"
+                :average="average"
+            />
         </section>
 
         <!-- HAMMER -->
@@ -75,13 +81,27 @@
         >
             <q-separator class="separator" />
             <div class="row__container row justify-between items-center">
-                <div>
+                <div class="row items-center">
+                     <q-icon
+                name="trending_up"
+                size="1em"
+                :style="{ color: getColor(STAT_COLORS[type]) }"
+                class="q-mr-sm"
+            
+            />
                     <h4>Season high</h4>
                 </div>
                 <h5>{{ cleanNumber(highest) }}</h5>
             </div>
             <div class="row__container row justify-between items-center">
-                <div>
+                <div class="row items-center">
+                        <q-icon
+                name="trending_down"
+                size="1em"
+                :style="{ color: getColor('red') }"
+                class="q-mr-sm"
+            
+            />
                     <h4>Season low</h4>
                 </div>
                 <h5>{{ cleanNumber(lowest) }}</h5>
@@ -120,7 +140,7 @@
 </template>
 <style lang="scss" scoped>
 .details__container {
-    margin-top: var(--space-MD);
+    margin-top: var(--space-lg);
     .row__container {
         margin-bottom: var(--space-sm);
         h5 {
@@ -143,8 +163,8 @@
     }
     .separator {
         background-color: $app-blue;
-        margin-bottom: var(--space-lg);
-        margin-top: calc(var(--space-lg) - 4px);
+        margin-bottom: var(--space-md);
+        margin-top: calc(var(--space-md) - 4px);
     }
 }
 </style>

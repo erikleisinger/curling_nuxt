@@ -8,6 +8,13 @@
                 class="q-mr-xs"
                 v-if="COLOR_STATS.includes(statField)"
             />
+             <q-icon
+                name="o_hardware"
+                size="0.9em"
+                :style="{ color: statField === STAT_FIELDS.WITH_HAMMER ? getColor('blue') : getColor('slate'), transform: statField === STAT_FIELDS.WITH_HAMMER ? '' : 'rotate(180deg)' }"
+                class="q-mr-xs"
+                v-if="HAMMER_STATS.includes(statField)"
+            />
 
             {{STAT_FIELD_TITLES[statField]}}
 
@@ -74,6 +81,11 @@ const COLOR_STATS = [
     STAT_FIELDS.BLUE,
 ]
 
+const HAMMER_STATS = [
+    STAT_FIELDS.WITH_HAMMER,
+    STAT_FIELDS.WITHOUT_HAMMER
+]
+
 
 
 const { userTeamIds } = useTeam();
@@ -94,7 +106,9 @@ const stats = computed(() => {
 
 const {getCumulativeStat} = useStats()
 
-const value = computed(() => getCumulativeStat(stats.value.filter(STAT_FIELD_FILTER_FUNCTIONS[props.statField]), STAT_FIELDS_TOTAL[props.statType]))
+
+
+const value = computed(() => getCumulativeStat(stats.value.filter(STAT_FIELD_FILTER_FUNCTIONS[props.statField]), STAT_FIELDS_TOTAL[props.statField] ?? STAT_FIELDS_TOTAL[props.statType]))
 const color = computed(() => Number.isNaN(value.value) ? getColor('slate') : value.value > props.average ? getColor('slate') : getColor('slate'));
 
 const isPercent = !NON_PERCENT_STATS.includes(props.statType);
