@@ -156,6 +156,8 @@ const { getColor } = useColor();
 
 const filters = ref({
     teams: [],
+    opposition: null,
+    rink: null,
     sheet: null,
 });
 
@@ -199,11 +201,7 @@ const getAllTeamStats = async () => {
     data.forEach((stat) => {
         if (stat.rink) useRepo(Rink).save(stat.rink);
         if (stat.sheet) useRepo(Sheet).save(stat.sheet);
-        useRepo(TeamStats).save({
-            ...stat,
-            rink_id: stat.rink?.id,
-            sheet_id: stat.sheet?.id,
-        });
+        useRepo(TeamStats).save(stat);
     });
     return data;
 };
