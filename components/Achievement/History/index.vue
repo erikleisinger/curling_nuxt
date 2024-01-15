@@ -3,7 +3,7 @@
         <div v-if="isLoading || !isOpen">
             <q-item
                 style="max-width: 300px"
-                v-for="i in Array.from(Array(5).keys())"
+                v-for="i in Array.from(Array(6).keys())"
                 :key="i"
             >
                 <q-item-section avatar>
@@ -131,6 +131,7 @@ const notificationsPaginated = computed(() =>
 const notificationCount = computed(() => notifications.value?.length);
 
 const showMore = () => {
+    console.log('show more')
     if (cursor.value === notificationCount.value) return;
     if (
         notificationsPaginated.value.length + CURSOR_INCREMENT >
@@ -263,13 +264,13 @@ const scrollContainer = useParentElement(historyContainer);
 
 const { arrivedState } = useScroll(scrollContainer);
 
-watch(
-    () => arrivedState.bottom,
-    (val) => {
-        if (!val) return;
-        showMore();
-    }
-);
+// watch(
+//     () => arrivedState.bottom,
+//     (val) => {
+//         if (!val) return;
+//         showMore();
+//     }
+// );
 
 // animate notifications
 

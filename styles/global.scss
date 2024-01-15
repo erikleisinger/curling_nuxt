@@ -455,6 +455,11 @@ $help-animation: attention 2s infinite linear;
             color: $color!important;
         }
     }
+    .q-inner-loading {
+        .q-spinner {
+            color: $color!important;
+        }
+    }
 }
 
 @mixin lines {
@@ -470,3 +475,5 @@ $help-animation: attention 2s infinite linear;
         border-right: 1px solid rgba(0, 0, 0, 0.08);
     }
 }
+
+

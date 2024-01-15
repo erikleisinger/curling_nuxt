@@ -112,7 +112,7 @@
             </q-btn>
         </div>
         <div class="loading-container" v-if="isLoading">
-            <q-inner-loading :showing="true" color="primary" />
+            <q-inner-loading :showing="true"  />
         </div>
         <div v-if="gamesPaginated.length" class="q-mt-md">
             <div
@@ -154,6 +154,11 @@
     </div>
 </template>
 <style lang="scss" scoped>
+:deep(.q-inner-loading) {
+    .q-spinner {
+        color: $app-mint!important;
+    }
+}
 .filter-badge {
     right: 4px;
     bottom: 0;

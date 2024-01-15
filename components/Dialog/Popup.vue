@@ -7,8 +7,8 @@
         </div>
         <q-separator />
         <div class="popup-container--slot-content"  :id="`content-${uniqueId}`">
-            <slot />
-            <!-- v-if="ready" -->
+            <slot v-if="ready"/>
+            <!--  -->
         </div>
     </div>
     <div class="popup--overlay" :id="`overlay-${uniqueId}`" v-show="!hideOverlay" :style="{pointerEvents: hideOverlay || !isOpen ? 'none' : 'all'}">

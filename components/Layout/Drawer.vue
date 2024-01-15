@@ -74,8 +74,8 @@
             </q-item-section>
                 </q-item>
             </q-list> -->
-          <div class="drawer-header dark" v-if="open">Bye Bye</div>
-          <q-list v-if="open">
+          <!-- <div class="drawer-header dark" v-if="open">Bye Bye</div> -->
+          <q-list v-if="open" class="q-mt-xl">
             <q-item clickable v-ripple @click="logout">
                 <q-item-section avatar>
                     <q-icon name="logout"/>

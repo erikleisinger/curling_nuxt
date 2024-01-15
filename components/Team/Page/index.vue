@@ -81,12 +81,12 @@
     }
     :deep(.q-tab--active) {
         color: white;
-        background-color: $app-yellow;
+        background-color: $app-mint;
         border-radius: 2px;
     }
     :deep(.q-tab__indicator) {
         bottom: 12px;
-        background-color: $app-yellow;
+        background-color: $app-mint;
         display: none;
     }
     :deep(.q-focus-helper) {
