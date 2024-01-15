@@ -605,6 +605,7 @@ const requestToJoin = async () => {
         team_id: props.teamId,
         requester_profile_id: userId.value,
     });
+     useTeamRequestStore().getTeamRequestsByUser(userId.value)
       queryClient.invalidateQueries({
         queryKey: ["team", "players", props.teamId],
     });

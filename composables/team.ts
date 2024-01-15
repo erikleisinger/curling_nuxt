@@ -6,6 +6,7 @@ import Rink from "@/store/models/rink";
 import Badge from "@/store/models/badge";
 import {EPHEMERAL_BADGES} from  '@/constants/badges'
 import {useUserTeamStore} from '@/store/user-teams'
+import { useTeamRequestStore } from "@/store/team-requests";
 
 
 
@@ -213,6 +214,6 @@ export const useTeam = () => {
         return useUserTeamStore().userTeams.some(({id}) => teamId === id)
     };
 
-    const userTeamIds = computed(() => useUserTeamStore().userTeams.map(({id}) => id))
+    const userTeamIds = computed(() =>  [...useUserTeamStore().userTeams.map(({ id }) => id), ...useTeamRequestStore().requests.map(({team_id}) => team_id)])
     return { getTeamPlayers, isOnTeam, getFullTeam, userTeamIds };
 };

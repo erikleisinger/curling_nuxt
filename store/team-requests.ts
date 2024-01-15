@@ -99,7 +99,7 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 )
             `
                 )
-                .eq("requestee_profile_id", profile_id)
+                .eq("requester_profile_id", profile_id)
                 .eq('status', 'pending')
             this.requests = data?.map((d) => ({
                 ...(d.team ?? {}),

@@ -144,6 +144,7 @@ import {
 } from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";
+import {useTeamRequestStore} from '@/store/team-requests'
 import { useEventListener, useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
@@ -162,7 +163,7 @@ const filters = ref({
 });
 
 const teamIds = computed(() =>
-    useUserTeamStore().userTeams.map(({ id }) => id)
+    [...useUserTeamStore().userTeams.map(({ id }) => id), ...useTeamRequestStore().requests.map(({team_id}) => team_id)]
 );
 
 const getTeamStatsTotal = async () => {

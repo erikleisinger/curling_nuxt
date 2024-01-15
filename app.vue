@@ -9,6 +9,7 @@
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
+        <!-- <TutorialFloating v-if="!isPublicRoute"/> -->
        
  </div>
 </template>
@@ -58,7 +59,9 @@ const MANUAL_LOAD_ROUTES = [
     "rinks-id",
 ];
 nuxtApp.hook("page:finish", () => {
+    console.log(MANUAL_LOAD_ROUTES.includes(route.name))
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
+    console.log('set loading false')
     setLoading(false);
 });
 
@@ -75,6 +78,8 @@ onBeforeMount(async () => {
     setVh();
     useEventListener(window, "resize", setVh);
 });
+
+const isPublicRoute = computed(() => PUBLIC_ROUTES.includes(route.fullPath))
 
 onBeforeMount(async () => {
     const user = useSupabaseUser();

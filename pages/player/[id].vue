@@ -11,9 +11,9 @@
         shrink
        
     >
-        <q-tab label="Teams" :name="0" :ripple="false" />
+        <q-tab label="Teams" :name="0" :ripple="false"  />
 
-        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit"/>
+        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit" />
 
     </q-tabs>
    
@@ -259,6 +259,13 @@ const rink = computed(() =>
 const { toggleGlobalSearch } = useDialogStore();
 
 const { updateHomeRink } = useUserStore();
+
+onMounted(() => {
+    const {query} = route;
+    const {tab} = query ?? {};
+    if (tab === 'settings') currentIndex.value = 1;
+})
+
 
 const editingAvatar = ref(false)
 </script>
