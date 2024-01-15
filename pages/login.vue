@@ -27,8 +27,9 @@
                         ]"
                         lazy-rules
                         v-if="tab === TAB_NAMES.SIGN_UP"
-                        rounded
+                       filled
                         outlined
+                        standout
                         dark
                     />
                     <q-input
@@ -43,8 +44,9 @@
                         ]"
                         lazy-rules
                         v-if="tab === TAB_NAMES.SIGN_UP"
-                        rounded
+                        filled
                         outlined
+                        standout
                         dark
                     />
                     <q-input
@@ -59,8 +61,9 @@
                         ]"
                         lazy-rules
                         v-if="tab === TAB_NAMES.SIGN_UP"
-                        rounded
+                        filled
                         outlined
+                        standout
                         dark
                     />
                     <q-input
@@ -72,6 +75,7 @@
                         lazy-rules
                         standout
                         filled
+                        outlined
                         dark
                     />
                     <q-input
@@ -119,6 +123,7 @@
                 </q-card-section>
                 <q-card-actions
                     class="row justify-center q-pb-lg q-px-lg"
+                    style="padding-top: 0"
                 >
                     <Button
                         type="submit"
@@ -158,6 +163,13 @@
 @include styleInput($app-mint, $app-red);
 .login-input__container {
     padding-top: var(--space-lg);
+padding-bottom: var(--space-lg);
+    .q-field {
+        &:not(:first-child) {
+margin-top: var(--space-md)
+        }
+        
+    }
 }
 .login--container {
     display: grid;
