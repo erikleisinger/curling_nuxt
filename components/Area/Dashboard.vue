@@ -12,7 +12,7 @@
             <h1>Dashboard</h1>
             <h2>2023-2024</h2>
         </header> -->
-        <main class="main-content">
+        <main class="main-content" ref="mainContent">
         <section class="filter__container row justify-center">
             <DashboardFilters v-model="filters" />
 
@@ -257,6 +257,8 @@ const tileContainer = ref(null);
 const expanded = ref(null);
 const preventExpand = ref(false);
 
+const mainContent = ref(null)
+
 const setSelected = (type) => {
     if (preventExpand.value) {
         preventExpand.value = false;
@@ -266,9 +268,9 @@ const setSelected = (type) => {
         // expanded.value = null;
     } else {
         expanded.value = type;
-        const scroller = document.getElementById("global-container");
-        if (scroller.scrollTop < tileContainer.value.offsetTop) return;
-        scroller.scrollTop = tileContainer.value.offsetTop;
+        
+        if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
+        mainContent.value.scrollTop = tileContainer.value.offsetTop;
     }
 };
 

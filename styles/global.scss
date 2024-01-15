@@ -443,7 +443,7 @@ $help-animation: attention 2s infinite linear;
             color: $color!important;
         }
         :deep(.q-field__native) {
-            padding: unset;
+            
             line-height: 1;
         }
         :deep(.q-field__control) {

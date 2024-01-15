@@ -21,9 +21,7 @@
                 class="rings-menu__option"
                 @click.stop="
                     doAction($event, () =>
-                        toggleTeamCreator({
-                            open: true,
-                        })
+                        navigateTo('/teams/create')
                     )
                 "
             >
@@ -66,7 +64,7 @@ $button-dimension: 38.5%;
         position: absolute;
         top: 22px;
         right: 12px;
-        z-index: 16;
+        z-index: 11;
     }
     &.outer {
         background-color: #6cc0e5;
