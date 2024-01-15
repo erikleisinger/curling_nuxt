@@ -152,7 +152,7 @@ import { STAT_COLORS } from "@/constants/stats";
 import {useDialogStore} from '@/store/dialog'
 import Team from "@/store/models/team";
 import Player from "@/store/models/player";
-import Rink from "@/store/models/Rink";
+import Rink from "@/store/models/rink";
 const props = defineProps({
     modelValue: Object,
     statType: String,
