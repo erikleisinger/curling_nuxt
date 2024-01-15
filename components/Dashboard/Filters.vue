@@ -101,10 +101,10 @@
                         <Rings
                             size="1.4em"
                             class="q-mr-sm"
-                            :twelveft="color"
-                            :fourft="color"
-                            :eightft="getColor('white')"
-                            :buttonft="getColor('white')"
+                            :twelveft="'white'"
+                            :fourft="'white'"
+                            :eightft="getColor('royalBlue')"
+                            :buttonft="getColor('royalBlue')"
                         />
                         <h3>Opposition</h3>
                     </Button>

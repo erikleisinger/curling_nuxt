@@ -107,6 +107,12 @@ const stats = computed(() => {
         useRepo(TeamStats)
             .query()
             .whereIn("team_id", filteredTeamIds.value)
+             .where('rink_id', (val) => {
+            return props.filters.rink ? val === props.filters.rink : true
+        })
+        .where('sheet_id', (val) => {
+            return props.filters.sheet ? val === props.filters.sheet : true
+        })
             .get()
     );
 });

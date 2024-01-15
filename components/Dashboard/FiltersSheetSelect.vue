@@ -79,6 +79,11 @@ const selectSheet = (num) => {
     if (!sheet) return;
 
     const {id} = sheet;
-    selectedSheet.value = id;
+    if (selectedSheet.value === id) {
+        selectedSheet.value = null
+    } else {
+selectedSheet.value = id;
+    }
+    
 }
 </script>

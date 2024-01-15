@@ -22,7 +22,9 @@
                     "
                     :maintain="false"
                     :color="getColor(STAT_COLORS[type])"
+                 
                 />
+             
             </div>
         </template>
         <template v-slot:stat-expanded>
@@ -54,7 +56,10 @@
                         @click="onClick"
                         ref="chart"
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
+                 
                     />
+                     
+                 
                 </div>
                 <div
                     class="full-width row justify-center clickable q-pt-lg text-caption"
@@ -170,7 +175,7 @@ const CUMULATIVE_CHART_STATS = [STAT_TYPES.WINS, STAT_TYPES.HAMMER_LAST_END];
 const isCumulative = CUMULATIVE_CHART_STATS.includes(props.type);
 const showCumulative = ref(false);
 const chartPoints = computed(() => {
-    return allStats.value.map((data, index) => {
+    const points = allStats.value.map((data, index) => {
         if (isCumulative || showCumulative.value) {
             return (
                 getCumulativeStat(
@@ -182,6 +187,8 @@ const chartPoints = computed(() => {
 
         return STAT_FIELDS_TOTAL[props.type](data) * (isPercent ? 100 : 1);
     });
+    if (points.length === 1) return [points[0], points[0]]
+    return points;
 });
 
 const totalTile = computed(() =>
