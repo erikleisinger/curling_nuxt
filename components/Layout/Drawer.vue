@@ -105,8 +105,8 @@
     width: 80px;
     transition: width 0.2s;
 
+
     padding-top: calc(4em + var(--space-sm));
-    overflow: hidden;
     color: white;
     @include sm {
         padding-top: calc(5em + var(--space-sm));
@@ -123,6 +123,7 @@
     }
     height: calc(100 * var(--vh, 1vh));
     overflow: auto;
+    overflow-x: hidden;
     z-index: 13;
 
     .nav-drawer--content {

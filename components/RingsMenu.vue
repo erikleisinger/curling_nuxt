@@ -60,6 +60,8 @@ $button-dimension: 38.5%;
         @include sm {
             transform: scale(60);
         }
+         -webkit-filter: grayscale(20%);
+                filter: grayscale(20%);
         opacity: 0.95;
         position: absolute;
         top: 22px;
@@ -67,7 +69,7 @@ $button-dimension: 38.5%;
         z-index: 11;
     }
     &.outer {
-        background-color: #6cc0e5;
+        background-color: $app-blue;
         height: v-bind(size);
         width: v-bind(size);
     }
@@ -75,7 +77,7 @@ $button-dimension: 38.5%;
         height: $mid-dimension;
         width: $mid-dimension;
 
-        background-color: white;
+        background-color: $app-slate;
     }
     &.button,
     &.mid,
@@ -93,7 +95,7 @@ $button-dimension: 38.5%;
         width: $button-dimension;
     }
     &.inner {
-        background-color: #fb4f4f;
+        background-color: $app-red;
         height: $inner-dimension;
         width: $inner-dimension;
     }
@@ -102,21 +104,25 @@ $button-dimension: 38.5%;
     pointer-events: none;
     position: fixed;
     width: fit-content;
+
+    background-color: rgba(0,0,0,0.5);
     top: 0;
     z-index: 100;
     left: 0;
     right: 0;
     margin: auto;
-    padding: var(--space-lg) 0px;
+    padding: var(--space-lg);
+    margin-top: var(--space-md);
+    border-radius: 32px;
     @include sm {
         padding: var(--space-xxl) 0px;
     }
     .rings-menu__option {
         cursor: pointer;
         pointer-events: all;
-        border-bottom: 4px solid $app-yellow;
+        border-bottom: 4px solid $app-mint;
         font-family: $font-family-header;
-        color: $app-slate;
+        color: white;
         font-size: 64px;
         line-height: 50px;
         width: fit-content;
@@ -186,12 +192,12 @@ const setBig = () => {
     if (!big.value) return;
     nextTick(() => {
         gsap.from(document.querySelectorAll(".rings-menu__option"), {
-            scale: 0,
+            scaleY: 0,
             opacity: 0.5,
             stagger: 0.2,
-            duration: 0.9,
+            duration: 0.2,
             delay: 0.1,
-            ease: "elastic",
+            ease: "power2",
         });
     });
 };
