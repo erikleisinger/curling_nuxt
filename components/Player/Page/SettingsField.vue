@@ -9,8 +9,8 @@
             </div>
             <div v-else-if="value !== 'rink_id'">
                 <slot name="selection" :editedValue="editedValue">
-                    <q-input dense v-model="editedValue">
-                        {{ editedValue }}
+                    <q-input dense v-model="editedValue" :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_LENGTH)]" ref="input">
+                       
                     </q-input>
                 </slot>
             </div>
@@ -35,6 +35,7 @@
                 size="12px"
                 @click="onEndEdit"
                 v-show="!!editing"
+                :disable="hasError"
             />
         </div>
     </div>
@@ -50,6 +51,7 @@
 <script setup>
 import { useDialogStore } from "@/store/dialog";
 import { useQueryClient } from "@tanstack/vue-query";
+import {VALIDATION_RULES} from '@/constants/validation'
 
 const queryClient = useQueryClient();
 
@@ -60,6 +62,18 @@ const props = defineProps({
     title: String,
     value: String,
 });
+
+const MAX_LENGTHS = {
+    'first_name': 20,
+    'last_name': 20,
+    'username': 20
+}
+
+const MAX_LENGTH = MAX_LENGTHS[props.value];
+
+const input = ref(null);
+
+const hasError = computed(() => input.value?.hasError)
 
 const emit = defineEmits(["save", "update:modelValue"]);
 

@@ -15,12 +15,15 @@
                         large.</span
                     >
                 </q-card-section>
-                <q-card-section>
+                <q-card-section class="q-py-lg">
                     <q-input
                         rounded
                         outlined
                         bg-color="white"
                         v-model="editedName"
+                        :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_NAME_LENGTH)]"
+                        ref="nameInput"
+                        placeholder="Team name"
                     >
                         <template v-slot:after>
                             <Button
@@ -29,7 +32,7 @@
                                 icon="check"
                                 size="14px"
                                 color="mint"
-                                
+                                :disable="nameError"
                                 @click="editingName = false"
                             />
                         </template>
@@ -204,11 +207,14 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {VALIDATION_RULES} from '@/constants/validation'
 import { useTeamStore } from "@/store/teams";
 import {useUserTeamStore} from '@/store/user-teams'
 import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
-
+const MAX_NAME_LENGTH = 25;
+const nameInput = ref(null);
+const nameError = computed(() => nameInput.value?.hasError)
 const {defaultAvatar} = useAvatar();
 
 const props = defineProps({
