@@ -37,7 +37,22 @@
             </q-card>
         </div>
         <div class="help__container" v-else>
-            <div class="help__header">{{isCreating ? 'Create new' : 'Edit'}} team</div>
+            <div class="help__header row justify-between items-center">
+                <h3>{{isCreating ? 'Create new' : 'Edit'}} team</h3>
+                <q-btn flat round icon="more_vert" color="white" dense>
+                    <q-menu>
+                        <q-list separator>
+                            <q-item @click="deleteConfirmationOpen = true" clickable v-ripple>
+                                <q-item-section no-wrap>
+                                    <q-item-label>
+                                    Delete team
+                                    </q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-menu>
+                </q-btn>
+            </div>
             <div
                 class="edit-option text-center row items-center"
                 @click="editingName = true"
@@ -82,6 +97,7 @@
                 />
                 <div>Set team rink</div>
             </div>
+       
             <div class="row justify-between items-center q-pa-sm help__footer">
                 <Button color="white" text-color="slate" @click="close"
                     >Cancel</Button
@@ -89,6 +105,7 @@
                 <Button color="mint" @click="save" :disable="saveDisabled">Save</Button>
             </div>
         </div>
+        <TeamDelete :teamId="teamId" @close="deleteConfirmationOpen = false" v-if="!isCreating && deleteConfirmationOpen"/>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -174,7 +191,13 @@
             background-color: $app-mint;
             color: white;
             @include smmd-text;
+            pointer-events: all;
         }
+    }
+    .delete--container {
+         pointer-events: all;
+            margin: var(--space-xs);
+            padding: var(--space-xs);
     }
 }
 </style>
@@ -321,4 +344,6 @@ const refreshTeam = () => {
         queryKey: ["team", "full", props.teamId],
     });
 };
+
+const deleteConfirmationOpen = ref(false)
 </script>
