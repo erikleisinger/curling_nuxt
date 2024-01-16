@@ -2,7 +2,7 @@
     <q-layout view="hhh lpr fff" class="app-layout">
 
             <q-header class="layout-header" elevated reveal v-show="!isLoggedOutRoute">
-                <LayoutHeader>
+                <LayoutHeader  @openFeedback="feedbackOpen = true">
                     <template v-slot:menu>
                         <q-btn
                             icon="menu"
@@ -12,6 +12,7 @@
                             @click="leftDrawerOpen = true"
                             class="nav-drawer-toggle"
                             id="global-menu-toggle"
+                           
                         />
                     </template>
                 </LayoutHeader>
@@ -25,7 +26,7 @@
                 <DialogPopup
                     :open="notificationsOpen"
                     bottom
-                    maxHeight="600px"
+                    :maxHeight="$q.screen.gt.sm ? '600px' : null"
                     :maxWidth="$q.screen.xs ? null : '400px'"
                     right
                     :hideOverlay="!$q.screen.xs"

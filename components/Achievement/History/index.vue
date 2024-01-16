@@ -122,7 +122,7 @@ const { isLoading, data: notifications, isSuccess } = useQuery({
 
 // PAGINATION
 
-const CURSOR_INCREMENT = 6;
+const CURSOR_INCREMENT = 12;
 const cursor = ref(CURSOR_INCREMENT);
 
 const notificationsPaginated = computed(() =>
@@ -131,7 +131,6 @@ const notificationsPaginated = computed(() =>
 const notificationCount = computed(() => notifications.value?.length);
 
 const showMore = () => {
-    console.log('show more')
     if (cursor.value === notificationCount.value) return;
     if (
         notificationsPaginated.value.length + CURSOR_INCREMENT >
@@ -143,7 +142,7 @@ const showMore = () => {
     }
 };
 
-const markUnread = async (nots) => {
+const markAsRead = async (nots) => {
     const client = useSupabaseClient();
     await client
         .from("notifications")
@@ -154,91 +153,9 @@ const markUnread = async (nots) => {
         );
 };
 
-const onNotificationChange = async (e) => {
-    const { new: newData } = e ?? {};
-    const { id, read } = newData ?? {};
-    if (!id) return;
-    const nots = [...notifications.value];
-    const index = nots.findIndex(({ id: notId }) => notId === id);
-    if (index === -1) return;
-    nots.splice(index, 1, {
-        ...nots[index],
-        read,
-    });
-    queryClient.setQueryData(["notifications", userId.value], nots);
-};
 
-const onNotificationInsert = async (e) => {
-    const { new: newData } = e ?? {};
-    const { achievement_id, id: notification_id, created_at } = newData ?? {};
-    if (!achievement_id) return;
-    const client = useSupabaseClient();
-    const { data: notification } = await client
-        .from("achievements")
-        .select(
-            `
-        name,
-        type,
-        team:team_id(
-            id,
-            name,
-            avatar_url
-        ),
-        profile:profile_id(
-            id,
-            first_name,
-            last_name,
-            avatar
-        ),
-        info
-    `
-        )
-        .eq("id", achievement_id)
-        .single();
-    queryClient.setQueryData(
-        ["notifications", userId.value],
-        [
-            {
-                ...notification,
-                id: notification_id,
-                created_at,
-            },
-            ...notifications.value,
-        ]
-    );
-
-    setUnread(notifications.value);
-};
-
-const startWebsockets = () => {
-    const client = useSupabaseClient();
-    client
-        .channel("notifications")
-        .on(
-            "postgres_changes",
-            {
-                event: "INSERT",
-                schema: "public",
-                table: "notifications",
-                filter: `profile_id=eq.${userId.value}`,
-            },
-            onNotificationInsert
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "notifications",
-                filter: `profile_id=eq.${userId.value}`,
-            },
-            onNotificationChange
-        )
-        .subscribe();
-};
 
 onMounted(() => {
-    startWebsockets();
     setOpen(props.open);
 });
 
@@ -252,7 +169,7 @@ watch(
     (val) => {
         if (!val) {
             // Timeout allows for animation to finish before mutating
-           markUnread(notificationsPaginated.value);
+           markAsRead(notificationsPaginated.value);
         }
 
         setOpen(val);

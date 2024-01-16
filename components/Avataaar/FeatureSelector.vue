@@ -18,9 +18,6 @@
         </template>
       </q-select>
 </template>
-<style lang="scss" scoped>
-     @include styleInput($app-mint, 'white')
-</style>
 <script setup>
 const props = defineProps({
     disabled: Boolean,

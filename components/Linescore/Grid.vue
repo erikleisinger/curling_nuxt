@@ -113,7 +113,7 @@
                 align-items: center;
                    padding: 4%;
                 &.selected {
-                    background-color: #00cd93;
+                    background-color: $app-mint;
                     color: white;
                     font-weight: bold;
                 }

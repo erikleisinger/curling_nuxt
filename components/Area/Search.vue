@@ -131,7 +131,6 @@
     <!-- </Teleport> -->
 </template>
 <style lang="scss" scoped>
-@include styleInput($app-mint, 'white');
 .expand-shrink-enter-active,
 .expand-shrink-leave-active {
     transition: all 0.3s;

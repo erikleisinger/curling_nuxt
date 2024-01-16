@@ -4,7 +4,7 @@
 
             <q-card-section>
                 <h3>Submit feedback</h3>
-                <h4 class="text-sm">Let me know about any bugs, issues, or ideas you might have. I really appreciate it!</h4>
+                <h4 class="text-sm font-secondary">Let me know about any bugs, issues, or ideas you might have. I really appreciate it!</h4>
             </q-card-section>
             <q-card-section>
                 <q-input counter type="textarea" v-model="text" outlined placeholder="Type your feedback here" :rules="[(val) => val.length < MAX_LENGTH || `Please limit your feedback to ${MAX_LENGTH} characters.`]" >
@@ -14,8 +14,8 @@
                 </q-input>
             </q-card-section>
             <q-card-actions class="row justify-between">
-        <q-btn flat @click="emit('close')">Close</q-btn>
-                <q-btn color="primary" :disable="disabled" @click="submit">Submit</q-btn>
+        <Button flat @click="emit('close')" color="white" text-color="slate">Close</Button>
+                <Button color="mint" :disable="disabled" @click="submit">Submit</Button>
             </q-card-actions>
 
         </q-card>

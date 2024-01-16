@@ -8,7 +8,6 @@
         <q-separator />
         <div class="popup-container--slot-content"  :id="`content-${uniqueId}`">
             <slot v-if="ready"/>
-            <!--  -->
         </div>
     </div>
     <div class="popup--overlay" :id="`overlay-${uniqueId}`" v-show="!hideOverlay" :style="{pointerEvents: hideOverlay || !isOpen ? 'none' : 'all'}">
@@ -31,7 +30,7 @@
     box-shadow: $pretty-shadow;
     position: fixed;
     max-width: v-bind(maxWidth);
-    background-color: white;
+    // background-color: white;
     overflow: hidden;
     &.bottom {
        bottom: 0px;
@@ -64,10 +63,15 @@
         background-color: $app-mint;
         color: white;
         font-size: 1.2rem;
+        border-top-left-radius: inherit;
+         border-top-right-radius: inherit;
     }
     .popup-container--slot-content {
         height: v-bind(contentHeight);
+        min-height: v-bind(contentHeight);
         overflow: auto;
+        background-color: white;
+        margin-top: -1px;
        
     }
 }

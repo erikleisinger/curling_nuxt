@@ -16,6 +16,7 @@
  </div>
 </template>
 <style lang="scss">
+@include styleInput($app-mint, 'white');
 #__nuxt {
     height: inherit;
     @include bg-blue-side;

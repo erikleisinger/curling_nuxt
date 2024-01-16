@@ -159,8 +159,6 @@
         background-color: white;
     }
 }
-
-@include styleInput($app-mint, $app-red);
 .login-input__container {
     padding-top: var(--space-lg);
 padding-bottom: var(--space-lg);

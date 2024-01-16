@@ -1,5 +1,6 @@
 <template>
     <div class="full-height relative-position">
+        <NotificationListener v-if="userId" @refresh="refresh"/>
         <q-toolbar class="row justify-between items-center header">
             <slot name="menu" />
             <div
@@ -27,7 +28,6 @@
                     color="white"
                     @click="toggleNotifications({ open: !notificationsOpen })"
                     :size="$q.screen.xs ? '14px' : '16px'"
-                    
                 >
                     <transition
                         appear
@@ -50,12 +50,12 @@
                         width: $q.screen.xs ? '30px' : '35px',
                         height: $q.screen.xs ? '30px' : '35px',
                     }"
-                     id="global-rings-menu"
+                    id="global-rings-menu"
                 >
                     <RingsMenu
                         :size="$q.screen.xs ? '30px' : '35px'"
                         class="clickable rings-button"
-                       
+                        @openFeedback="emit('openFeedback')"
                     />
                 </div>
             </div>
@@ -80,12 +80,38 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useDebounceFn } from "@vueuse/core";
+
+const emit = defineEmits(['openFeedback'])
+
+const queryClient = useQueryClient();
+
 const { toggleNotifications } = useDialogStore();
 const notificationsOpen = computed(() => useDialogStore().notifications.open);
 
-const { listenForNotifications, count: unreadNotificationCount } =
-    useNotification();
+const {user:userId} = useUser()
 
-const { user: userId } = useUser();
-const listener = listenForNotifications();
+const getNotificationCount = async () => {
+    const client = useSupabaseClient();
+    const { count } = await client
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("read", false);
+
+    return count;
+};
+
+const { isLoading, data: unreadNotificationCount } = useQuery({
+    queryKey: ["notificationCount"],
+    queryFn: getNotificationCount,
+});
+
+const refresh = useDebounceFn(() => {
+    queryClient.invalidateQueries({
+        queryKey: ["notificationCount"],
+    });
+}, 1000);
+
+
 </script>

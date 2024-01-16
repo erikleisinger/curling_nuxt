@@ -207,16 +207,16 @@
                                             >Extra</span
                                         ></q-btn
                                     >
-                                    <q-btn
+                                    <Button
                                         stretch
-                                        color="primary"
+                                        color="mint"
                                         icon="check"
                                         no-wrap
                                         class="col-grow q-pa-none"
                                         @click="goSummary"
                                         ><span class="q-pl-xs"
                                             >Done</span
-                                        ></q-btn
+                                        ></Button
                                     >
                                 </div>
                             </transition>
@@ -273,27 +273,29 @@
                                         height: `${scrollerHeight}px`,
                                     }"
                                 >
-                                    <q-btn
+                                    <Button
                                         icon="add"
                                         stretch
                                         class="col-grow q-pa-none"
                                         @click="goExtra"
                                         no-wrap
+                                        color="white"
+                                        text-color="mint"
                                         v-if="showExtraEnd()"
                                         ><span class="q-pl-xs"
                                             >Extra</span
-                                        ></q-btn
+                                        ></Button
                                     >
-                                    <q-btn
+                                    <Button
                                         stretch
-                                        color="primary"
+                                        color="mint"
                                         icon="check"
                                         no-wrap
                                         class="col-grow q-pa-none"
                                         @click="goSummary"
                                         ><span class="q-pl-xs"
                                             >Done</span
-                                        ></q-btn
+                                        ></Button
                                     >
                                 </div>
                             </transition>

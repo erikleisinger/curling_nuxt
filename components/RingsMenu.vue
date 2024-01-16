@@ -27,7 +27,7 @@
             >
                 New team
             </div>
-            <div class="rings-menu__option bottom small">Send feedback</div>
+            <div class="rings-menu__option bottom small" @click="doAction($event, () => emit('openFeedback'))">Send feedback</div>
         </div>
     </div>
 </template>
@@ -178,6 +178,8 @@ const props = defineProps({
         default: "35px",
     },
 });
+
+const emit = defineEmits(['openFeedback'])
 
 const setBig = () => {
     big.value = !big.value;

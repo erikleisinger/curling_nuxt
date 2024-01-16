@@ -26,9 +26,6 @@
         </q-input>
     </DialogConfirmation>
 </template>
-<style lang="scss" scoped>
-    @include styleInput($app-mint, 'white');
-</style>
 <script setup>
 import Team from '@/store/models/team';
 import {useNotificationStore} from '@/store/notification';
