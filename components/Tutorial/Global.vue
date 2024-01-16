@@ -149,7 +149,7 @@ const showTeamCreateDone = computed(() => isTeamPage.value && !!userTeamIds.valu
 
 const showBackFromProfile = computed(() => isPlayerPage.value && !!hasRink.value && !!hasAvatar.value && !isAvatarGeneratorOpen.value)
 
-const showAddGame = computed(() => !games.value?.length && !isPlayerPage.value && !isTeamPage.value && !isRingsMenuOpen.value && isDashboard.value)
+const showAddGame = computed(() => !games.value?.length && !isPlayerPage.value && !isTeamPage.value && !isRingsMenuOpen.value && isDashboard.value && !isSearchOpen.value)
 
 const isAddMenuVisible = computed(() => useSessionStore().addTeamMenuOpen);
 
