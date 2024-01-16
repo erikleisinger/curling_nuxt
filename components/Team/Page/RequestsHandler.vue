@@ -159,6 +159,10 @@ const { isLoading } = useQuery({
     queryFn: () => getTeamPlayers(props.teamId),
     refetchOnWindowFocus: false,
     keepPreviousData: true,
+    select:(val) => {
+        console.log('got new players: ', val)
+        return val;
+    }
 });
 
 const { isOnTeam } = useTeam();

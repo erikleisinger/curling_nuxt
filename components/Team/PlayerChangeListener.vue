@@ -11,19 +11,18 @@ const props = defineProps({
 });
 const onChange = useDebounceFn((e) => {
     console.log('on change: ', e)
+    const {new:newData, old: oldData} = e ?? {};
+    const {team_id} = newData ?? oldData ?? {};
     queryClient.invalidateQueries({
-        queryKey: ["team", "players", props.teamId],
+        queryKey: ["team", "players", team_id],
     });
-    useUserTeamStore().fetchUserTeams(true)
 }, 1000);
 
 const {userTeamIds} = useTeam();
    const {user: userId} = useUser()
 const onJunctionChange = (e) => {
-    console.log('JUNCTION CHANGE: ', e)
     onChange(e);
     const {new:newData, old: oldData} = e;
-    console.log(newData, oldData)
     const {profile_id} = newData ?? oldData ?? {};
     if (profile_id !== userId.value) return;
     useUserTeamStore().fetchUserTeams(true)
