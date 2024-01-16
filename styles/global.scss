@@ -476,4 +476,26 @@ $help-animation: attention 2s infinite linear;
     }
 }
 
+@mixin pretty-scrollbar {
+
+        -ms-scroll-chaining: none;
+        overscroll-behavior: none;
+        &::-webkit-scrollbar {
+          width: 12px;
+        }
+        &::-webkit-scrollbar-track {
+          border-radius: 50px;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 50px;
+          background-clip: content-box;
+          background-color: rgba(255, 255, 255, 0.1);
+          border: 2px solid transparent;
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+          }
+        }
+      
+}
+
 

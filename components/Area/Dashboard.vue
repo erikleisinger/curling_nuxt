@@ -30,6 +30,7 @@
 .dashboard__container {
     @include bg-blue-side;
     .main-content {
+        @include hide-scroll;
         position: absolute;
         top: 0;
         width: 100%;
@@ -213,9 +214,13 @@ const setSelected = (type) => {
     } else {
         expanded.value = type;
 
-        if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
+           nextTick(() => {
+if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
         mainContent.value.scrollTop = tileContainer.value.offsetTop;
+    })
     }
+
+     
 };
 
 const endView = (e) => {

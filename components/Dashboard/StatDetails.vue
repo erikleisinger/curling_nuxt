@@ -126,7 +126,7 @@
                             }"
                         />
 
-                        {{ highestDiff }}{{ isPercent ? "%" : "" }}
+                        {{ cleanNumber(highestDiff) }}{{ isPercent ? "%" : "" }}
                     </div>
                     <h5>{{ cleanNumber(highest) }}</h5>
                 </div>
@@ -157,7 +157,7 @@
                             }"
                         />
 
-                        {{ lowestDiff }}{{ isPercent ? "%" : "" }}
+                        {{ cleanNumber(lowestDiff) }}{{ isPercent ? "%" : "" }}
                     </div>
                     <h5>{{ cleanNumber(lowest) }}</h5>
                 </div>
@@ -302,11 +302,6 @@ const statsByGame = computed(() => {
         .get();
 });
 
-const getPlusMinus = (stat) => {
-    if (isPercent) {
-        return stat * 100;
-    }
-};
 
 const { getCumulativeStat } = useStats();
 

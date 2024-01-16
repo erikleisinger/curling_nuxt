@@ -31,7 +31,7 @@
                 <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">
                     Players
                 </h2>
-                <div style="width: fit-content; margin: auto; position: relative">
+                <div  class="player-section">
                     <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
                     <TeamPagePlayers :teamId="teamId" />
                 </div>
@@ -56,6 +56,13 @@
     position: relative;
     @include lines;
     height: 100%;
+}
+
+.player-section {
+    width: fit-content; 
+    margin: auto; 
+    position: relative;
+    margin-bottom: var(--space-md)
 }
 
 .team-requests__floating {

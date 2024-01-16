@@ -114,16 +114,17 @@ $footer-height-sm: 4em;
     }
 }
 .page__container--global {
+    @include hide-scroll;
+    @include sm {
+ @include pretty-scrollbar;
+    }
+   
+
     height: calc((100 * var(--vh, 1vh)));
     overflow: auto;
     overflow-x:hidden;
     scroll-behavior: smooth;
-    // padding: unset !important;
-    -ms-overflow-style: none!important; /* IE and Edge */
-    scrollbar-width: none!important;; /* Firefox */
-    &::-webkit-scrollbar {
-        display: none!important;;
-    }
+    
     margin: unset !important;
     @include sm {
         height: calc((100 * var(--vh, 1vh)));

@@ -158,12 +158,16 @@ $bg-badge--green: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/s
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.hide-scroll {
+@mixin hide-scroll {
     -ms-overflow-style: none!important; /* IE and Edge */
     scrollbar-width: none!important;; /* Firefox */
     &::-webkit-scrollbar {
         display: none!important;;
     }
+}
+
+.hide-scroll {
+   @include hide-scroll;
 }
 
 .purple__background--small {
