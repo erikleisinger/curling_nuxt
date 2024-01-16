@@ -6,7 +6,6 @@
                 rounded
                 outlined
                 :label="inputLabel"
-                color="deep-purple"
                 v-model="searchInput"
                 @keydown.enter="search"
                 clearable
@@ -187,7 +186,6 @@
         :deep(.q-field__bottom) {
             padding-top: var(--space-xxxs);
             .q-field__messages {
-                color: $deep-purple;
                 font-weight: bold;
             }
         }

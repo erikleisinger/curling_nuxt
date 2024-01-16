@@ -82,7 +82,7 @@ import { useDialogStore } from "@/store/dialog";
 import {useUserStore} from '@/store/user'
 import {useTeamRequestStore} from '@/store/team-requests'
 import Player from "@/store/models/player";
-import GameTeam from '@/store/models/game-team'
+import TeamStats from '@/store/models/team-stats'
 import { useElementVisibility } from "@vueuse/core";
 const route = useRoute();
 const DISABLE_ON_ROUTES = ["gateway"];
@@ -96,7 +96,7 @@ const player = computed(() =>
     useRepo(Player).where("id", userId.value).first()
 );
 
-const games = computed(() => useRepo(GameTeam).query().whereIn('team_id', userTeamIds.value).get())
+const games = computed(() => useRepo(TeamStats).query().whereIn('team_id', userTeamIds.value).get())
 
 const hasGames = computed(() => !!games.value?.length)
 
