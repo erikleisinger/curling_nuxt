@@ -47,7 +47,6 @@ import {useElementBounding, useElementSize, useWindowSize, useElementVisibility}
 
     const positionX = computed(() => {
         if (x.value + textWidth.value > windowWidth.value) {
-            console.log('TOO BIG')
             const newX = x.value - textWidth.value - elementWidth.value
             return newX >=0 ? newX : 0;
         }
@@ -57,8 +56,6 @@ import {useElementBounding, useElementSize, useWindowSize, useElementVisibility}
     const positionY = computed(() => {
         const newPosY = y.value + (props.bottom ? elementHeight.value : 0);
         if (newPosY + textHeight.value > windowHeight.value) return y.value - textHeight.value;
-
-            console.log(newPosY, windowHeight.value)
         return newPosY;
     })
 
