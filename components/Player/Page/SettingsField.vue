@@ -25,7 +25,7 @@
                 @click="onStartEdit"
                 :loading="saving"
                 :disabled="saving"
-                v-if="!editing"
+                v-show="!editing"
                 :id="buttonId"
             />
             <Button
@@ -34,7 +34,7 @@
                 color="mint"
                 size="12px"
                 @click="onEndEdit"
-                v-else
+                v-show="!!editing"
             />
         </div>
     </div>
@@ -103,11 +103,19 @@ const onStartEdit = () => {
             inputLabel: "Search for a home rink",
             callback: (val) => {
                 editedValue.value = val;
-                nextTick(() => {
-                    onEndEdit();
-                });
+               
             },
         },
     });
 };
+
+const isSearchOpen = computed(() => useDialogStore().globalSearch.open);
+
+watch(isSearchOpen, (val) => {
+    if (val) return;
+    if (!editing.value) return;
+     nextTick(() => {
+                    onEndEdit();
+                });
+})
 </script>
