@@ -1,5 +1,0 @@
-<template>
-
-        <Rink/>
-
-</template>

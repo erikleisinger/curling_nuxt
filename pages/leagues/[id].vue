@@ -1,3 +1,0 @@
-<template>
-        <League/>
-</template>

@@ -1,6 +1,0 @@
-<template>
-
-        <AreaTeams/>
-
-</template>
-

@@ -8,7 +8,7 @@
            </NuxtLayout>
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
-        <DialogLeagueEditor v-if="isLeagueEditorOpen" />
+        <!-- <DialogLeagueEditor v-if="isLeagueEditorOpen" /> -->
                 <TeamPlayerChangeListener v-if="!isPublicRoute && !!userId"/>
 
             <TutorialGlobal v-if="!isPublicRoute && !hasCompletedTutorial"/>

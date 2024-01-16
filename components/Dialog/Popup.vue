@@ -193,12 +193,10 @@ watch(
     isOpen,
     (val) => {
         if (val) {
-            window.noPopState = true;
             onOpen();
             calculateZIndex()
         }
         if (!val) {
-             window.noPopState = false;
             onClose();
         }
     }
