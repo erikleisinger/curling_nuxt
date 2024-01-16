@@ -9,7 +9,7 @@
             </div>
             <div v-else-if="value !== 'rink_id'">
                 <slot name="selection" :editedValue="editedValue">
-                    <q-input dense v-model="editedValue" :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_LENGTH)]" ref="input">
+                    <q-input dense v-model="editedValue" :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_LENGTH), VALIDATION_RULES.REQUIRED]" ref="input">
                        
                     </q-input>
                 </slot>

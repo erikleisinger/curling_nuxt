@@ -21,7 +21,7 @@
                         outlined
                         bg-color="white"
                         v-model="editedName"
-                        :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_NAME_LENGTH)]"
+                        :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_NAME_LENGTH), VALIDATION_RULES.REQUIRED]"
                         ref="nameInput"
                         placeholder="Team name"
                     >
