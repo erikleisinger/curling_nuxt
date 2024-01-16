@@ -61,7 +61,7 @@
                     <q-input
                         v-else
                         label="Type an opposition name"
-                        class="custom-name__input q-px-lg"
+                        class="custom-name__input q-mx-lg"
                         v-model="selections.name"
                         autofocus
                     >
@@ -109,6 +109,7 @@
     .custom-name__input {
         width: 100vw;
         max-width: 500px;
+        padding: 0px var(--space-md);
     }
     .team-name {
         @include md-text;
