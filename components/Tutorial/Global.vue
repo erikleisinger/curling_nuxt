@@ -23,13 +23,13 @@
          <TutorialHighlight
             v-else-if="showAddTeamMenu"
             elementId="dashboard-add-team-menu"
-            tutorialText="If your team already exists on pebble, you can search for it and request to join. Otherwise, add your team by clicking Create new team!"
+            tutorialText="If your team already exists on Pebble, you can search for it and request to join. Otherwise, add your team by clicking Create new team."
             bottom
         />
            <TutorialHighlight
             v-else-if="showTeamRequest"
             elementId="team-page-requests-handler"
-            tutorialText="If you'd like to join this team, click on Request to Join Team!"
+            tutorialText="If you'd like to join this team, click on Request to join team."
             bottom
         />
                 <TutorialHighlight
@@ -142,7 +142,7 @@ const showAvatarHighlight = computed(
 
 const hasTeams = computed(() => !!userTeamIds?.value?.length)
 
-const showAddTeam = computed(() => !isSearchOpen.value && !isPlayerPage.value && !hasTeams.value && !isAddMenuVisible.value);
+const showAddTeam = computed(() => !isSearchOpen.value && !isPlayerPage.value && !isTeamPage.value && !hasTeams.value && !isAddMenuVisible.value);
 const showAddTeamMenu = computed(() => !isSearchOpen.value && !isPlayerPage.value && !hasTeams.value && !!isAddMenuVisible.value && menuReady.value)
 const showTeamRequest = computed(() => isTeamPage.value && !userTeamIds.value?.length)
 const showTeamRequestDone = computed(() => isTeamPage.value && !!userTeamIds.value?.length && !!requests.value.length)
