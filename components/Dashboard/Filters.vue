@@ -19,8 +19,33 @@
                 size="15px"
                 color="white"
                 text-color="mint"
-                @click="navigateTo('/teams/create')"
-            />
+              
+            >
+            <q-menu>
+                <q-list separator>
+                    <q-item clickable v-ripple @click="navigateTo('/teams/create')">
+                        <q-item-section avatar>
+                            <q-icon name="add" :style="{color: getColor('mint')}"/>
+                        </q-item-section>
+                        <q-item-section no-wrap>
+                            <q-item-label>
+                                Create new team
+                            </q-item-label>
+                        </q-item-section>   
+                    </q-item>
+                    <q-item clickable v-ripple @click="searchTeam">
+                        <q-item-section avatar>
+                            <q-icon name="search" />
+                        </q-item-section>
+                        <q-item-section no-wrap>
+                            <q-item-label>
+                                Search for a team
+                            </q-item-label>
+                        </q-item-section>   
+                    </q-item>
+                </q-list>
+            </q-menu>
+            </Button>
         </div>
     </div>
     <div class="full-width filters__container">
@@ -231,6 +256,20 @@ const searchRink = () => {
             callback: (val) => {
                 const {id} = val;
                 filters.value.rink = id;
+            }
+        }
+    })
+}
+
+const searchTeam = () => {
+      useDialogStore().toggleGlobalSearch({
+        open: true,
+        options: {
+            resourceTypes: ['team'],
+            inputLabel: 'Search for a team',
+            callback: (val) => {
+                const {id} = val;
+                return navigateTo(`/teams/${id}`)
             }
         }
     })
