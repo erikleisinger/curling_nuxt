@@ -10,6 +10,7 @@
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
         <!-- <TutorialFloating v-if="!isPublicRoute"/> -->
+                <TeamPlayerChangeListener v-if="!isPublicRoute && !!userId"/>
        
  </div>
 </template>
@@ -49,6 +50,9 @@ const nuxtApp = useNuxtApp();
 const { setLoading } = useLoading();
 
 const route = useRoute();
+
+const {user:userId} = useUser();
+const {userTeamIds} = useTeam();
 
 
 

@@ -109,15 +109,19 @@
                         roster.
                     </template>
                     <template v-slot:footer>
-                        <q-btn
+                        <div class="row justify-between q-my-sm full-width">
+                        <Button
                             rounded
-                            class="confirm-btn"
+                            class="confirm-btn "
+                            color="white"
+                            text-color="slate"
                             @click="showConfirmDelete = false"
-                            >Cancel</q-btn
+                            >Cancel</Button
                         >
-                        <q-btn rounded class="confirm-btn red" @click="onRemove"
-                            >Confirm</q-btn
+                        <Button rounded class="confirm-btn red" @click="onRemove" color="red"
+                            >Confirm</Button
                         >
+                        </div>
                     </template>
                 </DialogCard>
             </GlobalMenu>

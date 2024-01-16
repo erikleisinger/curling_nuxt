@@ -10,14 +10,20 @@ const props = defineProps({
     teamId: Number,
 });
 const onChange = useDebounceFn((e) => {
+    console.log('on change: ', e)
     queryClient.invalidateQueries({
         queryKey: ["team", "players", props.teamId],
     });
+    useUserTeamStore().fetchUserTeams(true)
 }, 1000);
+
+const {userTeamIds} = useTeam();
    const {user: userId} = useUser()
 const onJunctionChange = (e) => {
-    onChange();
+    console.log('JUNCTION CHANGE: ', e)
+    onChange(e);
     const {new:newData, old: oldData} = e;
+    console.log(newData, oldData)
     const {profile_id} = newData ?? oldData ?? {};
     if (profile_id !== userId.value) return;
     useUserTeamStore().fetchUserTeams(true)
@@ -33,37 +39,37 @@ const watchForChanges = () => {
                 event: "INSERT",
                 schema: "public",
                 table: "team_requests",
-                filter: `team_id=eq.${props.teamId}`,
+                filter: `team_id=in.(${userTeamIds.value})`,
             },
             onChange
         )
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "team_requests",
-                filter: `team_id=eq.${props.teamId}`,
-            },
-            onChange
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "DELETE",
-                schema: "public",
-                table: "team_requests",
-                filter: `team_id=eq.${props.teamId}`,
-            },
-            onChange
-        )
+        // .on(
+        //     "postgres_changes",
+        //     {
+        //         event: "UPDATE",
+        //         schema: "public",
+        //         table: "team_requests",
+        //         filter: `team_id=in.(${userTeamIds.value})`,
+        //     },
+        //     onChange
+        // )
+        // .on(
+        //     "postgres_changes",
+        //     {
+        //         event: "DELETE",
+        //         schema: "public",
+        //         table: "team_requests",
+        //         filter: `team_id=in.(${userTeamIds.value})`,
+        //     },
+        //     onChange
+        // )
         .on(
             "postgres_changes",
             {
                 event: "INSERT",
                 schema: "public",
                 table: "team_profile_junction",
-                filter: `team_id=eq.${props.teamId}`,
+                filter: `team_id=in.(${userTeamIds.value})`,
             },
             onJunctionChange
         )
@@ -73,7 +79,7 @@ const watchForChanges = () => {
                 event: "UPDATE",
                 schema: "public",
                 table: "team_profile_junction",
-                filter: `team_id=eq.${props.teamId}`,
+                filter: `team_id=in.(${userTeamIds.value})`,
             },
             onJunctionChange
         )
@@ -83,14 +89,19 @@ const watchForChanges = () => {
                 event: "DELETE",
                 schema: "public",
                 table: "team_profile_junction",
-                filter: `team_id=eq.${props.teamId}`,
+                filter: `team_id=in.(${userTeamIds.value})`,
             },
             onJunctionChange
         )
         .subscribe();
 };
 
-onMounted(() => {
+watch(userId, (val) => {
+    if (!val) return;
     watchForChanges();
-});
+}, {immediate: true})
+
+watch(userTeamIds, (val) => {
+    watchForChanges()
+}, {deep: true, immediate: true})
 </script>

@@ -214,6 +214,7 @@ import {
     onClickOutside,
 } from "@vueuse/core";
 import { parseAvatar } from "@/utils/avatar";
+import Team from '@/store/models/team'
 
 const props = defineProps({
     restrictIds: {
@@ -264,6 +265,17 @@ const useSearch = useThrottleFn(async () => {
         })
         .limit(25);
 
+        data.forEach((item) => {
+            const {resourcetype} = item;
+            if (resourcetype !== 'team') return;
+            const {id, avatar_url, name} = item;
+            useRepo(Team).save({
+                id,
+                name,
+                avatar_url
+            })
+        })
+
     results.value = data.reduce((all, current) => {
         if (!props.resourceTypes?.length) return [...all, current];
         if (!props.resourceTypes.includes(current.resourcetype)) return all;
@@ -284,6 +296,8 @@ const useSearch = useThrottleFn(async () => {
             return all;
         return [...all, current];
     }, []);
+
+    
 
     if (!!results.value?.length) input.value.blur();
     loading.value = false;

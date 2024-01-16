@@ -21,7 +21,7 @@
                 text-color="mint"
               
             >
-            <q-menu>
+            <q-menu auto-close>
                 <q-list separator>
                     <q-item clickable v-ripple @click="navigateTo('/teams/create')">
                         <q-item-section avatar>
@@ -269,7 +269,7 @@ const searchTeam = () => {
             inputLabel: 'Search for a team',
             callback: (val) => {
                 const {id} = val;
-                return navigateTo(`/teams/${id}`)
+                return navigateTo(`/teams/${id}?request=true`)
             }
         }
     })

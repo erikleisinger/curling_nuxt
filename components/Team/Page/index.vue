@@ -1,6 +1,6 @@
 <template>
     <div class="team-page-container">
-        <TeamPlayerChangeListener v-if="!isCreate"/>
+
        
         <TeamPageHeader2
             :teamId="teamId"
@@ -75,7 +75,7 @@
     &.float-page-top {
         position: fixed;
         top: calc($app-header-height-xs + var(--space-sm));
-        z-index: 100000;
+        z-index: 1;
         bottom: unset;
         @include sm {
             top: calc($app-header-height-sm + var(--space-sm));
