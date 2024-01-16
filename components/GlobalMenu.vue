@@ -133,7 +133,7 @@ watch(
     () => props.modelValue,
     (val, oldVal) => {
         if (val === oldVal || !val) {
-            // close();
+            close();
             return;
         }
 
@@ -162,26 +162,28 @@ const animateOpen = () => {
 };
 
 const close = () => {
-    gsap.fromTo(
-        `#${uniqueId}`,
-        {
-            scaleY: 1,
-        },
-        {
-            scaleY: 0,
-            transformOrigin: reverseY.value ? "bottom" : "top",
-            duration: 0.2,
-            onComplete: () => {
-                showing.value = false;
+    showing.value = false;
                 open.value = false;
-            },
-        }
-    );
+    // gsap.fromTo(
+    //     `#${uniqueId}`,
+    //     {
+    //         scaleY: 1,
+    //     },
+    //     {
+    //         scaleY: 0,
+    //         transformOrigin: reverseY.value ? "bottom" : "top",
+    //         duration: 0.2,
+    //         onComplete: () => {
+    //             showing.value = false;
+    //             open.value = false;
+    //         },
+    //     }
+    // );
 };
 
 onClickOutside(menu, () => {
     if (!open.value || !props.closeOnOutsideClick) return;
-    // close();
+    close();
     maxHeight.value = "unset";
 });
 

@@ -1,197 +1,133 @@
 <template>
-<div class="player-tile__container--outer">
-    <!-- <div class="player-tiles__header full-width row justify-center">
+    <div class="player-tile__container--outer">
+        <!-- <div class="player-tiles__header full-width row justify-center">
         <div class="player-tiles__header--inner">
             Players
         </div>
 
     </div> -->
-    <div class="player-tile__container">
-        <TeamPagePlayerTile
-            v-for="(player, index) in teamPlayers"
-            :key="player.id"
-            :playerId="player.id"
-            :teamId="teamId"
-            :style="{
-                ...getStyle(index),
-                order: PLAYER_SORT_ORDER.indexOf(player.pivot.position),
-            }"
-            :index="index"
-            :columns="columns"
-            @click="selectPlayer(player.id)"
-            :selected="selectedPlayer?.id === player.id"
-            @deselect="onDeselect"
-            class="player-tile"
-            :class="{ 'player-tile--edited': selectedPlayer?.id === player.id }"
-            :id="`${uniqueId}-${player.id}`"
-        />
-
-        <TeamPagePlayerTile
-            v-for="(emptySlot, index) in Array.from(Array(emptySlots)).keys()"
-            :key="index"
-            :teamId="teamId"
-            :style="{ ...getStyle(teamPlayers.length + index), order: 10 }"
-            :canEdit="canEdit"
-            @click="onAddPlayer"
-        />
-
-        <div class="rings row justify-center items-center" @click.stop>
-            <Rings
-                :size="$q.screen.xs ? '35px' : '40px'"
-                :twelveft="getColor('slate')"
-                :fourft="getColor('slate')"
-                v-show="!selectedPlayer?.id"
-                id="players-rings"
-                data-flip-id="players-menu"
+        <div class="player-tile__container">
+            <TeamPagePlayerTile
+                v-for="(player, index) in teamPlayers"
+                :key="player.id"
+                :playerId="player.id"
+                :teamId="teamId"
+                :style="{
+                    ...getStyle(index),
+                    order: PLAYER_SORT_ORDER.indexOf(player.pivot.position),
+                }"
+                :index="index"
+                :columns="columns"
+                @click="selectPlayer(player.id)"
+                :selected="selectedPlayer?.id === player.id"
+                @deselect="onDeselect"
+                class="player-tile"
+                :class="{
+                    'player-tile--edited': selectedPlayer?.id === player.id,
+                }"
+                :id="`${uniqueId}-${player.id}`"
             />
-            <div
-                v-show="!!selectedPlayer?.id"
-                class="edit-menu"
-                id="player-edit-menu"
-                data-flip-id="players-menu"
-                ref="editMenu"
-            >
-                <div class="row menu-inner">
-                    <q-btn
-                        flat
-                        round
-                        icon="visibility"
-                        v-if="selectedPlayer?.id"
-                        @click="navigateTo(`/player/${selectedPlayer?.id}`)"
-                    />
-                    <q-btn
-                        flat
-                        round
-                        icon="edit"
-                        v-if="canEdit && selectedPlayer?.id"
-                        @click="beginSelectPosition"
-                    >
-                    </q-btn>
-                    <q-btn
-                        flat
-                        round
-                        icon="person_remove"
-                        v-if="canEdit && selectedPlayer?.id"
-                        @click="showConfirmDelete = true"
-                    />
-                    <q-btn flat round icon="add" v-if="!selectedPlayer?.id" />
+
+            <TeamPagePlayerTile
+                v-for="(emptySlot, index) in Array.from(
+                    Array(emptySlots)
+                ).keys()"
+                :key="index"
+                :teamId="teamId"
+                :style="{ ...getStyle(teamPlayers.length + index), order: 10 }"
+                :canEdit="canEdit"
+                @click="onAddPlayer"
+            />
+
+            <div class="rings row justify-center items-center" @click.stop>
+                <Rings
+                    :size="$q.screen.xs ? '35px' : '40px'"
+                    :twelveft="getColor('slate')"
+                    :fourft="getColor('slate')"
+                    v-show="!selectedPlayer?.id"
+                    id="players-rings"
+                    data-flip-id="players-menu"
+                />
+                <div
+                    v-show="!!selectedPlayer?.id"
+                    class="edit-menu"
+                    id="player-edit-menu"
+                    data-flip-id="players-menu"
+                    ref="editMenu"
+                >
+                    <div class="row menu-inner">
+                        <q-btn
+                            flat
+                            round
+                            icon="visibility"
+                            v-if="selectedPlayer?.id"
+                            @click="navigateTo(`/player/${selectedPlayer?.id}`)"
+                        />
+                        <q-btn
+                            flat
+                            round
+                            icon="edit"
+                            v-if="canEdit && selectedPlayer?.id"
+                            @click="beginSelectPosition"
+                        >
+                        </q-btn>
+                        <q-btn
+                            flat
+                            round
+                            icon="person_remove"
+                            v-if="canEdit && selectedPlayer?.id"
+                            @click="showConfirmDelete = true"
+                        />
+                        <q-btn
+                            flat
+                            round
+                            icon="add"
+                            v-if="!selectedPlayer?.id"
+                        />
+                    </div>
                 </div>
             </div>
+
+            <GlobalMenu v-model="showMenu">
+                <TeamPagePlayerPositionSelect
+                    v-model="editedPlayer.position"
+                    :playerId="editedPlayer?.id"
+                    ref="positionSelectMenu"
+                    class="player-position-select"
+                />
+            </GlobalMenu>
+            <GlobalMenu v-model="showConfirmDelete">
+                <DialogCard ref="confirmDelete">
+                    <template v-slot:title>
+                        Remove {{ selectedPlayer?.first_name }}?
+                    </template>
+
+                    <template v-slot:content>
+                        {{ selectedPlayer?.first_name }}
+                        {{ selectedPlayer?.last_name }} will be
+                        <strong>removed</strong> from {{ team.name }}'s team
+                        roster.
+                    </template>
+                    <template v-slot:footer>
+                        <q-btn
+                            rounded
+                            class="confirm-btn"
+                            @click="showConfirmDelete = false"
+                            >Cancel</q-btn
+                        >
+                        <q-btn rounded class="confirm-btn red" @click="onRemove"
+                            >Confirm</q-btn
+                        >
+                    </template>
+                </DialogCard>
+            </GlobalMenu>
         </div>
-
-        <GlobalMenu v-model="showMenu">
-            <TeamPagePlayerPositionSelect
-                v-model="editedPlayer.position"
-                :playerId="editedPlayer?.id"
-                ref="positionSelectMenu"
-                class="player-position-select"
-            />
-        </GlobalMenu>
-        <GlobalMenu v-model="showConfirmDelete" >
-            <DialogCard ref="confirmDelete">
-                <template v-slot:title>
-                    Remove {{ selectedPlayer?.first_name }}?
-                </template>
-
-                <template v-slot:content>
-                    {{ selectedPlayer?.first_name }}
-                    {{ selectedPlayer?.last_name }} will be
-                    <strong>removed</strong> from {{ team.name }}'s team roster.
-                </template>
-                <template v-slot:footer>
-                    <q-btn
-                        rounded
-                        class="confirm-btn"
-                        @click="showConfirmDelete = false"
-                        >Cancel</q-btn
-                    >
-                    <q-btn rounded class="confirm-btn red" @click="onRemove"
-                        >Confirm</q-btn
-                    >
-                </template>
-            </DialogCard>
-        </GlobalMenu>
-          <GlobalMenu v-model="showRequestsMenu" >
-            <DialogCard ref="confirmDelete" maxWidth="95vw">
-                <template v-slot:title>
-                    {{pendingPlayers.length}} pending request{{pendingPlayers.length > 1 ? 's' : ''}}
-                </template>
-
-                <template v-slot:content>
-                   <q-list separator >
-                    <q-item v-for="player in pendingPlayers" :key="player.id" style="padding: unset">
-                        <q-item-section avatar>
-                            <div style="width: 40px">
-                                <Avataaar v-bind="parseAvatar(player.avatar)"/>
-                            </div>
-                        </q-item-section>
-                        <q-item-section class="request-name-section">
-                            <q-item-label class="text-caption truncate-text">{{player.first_name}} {{player.last_name}}</q-item-label>
-                            <q-item-label caption>@{{player.username}}</q-item-label>
-                        </q-item-section>
-                        <q-item-section class="request-card-actions">
-                            <q-btn flat round icon="close" dense @click="respondToRequest('rejected', player.id)" :disable="responding" :loading="responding"/>
-                            <q-btn flat round icon="check" dense @click="respondToRequest('accepted', player.id)" :disable="responding" :loading="responding"/>
-                        </q-item-section>
-                    </q-item>
-                   </q-list>
-                </template>
-                <template v-slot:footer>
-                    <div/>
-                    <q-btn
-                        rounded
-                        class="confirm-btn"
-                       
-                        >Close</q-btn
-                    >
-                    
-                </template>
-            </DialogCard>
-        </GlobalMenu>
-      
     </div>
-</div>
-      <div v-if="!canEdit" class="row full-width justify-center">
-           <q-btn rounded class="request-btn" v-if="!hasRequested" @click="requestToJoin">Request to join team</q-btn>
-           <q-chip v-else class="request-chip">Request pending</q-chip>
-        </div>
-        <div v-else-if="pendingPlayers?.length">
-    <q-chip clickable class="request-chip" @click="showRequestsMenu = true">{{pendingPlayers.length}} pending requests</q-chip>
-        </div>
 </template>
 <style lang="scss"></style>
 <style lang="scss" scoped>
-.request-card-actions {
-    min-width: 75px;
-    justify-content: flex-end;
-    flex-direction: row!important;
-    flex-grow: 0;
-}
-.request-name-section {
-    flex-grow: 1;
-}
-.confirm-btn {
-    font-family: $font-family-header;
-    font-size: 1em;
 
-    &.red {
-        background-color: $app-red;
-        color: white;
-    }
-}
-.request-btn {
-    background-color: $app-yellow;
-    color: white;
-    font-family: $font-family-header;
-    @include reg-text;
-}
-.request-chip {
-    padding: var(--space-xs);
-    font-family: $font-family-header;
-    background-color: $app-yellow;
-    color: white;
-    @include reg-text;
-}
+
 
 
 .player-tiles__header--inner {
@@ -208,7 +144,6 @@
     position: relative;
     line-height: 1;
     @include text-caption;
-
 }
 .player-tile__container {
     display: grid;
@@ -288,7 +223,7 @@
 import Team from "@/store/models/team";
 import TeamPlayer from "@/store/models/team-player";
 import { useDialogStore } from "@/store/dialog";
-import {parseAvatar} from '@/utils/avatar'
+import { parseAvatar } from "@/utils/avatar";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
 import { onClickOutside } from "@vueuse/core";
@@ -369,15 +304,18 @@ const teamPlayers = computed(() => {
                 PLAYER_SORT_ORDER.indexOf(positionA) -
                 PLAYER_SORT_ORDER.indexOf(positionB)
             );
-        })
-}
-);
+        });
+});
 
 const pendingPlayers = computed(() =>
     team.value.players?.filter(({ pivot }) => !!pivot.status)
 );
-const {user: userId} = useUser();
-const hasRequested = computed(() => !canEdit.value && pendingPlayers.value.some(({id}) => id === userId.value))
+const { user: userId } = useUser();
+const hasRequested = computed(
+    () =>
+        !canEdit.value &&
+        pendingPlayers.value.some(({ id }) => id === userId.value)
+);
 
 const columns = computed(() => (teamPlayers.value?.length < 4 ? 2 : 3));
 
@@ -390,9 +328,9 @@ const emptySlots = computed(() => {
 // const columns = computed(() => 3)
 const columnStyle = computed(() => {
     if ($q.screen.xs) {
-        return `repeat(2, 1fr)`
+        return `repeat(2, 1fr)`;
     }
-    return `repeat(${columns.value}, 1fr)`
+    return `repeat(${columns.value}, 1fr)`;
 });
 
 const getStyle = (index) => {
@@ -418,10 +356,10 @@ const getStyle = (index) => {
     } else {
         directions = {
             0: "top-left",
-            1: 'top-right',
+            1: "top-right",
             2: null,
             3: null,
-            4: 'bottom-left',
+            4: "bottom-left",
             5: "bottom-right",
         };
     }
@@ -493,25 +431,12 @@ const removePlayer = async (playerId) => {
 const onRemove = async () => {
     // removing.value = true;
     showConfirmDelete.value = false;
-    const { id: playerId } = {...selectedPlayer.value};
+    const { id: playerId } = { ...selectedPlayer.value };
     selectPlayer(null);
     useRepo(TeamPlayer)
         .where("team_id", props.teamId)
         .where("player_id", playerId)
         .delete();
-    // if (requestStatus.value) {
-    //     if (requestStatus.value === "requested") {
-    //         await useTeamRequestStore().deleteTeamRequest({
-    //             teamId: props.teamId,
-    //             profileId: props.playerId,
-    //         });
-    //     } else if (requestStatus.value === "invited") {
-    //         await useTeamRequestStore().deleteTeamInvitation({
-    //             teamId: props.teamId,
-    //             profileId: props.playerId,
-    //         });
-    //     }
-    // } else {
     const { user: userId } = useUser();
     await removePlayer(playerId);
     if (userId.value === playerId) {
@@ -523,8 +448,6 @@ const onRemove = async () => {
         queryKey: ["team", "players", props.teamId],
     });
 
-    // removing.value = false;
-    // confirmOpen.value = false;
 };
 
 const editedPlayer = ref({});
@@ -600,43 +523,7 @@ const tileWidth = computed(() => {
     }
 });
 
-const requestToJoin = async () => {
-    await useTeamRequestStore().sendTeamRequest({
-        team_id: props.teamId,
-        requester_profile_id: userId.value,
-    });
-     useTeamRequestStore().getTeamRequestsByUser(userId.value)
-      queryClient.invalidateQueries({
-        queryKey: ["team", "players", props.teamId],
-    });
-};
 
-const showRequestsMenu = ref(false)
 
-const responding = ref(false);
-const respondToRequest = async (status, playerId) => {
-    responding.value = true;
-    const player = pendingPlayers.value?.find(
-        ({ id }) => id === playerId
-    );
-    const {pivot} = player ?? {};
-    const {request_id} = pivot ?? {};
-    if (!request_id) return;
-    await useTeamRequestStore().updateTeamRequestStatus({
-        id: request_id,
-        status,
-    });
-    await useUserTeamStore().fetchUserTeams(true);
-    useNotificationStore().addNotification({
-        state: "completed",
-        text: `Request ${status}`,
-        timeout: 3000,
-    });
-       queryClient.invalidateQueries({
-        queryKey: ["team", "players", props.teamId],
-    });
-    if (pendingPlayers.value.length === 1) showRequestsMenu.value = false; 
-    responding.value = false;
-    doInviteAnimation(false);
-};
+
 </script>

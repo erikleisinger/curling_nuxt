@@ -1,12 +1,7 @@
 <template>
     <div class="team-page-container">
         <TeamPlayerChangeListener v-if="!isCreate"/>
-        <div :class="{ 'q-mt-lg': route.query.request }" v-if="!isCreate">
-            <TeamRequestsHandler
-                :teamId="teamId"
-                :onlyInvite="!route.query.request"
-            />
-        </div>
+       
         <TeamPageHeader2
             :teamId="teamId"
             @loaded="headerLoaded = true"
@@ -36,7 +31,8 @@
                 <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">
                     Players
                 </h2>
-                <div style="width: fit-content; margin: auto">
+                <div style="width: fit-content; margin: auto; position: relative">
+                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
                     <TeamPagePlayers :teamId="teamId" />
                 </div>
             </div>
@@ -60,6 +56,31 @@
     position: relative;
     @include lines;
     height: 100%;
+}
+
+.team-requests__floating {
+    position: absolute;
+    z-index: 3;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top:0;
+    width: fit-content;
+    &.float-mid {
+        top: 0;
+        bottom: 0;
+        height: fit-content;
+        z-index: 7;
+    }
+    &.float-page-top {
+        position: fixed;
+        top: calc($app-header-height-xs + var(--space-sm));
+        z-index: 100000;
+        bottom: unset;
+        @include sm {
+            top: calc($app-header-height-sm + var(--space-sm));
+        }
+    }
 }
 
 
@@ -150,6 +171,8 @@ watch(pageReady, (val) => {
         setLoading(false);
     }, 50);
 });
+
+const helpRequest = computed(() => !!route?.query?.request)
 </script>
 <script lang="ts">
 export default {
