@@ -179,6 +179,7 @@ margin-top: var(--space-md)
     position: fixed;
     top: 0;
     left: 0;
+    overflow: auto;
 
     @include bg-blue-side;
 }
