@@ -40,13 +40,11 @@ export const useData = () => {
           new Promise((resolve) => {
             operation().then(() => {
               progress.value += incrementValue;
-              console.log('operation done')
               resolve();
             });
           })
       );
       await Promise.all(promises);
-      console.log('data done')
   };
   const resetData = () => {
     const {resetSession} = useSessionStore();

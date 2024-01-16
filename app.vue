@@ -63,9 +63,7 @@ const MANUAL_LOAD_ROUTES = [
     "rinks-id",
 ];
 nuxtApp.hook("page:finish", () => {
-    console.log(MANUAL_LOAD_ROUTES.includes(route.name))
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
-    console.log('set loading false')
     setLoading(false);
 });
 
