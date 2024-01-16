@@ -2,7 +2,8 @@ import { defineStore } from "pinia";
 import { BasicTeamRequest, RequestStatus } from "@/types/request";
 import { TABLE_NAMES } from "@/constants/tables";
 import { useNotificationStore } from "@/store/notification";
-import TeamPlayer from '@/store/models/team-player'
+import TeamPlayer from '@/store/models/team-player';
+import Team from '@/store/models/team'
 
 export const useTeamRequestStore = defineStore("team-requests", {
     state: () => {
@@ -101,6 +102,12 @@ export const useTeamRequestStore = defineStore("team-requests", {
                 )
                 .eq("requester_profile_id", profile_id)
                 .eq('status', 'pending')
+                data?.forEach((d) => {
+                    const {team} = d;
+                    if (!team) return;
+                    useRepo(Team).save(team)
+
+                })
             this.requests = data?.map((d) => ({
                 ...(d.team ?? {}),
                 ...d,

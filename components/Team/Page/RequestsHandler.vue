@@ -159,10 +159,6 @@ const { isLoading } = useQuery({
     queryFn: () => getTeamPlayers(props.teamId),
     refetchOnWindowFocus: false,
     keepPreviousData: true,
-    select:(val) => {
-        console.log('got new players: ', val)
-        return val;
-    }
 });
 
 const { isOnTeam } = useTeam();
@@ -217,7 +213,6 @@ const respondToRequest = async (status, playerId) => {
     queryClient.invalidateQueries({
         queryKey: ["team", "players", props.teamId],
     });
-    console.log(pendingPlayers.value.length)
     if (pendingPlayers.value.length <= 1) showRequestsMenu.value = false;
     responding.value = false;
 };

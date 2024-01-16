@@ -48,9 +48,12 @@
                 </div>
             </q-item-section>
             <q-item-section class="q-ml-md">
-                <div >
+                <q-item-label>
                     {{ team.name }}
-                </div>
+                </q-item-label>
+                <q-item-label caption v-if="requests.some(({team_id}) => team_id === team.id)">
+                    Requested
+                </q-item-label>
             </q-item-section>
             </q-item>
             </q-list>
@@ -172,6 +175,12 @@
         }
         .q-item__section {
             font-family: $font-family-header;
+            .q-item__label--caption {
+                font-family: $font-family-secondary;
+                line-height: 0.7;
+                margin-top: unset;
+                font-style: italic;
+            }
         }
     }
     .click-overlay {
@@ -218,10 +227,12 @@
 <script setup>
 import { onClickOutside, useSwipe } from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
+import {useTeamRequestStore} from '@/store/team-requests'
 import Rink from "@/store/models/rink";
 import { parseAvatar } from "@/utils/avatar";
 import {useQuery} from '@tanstack/vue-query'
 import Player from "@/store/models/player";
+import Team from '@/store/models/team'
 const props = defineProps({
     modelValue: Boolean,
 });
@@ -258,10 +269,13 @@ const doLogout = () => {
 
 const { user: userId } = useUser();
 const user = computed(() => useRepo(Player).where("id", userId.value).first());
-const userTeams = computed(() => useUserTeamStore().userTeams);
+const {userTeamIds} = useTeam();
+const userTeams = computed(() => userTeamIds.value.map((id) => useRepo(Team).where('id', id).first()).filter((t) => !!t))
 const rink = computed(() =>
     useRepo(Rink).where("id", user.value?.rink_id).first()
 );
+
+const requests = computed(() => useTeamRequestStore().requests)
 
 const route = useRoute();
 watch(

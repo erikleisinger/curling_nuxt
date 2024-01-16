@@ -9,17 +9,29 @@ const queryClient = useQueryClient();
 const props = defineProps({
     teamId: Number,
 });
-const onChange = useDebounceFn((e) => {
-    console.log('on change: ', e)
-    const {new:newData, old: oldData} = e ?? {};
-    const {team_id} = newData ?? oldData ?? {};
-    queryClient.invalidateQueries({
-        queryKey: ["team", "players", team_id],
-    });
-}, 1000);
 
 const {userTeamIds} = useTeam();
-   const {user: userId} = useUser()
+   const {user: userId} = useUser();
+
+
+const onChange = useDebounceFn((e) => {
+    const {new:newData, old: oldData} = e ?? {};
+    const {team_id} = newData ?? oldData ?? {};
+    if (team_id) {
+queryClient.invalidateQueries({
+        queryKey: ["team", "players", team_id],
+    });
+    } else {
+        userTeamIds.value.forEach((teamId) => {
+            queryClient.invalidateQueries({
+        queryKey: ["team", "players", teamId],
+    });
+        })
+    }
+    
+}, 1000);
+
+
 const onJunctionChange = (e) => {
     onChange(e);
     const {new:newData, old: oldData} = e;
@@ -31,7 +43,7 @@ const onJunctionChange = (e) => {
 const watchForChanges = () => {
     const client = useSupabaseClient();
     client
-        .channel("team_requests")
+        .channel("team_changes")
         .on(
             "postgres_changes",
             {
