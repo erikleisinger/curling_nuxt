@@ -18,6 +18,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 ref="avatar"
+               
             >
                 <desc>Created with getavataaars.com</desc>
                 <defs>
@@ -100,7 +101,7 @@
                     </pattern>
                 </defs>
                 <g
-                    id="Avataaar"
+                    :id="svgId ?? 'Avataaar'"
                     stroke="none"
                     stroke-width="0"
                     fill="none"
@@ -262,6 +263,7 @@ import {
 import updates from "~/plugins/updates";
 
 const props = defineProps({
+svgId: String,
     isCircle: {
         type: Boolean,
         default: true,

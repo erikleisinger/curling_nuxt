@@ -13,10 +13,10 @@
                 <div
                     style="width: 50px"
                     class="clickable"
-                    id="global-drawer-user-avatar"
+                    id="nav-drawer-player-avatar"
                     @click="navigateTo(`/player/${user?.id}`)"
                 >
-                    <Avataaar v-bind="parseAvatar(user?.avatar)" />
+                    <Avataaar v-bind="parseAvatar(user?.avatar)" svgId="global-drawer-user-avatar"/>
                 </div>
                 <div class="q-ml-md q-pt-xs" style="max-width: 68%">
                     <div

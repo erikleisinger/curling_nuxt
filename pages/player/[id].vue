@@ -262,14 +262,15 @@ const { toggleGlobalSearch } = useDialogStore();
 const { updateHomeRink } = useUserStore();
 
 onMounted(() => {
-    const {query} = route;
-    const {tab} = query ?? {};
-    if (tab === 'settings') currentIndex.value = 1;
+    const {hash, path} = route;
+    if (hash) return navigateTo(path, {replace: true})
+    
 })
 const editingAvatar = ref(false)
 watch(editingAvatar, (val) => {
     useSessionStore().toggleAvatarGenerator(val)
 })
+
 
 
 

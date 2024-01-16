@@ -11,6 +11,7 @@
             "
             elementId="global-drawer-user-avatar"
             tutorialText="Click your avatar to go to your player page."
+            target="nav-drawer-player-avatar"
             bottom
         />
         <TutorialHighlight

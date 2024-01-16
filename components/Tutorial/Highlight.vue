@@ -31,6 +31,7 @@ import {useElementBounding, useElementSize, useWindowSize, useElementVisibility}
     const props = defineProps({
         bottom: Boolean,
         elementId: String,
+        target: String,
         tutorialText: String,
     })
 
@@ -59,6 +60,6 @@ import {useElementBounding, useElementSize, useWindowSize, useElementVisibility}
         return newPosY;
     })
 
-    const targetVisible = useElementVisibility(document.getElementById(props.elementId))
+    const targetVisible = useElementVisibility(document.getElementById(props.target ?? props.elementId))
 
 </script>
