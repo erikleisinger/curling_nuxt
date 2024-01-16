@@ -3,42 +3,41 @@
 </template>
 <script setup>
 import { useQueryClient } from "@tanstack/vue-query";
-import {useUserTeamStore} from '@/store/user-teams'
-import {useDebounceFn} from '@vueuse/core'
+import { useUserTeamStore } from "@/store/user-teams";
+import {useTeamRequestStore} from '@/store/team-requests'
+import { useDebounceFn } from "@vueuse/core";
 const queryClient = useQueryClient();
 const props = defineProps({
     teamId: Number,
 });
 
-const {userTeamIds} = useTeam();
-   const {user: userId} = useUser();
-
+const { userTeamIds } = useTeam();
+const { user: userId } = useUser();
 
 const onChange = useDebounceFn((e) => {
-    const {new:newData, old: oldData} = e ?? {};
-    const {team_id} = newData ?? oldData ?? {};
+    const { new: newData, old: oldData } = e ?? {};
+    const { team_id } = newData ?? oldData ?? {};
     if (team_id) {
-queryClient.invalidateQueries({
-        queryKey: ["team", "players", team_id],
-    });
+        queryClient.invalidateQueries({
+            queryKey: ["team", "players", team_id],
+        });
     } else {
         userTeamIds.value.forEach((teamId) => {
             queryClient.invalidateQueries({
-        queryKey: ["team", "players", teamId],
-    });
-        })
+                queryKey: ["team", "players", teamId],
+            });
+        });
     }
-    
 }, 1000);
-
 
 const onJunctionChange = (e) => {
     onChange(e);
-    const {new:newData, old: oldData} = e;
-    const {profile_id} = newData ?? oldData ?? {};
+    const { new: newData, old: oldData } = e;
+    const { profile_id } = newData ?? oldData ?? {};
     if (profile_id !== userId.value) return;
-    useUserTeamStore().fetchUserTeams(true)
-}
+    useUserTeamStore().fetchUserTeams(true);
+    useTeamRequestStore().getTeamRequestsByUser(userId.value)
+};
 
 const watchForChanges = () => {
     const client = useSupabaseClient();
@@ -107,12 +106,20 @@ const watchForChanges = () => {
         .subscribe();
 };
 
-watch(userId, (val) => {
-    if (!val) return;
-    watchForChanges();
-}, {immediate: true})
+watch(
+    userId,
+    (val) => {
+        if (!val) return;
+        watchForChanges();
+    },
+    { immediate: true }
+);
 
-watch(userTeamIds, (val) => {
-    watchForChanges()
-}, {deep: true, immediate: true})
+watch(
+    userTeamIds,
+    (val) => {
+        watchForChanges();
+    },
+    { deep: true, immediate: true }
+);
 </script>
