@@ -9,8 +9,9 @@
         <NotificationHandler />
         <DialogGlobalSearch v-if="isGlobalSearchOpen" />
         <DialogLeagueEditor v-if="isLeagueEditorOpen" />
-        <!-- <TutorialFloating v-if="!isPublicRoute"/> -->
                 <TeamPlayerChangeListener v-if="!isPublicRoute && !!userId"/>
+
+            <TutorialGlobal v-if="!isPublicRoute && !hasCompletedTutorial"/>
        
  </div>
 </template>
@@ -39,6 +40,7 @@ import { PUBLIC_ROUTES } from "@/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useSessionStore } from "@/store/session";
+import {useUserStore} from '@/store/user'
 
 const { globalLoading } = useLoading();
 const sessionStore = useSessionStore();
@@ -107,4 +109,6 @@ const dialogStore = useDialogStore();
 const isGlobalSearchOpen = computed(() => dialogStore.globalSearch.open);
 const isLeagueEditorOpen = computed(() => dialogStore.leagueEditor.open);
 const isTeamCreatorOpen = computed(() => dialogStore.teamCreator.open);
+
+const hasCompletedTutorial = computed(() => useUserStore()?.has_completed_tutorial)
 </script>

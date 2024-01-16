@@ -32,7 +32,7 @@
                     Players
                 </h2>
                 <div style="width: fit-content; margin: auto; position: relative">
-                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
+                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
                     <TeamPagePlayers :teamId="teamId" />
                 </div>
             </div>

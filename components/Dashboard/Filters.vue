@@ -19,9 +19,10 @@
                 size="15px"
                 color="white"
                 text-color="mint"
+                id="dashboard-add-team-button"
               
             >
-            <q-menu auto-close>
+            <q-menu auto-close  v-model="addTeamMenuOpen" id="dashboard-add-team-menu">
                 <q-list separator>
                     <q-item clickable v-ripple @click="navigateTo('/teams/create')">
                         <q-item-section avatar>
@@ -175,6 +176,7 @@
 <script setup>
 import { STAT_COLORS } from "@/constants/stats";
 import {useDialogStore} from '@/store/dialog'
+import {useSessionStore} from '@/store/session'
 import Team from "@/store/models/team";
 import Player from "@/store/models/player";
 import Rink from "@/store/models/rink";
@@ -274,4 +276,9 @@ const searchTeam = () => {
         }
     })
 }
+
+const addTeamMenuOpen = ref(false);
+watch(addTeamMenuOpen, (val) => {
+    useSessionStore().toggleAddTeamMenu(val)
+})
 </script>

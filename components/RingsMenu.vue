@@ -159,6 +159,7 @@ $button-dimension: 38.5%;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {useSessionStore} from '@/store/session'
 import {
     onClickOutside,
     useParentElement,
@@ -259,4 +260,8 @@ const onSelect = (selection) => {
         return navigateTo(`/leagues/${selection.id}`);
     }
 };
+
+watch(big, (val) => {
+    useSessionStore().toggleRingsMenu(val)
+})
 </script>

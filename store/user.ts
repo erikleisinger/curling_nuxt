@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", {
             avatar: null,
             email: null,
             first_name: null,
+            has_completed_tutorial: false,
             id: null,
             is_new: false,
             last_name: null,
@@ -44,7 +45,8 @@ export const useUserStore = defineStore("user", {
                     last_name,
                     avatar,
                     is_new,
-                    rink_id
+                    rink_id,
+                    has_completed_tutorial
                 `).eq('id', profileId),
                 { onError: "Error getting current user" }
 

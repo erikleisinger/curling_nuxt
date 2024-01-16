@@ -11,9 +11,9 @@
         shrink
        
     >
-        <q-tab label="Teams" :name="0" :ripple="false"  />
+        <q-tab label="Teams" :name="0" :ripple="false"  @click="navigateTo('#teams')"/>
 
-        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit" />
+        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit" @click="navigateTo('#settings')" id="player-page-settings-tab"/>
 
     </q-tabs>
    
@@ -156,6 +156,7 @@ import { useUserStore } from "@/store/user";
 import { useQuery } from "@tanstack/vue-query";
 import { useDialogStore } from "@/store/dialog";
 import { parseAvatar } from "@/utils/avatar";
+import {useSessionStore} from '@/store/session'
 
 const { logout } = useSession();
 const { sortBadges } = useBadge();
@@ -265,9 +266,13 @@ onMounted(() => {
     const {tab} = query ?? {};
     if (tab === 'settings') currentIndex.value = 1;
 })
-
-
 const editingAvatar = ref(false)
+watch(editingAvatar, (val) => {
+    useSessionStore().toggleAvatarGenerator(val)
+})
+
+
+
 </script>
 <script>
 export default {

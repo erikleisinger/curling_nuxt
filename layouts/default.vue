@@ -11,6 +11,7 @@
                             color="white"
                             @click="leftDrawerOpen = true"
                             class="nav-drawer-toggle"
+                            id="global-menu-toggle"
                         />
                     </template>
                 </LayoutHeader>

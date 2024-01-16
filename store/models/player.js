@@ -30,6 +30,7 @@ export default class Player extends Model {
             teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
             timezone: this.string(),
             username: this.string(),
+            has_completed_tutorial: this.boolean()
         }
        
     }

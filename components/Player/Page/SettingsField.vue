@@ -9,13 +9,9 @@
             </div>
             <div v-else-if="value !== 'rink_id'">
                 <slot name="selection" :editedValue="editedValue">
-            <q-input
-                
-                dense
-                v-model="editedValue"
-            >
-                {{ editedValue }}
-            </q-input>
+                    <q-input dense v-model="editedValue">
+                        {{ editedValue }}
+                    </q-input>
                 </slot>
             </div>
         </div>
@@ -30,6 +26,7 @@
                 :loading="saving"
                 :disabled="saving"
                 v-if="!editing"
+                :id="buttonId"
             />
             <Button
                 round
@@ -52,11 +49,12 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import {useQueryClient} from '@tanstack/vue-query';
+import { useQueryClient } from "@tanstack/vue-query";
 
 const queryClient = useQueryClient();
 
 const props = defineProps({
+    buttonId: String,
     modelValue: [String, Object],
     playerId: String,
     title: String,
@@ -75,7 +73,7 @@ const editedValue = computed({
         emit("update:modelValue", val);
     },
 });
-const saving = ref(false)
+const saving = ref(false);
 const onEndEdit = async () => {
     saving.value = true;
     editing.value = false;
@@ -83,18 +81,16 @@ const onEndEdit = async () => {
     const client = useSupabaseClient();
 
     let updates;
-
-    if (props.value === 'rink_id') {
-        updates = {[props.value]: editedValue.value?.id}
+    if (props.value === "rink_id") {
+        updates = { [props.value]: editedValue.value?.id };
     } else {
-        updates = {[props.value]:editedValue.value}
+        updates = { [props.value]: editedValue.value };
     }
-    await client.from('profiles').update(updates).eq('id', props.playerId)
+    await client.from("profiles").update(updates).eq("id", props.playerId);
     queryClient.invalidateQueries({
-        queryKey: ['player', props.playerId]
-    })
+        queryKey: ["player", props.playerId],
+    });
     saving.value = false;
-    
 };
 
 const onStartEdit = () => {
@@ -107,6 +103,9 @@ const onStartEdit = () => {
             inputLabel: "Search for a home rink",
             callback: (val) => {
                 editedValue.value = val;
+                nextTick(() => {
+                    onEndEdit();
+                });
             },
         },
     });

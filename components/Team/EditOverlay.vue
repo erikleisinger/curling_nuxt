@@ -24,11 +24,12 @@
                     >
                         <template v-slot:after>
                             <Button
-                                flat
+                                
                                 round
                                 icon="check"
-                                size="16px"
+                                size="14px"
                                 color="mint"
+                                
                                 @click="editingName = false"
                             />
                         </template>

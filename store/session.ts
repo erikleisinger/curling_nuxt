@@ -12,6 +12,10 @@ import { DatabaseError, ErrorName, ValidationError } from "@/types/error";
 
 export const useSessionStore = defineStore("session", {
     state: () => ({
+        drawerOpen: false,
+        addTeamMenuOpen: false,
+        avatarGeneratorOpen: false,
+        ringsMenuOpen: false,
         end: 1,
         ends: useStorage("ends", [] as End[]),
         game: useStorage("game", {} as Game | null),
@@ -491,6 +495,18 @@ export const useSessionStore = defineStore("session", {
         },
         setPageLoading(bool: boolean) {
             this.pageLoading = bool;
+        },
+        toggleAddTeamMenu(open: boolean) {
+            this.addTeamMenuOpen = open;
+        },
+        toggleAvatarGenerator(open: boolean) {
+            this.avatarGeneratorOpen = open;
+        },
+        toggleDrawer(open: boolean) {
+            this.drawerOpen = open;
+        },
+        toggleRingsMenu(open: boolean) {
+            this.ringsMenuOpen = open;
         },
         async updateScore(
             points_scored: number,

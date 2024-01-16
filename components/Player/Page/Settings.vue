@@ -28,6 +28,7 @@
                 v-model="editedRink"
                 value="rink_id"
                 :playerId="playerId"
+                buttonId="edit-player-rink-btn"
             >
                 <template v-slot:display="{ value }">
                     {{ value?.name }}
@@ -56,7 +57,7 @@
                 </template>
             </PlayerPageSettingsField> -->
             <div class="full-width q-mt-md row justify-center">
-            <Button color="mint" @click="emit('editAvatar')">Edit avatar</Button>
+            <Button color="mint" @click="emit('editAvatar')" id="player-page-edit-avatar">Edit avatar</Button>
             </div>
         </section>
     </main>

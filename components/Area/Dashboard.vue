@@ -1,78 +1,33 @@
 <template>
     <div class="dashboard__container" id="dashboard">
-        <!-- <LayoutCircleTitle title="" minHeight="225px" class="circle-header">
-            <template v-slot:underlay>
-                <Rings size="100%" />
-            </template>
-            <template v-slot:append>
-         
-            </template>
-        </LayoutCircleTitle> -->
-        <!-- <header>
-            <h1>Dashboard</h1>
-            <h2>2023-2024</h2>
-        </header> -->
+
         <main class="main-content" ref="mainContent">
-        <section class="filter__container row justify-center">
-            <DashboardFilters v-model="filters" />
+            <section class="filter__container row justify-center">
+                <DashboardFilters v-model="filters" />
+            </section>
 
-        </section>
-                    <!-- <div>
-                <div
-                    class="full-width row justify-center text-caption text-black q-mt-sm"
-                >
-                    <div
-                        class="row clickable"
-                        @click="filterBySheet = !filterBySheet"
-                    >
-                        <Rings
-                            :twelveft="
-                                filterBySheet
-                                    ? getColor('mint')
-                                    : getColor('slate')
-                            "
-                            :fourft="
-                                filterBySheet
-                                    ? getColor('mint')
-                                    : getColor('slate')
-                            "
-                            size="1.5em"
-                            class="q-mr-xs"
-                        />Filter by sheet
-                    </div>
-                </div>
-                <div v-if="filterBySheet">Filter</div>
-            </div> -->
-
-        <section class="tile__container" :class="{ expanded }" ref="tileContainer">
-            <DashboardStat
-                v-for="statType in stats"
-                :key="statType"
-                :type="statType"
-                @click="setSelected(statType)"
-                :expanded="expanded === statType"
-                :style="{ order: expanded === statType ? 0 : 1 }"
-                :filters="filters"
-                @close="endView"
+            <section
+                class="tile__container"
+                :class="{ expanded }"
+                ref="tileContainer"
             >
-            </DashboardStat>
-        </section>
-     
+                <DashboardStat
+                    v-for="statType in stats"
+                    :key="statType"
+                    :type="statType"
+                    @click="setSelected(statType)"
+                    :expanded="expanded === statType"
+                    :style="{ order: expanded === statType ? 0 : 1 }"
+                    :filters="filters"
+                    @close="endView"
+                >
+                </DashboardStat>
+            </section>
         </main>
     </div>
 </template>
 <style lang="scss" scoped>
 .dashboard__container {
-    // .circle-header {
-    //     position: fixed;
-    //     top:64px;
-    //     @include sm {
-    //         top: 75px;
-    //     }
-    //     // bottom: -50%;
-    //     opacity: 1;
-    // }
-    // background-color: $app-royal-blue;
     @include bg-blue-side;
     .main-content {
         position: absolute;
@@ -80,19 +35,12 @@
         width: 100%;
         height: 100%;
         overflow: auto;
-        // .filter__container {
-        //     position: sticky;
-        //     top: 0;
-        // }
-       
     }
-    // background-color: white;
     @include lines;
     min-height: 100%;
     color: rgb(250, 250, 250);
     position: relative;
     width: 100%;
-    // padding-top: var(--space-lg);
     h1 {
         @include lg-text;
         text-align: center;
@@ -108,17 +56,14 @@
         z-index: 100;
     }
 
-
     .tile__container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         @include xxs {
-           grid-template-columns: repeat(1, 1fr); 
+            grid-template-columns: repeat(1, 1fr);
         }
-        // margin-top: var(--space-md);
         column-gap: 2px;
         row-gap: 2px;
-        // gap: var(--space-sm);
         padding-bottom: var(--space-lg);
         flex-wrap: wrap;
         justify-content: space-around;
@@ -128,7 +73,6 @@
         &.expanded {
             grid-template-columns: 1fr;
         }
-       
     }
 
     .filter__container {
@@ -144,7 +88,7 @@ import {
 } from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";
-import {useTeamRequestStore} from '@/store/team-requests'
+import { useTeamRequestStore } from "@/store/team-requests";
 import { useEventListener, useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
@@ -162,9 +106,10 @@ const filters = ref({
     sheet: null,
 });
 
-const teamIds = computed(() =>
-    [...useUserTeamStore().userTeams.map(({ id }) => id), ...useTeamRequestStore().requests.map(({team_id}) => team_id)]
-);
+const teamIds = computed(() => [
+    ...useUserTeamStore().userTeams.map(({ id }) => id),
+    ...useTeamRequestStore().requests.map(({ team_id }) => team_id),
+]);
 
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
@@ -256,7 +201,7 @@ const tileContainer = ref(null);
 const expanded = ref(null);
 const preventExpand = ref(false);
 
-const mainContent = ref(null)
+const mainContent = ref(null);
 
 const setSelected = (type) => {
     if (preventExpand.value) {
@@ -267,7 +212,7 @@ const setSelected = (type) => {
         // expanded.value = null;
     } else {
         expanded.value = type;
-        
+
         if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
         mainContent.value.scrollTop = tileContainer.value.offsetTop;
     }
@@ -290,9 +235,13 @@ const dashboard = ref(null);
 
 const { direction } = useSwipe(tileContainer, {
     onSwipe: (e) => {
-  
         if (!expanded.value) return;
-        if (Array.from(e.composedPath()).map(({tagName}) => tagName).includes('CANVAS')) return;
+        if (
+            Array.from(e.composedPath())
+                .map(({ tagName }) => tagName)
+                .includes("CANVAS")
+        )
+            return;
         const index = stats.value.indexOf(expanded.value);
         if (direction.value === "right") {
             if (index === 0) return;
