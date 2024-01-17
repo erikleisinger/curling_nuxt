@@ -19,7 +19,8 @@
 @include styleInput($app-mint, 'white');
 #__nuxt {
     height: inherit;
-    @include bg-blue-side;
+    // @include bg-blue-side;
+    background-color: red;
     // background-color: #150578
     
 }
