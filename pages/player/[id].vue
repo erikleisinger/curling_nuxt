@@ -12,8 +12,10 @@
        
     >
         <q-tab label="Teams" :name="0" :ripple="false"  @click="navigateTo('#teams')"/>
-
-        <q-tab label="Settings" :name="1" :ripple="false"  :disable="!canEdit" @click="navigateTo('#settings')" id="player-page-settings-tab"/>
+<q-tab label="Badges" :name="1" :disable="true" :ripple="false" >
+   <div class="font-secondary text-caption" style="line-height:1; margin-top: -5px; text-transform: none"> Coming soon</div>
+</q-tab>
+        <q-tab label="Settings" :name="2" :ripple="false"  v-if="canEdit" @click="navigateTo('#settings')" id="player-page-settings-tab"/>
 
     </q-tabs>
    
@@ -21,7 +23,7 @@
         <section class="player-teams__section" v-if="currentIndex === 0">
             <PlayerPageTeams :playerId="player?.id" @loaded="onLoaded" />
         </section>
-        <PlayerPageSettings :playerId="player?.id" v-if="currentIndex === 1" @editAvatar="editingAvatar = true"/>
+        <PlayerPageSettings :playerId="player?.id" v-if="currentIndex === 2" @editAvatar="editingAvatar = true"/>
     </main>
 
     <q-dialog v-model="editingAvatar" persistent v-if="canEdit">

@@ -194,9 +194,9 @@ const setBig = () => {
         gsap.from(document.querySelectorAll(".rings-menu__option"), {
             scaleY: 0,
             opacity: 0.5,
-            stagger: 0.2,
+            stagger: 0.1,
             duration: 0.2,
-            delay: 0.1,
+            // delay: 0.1,
             ease: "power2",
         });
     });

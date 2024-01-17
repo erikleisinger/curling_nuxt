@@ -48,8 +48,9 @@
                     :style="{ color: getColor(STAT_COLORS[type] ?? 'blue') }"
                 >
                     <div class="knob--text">
-                        <h2 >
+                        <h2 style="white-space: nowrap; position: relative">
                             {{ percent.toFixed(isPercent ? 0 : 1) }}
+                             <span class="text-caption" style="margin-left: -1.3em; position: absolute;bottom:0.5em;right:-0.8em" v-if="isPercent">%</span>
                         </h2>
                     </div>
                 </q-knob>

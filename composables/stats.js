@@ -70,7 +70,38 @@ export const useStats = () => {
         
     }
 
+    const getCumulativeHighestLowest = (statsArray, calcFunction) => {
+        let lowest = 0;
+        let highest = 0;
+        let highestIndex = 0;
+        let lowestIndex = 0;
+
+        statsArray.forEach((stat, index) => {
+            const array = [...statsArray].splice(0, index + 1)
+            const value = getCumulativeStat(array, calcFunction);
+            if (!index) {
+                lowest = value;
+                highest = value;
+            } else {
+                if (value > highest) {
+                    highest = value;
+                }
+                if (value < lowest) {
+                    lowest = value;
+                }
+            }
+        })
+
+        return {
+            highest, 
+            lowest,
+            lowestIndex,
+            highestIndex,
+        }
+
+    }
 
 
-    return { calcStat, getCumulativeStat };
+
+    return { calcStat, getCumulativeStat, getCumulativeHighestLowest };
 };

@@ -111,7 +111,6 @@ const setAvatar = () => {
 const { logout } = useSession();
 
 onMounted(() => {
-    console.log('values: ', avatar.value, rink_id.value, userTeamIds.value.length)
     if (!!avatar.value && !!rink_id.value && !!userTeamIds?.value?.length) return navigateTo('/')
 })
 </script>

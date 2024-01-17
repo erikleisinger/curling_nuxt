@@ -236,11 +236,9 @@ const rinkFilterClick = () => {
         const rinkId = teams.value.find(
             ({ id }) => id === selectedTeamId
         )?.rink_id;
-            console.log('rinkId: ', rinkId)
         filters.value.rink = rinkId;
     } else {
         const rinkId = currentUser.value.rink_id;
-        console.log('rinkId user: ', rinkId)
         filters.value.rink = rinkId;
     }
 };

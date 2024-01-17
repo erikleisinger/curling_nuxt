@@ -37,6 +37,9 @@
     .player-info__section {
         padding-top: 2em;
         max-width: 50%;
+        @include sm {
+            max-width: 70%;
+        }
         h1 {
             @include lg-text;
             &:first-child {
@@ -46,6 +49,7 @@
             
             max-width: 100%;
             white-space: pre-wrap;
+            word-break: break-word;
 
         }
     }

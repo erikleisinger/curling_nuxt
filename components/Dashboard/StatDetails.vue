@@ -101,6 +101,7 @@
         >
             <q-separator class="separator" />
             <div class="row__container row justify-between items-center">
+                <div>
                 <div class="row items-center">
                     <q-icon
                         name="trending_up"
@@ -109,6 +110,12 @@
                         class="q-mr-sm"
                     />
                     <h4>Season high</h4>
+             
+                </div>
+                  <div class="item-caption row" style="margin-top: -5px; margin-left: 1.8em" v-if="!!lowestGame">
+                    {{toTimezone(highestGame.start_time,  "MMMM D, YYYY")}}
+                      <q-btn flat round icon="open_in_new" size="0.6em" dense @click="emit('view', highestLowest?.highestIndex)" class="q-ml-xs" color="white"/>
+                  </div>
                 </div>
                 <div class="row items-end">
                     <div class="text-caption q-mr-sm">
@@ -126,12 +133,13 @@
                             }"
                         />
 
-                        {{ cleanNumber(highestDiff) }}{{ isPercent ? "%" : "" }}
+                        {{ cleanNumber(highestDiff) }}
                     </div>
                     <h5>{{ cleanNumber(highest) }}</h5>
                 </div>
             </div>
             <div class="row__container row justify-between items-center">
+                <div>
                 <div class="row items-center">
                     <q-icon
                         name="trending_down"
@@ -140,7 +148,14 @@
                         class="q-mr-sm"
                     />
                     <h4>Season low</h4>
+                   
                 </div>
+                  <div class="item-caption row" style="margin-top: -5px; margin-left: 1.8em" v-if="!!lowestGame">
+                    {{toTimezone(lowestGame.start_time,  "MMMM D, YYYY")}}
+                      <q-btn flat round icon="open_in_new" size="0.6em" dense @click="emit('view', highestLowest?.lowestIndex)" class="q-ml-xs" color="white"/>
+                  </div>
+                </div>
+              
                 <div class="row items-end">
                     <div class="text-caption q-mr-sm">
                         <q-icon
@@ -157,7 +172,7 @@
                             }"
                         />
 
-                        {{ cleanNumber(lowestDiff) }}{{ isPercent ? "%" : "" }}
+                        {{ cleanNumber(lowestDiff) }}
                     </div>
                     <h5>{{ cleanNumber(lowest) }}</h5>
                 </div>
@@ -176,7 +191,10 @@
                     </caption>
                 </div>
                 <div class="row items-end">
-                    <div class="text-caption q-mr-sm">
+                    <div
+                        class="text-caption q-mr-sm"
+                        v-if="worldwideDiff !== 'NaN'"
+                    >
                         <q-icon
                             :name="
                                 worldwideDiff > 0
@@ -191,7 +209,9 @@
                             }"
                         />
 
-                        {{ worldwideDiff }}{{ isPercent ? "%" : "" }}
+                        <span
+                            >{{ worldwideDiff }}{{ isPercent ? "%" : "" }}</span
+                        >
                     </div>
                     <h5>{{ cleanNumber(worldwide) }}</h5>
                 </div>
@@ -241,6 +261,11 @@
         margin-bottom: var(--space-md);
         margin-top: calc(var(--space-md) - 4px);
     }
+    .item-caption {
+        @include text-caption;
+        font-style: italic;
+        color: rgba(255,255,255,0.8);
+    }
 }
 </style>
 <script setup>
@@ -257,12 +282,16 @@ import Player from "@/store/models/player";
 const props = defineProps({
     average: Number,
     betterThanAverage: Boolean,
+    chart: Object,
     filters: Object,
     total: Number,
     type: String,
     worldwide: Number,
 });
+
+const emit = defineEmits(['view'])
 const { getColor } = useColor();
+const {toTimezone} = useTime();
 // const color = computed(() =>
 //     props.betterThanAverage ? getColor("mint") : getColor("yellow")
 // );
@@ -293,17 +322,17 @@ const statsByGame = computed(() => {
     return useRepo(TeamStats)
         .query()
         .whereIn("team_id", filteredTeamIds.value)
-         .where('rink_id', (val) => {
-            return props.filters.rink ? val === props.filters.rink : true
+        .where("rink_id", (val) => {
+            return props.filters.rink ? val === props.filters.rink : true;
         })
-        .where('sheet_id', (val) => {
-            return props.filters.sheet ? val === props.filters.sheet : true
+        .where("sheet_id", (val) => {
+            return props.filters.sheet ? val === props.filters.sheet : true;
         })
+        .orderBy('start_time')
         .get();
 });
 
-
-const { getCumulativeStat } = useStats();
+const { getCumulativeStat, getCumulativeHighestLowest } = useStats();
 
 const cleanNumber = (num) => {
     if (Number.isNaN(num)) return "-";
@@ -338,15 +367,60 @@ const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
 const DISABLE_HIGHEST_LOWEST = [STAT_TYPES.WINS];
 
-const highest = computed(() =>
-    Math.max(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
+const CUMULATIVE_HIGHEST_LOWEST = [STAT_TYPES.HAMMER_LAST_END];
+const isCumulative = CUMULATIVE_HIGHEST_LOWEST.includes(props.type);
+
+const highestLowest = computed(() => {
+    if (isCumulative)
+        return getCumulativeHighestLowest(
+            statsByGame.value,
+            STAT_FIELDS_TOTAL[props.type]
+        );
+    return {
+        highest: Math.max(
+            ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
+        ),
+        lowest: Math.min(
+            ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
+        ),
+        highestIndex: [...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]).indexOf(Math.max(
+            ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))),
+        lowestIndex: [...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]).indexOf(Math.min(
+            ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))),
+    };
+});
+
+const highest = computed(() => {
+    return highestLowest.value?.highest
+});
+
+const highestDiff = computed(
+    () =>
+        (highest.value * (isPercent ? 100 : 1) - props.average) /
+        (isPercent ? 100 : 1)
 );
 
-const highestDiff = computed(() => highest.value - props.average);
-const lowest = computed(() =>
-    Math.min(...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
-);
-const lowestDiff = computed(() => lowest.value - props.average);
+const highestGame = computed(() => {
+    const index = highestLowest.value.highestIndex;
+    return statsByGame.value[index]
+})
 
-const worldwideDiff = computed(() => (props.average - (props.worldwide * (isPercent ? 100 : 1))).toFixed(1))
+const lowest = computed(() => {
+
+     return highestLowest.value?.lowest
+});
+const lowestDiff = computed(
+    () =>
+        (lowest.value * (isPercent ? 100 : 1) - props.average) /
+        (isPercent ? 100 : 1)
+);
+
+const lowestGame = computed(() => {
+    const index = highestLowest.value.lowestIndex;
+    return statsByGame.value[index]
+})
+
+const worldwideDiff = computed(() =>
+    (props.average - props.worldwide * (isPercent ? 100 : 1)).toFixed(1)
+);
 </script>

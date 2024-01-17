@@ -37,6 +37,7 @@
                     :data="gameInfo"
                     :type="type"
                     v-model="showGameInfo"
+                   
                 />
                 <div style="height: 250px">
                     <div
@@ -54,8 +55,9 @@
                         labels
                         clickable
                         @click="onClick"
-                        ref="chart"
+                       
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
+                        v-model="chart"
                  
                     />
                      
@@ -92,6 +94,7 @@
                 :average="totalTile"
                 :betterThanAverage="betterThanAverage"
                 :worldwide="average"
+                 @view="viewOnChart"
             />
         </div>
     </DashboardTile>
@@ -137,7 +140,7 @@ const props = defineProps({
 });
 
 const { getColor } = useColor();
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "scroll"]);
 
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
@@ -284,4 +287,15 @@ onClickOutside(chart, () => {
     gameInfo.value = null;
     showGameInfo.value = false;
 });
+
+const viewOnChart = (index) => {
+    const datasetMeta = chart.value?.getDatasetMeta(0)
+    const {data} = datasetMeta ?? {};
+    if (!data)return;
+
+    const {x,y} = data[index];
+
+    emit('scroll')
+    onClick({x,y,index})
+}
 </script>

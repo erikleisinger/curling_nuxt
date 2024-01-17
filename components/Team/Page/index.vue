@@ -39,6 +39,7 @@
             <div
                 v-if="!isCreate && !$q.screen.xs || currentIndex === 1"
                 :class="$q.screen.xs ? 'col-12' : 'col-6'"
+                style="min-height: 300px"
             >
                 <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">
                     Game history

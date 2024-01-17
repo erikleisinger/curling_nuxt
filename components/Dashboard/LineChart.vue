@@ -10,11 +10,21 @@ const props = defineProps({
     },
     data: Array,
     maintain: Boolean,
+    modelValue: Object,
     labels: Boolean,
     clickable: Boolean,
 });
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'update:modelValue'])
+
+const chartForParent = computed({
+    get() {
+        return props.modelValue
+    },
+    set(val) {
+        emit('update:modelValue', val)
+    }
+})
 let myChart;
 const chart = ref(null);
 
@@ -35,6 +45,7 @@ const setChartData = () => {
         },
     ];
     myChart.update();
+    chartForParent.value = myChart;
 };
 
 const {setBgGradient} = useColor();
@@ -88,6 +99,7 @@ onMounted(() => {
     Object.seal(chart.value);
 
     setChartData();
+    
 });
 
 watch(
@@ -97,4 +109,7 @@ watch(
     },
     { deep: true }
 );
+
+
+
 </script>

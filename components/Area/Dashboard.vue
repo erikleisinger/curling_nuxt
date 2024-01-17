@@ -1,6 +1,5 @@
 <template>
     <div class="dashboard__container" id="dashboard">
-
         <main class="main-content" ref="mainContent">
             <section class="filter__container row justify-center">
                 <DashboardFilters v-model="filters" />
@@ -20,6 +19,7 @@
                     :style="{ order: expanded === statType ? 0 : 1 }"
                     :filters="filters"
                     @close="endView"
+                    @scroll="scrollUp"
                 >
                 </DashboardStat>
             </section>
@@ -213,14 +213,15 @@ const setSelected = (type) => {
         // expanded.value = null;
     } else {
         expanded.value = type;
-
-           nextTick(() => {
-if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
-        mainContent.value.scrollTop = tileContainer.value.offsetTop;
-    })
+        scrollUp();
     }
+};
 
-     
+const scrollUp = () => {
+    nextTick(() => {
+        if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
+        mainContent.value.scrollTop = tileContainer.value.offsetTop;
+    });
 };
 
 const endView = (e) => {

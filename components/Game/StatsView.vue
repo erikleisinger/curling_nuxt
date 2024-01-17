@@ -138,7 +138,6 @@ const getStatsForGame = async () => {
         .eq("game_id", props.gameId);
     if (!data?.length) return null;
     data.forEach((stat) => {
-        console.log(stat)
         if (!stat.team_id) cleanupOpposition.value = true;
         useRepo(TeamStats).save({
             ...stat,
