@@ -1,7 +1,7 @@
 <template>
         <TeamAvatar :teamId="teamId" class="team-chip__avatar" style="width: 18px" v-if="teamId" />
      <q-icon name="o_smart_toy"  color="grey-8" size="1em" class="q-mr-xs" v-else />
-       <strong style="line-height: 0.7">   {{ team?.name ?? name ?? teamName }}</strong>
+       <strong style="line-height: 0.7">   {{ teamName ?? team?.name ?? name  }}</strong>
 </template>
 <style lang="scss" scoped>
  .team-chip__avatar {

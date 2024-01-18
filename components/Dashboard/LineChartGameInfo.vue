@@ -231,9 +231,9 @@ const getGameInfo = async () => {
     data.forEach((item) => {
         const {team, game, pending, color, placeholder, points_scored} = item;
         const {end_count, hammer_first_end, conceded} = gameInfoData;
+        console.log(team, placeholder)
         useRepo(Team).save({
-            ...team,
-            name: team?.id ? team?.name : placeholder
+            ...team
         });
         useRepo(Game).save({
             ...game,
@@ -271,9 +271,9 @@ const { isLoading, data: gameData } = useQuery({
 
 const opposition = computed(() => {
     if (home.value?.team_id === props.data.team_id)
-        return away.value?.placeholder ? {
+        return !away.value?.id ? {
     id: 0,
-    name: away.value?.placeholder} : away.value
-    return home.value
+    name: away.value?.placeholder} : away.value?.team
+    return home.value?.team
 });
 </script>
