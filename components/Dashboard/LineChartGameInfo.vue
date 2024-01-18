@@ -43,11 +43,11 @@
                     <template v-slot:avatarHome>
                         <div style="width: 18px">
                             <TeamAvatar
-                                :teamId="gameData.home?.id"
-                                :color="gameData?.home_color"
+                                :teamId="home?.team_id"
+                                :color="home?.color"
                                 :hammer="
-                                    gameData?.hammer_first_end ===
-                                    gameData.home?.id
+                                    game?.hammer_first_end ===
+                                    home?.team_id
                                 "
                             />
                         </div>
@@ -55,11 +55,11 @@
                     <template v-slot:avatarAway>
                         <div style="width: 18px">
                             <TeamAvatar
-                                :teamId="gameData.away?.id"
-                                :color="gameData?.away_color"
+                                :teamId="away?.team_id"
+                                :color="away?.color"
                                 :hammer="
-                                    gameData?.hammer_first_end ===
-                                    gameData.away?.id
+                                    game?.hammer_first_end ===
+                                    away?.team_id
                                 "
                             />
                         </div>
@@ -99,8 +99,8 @@
 <script setup>
 import { useQuery } from "@tanstack/vue-query";
 import Team from "@/store/models/team";
-import Rink from "@/store/models/rink";
-import Sheet from "@/store/models/sheet";
+import Game from '@/store/models/game';
+import GameTeam from '@/store/models/game-team'
 import {
     STAT_FIELDS_TOTAL,
     STAT_NAMES,
@@ -114,6 +114,7 @@ const props = defineProps({
 });
 
 const { toTimezone } = useTime();
+const dayjs = useDayjs();
 const { getColor } = useColor();
 
 const HIDE_TYPE_TYPES = [STAT_TYPES.WINS];
@@ -125,6 +126,10 @@ const BOOLEAN_STAT_TYPES = [
 const value = computed(() => STAT_FIELDS_TOTAL[props.type](props.data));
 
 const title = STAT_NAMES[props.type];
+
+const game = computed(() => useRepo(Game).where('id', props.data.game_id).first())
+const home = computed(() => useRepo(GameTeam).with('team').where('game_id', props.data.game_id).offset(0).first())
+const away = computed(() => useRepo(GameTeam).with('team').where('game_id', props.data.game_id).offset(1).first())
 
 const getScoreDetails = async () => {
     const client = useSupabaseClient();
@@ -147,7 +152,7 @@ const generateScore = async () => {
     const details = await getScoreDetails();
     const s = Array.from(
         {
-            length: Math.max(gameData.value?.end_count, details?.length),
+            length: Math.max(game?.value?.end_count, details?.length),
         },
         (_, i) => i + 1
     ).reduce((all, current, index) => {
@@ -167,15 +172,14 @@ const generateScore = async () => {
                         details[index]?.points_scored === null
                             ? "X"
                             : details[index]?.scoring_team_id ===
-                              gameData.value?.home?.id
+                              home.value?.team_id
                             ? details[index]?.points_scored
                             : 0,
                     away:
                         details[index]?.points_scored === null
                             ? "X"
                             : details[index]?.scoring_team_id ===
-                                  gameData.value?.away?.id ||
-                              !details[index]?.scoring_team_id
+                                  away.value?.team_id 
                             ? details[index]?.points_scored
                             : 0,
                     ...details[index],
@@ -195,47 +199,60 @@ const getScore = async () => {
 const getGameInfo = async () => {
     const client = useSupabaseClient();
     const { data } = await client
-        .from("games")
+        .from("game_scores")
         .select(
             `
-        start_time,
-            rink:rink_id (
-                id,
-                name,
-                city,
-                province,
-                sheets
-            ),
-            sheet:sheet_id (
-                id,
-                number,
-                rink_id
-            ),
-            home (
+            team:team_id (
                 id,
                 name,
                 avatar_url
             ),
-            away (
+            game:game_id(
                 id,
-                name,
-                avatar_url
+                start_time,
+                end_count
             ),
-            home_color,
-            away_color,
-            placeholder_away,
-            end_count,
-            hammer_first_end
+            color,
+            placeholder,
+            pending,
+            points_scored
         `
         )
-        .eq("id", props.data.game_id)
-        .single();
+        .eq("game_id", props.data.game_id)
+    
+    const {data:gameInfoData} = await client.from('games_full').select(`
+        end_count,
+        hammer_first_end,
+        conceded
+        
+    `).eq('id', props.data.game_id).single()
+      
 
-    const { sheet, rink, home, away } = data;
-    if (rink) useRepo(Rink).save(rink);
-    if (sheet) useRepo(Sheet).save(sheet);
-    if (home) useRepo(Team).save(home);
-    if (away) useRepo(Team).save(away);
+    data.forEach((item) => {
+        const {team, game, pending, color, placeholder, points_scored} = item;
+        const {end_count, hammer_first_end, conceded} = gameInfoData;
+        useRepo(Team).save({
+            ...team,
+            name: team?.id ? team?.name : placeholder
+        });
+        useRepo(Game).save({
+            ...game,
+            start_time: dayjs(game.start_time).unix(),
+            end_count,
+            hammer_first_end,
+            conceded
+        })
+        useRepo(GameTeam).save({
+            game_id: game?.id,
+            team_id: team?.id,
+            pending,
+            color,
+            placeholder,
+            points_scored
+        })
+
+    })
+    
 
     return data;
 };
@@ -253,10 +270,10 @@ const { isLoading, data: gameData } = useQuery({
 });
 
 const opposition = computed(() => {
-    const { home, away, placeholder_away } = gameData.value ?? {};
-    if (!gameData.value) return {};
-    if (home?.id === props.data.team_id)
-        return away ?? { name: placeholder_away };
-    return home;
+    if (home.value?.team_id === props.data.team_id)
+        return away.value?.placeholder ? {
+    id: 0,
+    name: away.value?.placeholder} : away.value
+    return home.value
 });
 </script>

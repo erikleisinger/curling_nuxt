@@ -730,24 +730,40 @@ const highestLowest = computed(() => {
     };
 });
 
+const INVERTED_STATS = [STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME]
+
 const highest = computed(() => {
+    if(INVERTED_STATS.includes(props.type)) return highestLowest.value?.lowest;
     return highestLowest.value?.highest;
 });
 
 const highestDiff = computed(() => highest.value - props.average);
 
 const highestGame = computed(() => {
-    const index = highestLowest.value.highestIndex;
+    let index; 
+    if(INVERTED_STATS.includes(props.type)) {
+        index = highestLowest.value.lowestIndex
+    } else {
+        index = highestLowest.value.highestIndex
+    }
+
     return statsByGame.value[index];
 });
 
 const lowest = computed(() => {
+    if(INVERTED_STATS.includes(props.type)) return highestLowest.value?.highest;
     return highestLowest.value?.lowest;
 });
 const lowestDiff = computed(() => lowest.value - props.average);
 
 const lowestGame = computed(() => {
-    const index = highestLowest.value.lowestIndex;
+    let index; 
+    if(INVERTED_STATS.includes(props.type)) {
+        index = highestLowest.value.highestIndex
+    } else {
+        index = highestLowest.value.lowestIndex
+    }
+
     return statsByGame.value[index];
 });
 
