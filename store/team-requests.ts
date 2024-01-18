@@ -81,8 +81,15 @@ export const useTeamRequestStore = defineStore("team-requests", {
                     timeout: 10000,
                 });
                 useRepo(TeamPlayer).where('team_id', teamId).where('player_id', profileId).delete();
+                const index = this.requests.findIndex(({team_id}) => team_id === teamId)
+                if (index !== -1) {
+                    const newRequests = [...this.requests];
+                    newRequests.splice(index, 1)
+                    this.requests = newRequests;
+                }
                 return true;
             }
+           
         },
         async getTeamRequestsByUser(profile_id: number) {
             const client = useSupabaseClient();

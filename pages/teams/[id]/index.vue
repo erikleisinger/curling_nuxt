@@ -1,5 +1,5 @@
 <template>
-  <TeamPage v-if="!isLoading" > </TeamPage>
+  <TeamPage v-if="!isLoading || !enabled" > </TeamPage>
 
 </template>
 <script setup>
@@ -30,13 +30,15 @@ const getTeam = async () => {
     data.forEach((team) => {
         const {rink} = team;
         useRepo(Team).save(team);
-        useRepo(Rink).save(rink)
+        if (rink) useRepo(Rink).save(rink)
     })
 
 
     
     return data;
 }
+
+const enabled = computed(() => !Number.isNaN(teamId))
 
 
 const {setLoading} = useLoading();
@@ -46,6 +48,11 @@ const {isLoading} = useQuery({
     queryFn: getTeam,
     refetchOnWindowFocus: false,
     keepPreviousData: true,
+    enabled,
+    select: (val) => {
+        setLoading(false)
+        return val;
+    }
 })
 
 </script>

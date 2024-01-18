@@ -226,7 +226,7 @@ const doLogout = () => {
 
 const { user: userId } = useUser();
 const user = computed(() => useRepo(Player).where("id", userId.value).first());
-const { userTeamIds } = useTeam();
+const {userTeamIds} = useTeam();
 const userTeams = computed(() =>
     userTeamIds.value
         .map((id) => useRepo(Team).where("id", id).first())

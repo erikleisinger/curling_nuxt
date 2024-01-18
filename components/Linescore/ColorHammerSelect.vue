@@ -1,5 +1,5 @@
 <template>
-    <LinescorePageContainer @next="emit('select')">
+    <LinescorePageContainer @next="emit('select')" :disabled="selections.homeColor === selections.awayColor">
         <template v-slot:title> Edit game </template>
         <template v-slot:subtitle>
             Click rocks to change colors. Click hammers to set hammer in the
@@ -19,7 +19,7 @@
                                 <div class="color-selection__wrap">
                                     <SelectRockColor
                                         v-model="selections.homeColor"
-                                        :prevent="[selections.awayColor]"
+                                       
                                     />
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                                 <div class="color-selection__wrap">
                                     <SelectRockColor
                                         v-model="selections.awayColor"
-                                        :prevent="[selections.homeColor]"
+                                      
                                     />
                                 </div>
                             </div>

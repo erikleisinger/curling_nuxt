@@ -10,7 +10,7 @@
                 dense
                 >Request to join team</Button
             >
-            <q-chip v-else class="request-chip">Request pending</q-chip>
+            <q-chip v-else class="request-chip" clickable @click="showRequesterMenu = true">Request pending</q-chip>
         </div>
         <div v-else-if="pendingPlayers?.length">
             <q-chip
@@ -86,6 +86,23 @@
                             </q-item-section>
                         </q-item>
                     </q-list>
+                </template>
+              
+            </DialogCard>
+        </GlobalMenu>
+          <GlobalMenu v-model="showRequesterMenu" closeOnOutsideClick>
+            <DialogCard ref="confirmDelete" maxWidth="95vw">
+                <template v-slot:title>
+                    You have requested to join {{team.name}}
+                </template>
+
+                <template v-slot:content>
+                    If you would like to cancel this request, click <strong>cancel request</strong>. You can always try your luck later!
+                </template>
+                <template v-slot:footer>
+                    <div class="row justify-center full-width q-mb-sm">
+                    <Button color="red" @click="cancelRequest">Cancel request</Button>
+                    </div>
                 </template>
               
             </DialogCard>
@@ -216,4 +233,19 @@ const respondToRequest = async (status, playerId) => {
     if (pendingPlayers.value.length <= 1) showRequestsMenu.value = false;
     responding.value = false;
 };
+
+// Cancel request
+
+const showRequesterMenu = ref(false)
+
+const cancelRequest = async () => {
+    showRequesterMenu.value = false;
+    responding.value = true;
+    await useTeamRequestStore().deleteTeamRequest({teamId: team.value.id, profileId: userId.value})
+    await useUserTeamStore().fetchUserTeams(true);
+     queryClient.invalidateQueries({
+        queryKey: ["team", "players", props.teamId],
+    });
+    responding.value = false;
+}
 </script>

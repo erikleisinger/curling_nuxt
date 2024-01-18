@@ -205,7 +205,8 @@ const customOppositionName = ref(null);
 
 const toggleCustom = () => {
     if (customOpposition.value) return;
-    selections.value = {};
+    if (selections.id) selections.value = {};
+   
     customOpposition.value = true;
 };
 

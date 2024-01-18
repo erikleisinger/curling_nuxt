@@ -70,7 +70,7 @@
             <div class="stat-section__header">
                 <h4 class="row items-center justify-center">
                     <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    last end
+                    last end*
                 </h4>
             </div>
             <DashboardStatDetailsItem
@@ -167,7 +167,7 @@
             <div class="stat-section__header">
                 <h4 class="row items-center justify-center">
                     <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    2nd-last end
+                    2nd-last end*
                 </h4>
             </div>
 
@@ -266,7 +266,7 @@
             <div class="stat-section__header">
                 <h4 class="row items-center justify-center">
                     <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    3rd-last end
+                    3rd-last end*
                 </h4>
                 <h5
                     class="text-caption font-secondary text-italic text-center"
@@ -386,6 +386,10 @@
                 :filters="filters"
                 :average="average"
             />
+
+            <div class="q-pa-sm full-width row justify-center text-caption">
+                *does not include games that finish early (handshakes, bell, etc.)
+            </div>
         </section>
         <!--  -->
 
