@@ -6,6 +6,7 @@
             :titleColor="getColor(STAT_COLORS[type])"
         >
             <template v-slot:title>
+                <div class="row no-wrap">
                 <div class="relative-position">
                     <h3>
                         {{ props.data?.points_for }}-{{
@@ -26,6 +27,14 @@
                             :teamName="opposition?.name"
                         />
                     </div>
+                </div>  
+                <div class="total-container">
+                <h2 :style="{ color: getColor(STAT_COLORS[type]) }">{{props.data.raw.toFixed(isPercent ? 0 : 1)}}
+                    <span v-if="isPercent" class="text-caption" style="margin-left: -0.7em">
+                        %
+                    </span>
+                </h2> 
+                </div>
                 </div>
             </template>
 
@@ -94,6 +103,22 @@
         // text-align: right;
         font-style: italic;
     }
+    .total-container {
+        background-color: white;
+        margin-left: var(--space-xs);
+        height: 100%;
+        padding: var(--space-sm);
+        margin-top: calc(-1 * var(--space-sm));
+        margin-right: calc(-1 * var(--space-sm));
+        margin-bottom: calc(-1 * (var(--space-sm) - 0px));
+        border-bottom-left-radius: 16px;
+        flex-grow: 1;
+        h2 {
+            @include lg-text;
+            text-align: center;
+
+        }
+    }
 }
 </style>
 <script setup>
@@ -106,13 +131,14 @@ import {
     STAT_NAMES,
     STAT_TYPES,
     STAT_COLORS,
+    NON_PERCENT_STATS
 } from "@/constants/stats";
 const props = defineProps({
     data: Object,
     gameId: Number,
     type: String,
 });
-
+const isPercent = !NON_PERCENT_STATS.includes(props.type);
 const { toTimezone } = useTime();
 const dayjs = useDayjs();
 const { getColor } = useColor();

@@ -62,9 +62,11 @@ onMounted(() => {
                 const [point] = myChart.getElementsAtEventForMode(e, 'index', { intersect: false }, false) ?? [];
                 if (!point)return;
                 const {index, element} = point;
+                const {$context} = element;
+                const {raw} = $context;
                 const {x,y} = element;
 
-                emit('click', {index, x, y})
+                emit('click', {index, x, y, raw})
             },
             plugins: {
                 legend: {

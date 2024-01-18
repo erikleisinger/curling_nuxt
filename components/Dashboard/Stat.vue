@@ -270,13 +270,13 @@ const gameInfo = ref(null);
 const showGameInfo = ref(false);
 
 const onClick = useDebounceFn((e) => {
-    const { x, y, index } = e;
+    const { x, y, index, raw } = e;
     if (x - 1.5 === leftPoint.value) return;
     showGameInfo.value = false;
     nextTick(() => {
         topPoint.value = y;
         leftPoint.value = x - 1.5;
-        gameInfo.value = allStats.value[index];
+        gameInfo.value = {...allStats.value[index], raw};
         showGameInfo.value = true;
     });
 },50);
