@@ -98,7 +98,7 @@ const isTodaySelected = computed(() => {
 const limitTime = (val) => {
     if (props.timeOnly) return true;
     if (!props.limit) return true;
-    if (!isTodaySelected) return true;
+    if (!isTodaySelected.value) return true;
     const now = Number(toTimezone(null, "H"));
     return val <= now;
 };
