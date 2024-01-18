@@ -81,6 +81,31 @@ export const STAT_FIELDS = {
     WITHOUT_HAMMER_LE_U2: 'without_hammer_le_u2',
     WITHOUT_HAMMER_LE_D1: 'without_hammer_le_d1',
     WITHOUT_HAMMER_LE_D2: 'without_hammer_le_d2',
+    WITH_HAMMER_2LE: 'with_hammer_2le',
+    WITH_HAMMER_2LE_TIE: 'with_hammer_2le_tie',
+    WITH_HAMMER_2LE_U1: 'with_hammer_2le_u1',
+    WITH_HAMMER_2LE_U2: 'with_hammer_2le_u2',
+    WITH_HAMMER_2LE_D1: 'with_hammer_2le_d1',
+    WITH_HAMMER_2LE_D2: 'with_hammer_2le_d2',
+    WITHOUT_HAMMER_2LE: 'without_hammer_2le',
+    WITHOUT_HAMMER_2LE_TIE: 'without_hammer_2le_tie',
+    WITHOUT_HAMMER_2LE_U1: 'without_hammer_2le_u1',
+    WITHOUT_HAMMER_2LE_U2: 'without_hammer_2le_u2',
+    WITHOUT_HAMMER_2LE_D1: 'without_hammer_2le_d1',
+    WITHOUT_HAMMER_2LE_D2: 'without_hammer_2le_d2',
+    WITH_HAMMER_3LE: 'with_hammer_3le',
+    WITH_HAMMER_3LE_TIE: 'with_hammer_3le_tie',
+    WITH_HAMMER_3LE_U1: 'with_hammer_3le_u1',
+    WITH_HAMMER_3LE_U2: 'with_hammer_3le_u2',
+    WITH_HAMMER_3LE_D1: 'with_hammer_3le_d1',
+    WITH_HAMMER_3LE_D2: 'with_hammer_3le_d2',
+    WITHOUT_HAMMER_3LE: 'without_hammer_3le',
+    WITHOUT_HAMMER_3LE_TIE: 'without_hammer_3le_tie',
+    WITHOUT_HAMMER_3LE_U1: 'without_hammer_3le_u1',
+    WITHOUT_HAMMER_3LE_U2: 'without_hammer_3le_u2',
+    WITHOUT_HAMMER_3LE_D1: 'without_hammer_3le_d1',
+    WITHOUT_HAMMER_3LE_D2: 'without_hammer_3le_d2',
+    
     WITH_HAMMER: 'with_hammer',
     WITHOUT_HAMMER: 'without_hammer',
     WITH_HAMMER_EE: 'with_hammer_ee',
@@ -111,6 +136,28 @@ export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.POINTS_PER_END]: ({points_for, ends_played}) => points_for / ends_played,
     [STAT_FIELDS.WITH_HAMMER]: ({points_with_hammer, hammer_end_count}) => points_with_hammer / hammer_end_count,
     [STAT_FIELDS.WITHOUT_HAMMER]: ({points_without_hammer, non_hammer_end_count}) => points_without_hammer / non_hammer_end_count,
+
+    [STAT_FIELDS.WITH_HAMMER_LE]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+
+    [STAT_FIELDS.WITH_HAMMER_2LE]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_U2]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_U1]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: ({hammer_2le, win}) => !!hammer_2le && !!win ? 1 : 0,
+   
 }
 
 export const NON_PERCENT_STATS = [STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_PER_END];
@@ -123,22 +170,55 @@ export const STAT_FIELD_FILTER_FUNCTIONS = {
     [STAT_FIELDS.RED]: ({ color }) => color === "red",
     [STAT_FIELDS.WITH_HAMMER_FE]: ({ hammer_first_end_count }) => !!hammer_first_end_count,
     [STAT_FIELDS.WITHOUT_HAMMER_FE]:({ hammer_first_end_count }) => !hammer_first_end_count,
-    [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_le }) => !!hammer_le,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_le }) => !hammer_le,
+   
+
     [STAT_FIELDS.WITH_HAMMER]: () => true,
     [STAT_FIELDS.WITHOUT_HAMMER]: () => true,
+
     [STAT_FIELDS.WITH_HAMMER_EE]: ({hammer_ee, ee}) => !!ee && !!hammer_ee,
     [STAT_FIELDS.WITHOUT_HAMMER_EE]: ({hammer_ee, ee}) => !!ee && !hammer_ee,
-    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === 0,
-    [STAT_FIELDS.WITH_HAMMER_LE_U1]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === 1,
-    [STAT_FIELDS.WITH_HAMMER_LE_U2]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le > 1,
-    [STAT_FIELDS.WITH_HAMMER_LE_D1]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === -1,
-    [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le < -1,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === 0,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === 1,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: ({hammer_le, diff_le}) => !hammer_le  && diff_le > 1,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === -1,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({hammer_le, diff_le}) => !hammer_le  && diff_le < -1
+
+    [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_le, early_end }) => !early_end && !!hammer_le,
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: ({hammer_le, diff_le, early_end}) => !early_end && !!hammer_le  && diff_le === 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: ({hammer_le, diff_le, early_end}) => !early_end && !!hammer_le  && diff_le === 1,
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: ({hammer_le, diff_le, early_end}) => !early_end && !!hammer_le  && diff_le > 1,
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: ({hammer_le, diff_le, early_end}) => !early_end && !!hammer_le  && diff_le === -1,
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({hammer_le, diff_le, early_end}) => !early_end && !!hammer_le  && diff_le < -1,
+
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_le, early_end }) => !early_end && !hammer_le,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: ({hammer_le, diff_le, early_end}) => !early_end && !hammer_le  && diff_le === 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: ({hammer_le, diff_le, early_end}) => !early_end && !hammer_le  && diff_le === 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: ({hammer_le, diff_le, early_end}) => !early_end && !hammer_le  && diff_le > 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: ({hammer_le, diff_le, early_end}) => !early_end && !hammer_le  && diff_le === -1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({hammer_le, diff_le, early_end}) => !early_end && !hammer_le  && diff_le < -1,
+
+    [STAT_FIELDS.WITH_HAMMER_2LE]: ({ hammer_2le, early_end }) => !early_end && !!hammer_2le,
+    [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: ({hammer_2le, diff_2le, early_end}) => !early_end && !!hammer_2le  && diff_2le === 0,
+    [STAT_FIELDS.WITH_HAMMER_2LE_U1]: ({hammer_2le, diff_2le, early_end}) => !early_end && !!hammer_2le  && diff_2le === 1,
+    [STAT_FIELDS.WITH_HAMMER_2LE_U2]: ({hammer_2le, diff_2le, early_end}) => !early_end && !!hammer_2le  && diff_2le > 1,
+    [STAT_FIELDS.WITH_HAMMER_2LE_D1]: ({hammer_2le, diff_2le, early_end}) => !early_end && !!hammer_2le  && diff_2le === -1,
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: ({hammer_2le, diff_2le, early_end}) => !early_end && !!hammer_2le  && diff_2le < -1,
+
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: ({ hammer_2le, early_end }) => !early_end && !hammer_2le,
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: ({hammer_2le, diff_2le, early_end}) => !early_end && !hammer_2le  && diff_2le === 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: ({hammer_2le, diff_2le, early_end}) => !early_end && !hammer_2le  && diff_2le === 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: ({hammer_2le, diff_2le, early_end}) => !early_end && !hammer_2le  && diff_2le > 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: ({hammer_2le, diff_2le, early_end}) => !early_end && !hammer_2le  && diff_2le === -1,
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: ({hammer_2le, diff_2le, early_end}) => !early_end && !hammer_2le  && diff_2le < -1,
+
+    [STAT_FIELDS.WITH_HAMMER_3LE]: ({ hammer_3le, early_end }) => !early_end && !!hammer_3le,
+    [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: ({hammer_3le, diff_3le, early_end}) => !early_end && !!hammer_3le  && diff_3le === 0,
+    [STAT_FIELDS.WITH_HAMMER_3LE_U1]: ({hammer_3le, diff_3le, early_end}) => !early_end && !!hammer_3le  && diff_3le === 1,
+    [STAT_FIELDS.WITH_HAMMER_3LE_U2]: ({hammer_3le, diff_3le, early_end}) => !early_end && !!hammer_3le  && diff_3le > 1,
+    [STAT_FIELDS.WITH_HAMMER_3LE_D1]: ({hammer_3le, diff_3le, early_end}) => !early_end && !!hammer_3le  && diff_3le === -1,
+    [STAT_FIELDS.WITH_HAMMER_3LE_D2]: ({hammer_3le, diff_3le, early_end}) => !early_end && !!hammer_3le  && diff_3le < -1,
+
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: ({ hammer_3le, early_end }) => !early_end && !hammer_3le,
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: ({hammer_3le, diff_3le, early_end}) => !early_end && !hammer_3le  && diff_3le === 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: ({hammer_3le, diff_3le, early_end}) => !early_end && !hammer_3le  && diff_3le === 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: ({hammer_3le, diff_3le, early_end}) => !early_end && !hammer_3le  && diff_3le > 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: ({hammer_3le, diff_3le, early_end}) => !early_end && !hammer_3le  && diff_3le === -1,
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D2]: ({hammer_3le, diff_3le, early_end}) => !early_end && !hammer_3le  && diff_3le < -1,
 };
 
 export const STAT_FIELD_TITLES = {
@@ -147,20 +227,361 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.RED]: () => 'Red rocks',
     [STAT_FIELDS.WITH_HAMMER_FE]: () => 'With HFE',
     [STAT_FIELDS.WITHOUT_HAMMER_FE]: () => 'Without HFE',
-    [STAT_FIELDS.WITH_HAMMER_LE]: () => 'With HLE',
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Without HLE',
     [STAT_FIELDS.WITH_HAMMER]: (type) => type === STAT_TYPES.HAMMER_EFFICIENCY ? 'Average points scored' : 'With hammer',
     [STAT_FIELDS.WITHOUT_HAMMER]: () => 'Without hammer',
-    [STAT_FIELDS.WITH_HAMMER_EE]: () => 'With HEE',
-    [STAT_FIELDS.WITHOUT_HAMMER_EE]: () => 'Without HEE',
+
+    [STAT_FIELDS.WITH_HAMMER_EE]: () => 'With',
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: () => 'Without',
+
+    [STAT_FIELDS.WITH_HAMMER_LE]: () => 'With',
     [STAT_FIELDS.WITH_HAMMER_LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITH_HAMMER_LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITH_HAMMER_LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITH_HAMMER_LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITH_HAMMER_LE_D2]: () => 'Down 2+',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Without',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: () => 'Down 2+',
+
+    [STAT_FIELDS.WITH_HAMMER_2LE]: () => 'With',
+    [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITH_HAMMER_2LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITH_HAMMER_2LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITH_HAMMER_2LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: () => 'Down 2+',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: () => 'Without',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: () => 'Down 2+',
+
+    [STAT_FIELDS.WITH_HAMMER_3LE]: () => 'With',
+    [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITH_HAMMER_3LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITH_HAMMER_3LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITH_HAMMER_3LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITH_HAMMER_3LE_D2]: () => 'Down 2+',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: () => 'Without',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D2]: () => 'Down 2+',
+}
+
+export const STAT_TYPE_SUBTITLES = {
+    [STAT_FIELDS.WITH_HAMMER_LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {hammer_le}) => {
+            return all + hammer_le
+        }, 0)
+        return `${sum}/${length} games`
+        // return `${sum}/${length} games (${((sum / length) * 100).toFixed(1)}%)`
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !!hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !!hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !!hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !!hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !!hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le < -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {hammer_le}) => {
+            return all + (!hammer_le ? 1 : 0)
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_le}) => !early_end && !hammer_le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_le}) => {
+            return all + (diff_le < -1 ? 1 : 0)
+        }, 0)
+        console.log('without d2: ', filtered, length, sum)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_EE]: (stats) => {
+        const filtered = stats.filter(({ee}) => !!ee);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {hammer_ee}) => {
+            return all + hammer_ee
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: (stats) => {
+        const filtered = stats.filter(({ee}) => !!ee);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {hammer_ee}) => {
+            return all + (!hammer_ee ? 1 : 0)
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered.length;
+        const sum = filtered.reduce((all, {hammer_2le}) => {
+            return all + hammer_2le
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !!hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !!hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !!hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !!hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !!hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le < -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered.length;
+        const sum = filtered.reduce((all, {hammer_2le}) => {
+            return all + (!hammer_2le ? 1 : 0)
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le < -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+
+    [STAT_FIELDS.WITH_HAMMER_3LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered.length;
+        const sum = filtered.reduce((all, {hammer_3le}) => {
+            return all + hammer_3le
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITH_HAMMER_3LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !!hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_3LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !!hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !!hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_3LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !!hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITH_HAMMER_3LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !!hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le < -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: (stats) => {
+        const filtered = stats.filter(({early_end}) => !early_end);
+        const length = filtered.length;
+        const sum = filtered.reduce((all, {hammer_3le}) => {
+            return all + (!hammer_3le ? 1 : 0)
+        }, 0)
+        return `${sum}/${length} games`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le > 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === 1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === 0 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_3le}) => !early_end && !hammer_3le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_3le}) => {
+            return all + (diff_3le === -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: (stats) => {
+        const filtered = stats.filter(({early_end, hammer_2le}) => !early_end && !hammer_2le);
+        const length = filtered?.length;
+        const sum = filtered.reduce((all, {diff_2le}) => {
+            return all + (diff_2le < -1 ? 1 : 0)
+        }, 0)
+        return `(${sum}/${length})`
+    },
 }

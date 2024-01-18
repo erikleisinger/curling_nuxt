@@ -115,8 +115,7 @@ const teamIds = computed(() => [
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
     const { data } = await client.from("team_stats_total").select(`*`);
-    // .in("id", teamIds.value);
-    console.log('got total stats: ', data)
+
     data.forEach((totalStat) => {
         useRepo(TeamStatsTotal).save({
             ...totalStat,
@@ -160,7 +159,7 @@ const stats = computed(() => {
         return [
             STAT_TYPES.WINS,
             STAT_TYPES.POINTS_PER_END,
-            STAT_TYPES.HAMMER_LAST_END,
+            // STAT_TYPES.HAMMER_LAST_END,
             STAT_TYPES.POINTS_FOR_PER_GAME,
             STAT_TYPES.POINTS_AGAINST_PER_GAME,
             STAT_TYPES.ENDS_FOR_PER_GAME,
@@ -176,7 +175,7 @@ const stats = computed(() => {
     return [
         STAT_TYPES.WINS,
         STAT_TYPES.POINTS_PER_END,
-        STAT_TYPES.HAMMER_LAST_END,
+        // STAT_TYPES.HAMMER_LAST_END,
         STAT_TYPES.HAMMER_EFFICIENCY,
         STAT_TYPES.POINTS_FOR_PER_GAME,
         STAT_TYPES.ENDS_FOR_PER_GAME,
