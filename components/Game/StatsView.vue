@@ -115,8 +115,8 @@ const statTypes = Object.values(STAT_TYPES).filter((type) => !EXCLUDE.includes(t
 
 const teams = computed(() => {
     return {
-        home: useRepo(GameTeam).with('stats').where('game_id', props.gameId).where('home_team', true).first(),
-        away: useRepo(GameTeam).with('stats').where('game_id', props.gameId).where('home_team', false).first()
+        home: useRepo(GameTeam).with('stats').where('game_id', props.gameId).offset(0).first(),
+        away: useRepo(GameTeam).with('stats').where('game_id', props.gameId).offset(1).first()
     }
 })
 
@@ -128,21 +128,15 @@ const getStatsForGame = async () => {
         .from("team_stats")
         .select(
             `
-            *,
-            team:team_id (
-                name,
-                avatar_url
-            )
+            *
+            
             `
         )
         .eq("game_id", props.gameId);
     if (!data?.length) return null;
     data.forEach((stat) => {
         if (!stat.team_id) cleanupOpposition.value = true;
-        useRepo(TeamStats).save({
-            ...stat,
-            team_id: stat.team_id ?? teams.value?.away?.team_id,
-        });
+        useRepo(TeamStats).save(stat);
     });
 
     const { data: totalData } = await useSupabaseClient()

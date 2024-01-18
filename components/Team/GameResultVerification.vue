@@ -101,10 +101,6 @@ const props = defineProps({
 
 const emit = defineEmits(['refresh'])
 
-const { getFullTeam } = useTeam();
-
-
-
 const game = computed(() =>
     useRepo(Game).withAllRecursive().where("id", props.gameId).first()
 );

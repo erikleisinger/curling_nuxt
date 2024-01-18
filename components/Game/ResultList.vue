@@ -303,15 +303,45 @@ const games = computed(() => {
         );
 });
 
-const { getGames } = useGame();
+const getGames = async () => {
+    const client = useSupabaseClient();
+    const {data} = await client.from('game_scores').select(`
+        team:team_id(
+            id,
+            name,
+            avatar_url
+        ),
+        pending,
+        game_id,
+        color,
+        placeholder,
+        points_scored
+
+    `)
+
+    data.forEach((gameTeam) => {
+        const {team, game_id, points_scored, color, placeholder} = gameTeam;
+        useRepo(Game).save({
+            id: game_id
+        })
+        useRepo(Team).save(team)
+        useRepo(GameTeam).save({
+            team_id: team?.id,
+            game_id,
+            points_scored,
+            color,
+            placeholder
+
+        })
+
+    })
+    return data;
+}
 
 const { isLoading } = useQuery({
     queryKey: ["team", "games", props.teamId],
-    queryFn: () =>
-        getGames({
-            team_id_param: props.teamId,
-            game_id_param: null,
-        }),
+    queryFn: getGames,
+        
     refetchOnWindowFocus: false,
 });
 

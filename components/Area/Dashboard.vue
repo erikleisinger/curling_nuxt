@@ -116,6 +116,7 @@ const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
     const { data } = await client.from("team_stats_total").select(`*`);
     // .in("id", teamIds.value);
+    console.log('got total stats: ', data)
     data.forEach((totalStat) => {
         useRepo(TeamStatsTotal).save({
             ...totalStat,
@@ -136,18 +137,11 @@ const { isLoading, data: totalStats } = useQuery({
 const getAllTeamStats = async () => {
     const client = useSupabaseClient();
     const { data } = await client
-        .from("team_stats_with_params")
-        .select("*")
+        .from("team_stats")
+        .select('*')
         .in("team_id", teamIds.value);
 
-    //       sheet_id (
-    //     id,
-    //     number,
-    //     rink_id
-    // ),
     data.forEach((stat) => {
-        if (stat.rink) useRepo(Rink).save(stat.rink);
-        if (stat.sheet) useRepo(Sheet).save(stat.sheet);
         useRepo(TeamStats).save(stat);
     });
     return data;

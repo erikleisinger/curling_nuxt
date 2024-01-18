@@ -48,6 +48,11 @@ import { createSheet } from "@/utils/create-game";
 import { useNotificationStore } from "@/store/notification";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import {useElementBounding} from '@vueuse/core'
+import Rink from '@/store/models/rink';
+import Sheet from '@/store/models/sheet';
+import Game from '@/store/models/game';
+import Team from '@/store/models/team';
+import GameTeam from '@/store/models/game-team'
 
 const props = defineProps({
     gameId: Number
@@ -65,7 +70,74 @@ const editedGame = ref(null);
 
 const { setLoading } = useLoading();
 
-const { getGames } = useGame();
+const dayjs = useDayjs();
+
+const getGame = async () => {
+    const client = useSupabaseClient();
+    const {data } = await client.from('games_full').select(`
+        id,
+        start_time,
+        rink:rink_id(
+            id,
+            name,
+            city,
+            province,
+            sheets
+        ),
+        conceded,
+        sheet:sheet_id(
+            id,
+            number
+        ),
+        hammer_first_end,
+        end_early,
+        ends_played,
+        end_count
+    `).eq('id', props.gameId).single()
+    const {rink, sheet, start_time, ...rest} = data;
+    if(rink) useRepo(Rink).save(rink);
+    if (sheet) useRepo(Sheet).save(sheet);
+    useRepo(Game).save({
+        ...rest,
+        start_time: dayjs(start_time).unix(),
+        rink_id: rink?.id,
+        sheet_id: sheet?.id
+    })
+
+     const {data: gameScoreData} = await client.from('game_scores').select(`
+        team:team_id(
+            id,
+            name,
+            avatar_url
+        ),
+        pending,
+        game_id,
+        color,
+        placeholder,
+        points_scored
+
+    `).eq('game_id', props.gameId);
+
+    gameScoreData.forEach((gameScore) => {
+         const {team, game_id, points_scored, color, placeholder} = gameScore;
+        useRepo(Team).save(team)
+        useRepo(GameTeam).save({
+            team_id: team?.id,
+            game_id,
+            points_scored,
+            color,
+            placeholder
+
+        })
+    })
+
+
+   
+
+
+return {...data, ...gameScoreData};
+}
+
 const gameLoaded = ref(false);
 
 const {
@@ -74,11 +146,7 @@ const {
     data: currentGame,
 } = useQuery({
     queryKey: ["game", props.gameId],
-    queryFn: () =>
-        getGames({
-            team_id_param: null,
-            game_id_param: props.gameId,
-        }),
+    queryFn: getGame,
     select: (val) => {
         gameLoaded.value = true;
         return val;

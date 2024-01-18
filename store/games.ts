@@ -106,7 +106,7 @@ export const useGameStore = defineStore("game", {
                 client
                     .from(TABLE_NAMES.GAMES)
                     .upsert(game)
-                    .select(getQuery(TABLE_NAMES.GAMES))
+                    .select('id')
             );
 
             if (error) {
@@ -129,16 +129,7 @@ export const useGameStore = defineStore("game", {
 
             if (data) {
                 const [game] = data;
-                const index = this.games.findIndex((g) => g.id === game.id);
-                if (index === -1) {
-                    this.games.push(game);
-                } else {
-                    this.games.splice(index, 1, game);
-                }
-                const sessionStore = useSessionStore();
-                if (game?.id === sessionStore?.game?.id) {
-                    sessionStore.setGame(game);
-                }
+               
                 return game?.id;
             }
             return null;

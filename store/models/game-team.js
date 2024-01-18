@@ -20,6 +20,7 @@ export default class GameTeam extends Model {
             points_scored: this.number(0),
             pending: this.boolean(),
             home_team: this.boolean(),
+            placeholder: this.string()
         };
     }
     get isPlaceholder() {

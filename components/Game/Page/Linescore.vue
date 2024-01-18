@@ -43,8 +43,8 @@
         gameId: Number,
     })
 
-    const home = computed(() => useRepo(GameTeam).where('game_id', props.gameId).where('home_team', true).first())
-    const away = computed(() => useRepo(GameTeam).where('game_id', props.gameId).where('home_team', false).first())
+    const home = computed(() => useRepo(GameTeam).where('game_id', props.gameId).offset(0).first())
+    const away = computed(() => useRepo(GameTeam).where('game_id', props.gameId).offset(1).first())
 
     const endCount = computed(() => useRepo(Game).where('id', props.gameId).first()?.end_count)
     const hammerFirstEnd = computed(() => useRepo(Game).where('id', props.gameId).first()?.hammer_first_end)

@@ -67,27 +67,88 @@
 
         <section v-if="shouldShowHammerStats" name="hammer stats">
             <q-separator class="separator" />
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER_FE"
-                :filters="filters"
-                :average="average"
-            />
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER_FE"
-                :filters="filters"
-                :average="average"
-            />
+
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITH_HAMMER_LE"
                 :filters="filters"
                 :average="average"
             />
+                     <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE_D1"
+                :filters="filters"
+                :average="average"
+            />
+                   <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE_D2"
+                :filters="filters"
+                :average="average"
+            />
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE_TIE"
+                :filters="filters"
+                :average="average"
+            />
+                 <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE_U1"
+                :filters="filters"
+                :average="average"
+            />
+                   <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE_U2"
+                :filters="filters"
+                :average="average"
+            />
             <DashboardStatDetailsItem
                 :statType="props.type"
                 :statField="STAT_FIELDS.WITHOUT_HAMMER_LE"
+                :filters="filters"
+                :average="average"
+            />
+                     <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D1"
+                :filters="filters"
+                :average="average"
+            />
+                   <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D2"
+                :filters="filters"
+                :average="average"
+            />
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_TIE"
+                :filters="filters"
+                :average="average"
+            />
+                 <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U1"
+                :filters="filters"
+                :average="average"
+            />
+                   <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U2"
+                :filters="filters"
+                :average="average"
+            />
+             <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_EE"
+                :filters="filters"
+                :average="average"
+            />
+               <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_EE"
                 :filters="filters"
                 :average="average"
             />
@@ -338,7 +399,7 @@ const cleanNumber = (num) => {
     if (Number.isNaN(num)) return "-";
 
     if (isPercent) {
-        return `${Number((num * 100).toFixed())}%`;
+        return `${Number(num.toFixed())}%`;
     }
     return `${num > 0 ? "" : ""}${num.toFixed(1)}`;
 };
@@ -396,8 +457,7 @@ const highest = computed(() => {
 
 const highestDiff = computed(
     () =>
-        (highest.value * (isPercent ? 100 : 1) - props.average) /
-        (isPercent ? 100 : 1)
+        (highest.value  - props.average) 
 );
 
 const highestGame = computed(() => {
@@ -411,8 +471,7 @@ const lowest = computed(() => {
 });
 const lowestDiff = computed(
     () =>
-        (lowest.value * (isPercent ? 100 : 1) - props.average) /
-        (isPercent ? 100 : 1)
+        (lowest.value  - props.average) 
 );
 
 const lowestGame = computed(() => {
@@ -421,6 +480,6 @@ const lowestGame = computed(() => {
 })
 
 const worldwideDiff = computed(() =>
-    (props.average - props.worldwide * (isPercent ? 100 : 1)).toFixed(1)
+    (props.average - props.worldwide).toFixed(1)
 );
 </script>

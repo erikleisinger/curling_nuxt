@@ -172,14 +172,14 @@ const home = computed(() =>
     useRepo(GameTeam)
         .with("team")
         .where("game_id", props.gameId)
-        .where("home_team", true)
+        .offset(0)
         .first()
 );
 const away = computed(() =>
     useRepo(GameTeam)
         .with("team")
         .where("game_id", props.gameId)
-        .where("home_team", false)
+         .offset(1)
         .first()
 );
 const gameParams = computed(() => useRepo(Game).where('id', props.gameId).first())

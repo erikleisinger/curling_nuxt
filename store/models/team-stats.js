@@ -37,7 +37,15 @@ export default class TeamStats extends Model {
             points_with_hammer: this.number(),
             points_without_hammer: this.number(),
             opposition_points_with_hammer: this.number(),
-            opposition_points_without_hammer: this.number()
+            opposition_points_without_hammer: this.number(),
+            diff_3le: this.number(),
+            hammer_3le: this.number(),
+            diff_2le: this.number(),
+            hammer_2le: this.number(),
+            diff_le: this.number(),
+            hammer_le: this.number(),
+            hammer_ee: this.number(),
+            ee: this.boolean()
         }
        
     }

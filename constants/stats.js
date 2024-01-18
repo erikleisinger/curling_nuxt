@@ -70,9 +70,22 @@ export const STAT_FIELDS = {
     WITH_HAMMER_FE: 'with_hammer_fe',
     WITHOUT_HAMMER_FE: 'without_hammer_fe',
     WITH_HAMMER_LE: 'with_hammer_le',
+    WITH_HAMMER_LE_TIE: 'with_hammer_le_tie',
+    WITH_HAMMER_LE_U1: 'with_hammer_le_u1',
+    WITH_HAMMER_LE_U2: 'with_hammer_le_u2',
+    WITH_HAMMER_LE_D1: 'with_hammer_le_d1',
+    WITH_HAMMER_LE_D2: 'with_hammer_le_d2',
     WITHOUT_HAMMER_LE: 'without_hammer_le',
+    WITHOUT_HAMMER_LE_TIE: 'without_hammer_le_tie',
+    WITHOUT_HAMMER_LE_U1: 'without_hammer_le_u1',
+    WITHOUT_HAMMER_LE_U2: 'without_hammer_le_u2',
+    WITHOUT_HAMMER_LE_D1: 'without_hammer_le_d1',
+    WITHOUT_HAMMER_LE_D2: 'without_hammer_le_d2',
     WITH_HAMMER: 'with_hammer',
-    WITHOUT_HAMMER: 'without_hammer'
+    WITHOUT_HAMMER: 'without_hammer',
+    WITH_HAMMER_EE: 'with_hammer_ee',
+    WITHOUT_HAMMER_EE: 'without_hammer_ee',
+
 };
 
 export const STAT_FIELDS_TOTAL = {
@@ -110,10 +123,22 @@ export const STAT_FIELD_FILTER_FUNCTIONS = {
     [STAT_FIELDS.RED]: ({ color }) => color === "red",
     [STAT_FIELDS.WITH_HAMMER_FE]: ({ hammer_first_end_count }) => !!hammer_first_end_count,
     [STAT_FIELDS.WITHOUT_HAMMER_FE]:({ hammer_first_end_count }) => !hammer_first_end_count,
-    [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_last_end_count }) => !!hammer_last_end_count,
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_last_end_count }) => !hammer_last_end_count,
+    [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_le }) => !!hammer_le,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_le }) => !hammer_le,
     [STAT_FIELDS.WITH_HAMMER]: () => true,
     [STAT_FIELDS.WITHOUT_HAMMER]: () => true,
+    [STAT_FIELDS.WITH_HAMMER_EE]: ({hammer_ee, ee}) => !!ee && !!hammer_ee,
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: ({hammer_ee, ee}) => !!ee && !hammer_ee,
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === 0,
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === 1,
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le > 1,
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le === -1,
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({hammer_le, diff_le}) => !!hammer_le  && diff_le < -1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === 0,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: ({hammer_le, diff_le}) => !hammer_le  && diff_le > 1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: ({hammer_le, diff_le}) => !hammer_le  && diff_le === -1,
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({hammer_le, diff_le}) => !hammer_le  && diff_le < -1
 };
 
 export const STAT_FIELD_TITLES = {
@@ -126,5 +151,16 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Without HLE',
     [STAT_FIELDS.WITH_HAMMER]: (type) => type === STAT_TYPES.HAMMER_EFFICIENCY ? 'Average points scored' : 'With hammer',
     [STAT_FIELDS.WITHOUT_HAMMER]: () => 'Without hammer',
-
+    [STAT_FIELDS.WITH_HAMMER_EE]: () => 'With HEE',
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: () => 'Without HEE',
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: () => 'Down 2+',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: () => 'Tied',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: () => 'Up 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: () => 'Up by 2+',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: () => 'Down 1',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: () => 'Down 2+',
 }

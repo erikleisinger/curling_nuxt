@@ -482,7 +482,7 @@ const gameParams = ref({
     hammerFirstEndTeam: null,
     start_time: dayjs().format("YYYY-MM-DD HH:mm"),
     rink: {},
-    sheet: {},
+    sheet: null,
     league: {},
 });
 
@@ -606,18 +606,13 @@ const save = async () => {
         shouldSendInvitation = true;
 
     // toggleLineScore({ open: false });
-    const sheetId = await createSheet(rinkCopy?.id, sheetCopy);
+    let sheetId;
+    if (!!sheetCopy) sheetId = await createSheet(rinkCopy?.id, sheetCopy);
 
     const { toUTC } = useTime();
     const gameToCreate = {
-        home: params?.home?.id,
-        home_color: params?.homeColor,
-        away_color: params?.awayColor,
-        hammer_first_end: params?.hammerFirstEndTeam,
         end_count: endCount.value,
-        completed: false,
         conceded: conceded.value,
-        end_early: over.value,
         start_time: toUTC(
             gameParams.value.start_time,
             "YYYY MM DD hh:mm",
@@ -628,12 +623,6 @@ const save = async () => {
         league_id: leagueCopy?.id,
     };
 
-    if (!!params?.away?.id) {
-        gameToCreate.away = params.away.id;
-    } else {
-        gameToCreate.placeholder_away =
-            params?.away?.name ?? "Unnamed Opposition";
-    }
 
     if (editedIdCopy) {
         gameToCreate.id = editedIdCopy.value;
@@ -645,15 +634,15 @@ const save = async () => {
 
     const ends = generateEnds(
         scoreCopy,
-        gameToCreate?.hammer_first_end,
-        gameToCreate?.home,
-        shouldSendInvitation ? null : gameToCreate?.away,
+        params.hammerFirstEndTeam,
+        params.home?.id,
+        params?.away?.id ?? 0,
         gameId
     );
     await createEnds(ends, !!editedIdCopy);
 
     await createTeamGameJunction(
-        { ...gameToCreate, id: gameId },
+        { ...gameToCreate, home: params?.home?.id, away: params?.home?.away ?? 0, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
         shouldSendInvitation
     );
 
@@ -686,7 +675,6 @@ const createTeamGameJunction = async (game, isPending) => {
         away_color,
         home,
         away,
-        placeholder_away,
     } = game;
     const { errors } = await useSupabaseClient()
         .from("game_team_junction")
@@ -702,7 +690,7 @@ const createTeamGameJunction = async (game, isPending) => {
                 team_id: away,
                 color: away_color,
                 pending: isPending,
-                placeholder: placeholder_away,
+                placeholder: away?.id ? null : away?.name ?? 'Unnamed opposition',
             },
         ]);
 };
