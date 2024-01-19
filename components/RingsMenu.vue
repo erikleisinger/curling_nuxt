@@ -8,7 +8,7 @@
             :buttonft="big ? undefined : getColor('slate')"
             ref="ringsMenu" :size="size"/>
         <div class="menu__container column items-center" v-if="big">
-            <div class="rings-menu__option option-1" @click="toggleSearch">search</div>
+          
             <div
                 class="rings-menu__option"
                 @click.stop="
@@ -27,6 +27,7 @@
             >
                 New team
             </div>
+              <div class="rings-menu__option option-1" @click="toggleSearch">search</div>
             <div class="rings-menu__option bottom small" @click="doAction($event, () => emit('openFeedback'))">Send feedback</div>
         </div>
     </div>
@@ -242,8 +243,8 @@ const toggleSearch = () => {
         open: true,
 
         options: {
-            resourceTypes: ['team', 'profile', 'rink', 'league'],
-            inputLabel: "Search for a team, player, rink, or event",
+            resourceTypes: ['team', 'profile'],
+            inputLabel: "Search for a team or player",
             callback: onSelect,
         },
     });
