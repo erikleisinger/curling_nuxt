@@ -118,7 +118,6 @@ $footer-height-sm: 4em;
 }
 </style>
 <script setup>
-import { onClickOutside } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import Player from "@/store/models/player";
 
@@ -141,14 +140,6 @@ const { toggleLineScore, toggleGlobalSearch, toggleNotifications } =
 // --> feedback
 
 const feedbackOpen = ref(false);
-
-// --> big fab button
-
-const actionOpen = ref(false);
-const fab = ref(null);
-onClickOutside(fab, () => {
-    actionOpen.value = false;
-});
 
 
 // notifications

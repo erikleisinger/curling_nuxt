@@ -154,19 +154,12 @@ timeline.value = tl
             scaleY: 1,
             transformOrigin: `${percentX.value}% ${percentY.value}%  `,
             duration: 0.2,
-            simple: true,
             ease: "power",
             onComplete: () => {
 ready.value = true;
     }
         }
     );
-
-    // tl.from(".popup-container--slot-content", {
-    //     opacity: 0,
-    //     duration: 0.1,
-        
-    // });
     tl.to(`#overlay-${uniqueId}`, {
         opacity: 1,
     })
