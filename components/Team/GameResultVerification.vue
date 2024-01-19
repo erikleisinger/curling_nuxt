@@ -70,7 +70,7 @@
             <br/>
 
         <br/>
-        It has been verified by <TeamChip :teamId="pendingTeam.id"/> and contributes towards their season stats.
+        It has been verified by both teams and contributes towards their season stats.
         </span>
     </DialogInfo>
 </template>
@@ -92,8 +92,8 @@ import { useGameRequestStore } from "@/store/game-requests";
 import {useDialogStore} from '@/store/dialog'
 import Game from "@/store/models/game";
 import TeamPlayer from '@/store/models/team-player'
-import { useQuery } from "@tanstack/vue-query";
-
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+const queryClient = useQueryClient()
 
 const props = defineProps({
     gameId: Number,
@@ -106,7 +106,7 @@ const game = computed(() =>
 );
 
 const pendingTeam = computed(() =>
-    game.value.teams.find(({ home_team }) => !home_team)?.team ?? {}
+    game.value.teams.find(({ pending }) => !!pending)?.team ?? {}
 );
 const creatorTeam = computed(() =>
     game.value.teams.find(({ pending }) => !pending)?.team ?? {}
@@ -135,7 +135,7 @@ const respondToRequest = async (status) => {
 
 const robotTeam = computed(() => pendingTeam.value?.id > 100000000)
 
-const onRequestConfirm = () => {
+const onRequestConfirm = async () => {
     if (isVerified.value) return;
     if (robotTeam.value) {
         useDialogStore().toggleGlobalSearch({
@@ -152,8 +152,17 @@ const onRequestConfirm = () => {
         });
     } else {
         respondToRequest("accepted");
+        await updateGtj();
+        queryClient.invalidateQueries({
+            queryKey: ['game', props.gameId]
+        })
     }
 };
+
+const updateGtj = async () => {
+    const client = useSupabaseClient();
+    await client.from('game_team_junction').update({pending: false}).eq('game_id', props.gameId).eq('team_id', pendingTeam.value?.id)
+}
 
 
 const onOptionClick = async (e) => {

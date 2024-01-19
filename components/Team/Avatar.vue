@@ -246,7 +246,7 @@ const avatar_url = computed(() => team.value.avatar_url)
 const {teamId} = toRefs(props)
 
 const { isLoading,  data: avatarUrl, refetch } =  getTeamAvatar(teamId.value, {
-    enabled,
+    // enabled,
 })
 
 const avatar = ref(null);

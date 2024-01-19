@@ -47,7 +47,7 @@
                 {{ away.team?.name }}
             </div>
             <div class="avatar-container">
-                <TeamAvatar :teamId="away?.id" :color="away?.color" :hammer="gameParams.hammer_first_end === away?.team_id || !gameParams.hammer_first_end"  />
+                <TeamAvatar :teamId="away?.team_id" :color="away?.color" :hammer="gameParams.hammer_first_end === away?.team_id || !gameParams.hammer_first_end"  />
             </div>
         </div>
         <h3

@@ -642,7 +642,7 @@ const save = async () => {
     await createEnds(ends, !!editedIdCopy);
 
     await createTeamGameJunction(
-        { ...gameToCreate, home: params?.home?.id, away: params?.home?.away ?? 0, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
+        { ...gameToCreate, home: params?.home?.id, away: params?.away?.id ?? 0, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
         shouldSendInvitation
     );
 

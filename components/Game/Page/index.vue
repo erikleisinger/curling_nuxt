@@ -119,14 +119,15 @@ const getGame = async () => {
     `).eq('game_id', props.gameId);
 
     gameScoreData.forEach((gameScore) => {
-         const {team, game_id, points_scored, color, placeholder} = gameScore;
+         const {team, game_id, points_scored, color, placeholder, pending} = gameScore;
         useRepo(Team).save(team)
         useRepo(GameTeam).save({
             team_id: team?.id,
             game_id,
             points_scored,
             color,
-            placeholder
+            placeholder,
+            pending
 
         })
     })

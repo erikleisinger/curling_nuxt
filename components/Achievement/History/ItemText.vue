@@ -1,5 +1,6 @@
 <template>
-    <TeamChip :teamId="item.team?.id ?? item.info?.team?.id ?? item.info?.id" v-if="teamFirst" />
+    <TeamChip :teamId="item.team?.id ?? item.info?.team?.id ?? item.info?.id" v-if="teamFirst && item.type !== ACHIEVEMENT_TYPES.GAME_REQUEST" />
+    <TeamChip v-else-if="item.type == ACHIEVEMENT_TYPES.GAME_REQUEST" :teamId="item.info?.requester_id"/> 
 
     <!-- BADGE RESULT -->
 

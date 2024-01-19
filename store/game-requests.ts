@@ -69,6 +69,7 @@ export const useGameRequestStore = defineStore("game-requests", {
 
         },
         async sendGameRequest(team: Team, game_id: number) {
+            console.log('send request: ', team)
             const {id, name} = team;
             const notStore = useNotificationStore();
             const notId = notStore.addNotification({

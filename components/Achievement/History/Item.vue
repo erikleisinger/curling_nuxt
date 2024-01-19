@@ -5,14 +5,7 @@
         v-ripple
         clickable
         style="border-radius: inherit"
-        @click="
-            !!item.team ||
-            (item.info && item.type === ACHIEVEMENT_TYPES.TEAM_INVITATION)
-                ? navigateTo(`/teams/${item.team.id ?? item.info?.id}`, {
-                      replace: true,
-                  })
-                : navigateTo(`/player/${item.profile.id}`, { replace: true })
-        "
+        @click="navigate"
     >
         <q-item-section avatar class="relative-position">
             <Badge
@@ -23,11 +16,21 @@
                 v-if="isBadge"
             />
             <div style="width: 40px" v-else-if="isPlayer">
-                <Avataaar v-bind="parseAvatar(item.profile?.avatar ?? item.info?.avatar)" />
+                <Avataaar
+                    v-bind="
+                        parseAvatar(item.profile?.avatar ?? item.info?.avatar)
+                    "
+                />
             </div>
 
             <div style="width: 40px" v-else-if="isTeam">
-                <TeamAvatar :teamId="item.team?.id || item.info?.id" />
+                <TeamAvatar
+                    :teamId="
+                        item.info?.requester_id ||
+                        item.team?.id ||
+                        item.info?.id
+                    "
+                />
             </div>
 
             <div v-else>
@@ -231,8 +234,20 @@ const isPlayer = computed(() =>
 );
 
 const isTeam = computed(() =>
-    [ACHIEVEMENT_TYPES.GAME_REQUEST, ACHIEVEMENT_TYPES.TEAM_INVITATION].includes(props.item.type)
+    [
+        ACHIEVEMENT_TYPES.GAME_REQUEST,
+        ACHIEVEMENT_TYPES.TEAM_INVITATION,
+    ].includes(props.item.type)
 );
+
+
+const navigate = () => {
+    if (!!props.item.team &&
+            (props.item.info && props.item.type === ACHIEVEMENT_TYPES.TEAM_INVITATION)) return navigateTo(`/teams/${props.item.team.id ?? props.item.info?.id}`, {replace: true,})
+    if (props.item.type === ACHIEVEMENT_TYPES.GAME_REQUEST)return navigateTo(`/games/view/${props.item.game_id}`, { replace: true })
+    if (props.item.type === ACHIEVEMENT_TYPES.TEAM_REQUEST || props.item.type === ACHIEVEMENT_TYPES.TEAM_CHANGE)  return navigateTo(`/teams/${props.item.team.id}`, {replace: true,})
+     return navigateTo(`/player/${props.item.profile.id}`, { replace: true })
+}
 </script>
 <script>
 export default {

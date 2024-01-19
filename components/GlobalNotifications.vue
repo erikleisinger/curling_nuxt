@@ -54,6 +54,11 @@ onMounted(() => {
         setTimeout(() => {
             dialogStore.toggleNotifications({open: true})
         }, 2000)
-    }
+    } 
+})
+
+watch(hash, () => {
+    const open = hash.value === '#notifications';
+    dialogStore.toggleNotifications({open})
 })
 </script>
