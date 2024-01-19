@@ -222,7 +222,12 @@ const endView = (e) => {
     expanded.value = null;
 };
 
-onBeforeRouteLeave(() => {
+onBeforeRouteLeave((to) => {
+    const {query} = to;
+    const {force} = query ?? {};
+    if (force)  return true;
+       
+    
     if (expanded.value) {
         expanded.value = null;
         return false;

@@ -46,7 +46,6 @@
 }
 .logo-container {
     width: min(15vw, 100px);
-    // animation: fade 0.2s linear forwards;
 }
 :deep(.loading-container) {
     width: 100vw;
@@ -56,15 +55,6 @@
         .rounded-borders {
             border-radius: 24px;
         }
-    }
-}
-
-@keyframes fade {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
     }
 }
 </style>
@@ -106,79 +96,16 @@ const doAnimation = () => {
     const els = logo.value.$el.querySelectorAll(
         "path:not(.logo-i):not(.logo-rock)"
     );
-    const rock = logo.value.$el.querySelectorAll("path.logo-rock");
-    const i = logo.value.$el.querySelector("path.logo-i");
-    const xAmount = 40;
     const tl = gsap.timeline();
-    // const ringEls = Array.from(els).splice(0, 4)
-    // const ringElsRed = Array.from(els).splice(4, 4)
-    //   const letterEls = Array.from(els).splice(8, 6)
-    //   const dotEl = Array.from(els).splice(14, 1)
-    //   console.log(letterEls)
+
     tl.add("start");
     tl.from(els, {
         y: (index) => index % 2 === 0 ? 100 : -100,
-        // x: () => {
-        //     const random = Math.random() > 0.5 ? 1 : -1;
-        //     return Math.random() * 100 * (random)
-        // },
+
         opacity: 0,
         stagger: 0.1,
         duration: 1,
     })
-    // tl.from(
-    //     letterEls,
-    //     {
-    //         y: (index) => {
-
-    //             return index % 2 === 0? xAmount : -1 * xAmount
-    //         },
-    //         opacity: 0,
-    //         stagger: 0.09,
-    //         delay: 1,
-    //         duration:5,
-    //     },
-    //     "start"
-    // );
-    // tl.from(
-    //    ringEls,
-    //     {
-    //         x: (index) => {
-    //             return  -1 * xAmount;
-    //         },
-
-    //         opacity: 0,
-    //         stagger: 1,
-    //         delay: 1,
-    //         duration:5,
-    //     },
-    //     "start"
-    // );
-    //  tl.from(
-    //    ringElsRed,
-    //     {
-    //         x: (index) => {
-    //             return xAmount;
-    //         },
-
-    //         opacity: 0,
-    //         stagger: 1,
-    //         delay: 1,
-    //         duration:5,
-    //     },
-    //     "start"
-    // );
-    //  tl.from(
-    //    dotEl,
-    //     {
-    //         scale: 0,
-    //         ease: 'bounce',
-    //         opacity: 0,
-    //         duration:4,
-    //         delay: 1.5,
-    //     },
-    // );
-
 
     tl.duration(2.1);
 }

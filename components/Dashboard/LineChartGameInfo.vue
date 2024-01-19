@@ -78,7 +78,7 @@
                     <div class="text-caption ">
                     {{ toTimezone(gameData?.start_time, "MMMM D, YYYY") }}
                     </div>
-                    <q-btn flat round icon="open_in_new"   :style="{ color: getColor(STAT_COLORS[type]) }" dense size="0.5em" @click="navigateTo(`/games/${data.game_id}`)"/>
+                    <q-btn flat round icon="open_in_new"   :style="{ color: getColor(STAT_COLORS[type]) }" dense size="0.5em" @click="goToGame"/>
                 </div>
             </template>
         </DialogCard>
@@ -257,7 +257,6 @@ const getGameInfo = async () => {
     data.forEach((item) => {
         const {team, game, pending, color, placeholder, points_scored} = item;
         const {end_count, hammer_first_end, conceded} = gameInfoData;
-        console.log(team, placeholder)
         useRepo(Team).save({
             ...team
         });
@@ -302,4 +301,8 @@ const opposition = computed(() => {
     name: away.value?.placeholder} : away.value?.team
     return home.value?.team
 });
+
+const goToGame = () => {
+    return navigateTo(`/games/view/${props.data.game_id}?force=true`)
+}
 </script>

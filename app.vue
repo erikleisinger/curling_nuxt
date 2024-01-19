@@ -42,6 +42,7 @@ import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import { useSessionStore } from "@/store/session";
 import {useUserStore} from '@/store/user'
+import {useNotificationStore} from '@/store/notification'
 
 const { globalLoading } = useLoading();
 const sessionStore = useSessionStore();
@@ -57,7 +58,16 @@ const route = useRoute();
 const {user:userId} = useUser();
 const {userTeamIds} = useTeam();
 
+const scrubUrl = () => {
+    const {query} = route;
+    if (!query?.force) return;
+    const queryClone = {...query};
+    if (queryClone.force) delete queryClone.force;
+    return navigateTo({...route, query: {
+        ...queryClone,
 
+    }}, {replace: true})
+}
 
 const MANUAL_LOAD_ROUTES = [
     "teams-id",
@@ -66,6 +76,7 @@ const MANUAL_LOAD_ROUTES = [
     "rinks-id",
 ];
 nuxtApp.hook("page:finish", () => {
+    scrubUrl();
     if (MANUAL_LOAD_ROUTES.includes(route.name)) return;
     setLoading(false);
 });
@@ -92,7 +103,7 @@ onBeforeMount(async () => {
         !PUBLIC_ROUTES.includes(route.fullPath) &&
         user.value &&
         route.name !== "gateway"
-    ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true});
+    ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
     
         
 });

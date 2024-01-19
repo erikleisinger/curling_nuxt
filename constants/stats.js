@@ -372,7 +372,6 @@ export const STAT_TYPE_SUBTITLES = {
         const sum = filtered.reduce((all, {diff_le}) => {
             return all + (diff_le < -1 ? 1 : 0)
         }, 0)
-        console.log('without d2: ', filtered, length, sum)
         return `(${sum}/${length})`
     },
     [STAT_FIELDS.WITH_HAMMER_EE]: (stats) => {

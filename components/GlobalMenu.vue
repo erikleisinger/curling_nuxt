@@ -61,7 +61,7 @@ const props = defineProps({
     modelValue: Boolean,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", 'close']);
 
 const open = computed({
     get() {
@@ -164,6 +164,7 @@ const animateOpen = () => {
 const close = () => {
     showing.value = false;
                 open.value = false;
+                emit('close')
     // gsap.fromTo(
     //     `#${uniqueId}`,
     //     {
@@ -181,7 +182,7 @@ const close = () => {
     // );
 };
 
-onClickOutside(menu, () => {
+onClickOutside(menu, (e) => {
     if (!open.value || !props.closeOnOutsideClick) return;
     close();
     maxHeight.value = "unset";

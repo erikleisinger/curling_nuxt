@@ -33,13 +33,14 @@
                 class="line-chart__container"
             >
                 <!--  -->
+             
                 <DashboardStatGameDetails
                     :data="gameInfo"
                     :type="type"
                     v-model="showGameInfo"
-                   
                 />
-                <div style="height: 250px">
+               
+                <div style="height: 250px" >
                     <div
                         class="game-line__indicator"
                         v-if="showGameInfo"
@@ -57,7 +58,7 @@
                         @click="onClick"
                        
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
-                        v-model="chart"
+              
                  
                     />
                      
@@ -270,6 +271,10 @@ const gameInfo = ref(null);
 const showGameInfo = ref(false);
 
 const onClick = useDebounceFn((e) => {
+    if (gameInfo.value) {
+        gameInfo.value = null;
+        return;
+    }
     const { x, y, index, raw } = e;
     if (x - 1.5 === leftPoint.value) return;
     showGameInfo.value = false;
@@ -281,13 +286,6 @@ const onClick = useDebounceFn((e) => {
     });
 },50);
 
-const chart = ref(null);
-
-onClickOutside(chart, () => {
-    gameInfo.value = null;
-    showGameInfo.value = false;
-});
-
 const viewOnChart = (index) => {
     const datasetMeta = chart.value?.getDatasetMeta(0)
     const {data} = datasetMeta ?? {};
@@ -298,4 +296,10 @@ const viewOnChart = (index) => {
     emit('scroll')
     onClick({x,y,index})
 }
+
+watch(() => props.expanded, (val) => {
+    if (val) return;
+    showGameInfo.value = false;
+    gameInfo.value = null;
+})
 </script>

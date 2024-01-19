@@ -22,36 +22,9 @@
             <q-page-container
                 class="page__container--global relative-position"
                 id="global-container"
+                :class="{'prevent-scroll': $q.screen.xs && notificationsOpen}"
             >
-                <DialogPopup
-                    :open="notificationsOpen"
-                    bottom
-                    :maxHeight="$q.screen.gt.sm ? '600px' : null"
-                    :maxWidth="$q.screen.xs ? null : '400px'"
-                    right
-                    :hideOverlay="!$q.screen.xs"
-                    @hide="toggleNotifications({ open: false })"
-                >
-                    <template v-slot:header>
-                        <div class="row justify-between items-center">
-                            <h1
-                                class="text-md text-bold row justify-between items-center"
-                            >
-                                Notifications
-                            </h1>
-                            <q-btn
-                                flat
-                                round
-                                icon="close"
-                                @click="toggleNotifications({ open: false })"
-                            />
-                        </div>
-                    </template>
-                    <AchievementHistory
-                        :open="notificationsOpen"
-                        v-model="unreadNotificationCount"
-                    />
-                </DialogPopup>
+                <GlobalNotifications/>
         
                 <slot />
      
@@ -122,6 +95,9 @@ $footer-height-sm: 4em;
 
     height: calc((100 * var(--vh, 1vh)));
     overflow: auto;
+    &.prevent-scroll {
+        overflow: hidden;
+    }
     overflow-x:hidden;
     scroll-behavior: smooth;
     
@@ -174,8 +150,8 @@ onClickOutside(fab, () => {
     actionOpen.value = false;
 });
 
-// --> notifications
-const unreadNotificationCount = ref(0);
+
+// notifications
 const notificationsOpen = computed(() => dialogStore.notifications.open);
 
 // PLAYER AVATAR
@@ -198,4 +174,6 @@ const goTo = (view) => {
         wasNotificationsOpen ? 100 : 0
     );
 };
+
+
 </script>

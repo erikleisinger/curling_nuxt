@@ -1,5 +1,5 @@
 <template>
-    <div class="notification"></div>
+    <div class="notification" ref="notification"></div>
 </template>
 <style lang="scss" scoped>
 
@@ -13,6 +13,7 @@ const $q = useQuasar();
 let activeNotification;
 
 const emit = defineEmits(['delete'])
+// const position = $q.screen.xs ? 'top-right' : 'bottom-left'
 
 const setNotification = () => {
     const notificationColor =
@@ -34,13 +35,14 @@ const setNotification = () => {
         spinner: props.notification.state === "pending",
         color: notificationColor,
         message: props.notification.text,
-        position: "top-right",
-        icon,
+        position: 'top-right',
+        // icon,
         timeout:
             props.notification.state === "pending"
                 ? 0
                 : props.notification.timeout,
         progress: true,
+
         actions:  props.notification.state === 'pending' ? null : [
             { label: 'Dismiss', color: 'white', noDismiss: false }
         ],
@@ -65,4 +67,6 @@ watch(
     },
     { immediate: true, deep: true }
 );
+
+
 </script>

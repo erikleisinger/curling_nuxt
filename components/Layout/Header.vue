@@ -21,13 +21,18 @@
                 />
             </div>
             <div class="row items-center">
-                <q-btn
+
+                <Button
                     icon="notifications"
-                    flat
+                    :flat="!notificationsOpen"
                     round
-                    color="white"
+                    color="mint"
+                    :text-color="notificationsOpen ? null : 'white'"
                     @click="toggleNotifications({ open: !notificationsOpen })"
                     :size="$q.screen.xs ? '14px' : '16px'"
+                    dense
+                    class="q-mr-sm"
+                    v-if="hasCompletedTutorial"
                 >
                     <transition
                         appear
@@ -43,7 +48,7 @@
                             {{ unreadNotificationCount }}
                         </q-badge>
                     </transition>
-                </q-btn>
+                </Button>
                 <div
                     class="relative-position"
                     :style="{
@@ -80,8 +85,10 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
+import {useUserStore} from '@/store/user'
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useDebounceFn } from "@vueuse/core";
+
 
 const emit = defineEmits(['openFeedback'])
 
@@ -97,8 +104,8 @@ const getNotificationCount = async () => {
     const { count } = await client
         .from("notifications")
         .select("*", { count: "exact", head: true })
-        .eq("read", false);
-
+        .eq("read", false)
+        .eq('profile_id', userId.value)
     return count;
 };
 
@@ -113,5 +120,5 @@ const refresh = useDebounceFn(() => {
     });
 }, 1000);
 
-
+const hasCompletedTutorial = computed(() => useUserStore()?.has_completed_tutorial)
 </script>

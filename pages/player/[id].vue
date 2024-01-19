@@ -273,6 +273,14 @@ watch(editingAvatar, (val) => {
     useSessionStore().toggleAvatarGenerator(val)
 })
 
+onBeforeRouteLeave(() => {
+    if (editingAvatar.value) {
+        editingAvatar.value = false;
+        return false;
+    }
+    return true;
+})
+
 
 
 

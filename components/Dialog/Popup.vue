@@ -23,6 +23,9 @@
     // border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     height: calc(100 * var(--vh, 1vh) - 82px);
+    @include sm {
+        height: calc(100 * var(--vh, 1vh) - 92px);
+    }
     width: calc(100vw - (2 * var(--space-xs)));
     max-height: v-bind(maxHeight);
     max-width: calc(1300px - (2 * var(--space-xs)));
@@ -39,21 +42,27 @@
        }
     }
     &:not(.bottom) {
-        top: 65px;
+        top: $app-header-height-xs;
+        @include sm {
+            top: $app-header-height-sm;
+        }
     }
 
      &.right{
         right: 0;
-        @include sm {
-            right: v-bind(desktopRight);
+        // @include md {
+        //     right: v-bind(desktopRight);
 
+        // }
+        @include md {
+            right: var(--space-lg)
         }
     }
     &:not(.right) {
         left: 0;
         right: 0;
     }
-    @include sm {
+    @include md {
          height: calc(100 * var(--vh, 1vh) - 80px);
          margin-left: auto;
         margin-right: auto;
@@ -120,7 +129,7 @@ const { x: mouseX, y: mouseY } = useMouse();
 const percentX = ref(0);
 const percentY = ref(0);
 
-const desktopRight = computed(() => `calc(${window.innerWidth * ((100 - percentX.value) / 100)}px - (${props.maxWidth} / 2))`)
+const desktopRight = computed(() => `calc(${window.innerWidth * ((100 - percentX.value) / 100)}px - (${props.maxWidth} / 2) + var(--space-xs))`)
 
 const timeline = ref(null)
 
@@ -153,11 +162,11 @@ ready.value = true;
         }
     );
 
-    tl.from(".popup-container--slot-content", {
-        opacity: 0,
-        duration: 0.1,
+    // tl.from(".popup-container--slot-content", {
+    //     opacity: 0,
+    //     duration: 0.1,
         
-    });
+    // });
     tl.to(`#overlay-${uniqueId}`, {
         opacity: 1,
     })

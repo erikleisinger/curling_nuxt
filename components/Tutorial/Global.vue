@@ -4,6 +4,7 @@
             v-if="!isPlayerPage && (!hasRink || !hasAvatar) && !drawerOpen"
             elementId="global-menu-toggle"
             tutorialText="Let's get your profile set up! Click on the menu button to open the navigation drawer."
+            :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
         <TutorialHighlight
             v-else-if="
@@ -13,36 +14,43 @@
             tutorialText="Click your avatar to go to your player page."
             target="nav-drawer-player-avatar"
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
         <TutorialHighlight
             v-else-if="showAddTeam"
             elementId="dashboard-add-team-button"
             tutorialText="Looks like you aren't on any teams! Click the add button to get started."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
          <TutorialHighlight
             v-else-if="showAddTeamMenu"
             elementId="dashboard-add-team-menu"
             tutorialText="If your team already exists on Pebble, you can search for it and request to join. Otherwise, add your team by clicking Create new team."
             bottom
+            square
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
            <TutorialHighlight
             v-else-if="showTeamRequest"
             elementId="team-page-requests-handler"
             tutorialText="If you'd like to join this team, click on Request to join team."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
                 <TutorialHighlight
             v-else-if="showTeamRequestDone"
             elementId="global-logo"
             tutorialText="Great! You've requested to join the team. while you wait for a member of the team to approve your request, you can head back to the dashboard to check out your team statistics."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
                  <TutorialHighlight
             v-else-if="showTeamCreateDone"
             elementId="global-logo"
             tutorialText="Great! You've created a team. Now let's go back to dashboard to view your stats."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
       
         <TutorialHighlight
@@ -50,30 +58,37 @@
             elementId="player-page-settings-tab"
             tutorialText="Click your settings to modify your profile."
             bottom
+            square
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
         <TutorialHighlight
             v-else-if="showRinkHighlight"
             elementId="edit-player-rink-btn"
             tutorialText="Click the edit button to select a home rink."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
         <TutorialHighlight
             v-else-if="showAvatarHighlight"
             elementId="player-page-edit-avatar"
             tutorialText="Click to customize your personal avatar"
             bottom
+            rounded
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
          <TutorialHighlight
             v-else-if="showBackFromProfile"
             elementId="global-logo"
             tutorialText="Great! Now lets go back to the dashboard and get you on a team."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
          <TutorialHighlight
             v-else-if="showAddGame"
             elementId="global-rings-menu"
             tutorialText="To see your team stats, you'll first need to add a game. To do that, click on the rings menu and select 'New game'."
             bottom
+              :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
         />
     </div>
 </template>

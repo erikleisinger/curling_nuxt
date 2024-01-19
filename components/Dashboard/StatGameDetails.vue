@@ -1,5 +1,5 @@
 <template>
-    <GlobalMenu v-model="showGameInfo" :closeOnOutsideClick="false">
+    <GlobalMenu v-model="showGameInfo">
         <DashboardLineChartGameInfo
                     :data="data"
                     :type="type"
@@ -19,7 +19,7 @@ const props = defineProps({
 
 const gameId = computed(() => props.data?.game_id);
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", 'close']);
 
 const {getColor} = useColor();
 

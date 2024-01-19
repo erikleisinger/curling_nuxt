@@ -28,7 +28,7 @@
                 :data-index="i"
             >
                 <!--  -->
-                <LazyAchievementHistoryItem :item="a" />
+                <AchievementHistoryItem :item="a" />
 
                 <q-separator />
             </div>
@@ -36,7 +36,7 @@
         </div>
         <div
             class="row justify-center show-more__container"
-            v-if="!isLoading && notificationsPaginated?.length < notificationCount && isOpen"
+            v-if="!isLoading && isSuccess && notificationsPaginated?.length < notificationCount && isOpen"
         >
             <q-btn flat text color="blue" @click="showMore">Show more</q-btn>
         </div>
@@ -96,10 +96,11 @@ isOpen.value = val;
     }
 };
 
+
 // FETCH
 
 const getNotifications = async () => {
-    initialized.value = true;
+    // initialized.value = true;
     const client = useSupabaseClient();
 
     const { data } = await client.rpc("get_user_notifications", {
@@ -109,13 +110,19 @@ const getNotifications = async () => {
     return data;
 };
 
+const {open} = toRefs(props)
+
 const { isLoading, data: notifications, isSuccess } = useQuery({
     queryKey: ["notifications", userId.value],
     queryFn: getNotifications,
     refetchOnWindowFocus: false,
-    enabled: !initialized.value || props.open,
+    // enabled: !initialized.value || props.open,
+    enabled: open,
     select: (val) => {
         setUnread(val);
+        setTimeout(() => {
+            initialized.value = true;
+        }, 1000)
         return val;
     },
 });
@@ -181,13 +188,13 @@ const scrollContainer = useParentElement(historyContainer);
 
 const { arrivedState } = useScroll(scrollContainer);
 
-// watch(
-//     () => arrivedState.bottom,
-//     (val) => {
-//         if (!val) return;
-//         showMore();
-//     }
-// );
+watch(
+    () => arrivedState.bottom,
+    (val) => {
+        if (!val || !initialized.value) return;
+        showMore();
+    }
+);
 
 // animate notifications
 

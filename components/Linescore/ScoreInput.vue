@@ -18,8 +18,5 @@ import {useEventListener} from '@vueuse/core'
     const props = defineProps({
         score: Object
     })
-    
-    useEventListener(window, 'deviceorientation', (e) => {
-        console.log('orientation changed: ', e)
-    }, true)
+
 </script>

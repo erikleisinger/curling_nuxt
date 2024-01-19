@@ -43,13 +43,13 @@
                         a member.
                     </div>
                     <div class="full-width column items-center q-mt-md">
-                        <q-btn
+                        <Button
                             rounded
-                            color="primary"
+                            color="mint"
                             @click="
                                 dialogStore.toggleTeamCreator({ open: true })
                             "
-                            >Create new team</q-btn
+                            >Create new team</Button
                         >
                     </div>
                     <div class="full-width q-mt-md">
