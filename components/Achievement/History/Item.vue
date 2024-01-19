@@ -99,7 +99,6 @@ $append-icon-size: 1.7em;
 
     .game-result__icon {
         border: 1px solid black;
-        // clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         border-radius: 50%;
         color: green;
         font-size: calc(var(--text-md) - 0.1em);
@@ -115,7 +114,6 @@ $append-icon-size: 1.7em;
             rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
         .game-result--border {
             position: absolute;
-            // margin: auto;
             height: calc(100% + 4px);
             width: calc(100% + 4px);
             top: -2px;
@@ -124,12 +122,10 @@ $append-icon-size: 1.7em;
             bottom: -2px;
             background-color: white;
             border-radius: inherit;
-            //  clip-path: polygon(50% 10%, 100% 50%, 50% 90%, 0% 50%);
             z-index: 0;
             &:before {
                 content: "";
                 position: absolute;
-                // margin: auto;
                 border-radius: inherit;
                 height: calc(100% - 5px);
                 width: calc(100% - 5px);
@@ -140,26 +136,19 @@ $append-icon-size: 1.7em;
                 margin: auto;
                 background-color: white;
                 border: 1px solid rgba(0, 0, 0, 0.05);
-                //  clip-path: polygon(50% 10%, 100% 50%, 50% 90%, 0% 50%);
                 z-index: 0;
             }
             &.tie {
-                // box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-                // rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
                 &:before {
                     background: $bg-badge--baby-blue;
                 }
             }
             &.win {
-                // box-shadow: rgba(0, 255, 21, 0.25) 0px 6px 12px -2px,
-                // rgba(2, 69, 0, 0.3) 0px 0px 4px 1px;
                 &:before {
                     background: $bg-badge--green;
                 }
             }
             &.loss {
-                // box-shadow: rgba(255, 0, 0, 0.25) 0px 6px 12px -2px,
-                // rgba(255, 15, 15, 0.3) 0px 0px 4px 1px;
                 &:before {
                     background: $bg-badge--pale-red;
                 }
@@ -169,7 +158,6 @@ $append-icon-size: 1.7em;
         border-radius: 50%;
         border: 3px solid white;
         .result-text {
-            // background-color: white;
             height: fit-content;
             padding-top: 4px;
             color: inherit;

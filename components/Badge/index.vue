@@ -11,14 +11,12 @@
         <div class="underlay">
             <slot name="underlay" />
         </div>
-        <!-- <div class="relative-position" style="margin: auto"> -->
                 <BadgeIcon
                     :height="iconOnly ? iconHeight : $q.screen.xs ? '6em' : '8em'"
                     class="badge-icon"
                     :badge="badge"
                     style="margin: auto"
                 />
-            <!-- </div> -->
         <div v-if="!iconOnly" class="q-mt-sm">
                 <h2 class="text-md  text-center">{{ BADGE_NAMES[badge.name] }}</h2>
             </div>
@@ -55,17 +53,12 @@
 .badge__container {
     position: relative;
     cursor: pointer;
-    // display: grid;
-    // grid-template-rows: v-bind(gridRows);
-    // border: 1px solid rgba(0,0,0,0.05);
     padding: var(--space-xs);
     border-radius: 8px;
-    // background-color: rgba(255, 255, 255, 0.8);
     height: min-content;
     max-width: v-bind(width);
     min-width: v-bind(width);
     box-sizing: border-box;
-    // box-shadow: $pretty-shadow;
     &.icon-only {
         background-color: transparent;
         max-width: unset;

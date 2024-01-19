@@ -21,18 +21,17 @@
             </q-item>
         </div>
         <div v-else-if="!isLoading && isOpen">
-            <!-- <transition-group appear tag="div" @enter="onEnter"> -->
+        
             <div
                 v-for="(a, i) in notificationsPaginated"
                 :key="a.id"
                 :data-index="i"
             >
-                <!--  -->
                 <AchievementHistoryItem :item="a" />
 
                 <q-separator />
             </div>
-            <!-- </transition-group> -->
+     
         </div>
         <div
             class="row justify-center show-more__container"
@@ -49,13 +48,8 @@
 }
 </style>
 <script setup>
-import { useUserTeamStore } from "@/store/user-teams";
 import { useQuery } from "@tanstack/vue-query";
-import { useQueryClient } from "@tanstack/vue-query";
-import { useDebounceFn, useParentElement, useScroll } from "@vueuse/core";
-import gsap from "gsap";
-
-const queryClient = useQueryClient();
+import {  useParentElement, useScroll } from "@vueuse/core";
 
 const props = defineProps({
     modelValue: Number,
@@ -195,23 +189,6 @@ watch(
         showMore();
     }
 );
-
-// animate notifications
-
-const onEnter = (el, done) => {
-    const toSubtract = CURSOR_INCREMENT;
-    gsap.from(el, {
-        opacity: 0,
-        x: 50,
-        duration: 0.2,
-        delay:
-            (el.dataset.index -
-                (el.dataset.index >= CURSOR_INCREMENT ? toSubtract : 0)) *
-            0.1,
-        onComplete: done,
-        ease: "sine",
-    });
-};
 </script>
 <script>
 export default {

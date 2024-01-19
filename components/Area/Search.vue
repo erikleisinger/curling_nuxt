@@ -1,5 +1,4 @@
 <template>
-    <!-- <Teleport to="body"> -->
     <div class="search-container--floating" ref="searchBar">
         <div class="search__container--floating">
             <q-input
@@ -15,7 +14,6 @@
                 autofocus
                 ref="input"
             >
-                <!-- :hint="global && !hideHint ? 'Searching worldwide' : ''" -->
                 <template v-slot:before v-if="!hideIcons">
                     <slot name="before" />
                 </template>
@@ -31,7 +29,6 @@
                 </template>
             </q-input>
         </div>
-        <!-- :style="{height: `calc(100% - ${searchBarHeight}px)`}" -->
         <transition appear name="expand-shrink" mode="out-in">
             <q-list
                 class="search-results__container z-top"
@@ -127,7 +124,6 @@
             </q-list>
         </transition>
     </div>
-    <!-- </Teleport> -->
 </template>
 <style lang="scss" scoped>
 .expand-shrink-enter-active,

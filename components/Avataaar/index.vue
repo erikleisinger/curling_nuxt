@@ -126,7 +126,6 @@
                                         id="Circle-Background"
                                         xlink:href="#path-1"
                                     ></use>
-                                    <!-- fill='#E6E6E6' -->
                                     <g
                                         id="Color/Palette/Blue-01"
                                         mask="url(#mask-1)"
@@ -141,7 +140,6 @@
                                         ></rect>
                                       
                                     </g>
-                                        <!-- <circle cx="49.8%" cy="43%" r="44.5%" fill="none" stroke-width="8" stroke="red"/> -->
                                 </g>
                            
                                 <mask id="mask-2" fill="white">
