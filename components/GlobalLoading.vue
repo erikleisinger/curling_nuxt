@@ -26,8 +26,6 @@
 </template>
 <style lang="scss" scoped>
 .global-loading__wrap {
-    width: 100vw;
-    height: calc(100 * var(--vh, 1vh));
     margin: auto;
     position: fixed;
     top: 0;
@@ -35,6 +33,7 @@
     @include bg-blue-side;
     left: 0;
     right: 0;
+    bottom: 0;
     .global-loading__inner {
         width: $app-width;
         position: relative;
