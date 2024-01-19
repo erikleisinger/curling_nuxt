@@ -87,7 +87,6 @@ const leftVal = ref('unset');
 const rightVal = ref('unset')
 
 const getXVal = () => {
-    // leftVal.value = x.value - (width.value / 2)
     if (x.value + (width.value / 2) >= window.innerWidth) {
         leftVal.value = 0;
     } else {

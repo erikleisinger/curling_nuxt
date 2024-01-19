@@ -74,6 +74,9 @@
                         </div>
                     </template>
                 </LinescoreGrid>
+                <q-skeleton v-else type="rect" :height="$q.screen.xs ? '75px' : '120px'" width="100%">
+
+                </q-skeleton>
                 <div class="footer-caption row justify-between items-center">
                     <div class="text-caption ">
                     {{ toTimezone(gameData?.start_time, "MMMM D, YYYY") }}

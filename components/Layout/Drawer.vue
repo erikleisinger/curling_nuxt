@@ -1,4 +1,5 @@
 <template>
+<div>
     <div class="underlay" v-if="$q.screen.xs && open"/>
     <div
         class="nav-drawer"
@@ -93,6 +94,7 @@
             </q-list>
         </div>
     </div>
+</div>
 </template>
 <style lang="scss" scoped>
 .player-name__text {
