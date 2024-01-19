@@ -43,18 +43,8 @@ export default defineNuxtConfig({
             animations: [
                 "fadeIn",
                 "fadeOut",
-                "fadeInDown",
-                "fadeOutUp",
-                "shakeX",
-                "slideInUp",
-                "slideInRight",
                 "slideInLeft",
-                "slideInDown",
-                "slideOutLeft",
-                "slideOutUp",
                 "slideOutRight",
-                "slideOutUp",
-                "slideOutDown",
                 "zoomIn",
                 "zoomOut"
             ],
