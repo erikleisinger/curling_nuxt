@@ -16,7 +16,6 @@
                 :animateRing="!!(editing && selectColor && selections?.color)"
                 :highlight="false"
                 @click="onAvatarClick"
-                v-touchable="editing && !selections?.name"
                 v-memo="[
                     selections?.id,
                     selections?.color,

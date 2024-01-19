@@ -164,21 +164,6 @@ const close = () => {
     showing.value = false;
                 open.value = false;
                 emit('close')
-    // gsap.fromTo(
-    //     `#${uniqueId}`,
-    //     {
-    //         scaleY: 1,
-    //     },
-    //     {
-    //         scaleY: 0,
-    //         transformOrigin: reverseY.value ? "bottom" : "top",
-    //         duration: 0.2,
-    //         onComplete: () => {
-    //             showing.value = false;
-    //             open.value = false;
-    //         },
-    //     }
-    // );
 };
 
 onClickOutside(menu, (e) => {

@@ -38,7 +38,7 @@
                             class="text-caption"
                             style="line-height: 1; margin-top: 2px"
                         >
-                            {{ rink?.name }}
+                            {{ rink?.name ?? 'No home rink' }}
                         </div>
                     </div>
                 </div>

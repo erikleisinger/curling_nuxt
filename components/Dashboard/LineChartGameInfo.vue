@@ -9,8 +9,8 @@
                 <div class="row no-wrap">
                 <div class="relative-position">
                     <h3>
-                        {{ props.data?.points_for }}-{{
-                            props.data?.points_against
+                        {{ props.data?.points_for ?? 0 }}-{{
+                            props.data?.points_against ?? 0
                         }}
                         {{
                             props.data?.win
@@ -299,7 +299,7 @@ const { isLoading, data: gameData } = useQuery({
 
 const opposition = computed(() => {
     if (home.value?.team_id === props.data.team_id)
-        return !away.value?.id ? {
+        return !away.value?.team?.id ? {
     id: 0,
     name: away.value?.placeholder} : away.value?.team
     return home.value?.team

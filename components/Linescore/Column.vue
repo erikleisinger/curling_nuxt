@@ -189,14 +189,14 @@ const props = defineProps({
     visible: Boolean,
 });
 
-const emit = defineEmits(["shake", "remove", "update:model-value", "click", 'endGame']);
+const emit = defineEmits(["shake", "remove", "update:modelValue", "click", 'endGame']);
 
 const score = computed({
     get() {
         return props.modelValue;
     },
     set(val) {
-        emit("update:model-value", val);
+        emit("update:modelValue", val);
     },
 });
 

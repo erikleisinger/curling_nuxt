@@ -32,7 +32,7 @@
 
 const diff = computed(() => {
 const currentPercent = calcStat(props.stats, props.statName)
-    const totalPercent = (total.value[totalPercentMap[props.statName]] ?? 0) * 100;
+    const totalPercent = (total.value[totalPercentMap[props.statName]] ?? 0);
     return Number((currentPercent - totalPercent).toFixed(1));
 })
 

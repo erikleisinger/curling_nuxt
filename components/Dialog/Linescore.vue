@@ -173,6 +173,8 @@
                                         @shake="concede(end)"
                                         @endGame="setOver(end)"
                                         :inverted="inverted"
+                                         @click="onDesktopScoreClick(end)"
+                                       
                                     />
                                 </div>
                             </LinescoreScrollerSection>
@@ -257,6 +259,8 @@
                                     "
                                     @shake="concede(end)"
                                     @click="onDesktopScoreClick(end)"
+                                    
+                                
                                 />
                             </div>
                             <div style="min-width: 12vw" id="scrollend" />
@@ -545,8 +549,24 @@ const setVisible = (index) => {
     visible.value = index;
 };
 
+const validateScore = (endNo) => {
+if (score.value[endNo - 1] && score.value[endNo-1].home === 'X') {
+        Object.keys(score.value).forEach((key) => {
+            if (key < endNo && score.value[key].home === 'X') {
+                score.value[key] = {
+                    home: 0,
+                    away: 0,
+                }
+            } 
+        })
+    }
+}
+
 const onDesktopScoreClick = (e) => {
     visible.value = e;
+    validateScore(e)
+
+    
 };
 
 const scroller = ref(null);
@@ -642,7 +662,10 @@ const save = async () => {
     await createEnds(ends, !!editedIdCopy);
 
     await createTeamGameJunction(
-        { ...gameToCreate, home: params?.home?.id, away: params?.away?.id ?? 0, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
+        { ...gameToCreate, home: params?.home?.id, away: !params?.away?.id ? {
+            id: 0,
+            name: params?.away?.name
+        } : params?.away, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
         shouldSendInvitation
     );
 
@@ -651,22 +674,6 @@ const save = async () => {
 
     return navigateTo(`/games/view/${gameId}`);
 };
-
-// const createGameStats = async (team_id_param, game_id_param) => {
-//     const client = useSupabaseClient();
-//     const { data } = await client.rpc("get_team_game_statistics", {
-//         team_id_param,
-//         game_id_param,
-//     });
-//     const [stats] = data;
-//     if (!stats) return;
-//     const { errors } = await client.from("team_stats").insert({
-//         ...stats,
-//         team_id: team_id_param,
-//         game_id: game_id_param,
-//     });
-//     if (errors) console.error(errors);
-// };
 
 const createTeamGameJunction = async (game, isPending) => {
     const {
@@ -687,10 +694,10 @@ const createTeamGameJunction = async (game, isPending) => {
             },
             {
                 game_id,
-                team_id: away,
+                team_id: away?.id,
                 color: away_color,
                 pending: isPending,
-                placeholder: away?.id ? null : away?.name ?? 'Unnamed opposition',
+                placeholder: away?.id ? null : (away?.name ?? 'Unnamed opposition'),
             },
         ]);
 };
@@ -941,4 +948,5 @@ const setRink = () => {
 watch(() => gameParams.value.home, (val) => {
     setRink();
 })
+
 </script>

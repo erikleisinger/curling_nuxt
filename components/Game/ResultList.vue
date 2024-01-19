@@ -317,7 +317,7 @@ const getGames = async () => {
         placeholder,
         points_scored
 
-    `)
+    `).eq('team_id', props.teamId)
 
     data.forEach((gameTeam) => {
         const {team, game_id, points_scored, color, placeholder} = gameTeam;

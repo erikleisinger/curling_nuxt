@@ -32,8 +32,4 @@ const showGameInfo = computed({
     },
 });
 
-const show = ref(false)
-onMounted(() => {
-    show.value = true;
-})
 </script>

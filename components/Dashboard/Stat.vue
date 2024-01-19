@@ -56,7 +56,7 @@
                         labels
                         clickable
                         @click="onClick"
-                       
+                        v-model="chart"
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
               
                  
@@ -95,7 +95,7 @@
                 :average="totalTile"
                 :betterThanAverage="betterThanAverage"
                 :worldwide="average"
-                 @view="viewOnChart"
+              
             />
         </div>
     </DashboardTile>
@@ -285,6 +285,8 @@ const onClick = useDebounceFn((e) => {
         showGameInfo.value = true;
     });
 },50);
+
+const chart = ref(null)
 
 const viewOnChart = (index) => {
     const datasetMeta = chart.value?.getDatasetMeta(0)

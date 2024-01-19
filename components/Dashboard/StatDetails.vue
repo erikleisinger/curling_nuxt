@@ -416,7 +416,7 @@
                         v-if="!!lowestGame"
                     >
                         {{ toTimezone(highestGame.start_time, "MMMM D, YYYY") }}
-                        <q-btn
+                        <!-- <q-btn
                             flat
                             round
                             icon="open_in_new"
@@ -425,7 +425,7 @@
                             @click="emit('view', highestLowest?.highestIndex)"
                             class="q-ml-xs"
                             color="white"
-                        />
+                        /> -->
                     </div>
                 </div>
                 <div class="row items-end">
@@ -466,7 +466,7 @@
                         v-if="!!lowestGame"
                     >
                         {{ toTimezone(lowestGame.start_time, "MMMM D, YYYY") }}
-                        <q-btn
+                        <!-- <q-btn
                             flat
                             round
                             icon="open_in_new"
@@ -475,7 +475,7 @@
                             @click="emit('view', highestLowest?.lowestIndex)"
                             class="q-ml-xs"
                             color="white"
-                        />
+                        /> -->
                     </div>
                 </div>
 

@@ -59,8 +59,9 @@
             </div>
 
             <div class="row items-end no-wrap">
-                <div class="text-caption q-mr-sm row no-wrap items-center" v-if="hasValue">
+                <div class="text-caption q-mr-sm row no-wrap items-center" v-if="hasValue && showAvgDiff">
                     <q-icon
+                    v-if="avgDiff !== 0"
                         :name="
                             avgDiff > 0 ? 'arrow_drop_up' : 'arrow_drop_down'
                         "
@@ -72,7 +73,8 @@
                         }"
                     />
 
-                    {{ avgDiff }}{{ isPercent ? "%" : "" }}
+                   <span v-if="avgDiff"> {{ avgDiff }}{{ isPercent ? "%" : "" }}</span>
+                   <span v-else>-</span>
                 </div>
                 <h5 :style="{ color }">{{ cleanNumber(value) }}</h5>
             </div>
@@ -211,6 +213,7 @@ import {
     STAT_TYPE_SUBTITLES,
     NON_PERCENT_STATS,
     STAT_FIELD_TITLES,
+    STAT_TYPES,
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
 const props = defineProps({
@@ -303,8 +306,10 @@ const isPercent =
 
 const hasValue = computed(() => !Number.isNaN(value.value));
 
+const showAvgDiff = computed(() => props.statField !== STAT_FIELDS.WITH_HAMMER && props.statType !== STAT_TYPES.HAMMER_EFFICIENCY)
+
 const avgDiff = computed(() =>
-    (value.value * (isPercent ? 100 : 1) - props.average).toFixed(1)
+    Number((value.value * (isPercent ? 100 : 1) - props.average).toFixed(1))
 );
 
 const cleanNumber = (num) => {

@@ -13,30 +13,12 @@
                 :key="`percentage-${stat}`"
             >
                 <div class=" row no-wrap justify-center">
-                   <!-- <div class="row col-grow justify-start items-center">
-                        <div class="team-avatar__container">
-                            <TeamAvatar
-                                :teamId="teams.home.team_id"
-                                :color="teams.home.color"
-                                :viewable="false"
-                            />
-                        </div>
-                    </div> -->
                     <div>
                         <h2 class=" text-center full-width">
                             {{STAT_NAMES[stat]}}
                         </h2>
                         <h3>{{STAT_DESCRIPTIONS[stat]}}</h3>
                     </div>
-                    <!-- <div class="row col-grow justify-end items-center">
-                        <div class="team-avatar__container">
-                            <TeamAvatar
-                                :teamId="teams.away.team_id"
-                                :color="teams.away.color"
-                                :viewable="false"
-                            />
-                        </div>
-                    </div> -->
                 </div>
 
                 <div class="row no-wrap" >

@@ -25,7 +25,7 @@
                 data-flip-id="home-name"
                 class="team-name--color"
             >
-                {{ home.team?.name }}
+                {{ !home.team?.id ? home?.name : home?.team?.name }}
             </div>
         </div>
         <div
@@ -44,7 +44,7 @@
                 class="text-right team-name--color"
                 data-flip-id="away-name"
             >
-                {{ away.team?.name }}
+                {{ !away.team?.id ? away?.placeholder : away?.team?.name }}
             </div>
             <div class="avatar-container">
                 <TeamAvatar :teamId="away?.team_id" :color="away?.color" :hammer="gameParams.hammer_first_end === away?.team_id || !gameParams.hammer_first_end"  />
@@ -55,7 +55,7 @@
             :class="{ 'hide-sticky': stickied }"
             data-flip-id="home-name"
         >
-            {{ home?.team?.name }}
+            {{ !home.team?.id ? home?.placeholder : home?.team?.name }}
         </h3>
 
         <div
@@ -63,7 +63,7 @@
             style="margin-top: -1.5em; z-index: 1"
         >
          <div v-if="conceded && !stickied">Conceded</div>
-        <div>
+        <div :style="{color: stickied ? 'white' : getColor('slate')}">
             After {{endsPlayed}}
         </div>
        
@@ -73,7 +73,7 @@
             :class="{ 'hide-sticky': stickied }"
             data-flip-id="away-name"
         >
-            {{ away?.team?.name }}
+              {{ !away.team?.id ? away?.placeholder : away?.team?.name }}
         </h3>
     </div>
 </template>
