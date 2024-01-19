@@ -1,10 +1,12 @@
 <template>
+    <div class="underlay" v-if="$q.screen.xs && open"/>
     <div
         class="nav-drawer"
         :class="{ open, mobile: $q.screen.xs }"
         ref="drawer"
         @click="onDrawerClick"
     >
+
         <div
             :style="{ opacity: open || !$q.screen.xs ? 1 : 0 }"
             class="nav-drawer--content"
@@ -188,7 +190,19 @@
             line-height: 40px;
         }
     }
+
+ 
 }
+   .underlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: all;
+        background-color: rgba(0,0,0,0.4);
+        z-index: 12;
+    }
 </style>
 <script setup>
 import { onClickOutside, useSwipe } from "@vueuse/core";
