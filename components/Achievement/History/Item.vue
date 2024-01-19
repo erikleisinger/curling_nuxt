@@ -23,7 +23,7 @@
                 v-if="isBadge"
             />
             <div style="width: 40px" v-else-if="isPlayer">
-                <Avataaar v-bind="parseAvatar(item.profile?.avatar)" />
+                <Avataaar v-bind="parseAvatar(item.profile?.avatar ?? item.info?.avatar)" />
             </div>
 
             <div style="width: 40px" v-else-if="isTeam">

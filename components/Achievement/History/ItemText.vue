@@ -38,8 +38,8 @@
         <span v-if="item.type === 'team_invitation'">You</span>
 
         <strong v-else
-            >{{ item.profile.first_name ?? "Someone" }}
-            {{ item.profile.last_name ?? "" }}
+            >{{ item.profile.first_name ?? item.info?.first_name ?? "Someone" }}
+            {{ item.profile.last_name ?? item.info?.last_name ?? "" }}
         </strong>
     </span>
 
@@ -56,7 +56,7 @@
 
     <!-- TEAM REQUEST -->
     <span v-else-if="item.type === 'team_request'">{{
-        `requested to join `
+        ` requested to join `
     }}</span>
     <TeamChip
         v-if="playerFirst"

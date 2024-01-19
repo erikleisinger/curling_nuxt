@@ -27,6 +27,7 @@
         ref="text"
     >
         {{ tutorialText }}
+
     </div>
 </template>
 <style lang="scss" scoped>
