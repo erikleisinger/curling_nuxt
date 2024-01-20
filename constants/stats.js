@@ -230,45 +230,45 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.WITH_HAMMER]: (type) => type === STAT_TYPES.HAMMER_EFFICIENCY ? 'Average points scored' : 'With hammer',
     [STAT_FIELDS.WITHOUT_HAMMER]: () => 'Without hammer',
 
-    [STAT_FIELDS.WITH_HAMMER_EE]: () => 'With hammer',
-    [STAT_FIELDS.WITHOUT_HAMMER_EE]: () => 'Without hammer',
+    [STAT_FIELDS.WITH_HAMMER_EE]: () => 'Extra end with ',
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: () => 'Extra end without',
 
-    [STAT_FIELDS.WITH_HAMMER_LE]: () => 'With hammer',
+    [STAT_FIELDS.WITH_HAMMER_LE]: () => 'Coming home with',
     [STAT_FIELDS.WITH_HAMMER_LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITH_HAMMER_LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITH_HAMMER_LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITH_HAMMER_LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITH_HAMMER_LE_D2]: () => 'Down 2+',
 
-    [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Without hammer',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: () => 'Coming home without',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: () => 'Down 2+',
 
-    [STAT_FIELDS.WITH_HAMMER_2LE]: () => 'With hammer',
+    [STAT_FIELDS.WITH_HAMMER_2LE]: () => '2nd-last end with',
     [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITH_HAMMER_2LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITH_HAMMER_2LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITH_HAMMER_2LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITH_HAMMER_2LE_D2]: () => 'Down 2+',
 
-    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: () => 'Without hammer',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: () => '2nd-last end without',
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: () => 'Down 2+',
 
-    [STAT_FIELDS.WITH_HAMMER_3LE]: () => 'With hammer',
+    [STAT_FIELDS.WITH_HAMMER_3LE]: () => '3rd-last end with',
     [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITH_HAMMER_3LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITH_HAMMER_3LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITH_HAMMER_3LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITH_HAMMER_3LE_D2]: () => 'Down 2+',
 
-    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: () => 'Without hammer',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: () => '3rd-last end without',
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: () => 'Tied',
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: () => 'Up 1',
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: () => 'Up by 2+',
@@ -639,3 +639,33 @@ export const STAT_TYPE_SUBTITLES = {
         return `(${sum}/${length})`
     },
 }
+
+export const STAT_RANK_ORDER = {
+    [STAT_TYPES.WINS]: ({wins_average}) => wins_average,
+    [STAT_TYPES.BLANK_ENDS]: () => 0,
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: () => 0,
+    [STAT_TYPES.HAMMER_LAST_END]: ({hammer_last_end}) => hammer_last_end,
+    [STAT_TYPES.FORCE_EFFICIENCY]: ({force_efficiency}) => force_efficiency,
+    [STAT_TYPES.HAMMER_EFFICIENCY]: ({hammer_conversion_average}) => hammer_conversion_average,
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: ({points_for}) => points_for,
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: ({points_against}) => points_against,
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: ({ends_for}) => ends_for,
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: ({ends_against}) => ends_against,
+    [STAT_TYPES.STEAL_DEFENSE]: ({steal_defense}) => steal_defense,
+    [STAT_TYPES.STEAL_EFFICIENCY]: ({steal_efficiency}) => steal_efficiency,
+    [STAT_TYPES.POINTS_PER_END]: (data) => {
+        const { points_for, ends_played } = data;
+
+        return points_for / ends_played;
+    },
+};
+
+export const INVERTED_STATS = [STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME]
+
+export const POS_STATS = [STAT_FIELDS.WITH_HAMMER_LE, STAT_FIELDS.WITH_HAMMER_2LE, STAT_FIELDS.WITH_HAMMER_3LE, STAT_FIELDS.WITH_HAMMER_EE];
+export const NEG_STATS = [
+    STAT_FIELDS.WITHOUT_HAMMER_LE,
+    STAT_FIELDS.WITHOUT_HAMMER_2LE,
+     STAT_FIELDS.WITHOUT_HAMMER_3LE,
+     STAT_FIELDS.WITHOUT_HAMMER_EE
+];

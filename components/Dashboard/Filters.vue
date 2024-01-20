@@ -1,6 +1,6 @@
 <template>
-    <div class="team-filters__scroller hide-scroll">
-        <div class="row no-wrap team-filters__container">
+    <div class="team-filters__scroller hide-scroll" ref="container" >
+        <div class="row no-wrap team-filters__container" >
             <div
                 class="avatar-container"
                 v-for="team in teams"
@@ -49,8 +49,8 @@
             </Button>
         </div>
     </div>
-    <div class="full-width filters__container">
-        <div class="full-width row justify-center">
+    <div class="full-width filters__container" >
+        <div class="full-width row justify-center" >
             <Button @click="revealed = !revealed" flat color="mint"
                 ><Rings
                     class="q-mr-xs"
@@ -64,7 +64,7 @@
                         revealed ? getColor('white') : getColor('royalBlue')
                     "
                 />
-                <span :style="{ color: revealed ? getColor('mint') : 'white' }">
+                <span :style="{ color: revealed ? getColor('mint') : 'white' }" >
                     {{ revealed ? "Show less filters" : "Show more filters" }}
                 </span></Button
             >
@@ -162,6 +162,9 @@
     max-width: 100%;
     overflow: auto;
     padding: var(--space-sm);
+    &.stick {
+        background-color: white;
+    }
 }
 .team-filters__container {
     z-index: 1;
@@ -180,6 +183,7 @@ import {useSessionStore} from '@/store/session'
 import Team from "@/store/models/team";
 import Player from "@/store/models/player";
 import Rink from "@/store/models/rink";
+import {useThrottleFn, useElementSize, useScroll} from '@vueuse/core'
 const props = defineProps({
     modelValue: Object,
     statType: String,
@@ -279,4 +283,5 @@ const addTeamMenuOpen = ref(false);
 watch(addTeamMenuOpen, (val) => {
     useSessionStore().toggleAddTeamMenu(val)
 })
+
 </script>

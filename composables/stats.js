@@ -62,10 +62,9 @@ export const useStats = () => {
     const getCumulativeStat = (statsArray, val) => { 
         const cumulative = statsArray.reduce((all, current) => {
             const value = typeof val === 'function' ? val(current) : current[val]
-            if (!value) return all;
+            if (Number.isNaN(value)) return all;
             return all + value;
         }, 0)
-
         return cumulative / statsArray.length;
         
     }

@@ -1,19 +1,7 @@
 <template>
-    <div class="details-item__container">
-        <div
-            class="row__container row no-wrap justify-between items-center"
-            :class="{
-                subitem,
-                expanded,
-                clickable: !!slots.more,
-                pos: POS_STATS.includes(statField),
-                neg: NEG_STATS.includes(statField),
-            }"
-            @click="onClick"
-        >
-            <div>
-                <h4>
-                    <q-icon
+<DashboardStatDetailsItemTemplate :color="POS_STATS.includes(statField) ? getColor('mint') : getColor('red')" :subitem="subitem" v-model="expanded">
+    <template v-slot:icon>
+  <q-icon
                         name="circle"
                         size="0.7em"
                         :style="{ color: getColor(statField) }"
@@ -43,23 +31,15 @@
                         class="q-mr-xs"
                         v-if="NEG_STATS.includes(statField)"
                     />
-                 
-                    {{ STAT_FIELD_TITLES[statField](statType) }}
-                       <span class="text-caption font-secondary" v-if="subtitle && subitem">
-                       {{subtitle}}
-                    </span>
-                    <q-btn dense flat round :icon="expanded ? 'arrow_drop_down' : 'arrow_drop_up'" size="0.5em" v-if="slots.more"/>
-                </h4>
-                <h6 :class="{ hasIcon }" v-if="subtitle && !subitem">
-                   {{subtitle}}
-                </h6>
-            </div>
-            <div  class="stat-line">
-                <span style="visibility:hidden">a</span>
-            </div>
-
-            <div class="row items-end no-wrap">
-                <div class="text-caption q-mr-sm row no-wrap items-center" v-if="hasValue && showAvgDiff">
+    </template>
+    <template v-slot:title>
+{{ STAT_FIELD_TITLES[statField](statType) }}
+    </template>
+    <template v-slot:subtitle v-if="subtitle">
+   {{subtitle}}
+    </template>
+    <template v-slot:value>
+         <div class="text-caption q-mr-sm row no-wrap items-center" v-if="hasValue && showAvgDiff">
                     <q-icon
                     v-if="avgDiff !== 0"
                         :name="
@@ -77,19 +57,12 @@
                    <span v-else>-</span>
                 </div>
                 <h5 :style="{ color }">{{ cleanNumber(value) }}</h5>
-            </div>
-        </div>
-        <div
-            class="more__container"
-            v-if="slots.more && expanded"
-            :class="{
-                pos: POS_STATS.includes(statField),
-                neg: NEG_STATS.includes(statField),
-            }"
-        >
-            <slot name="more" />
-        </div>
-    </div>
+    </template>
+    <template v-slot:more v-if="slots.more">
+        <slot name="more"/>
+    </template>
+</DashboardStatDetailsItemTemplate>
+
 </template>
 <style lang="scss" scoped>
 $upcoming-color: rgba(255, 255, 255, 0.7);
@@ -206,13 +179,15 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 </style>
 <script setup>
 import {
+    NEG_STATS,
+    NON_PERCENT_STATS,
+    POS_STATS,
+    STAT_COLORS,
+    STAT_FIELD_FILTER_FUNCTIONS,
+    STAT_FIELD_TITLES,
     STAT_FIELDS_TOTAL,
     STAT_FIELDS,
-    STAT_FIELD_FILTER_FUNCTIONS,
-    STAT_COLORS,
     STAT_TYPE_SUBTITLES,
-    NON_PERCENT_STATS,
-    STAT_FIELD_TITLES,
     STAT_TYPES,
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
@@ -224,6 +199,8 @@ const props = defineProps({
     statType: String,
     subitem: Boolean,
 });
+
+
 
 const { getColor } = useColor();
 
@@ -243,13 +220,6 @@ const HAMMER_POS = [
      STAT_FIELDS.WITH_HAMMER_3LE,
 ];
 
-const POS_STATS = [STAT_FIELDS.WITH_HAMMER_LE, STAT_FIELDS.WITH_HAMMER_2LE, STAT_FIELDS.WITH_HAMMER_3LE, STAT_FIELDS.WITH_HAMMER_EE];
-const NEG_STATS = [
-    STAT_FIELDS.WITHOUT_HAMMER_LE,
-    STAT_FIELDS.WITHOUT_HAMMER_2LE,
-     STAT_FIELDS.WITHOUT_HAMMER_3LE,
-     STAT_FIELDS.WITHOUT_HAMMER_EE
-];
 
 
 
@@ -273,10 +243,10 @@ const stats = computed(() => {
         .query()
         .whereIn("team_id", filteredTeamIds.value)
         .where("rink_id", (val) => {
-            return props.filters.rink ? val === props.filters.rink : true;
+            return props.filters?.rink ? val === props.filters?.rink : true;
         })
         .where("sheet_id", (val) => {
-            return props.filters.sheet ? val === props.filters.sheet : true;
+            return props.filters?.sheet ? val === props.filters?.sheet : true;
         })
         .get();
 });
@@ -323,8 +293,4 @@ const cleanNumber = (num) => {
 
 const expanded = ref(false);
 
-const onClick = () => {
-    if (!slots.more) return;
-    expanded.value = !expanded.value;
-};
 </script>

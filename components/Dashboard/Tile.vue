@@ -196,10 +196,9 @@ const props = defineProps({
     betterThanAverage: Boolean,
     expanded: Boolean,
     percent: {
-        type: Number,
+        type: Number,   
         default: 0,
     },
-    total: Number,
     type: String,
 });
 

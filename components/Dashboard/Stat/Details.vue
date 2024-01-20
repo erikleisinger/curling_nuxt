@@ -16,6 +16,8 @@
             <h5>{{ statsByGame?.length ?? 0 }}</h5>
         </div>
 
+
+
         <!-- END SPECIFIC -->
 
         <section v-if="shouldShowEndStats" name="end stats">
@@ -63,337 +65,7 @@
             />
         </section>
 
-        <!-- HAMMER -->
-
-        <section v-if="shouldShowHammerStats" name="hammer stats">
-            <q-separator class="separator" />
-            <div class="stat-section__header">
-                <h4 class="row items-center justify-center">
-                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    last end*
-                </h4>
-            </div>
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER_LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <!-- <q-separator class="separator" /> -->
-            <div class="stat-section__header">
-                <h4 class="row items-center justify-center">
-                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    2nd-last end*
-                </h4>
-            </div>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER_2LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <!-- <q-separator class="separator" /> -->
-
-            <div class="stat-section__header">
-                <h4 class="row items-center justify-center">
-                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    3rd-last end*
-                </h4>
-                <h5
-                    class="text-caption font-secondary text-italic text-center"
-                    style="margin-top: -0.1em; margin-bottom: -0.4em"
-                >
-                    "The all important"
-                </h5>
-            </div>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER_3LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE"
-                :filters="filters"
-                :average="average"
-            >
-                <template v-slot:more>
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_U2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_U1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_D1"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                    <DashboardStatDetailsItem
-                        :statType="props.type"
-                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_D2"
-                        :filters="filters"
-                        :average="average"
-                        subitem
-                    />
-                </template>
-            </DashboardStatDetailsItem>
-
-            <!-- <q-separator class="separator" /> -->
-            <div class="stat-section__header">
-                <h4 class="row items-center justify-center">
-                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
-                    extra end
-                </h4>
-            </div>
-
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITH_HAMMER_EE"
-                :filters="filters"
-                :average="average"
-            />
-            <DashboardStatDetailsItem
-                :statType="props.type"
-                :statField="STAT_FIELDS.WITHOUT_HAMMER_EE"
-                :filters="filters"
-                :average="average"
-            />
-
-            <div class="q-pa-sm full-width row justify-center text-caption">
-                *does not include games that finish early (handshakes, bell, etc.)
-            </div>
-        </section>
-        <!--  -->
-
-        <!-- SEASON HIGH/LOW -->
+                <!-- SEASON HIGH/LOW -->
         <section
             name="season high and low"
             v-if="!DISABLE_HIGHEST_LOWEST.includes(props.type)"
@@ -502,16 +174,16 @@
             </div>
         </section>
 
-        <!-- WORLD STATS -->
+                        <!-- RINK (and later) WORLD STATS -->
 
-        <section name="global stats">
+         <section name="global stats">
             <q-separator class="separator" />
-            <div class="row__container row justify-between items-center">
+            <!-- <div class="row__container row justify-between items-center">
                 <div>
                     <h4>Worldwide</h4>
-                    <caption class="text-caption">
-                        Average among all teams
-                    </caption>
+                        <caption class="text-caption">
+                            Average among all teams
+                        </caption>
                 </div>
                 <div class="row items-end">
                     <div
@@ -538,22 +210,349 @@
                     </div>
                     <h5>{{ cleanNumber(worldwide) }}</h5>
                 </div>
+            </div> -->
+            <DashboardStatDetailsItemRink :rinkId="homeRink" :teamId="props.filters.teams[0]" :type="type" :average="average" v-if="homeRink"/>
+        </section>
+
+        <!-- HAMMER -->
+
+        <section v-if="shouldShowHammerStats" name="hammer stats">
+            <q-separator class="separator" />
+            <div class="stat-section__header">
+                <h4 class="row items-center justify-center">
+                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
+                    last end*
+                </h4>
             </div>
-            <div
-                class="row__container row justify-between upcoming items-center"
-                v-if="homeRink?.id"
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_LE"
+                :filters="filters"
+                :average="average"
             >
-                <div>
-                    <h4>
-                        {{ homeRink.name }}
-                    </h4>
-                    <caption class="text-caption">
-                        Coming soon
-                    </caption>
-                </div>
-                <h5>-</h5>
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+            
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_LE"
+                :filters="filters"
+                :average="average"
+            >
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+                        <q-separator class="separator" />
+            <div class="stat-section__header">
+                <h4 class="row items-center justify-center">
+                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
+                    extra end
+                </h4>
+            </div>
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_EE"
+                :filters="filters"
+                :average="average"
+            />
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_EE"
+                :filters="filters"
+                :average="average"
+            />
+
+            <q-separator class="separator" />
+            <div class="stat-section__header">
+                <h4 class="row items-center justify-center">
+                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
+                    2nd-last end*
+                </h4>
+            </div>
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_2LE"
+                :filters="filters"
+                :average="average"
+            >
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_2LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE"
+                :filters="filters"
+                :average="average"
+            >
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_2LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+            <q-separator class="separator" />
+
+            <div class="stat-section__header">
+                <h4 class="row items-center justify-center">
+                    <q-icon name="o_hardware" color="white" class="q-mr-xs" />
+                    3rd-last end*
+                </h4>
+                <h5
+                    class="text-caption font-secondary text-italic text-center"
+                    style="margin-top: -0.1em; margin-bottom: -0.4em"
+                >
+                    "The all important"
+                </h5>
+            </div>
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITH_HAMMER_3LE"
+                :filters="filters"
+                :average="average"
+            >
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITH_HAMMER_3LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+            <DashboardStatDetailsItem
+                :statType="props.type"
+                :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE"
+                :filters="filters"
+                :average="average"
+            >
+                <template v-slot:more>
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_U2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_U1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_D1"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                    <DashboardStatDetailsItem
+                        :statType="props.type"
+                        :statField="STAT_FIELDS.WITHOUT_HAMMER_3LE_D2"
+                        :filters="filters"
+                        :average="average"
+                        subitem
+                    />
+                </template>
+            </DashboardStatDetailsItem>
+
+
+
+            <div class="q-pa-sm full-width row justify-center text-caption">
+                *does not include games that finish early (handshakes, bell, etc.)
             </div>
         </section>
+        <!--  -->
+
+
+
+
+
+       
     </div>
 </template>
 <style lang="scss" scoped>
@@ -591,11 +590,14 @@
     }
 
     .stat-section__header {
+        display: none;
         h4 {
             @include smmd-text;
         }
 
-        margin: var(--space-md) 0px;
+        margin-bottom: var(--space-md);
+        margin-top: calc(-1 * var(--space-md));
+        
         background-color: rgba(0, 0, 0, 0.3);
         border-radius: 4px;
         padding: var(--space-xs) 0px;
@@ -604,6 +606,7 @@
 </style>
 <script setup>
 import {
+    INVERTED_STATS,
     NON_PERCENT_STATS,
     STAT_COLORS,
     STAT_FIELDS,
@@ -612,13 +615,13 @@ import {
 } from "@/constants/stats";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
+import Team from '@/store/models/team'
 import Player from "@/store/models/player";
 const props = defineProps({
     average: Number,
     betterThanAverage: Boolean,
     chart: Object,
     filters: Object,
-    total: Number,
     type: String,
     worldwide: Number,
 });
@@ -633,9 +636,7 @@ const { userTeamIds } = useTeam();
 
 const { user: userId } = useUser();
 
-const homeRink = computed(
-    () => useRepo(Player).with("rink").where("id", userId.value).first()?.rink
-);
+
 
 const stats = computed(() => {
     return useRepo(TeamStatsTotal)
@@ -650,6 +651,13 @@ const filteredTeamIds = computed(() => {
         props.filters.teams.includes(id)
     );
 });
+const homeRink = computed(
+    () =>  {
+        if (!props.filters?.teams?.length) return useRepo(Player).with("rink").where("id", userId.value).first()?.rink_id;
+        return useRepo(Team).with('rink').where('id', props.filters.teams[0]).first()?.rink_id
+    }
+        
+);
 
 const statsByGame = computed(() => {
     return useRepo(TeamStats)
@@ -733,7 +741,7 @@ const highestLowest = computed(() => {
     };
 });
 
-const INVERTED_STATS = [STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME]
+
 
 const highest = computed(() => {
     if(INVERTED_STATS.includes(props.type)) return highestLowest.value?.lowest;
@@ -771,6 +779,11 @@ const lowestGame = computed(() => {
 });
 
 const worldwideDiff = computed(() =>
-    (props.average - props.worldwide).toFixed(1)
+    (props.average - props.worldwide).toFixed()
 );
+</script>
+<script>
+export default {
+    name: 'StatDetails'
+}
 </script>

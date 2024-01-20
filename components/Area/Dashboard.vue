@@ -1,7 +1,7 @@
 <template>
     <div class="dashboard__container" id="dashboard">
-        <main class="main-content" ref="mainContent">
-            <section class="filter__container row justify-center">
+        <main class="main-content" ref="mainContent" id="dashboard-scroller">
+            <section class="filter__container row justify-center" >
                 <DashboardFilters v-model="filters" />
             </section>
             <!-- <div class="row no-wrap">
@@ -53,6 +53,9 @@
                     
                 >
                 </DashboardStat>
+                <div v-if="!!expanded" class="full-width q-pa-md row justify-center">
+                    
+                </div>
             </section>
         </main>
     </div>
@@ -104,11 +107,13 @@
         }
         &.expanded {
             grid-template-columns: 1fr;
+            
         }
     }
 
     .filter__container {
         margin: var(--space-lg) 0px;
+
     }
 }
 </style>
@@ -149,13 +154,18 @@ const teamIds = computed(() => [
 
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
-    const { data } = await client.from("team_stats_total").select(`*`);
+    const { data } = await client.from("team_stats_total").select('*');
 
     data.forEach((totalStat) => {
         useRepo(TeamStatsTotal).save({
             ...totalStat,
             team_id: totalStat.id,
         });
+        useRepo(Team).save({
+            id: totalStat?.id,
+            name: totalStat.name,
+            avatar_url: totalStat.avatar_url
+        })
     });
     return data;
 };
@@ -192,7 +202,7 @@ const $q = useQuasar();
 const stats = computed(() => {
     if ($q.screen.xs)
         return [
-            // STAT_TYPES.WINS,
+            STAT_TYPES.WINS,
             STAT_TYPES.POINTS_PER_END,
             // STAT_TYPES.HAMMER_LAST_END,
             STAT_TYPES.POINTS_FOR_PER_GAME,
@@ -209,7 +219,7 @@ const stats = computed(() => {
         ];
 
     return [
-        // STAT_TYPES.WINS,
+        STAT_TYPES.WINS,
         STAT_TYPES.POINTS_PER_END,
         // STAT_TYPES.HAMMER_LAST_END,
         STAT_TYPES.HAMMER_EFFICIENCY,

@@ -302,7 +302,10 @@ const opposition = computed(() => {
         return !away.value?.team?.id ? {
     id: 0,
     name: away.value?.placeholder} : away.value?.team
-    return home.value?.team
+    return !home.value?.team?.id ? {
+        id: 0,
+        name: home.value?.placeholder
+    } : home.value?.team
 });
 
 const goToGame = () => {

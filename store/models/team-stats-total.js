@@ -1,4 +1,5 @@
 import { Model } from "pinia-orm";
+import Team from '@/store/models/team'
 
 export default class TeamStatsTotal extends Model {
     static entity = "team-stats-total";
@@ -23,6 +24,7 @@ export default class TeamStatsTotal extends Model {
             hammer_last_end: this.number(0),
             hammer_last_end_percentile: this.number(0),
             team_id: this.number(0),
+            team: this.belongsTo(Team, 'team_id'),
             points_for: this.number(0),
             points_for_percentile: this.number(0),
             points_against: this.number(0),
@@ -36,7 +38,8 @@ export default class TeamStatsTotal extends Model {
             wins: this.number(0),
             wins_average: this.number(0),
             wins_percentile: this.number(0),
-            ends_played: this.number(0)
+            ends_played: this.number(0),
+            rink_id: this.number()
         };
     }
     get winPercent () {

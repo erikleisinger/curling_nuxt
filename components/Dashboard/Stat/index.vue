@@ -3,7 +3,7 @@
         :type="type"
         :style="{ width: expanded ? '100%' : '' }"
         :percent="totalTile"
-        :total="totalAll"
+
         :expanded="expanded"
         :betterThanAverage="betterThanAverage"
         ref="tile"
@@ -94,7 +94,6 @@
         <div class="stat-expanded__container" v-if="expanded">
             <DashboardStatDetails
                 :type="type"
-                :total="totalAll"
                 :filters="filters"
                 :average="totalTile"
                 :betterThanAverage="betterThanAverage"
@@ -133,6 +132,7 @@ import {
     NON_PERCENT_STATS,
     STAT_COLORS,
     STAT_FIELDS_TOTAL,
+    STAT_RANK_ORDER,
     STAT_TYPES,
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
@@ -207,48 +207,22 @@ const totalTile = computed(() =>
     )
 );
 
-const totalAll = computed(() => {
-    const all = useRepo(TeamStats)
-        .query()
-        .whereIn("team_id", userTeamIds.value)
-        .get();
 
-    return cleanNumber(getCumulativeStat(all, STAT_FIELDS_TOTAL[props.type]));
-});
 
-const STAT_RANK_ORDER = {
-    [STAT_TYPES.WINS]: "wins_average",
-    [STAT_TYPES.BLANK_ENDS]: "",
-    [STAT_TYPES.ENDS_FOR_PER_GAME]: "",
-    [STAT_TYPES.HAMMER_LAST_END]: "hammer_last_end",
-    [STAT_TYPES.FORCE_EFFICIENCY]: "force_efficiency",
-    [STAT_TYPES.HAMMER_EFFICIENCY]: "hammer_conversion_average",
-    [STAT_TYPES.POINTS_FOR_PER_GAME]: "points_for",
-    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: "points_against",
-    [STAT_TYPES.ENDS_FOR_PER_GAME]: "ends_for",
-    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: "ends_against",
-    [STAT_TYPES.STEAL_DEFENSE]: "steal_defense",
-    [STAT_TYPES.STEAL_EFFICIENCY]: "steal_efficiency",
-    [STAT_TYPES.POINTS_PER_END]: (data) => {
-        const { points_for, ends_played } = data;
 
-        return points_for / ends_played;
-    },
-};
 
 const average = computed(() => {
     const all = useRepo(TeamStatsTotal).query().get();
     // .orderBy(STAT_RANK_ORDER[props.type], "desc")
 
     const total = all.reduce((all, current) => {
-        if (typeof STAT_RANK_ORDER[props.type] === "function") {
             return all + STAT_RANK_ORDER[props.type](current);
-        }
-        return all + current[STAT_RANK_ORDER[props.type]];
     }, 0);
 
     return total / all.length;
 });
+
+
 
 const LESS_THAN_STATS = [
     STAT_TYPES.ENDS_AGAINST_PER_GAME,
@@ -310,4 +284,9 @@ watch(() => props.expanded, (val) => {
     showGameInfo.value = false;
     gameInfo.value = null;
 })
+</script>
+<script>
+export default {
+    name: 'Stat'
+}
 </script>
