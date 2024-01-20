@@ -23,9 +23,9 @@ export const STAT_NAMES = {
     [STAT_TYPES.HAMMER_FIRST_END]: 'Hammer in first end',
     [STAT_TYPES.HAMMER_LAST_END]: 'Hammer in last end',
     [STAT_TYPES.WINS]: 'Win %',
-    [STAT_TYPES.POINTS_FOR_PER_GAME]: 'Points for / PG',
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: 'Points per game',
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Points against / PG',
-    [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends for / PG',
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends per game',
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends against / PG',
     [STAT_TYPES.POINTS_PER_END]: 'Points per end'
 
@@ -48,7 +48,7 @@ export const STAT_DESCRIPTIONS = {
 }
 
 export const STAT_COLORS = {
-    [STAT_TYPES.WINS]: 'blue',
+    [STAT_TYPES.WINS]: 'yellow',
     [STAT_TYPES.POINTS_FOR_PER_GAME]: 'mint',
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'red',
     [STAT_TYPES.ENDS_FOR_PER_GAME]: 'mint',
@@ -274,6 +274,61 @@ export const STAT_FIELD_TITLES = {
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: () => 'Up by 2+',
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: () => 'Down 1',
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_D2]: () => 'Down 2+',
+}
+
+export const STAT_FIELD_TITLES_FULL = {
+    [STAT_FIELDS.BLUE]: 'Blue rocks',
+    [STAT_FIELDS.YELLOW]: 'Yellow rocks',
+    [STAT_FIELDS.RED]: 'Red rocks',
+    [STAT_FIELDS.WITH_HAMMER_FE]: 'With HFE',
+    [STAT_FIELDS.WITHOUT_HAMMER_FE]: 'Without HFE',
+    [STAT_FIELDS.WITH_HAMMER]: 'With hammer',
+    [STAT_FIELDS.WITHOUT_HAMMER]: 'Without hammer',
+
+    [STAT_FIELDS.WITH_HAMMER_EE]: 'With hammer in extra end',
+    [STAT_FIELDS.WITHOUT_HAMMER_EE]: 'Without hammer in extra end',
+
+    [STAT_FIELDS.WITH_HAMMER_LE]: 'With hammer in last end',
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: 'Tied with hammer in last end',
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: 'Up 1 with hammer in last end',
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: 'Up by 2+ with hammer in last end',
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: 'Down 1 with hammer in last end',
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: 'Down 2 with hammer in last end+',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: 'Without hammer in last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: 'Tied without hammer in last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: 'Up 1 without hammer in last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: 'Up by 2+ without hammer in last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: 'Down 1 without hammer in last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: 'Down 2+ without hammer in last end',
+
+    [STAT_FIELDS.WITH_HAMMER_2LE]: 'With hammer in 2nd-last end',
+    [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: 'Tied with hammer in 2nd-last end',
+    [STAT_FIELDS.WITH_HAMMER_2LE_U1]: 'Up 1 with hammer in 2nd-last end',
+    [STAT_FIELDS.WITH_HAMMER_2LE_U2]: 'Up by 2+ with hammer in 2nd-last end',
+    [STAT_FIELDS.WITH_HAMMER_2LE_D1]: 'Down 1 with hammer in 2nd-last end',
+    [STAT_FIELDS.WITH_HAMMER_2LE_D2]: 'Down 2+ with hammer in 2nd-last end',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE]: 'Without hammer in 2nd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: 'Tied without hammer in 2nd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: 'Up 1 without hammer in 2nd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: 'Up by 2+ without hammer in 2nd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: 'Down 1 without hammer in 2nd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: 'Down 2+ without hammer in 2nd-last end',
+
+    [STAT_FIELDS.WITH_HAMMER_3LE]: 'With hammer in 3rd-last end',
+    [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: 'Tied with hammer in 3rd-last end',
+    [STAT_FIELDS.WITH_HAMMER_3LE_U1]: 'Up 1 with hammer in 3rd-last end',
+    [STAT_FIELDS.WITH_HAMMER_3LE_U2]: 'Up by 2+ with hammer in 3rd-last end',
+    [STAT_FIELDS.WITH_HAMMER_3LE_D1]: 'Down 1 with hammer in 3rd-last end',
+    [STAT_FIELDS.WITH_HAMMER_3LE_D2]: 'Down 2+ with hammer in 3rd-last end',
+
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE]: 'Without hammer in 3rd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: 'Tied without hammer in 3rd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: 'Up 1 without hammer in 3rd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: 'Up by 2+ without hammer in 3rd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: 'Down 1 without hammer in 3rd-last end',
+    [STAT_FIELDS.WITHOUT_HAMMER_3LE_D2]: 'Down 2+ without hammer in 3rd-last end',
 }
 
 export const STAT_TYPE_SUBTITLES = {

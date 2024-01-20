@@ -580,7 +580,7 @@
         }
     }
     .separator {
-        background-color: $app-blue;
+        background-color: v-bind(color);
         margin-bottom: var(--space-md);
         margin-top: calc(var(--space-md) - 4px);
     }
@@ -626,9 +626,8 @@ const props = defineProps({
 const emit = defineEmits(["view"]);
 const { getColor } = useColor();
 const { toTimezone } = useTime();
-// const color = computed(() =>
-//     props.betterThanAverage ? getColor("mint") : getColor("yellow")
-// );
+
+const color = getColor(STAT_COLORS[props.type])
 
 const { userTeamIds } = useTeam();
 

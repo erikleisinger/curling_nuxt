@@ -10,9 +10,11 @@
         @close="emit('close')"
     >
         <template v-slot:stat>
+         
             <div
-                :style="`width: ${tileWidth}px; height: 80px`"
+                
                 v-if="!expanded"
+                :style="`width: ${tileWidth}px; height: 80px`"
             >
                 <DashboardLineChart
                     :data="
@@ -26,6 +28,8 @@
                 />
              
             </div>
+         
+          
         </template>
         <template v-slot:stat-expanded>
             <div
@@ -149,6 +153,8 @@ const cleanNumber = (num) => {
     if (Number.isNaN(num)) return 0;
     return Number((num * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1));
 };
+
+const slots = useSlots();
 
 const { userTeamIds } = useTeam();
 

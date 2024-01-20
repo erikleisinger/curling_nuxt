@@ -5,13 +5,13 @@
             v-if="!expanded"
         >
             <h3 class="position-relative row no-wrap">
-                <q-icon
+                <!-- <q-icon
                     v-if="betterThanAverage"
                     size="0.9em"
                     class="q-mr-xs"
                     name="stars"
                     :style="{ color: getColor('yellow') }"
-                />
+                /> -->
                 {{ name }}
             </h3>
             <h2 :class="{green: betterThanAverage}" style="white-space: nowrap">
@@ -62,7 +62,7 @@
         </header>
 
         <slot name="stat" v-if="!expanded" />
-
+<!-- 
          <div class="row justify-center full-width">
                     <h5 v-if="betterThanAverage && expanded">
                         <div
@@ -76,7 +76,7 @@
                         </div>
                         Better than the worldwide average
                     </h5>
-                </div>
+                </div> -->
 
         <slot />
     </div>
@@ -122,7 +122,7 @@ $min-height: min(175px, calc(50% - 12px));
         // position: absolute;
         top: 0;
         // @include reg-text;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         line-height: 0.8;
         // padding: 0px var(--space-sm);
         padding-right: var(--space-sm);
