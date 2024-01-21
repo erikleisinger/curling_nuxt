@@ -5,6 +5,7 @@
                     :type="type"
                     :gameId="gameId"
                     v-if="gameId"
+                    :comparisonType="comparisonType"
                 />
        
     </GlobalMenu>
@@ -12,6 +13,7 @@
 <script setup>
 import {STAT_COLORS} from '@/constants/stats'
 const props = defineProps({
+    comparisonType: String,
     modelValue: Boolean,
     data: Object,
     type: String,

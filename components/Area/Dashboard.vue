@@ -178,12 +178,15 @@ const { isLoading, data: totalStats } = useQuery({
     refetchOnWindowFocus: false,
 });
 
+const dayjs = useDayjs();
+
 const getAllTeamStats = async () => {
     const client = useSupabaseClient();
     const { data } = await client
         .from("team_stats")
-        .select('*')
+        .select(`*`)
         .in("team_id", teamIds.value);
+
 
     data.forEach((stat) => {
         useRepo(TeamStats).save(stat);
@@ -204,14 +207,16 @@ const stats = computed(() => {
         return [
             STAT_TYPES.WINS,
             STAT_TYPES.POINTS_PER_END,
+            // STAT_TYPES.HAMMER_PERFORMANCE,
             // STAT_TYPES.HAMMER_LAST_END,
+            STAT_TYPES.HAMMER_EFFICIENCY,
             STAT_TYPES.POINTS_FOR_PER_GAME,
             
             STAT_TYPES.ENDS_FOR_PER_GAME,
             STAT_TYPES.POINTS_AGAINST_PER_GAME,
             STAT_TYPES.ENDS_AGAINST_PER_GAME,
 
-            STAT_TYPES.HAMMER_EFFICIENCY,
+            
             STAT_TYPES.STEAL_EFFICIENCY,
             STAT_TYPES.FORCE_EFFICIENCY,
             STAT_TYPES.STEAL_DEFENSE,
@@ -221,6 +226,7 @@ const stats = computed(() => {
     return [
         STAT_TYPES.WINS,
         STAT_TYPES.POINTS_PER_END,
+        //   STAT_TYPES.HAMMER_PERFORMANCE,
         // STAT_TYPES.HAMMER_LAST_END,
         STAT_TYPES.HAMMER_EFFICIENCY,
         STAT_TYPES.POINTS_FOR_PER_GAME,

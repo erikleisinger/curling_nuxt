@@ -29,11 +29,20 @@
                     </div>
                 </div>  
                 <div class="total-container">
-                <h2 :style="{ color: getColor(STAT_COLORS[type]) }">{{props.data.raw.toFixed(isPercent ? 0 : 1)}}
-                    <span v-if="isPercent" class="text-caption" style="margin-left: -0.7em">
+                <h2 :style="{ color: getColor(STAT_COLORS[type]) }" style="white-space:nowrap">{{props.data.raw.toFixed(isPercent ? 0 : 1)}}
+                    <span v-if="isPercent" class="text-caption" style="margin-left: -0.8em">
                         %
                     </span>
+                
+                    <span  v-if="comparisonType" :style="{ color: getColor(STAT_COLORS[comparisonType]) }" style="font-size: 1.5rem">
+                        {{(props.data.raw2 * (isComparisonPercent && !isPercent ? 100 : 1)).toFixed(isComparisonPercent ? 0 : 1)}}
+                    <span v-if="isComparisonPercent" class="text-caption" style="margin-left: -0.4em">
+                        %
+                    </span>
+                    </span>
+                    
                 </h2> 
+               
                 </div>
                 </div>
             </template>
@@ -78,8 +87,8 @@
 
                 </q-skeleton>
                 <div class="footer-caption row justify-between items-center">
-                    <div class="text-caption ">
-                    {{ toTimezone(gameData?.start_time, "MMMM D, YYYY") }}
+                    <div class="text-caption " v-if="gameData && gameData[0]">
+                    {{ toTimezone(gameData[0].game?.start_time, "MMMM D, YYYY") }}
                     </div>
                     <q-btn flat round icon="open_in_new"   :style="{ color: getColor(STAT_COLORS[type]) }" dense size="0.5em" @click="goToGame"/>
                 </div>
@@ -137,11 +146,13 @@ import {
     NON_PERCENT_STATS
 } from "@/constants/stats";
 const props = defineProps({
+    comparisonType: String,
     data: Object,
     gameId: Number,
     type: String,
 });
 const isPercent = !NON_PERCENT_STATS.includes(props.type);
+const isComparisonPercent = !NON_PERCENT_STATS.includes(props.comparisonType)
 const { toTimezone } = useTime();
 const dayjs = useDayjs();
 const { getColor } = useColor();

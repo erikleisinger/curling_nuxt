@@ -12,6 +12,7 @@ export const STAT_TYPES = {
     ENDS_FOR_PER_GAME: 'efg',
     ENDS_AGAINST_PER_GAME: 'eag',
     POINTS_PER_END: 'ppe',
+    HAMMER_PERFORMANCE: 'hp'
 }
 
 export const STAT_NAMES = {
@@ -27,7 +28,8 @@ export const STAT_NAMES = {
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Points against / PG',
     [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends per game',
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends against / PG',
-    [STAT_TYPES.POINTS_PER_END]: 'Points per end'
+    [STAT_TYPES.POINTS_PER_END]: 'Points per end',
+    [STAT_TYPES.HAMMER_PERFORMANCE]: 'Hammer factor'
 
 }
 
@@ -44,7 +46,8 @@ export const STAT_DESCRIPTIONS = {
     [STAT_TYPES.POINTS_AGAINST_PER_GAME]: 'Average points conceded per game',
     [STAT_TYPES.ENDS_FOR_PER_GAME]: 'Ends won per game',
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: 'Ends conceded per game',
-    [STAT_TYPES.POINTS_PER_END]: 'Average points scored per end'
+    [STAT_TYPES.POINTS_PER_END]: 'Average points scored per end',
+    [STAT_TYPES.HAMMER_PERFORMANCE]: '# hammer conversions minus # steals conceded.'
 }
 
 export const STAT_COLORS = {
@@ -59,7 +62,8 @@ export const STAT_COLORS = {
     [STAT_TYPES.STEAL_DEFENSE]: 'blue',
     [STAT_TYPES.BLANK_ENDS]: 'blue',
     [STAT_TYPES.HAMMER_LAST_END]: 'blue',
-    [STAT_TYPES.POINTS_PER_END]: 'blue'
+    [STAT_TYPES.POINTS_PER_END]: 'blue',
+    [STAT_TYPES.HAMMER_PERFORMANCE]: 'blue'
 
 }
 
@@ -132,6 +136,7 @@ export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.BLANK_ENDS]: ({hammer_end_count, hammer_blank_count}) => hammer_blank_count / hammer_end_count || 0,
     [STAT_TYPES.ENDS_FOR_PER_GAME]: ({ends_for}) => ends_for,
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: ({ends_against}) => ends_against,
+    [STAT_TYPES.HAMMER_PERFORMANCE]: ({hammer_conversion_count, hammer_steal_count, hammer_end_count}) =>  (hammer_conversion_count / (hammer_end_count || 0)) - (hammer_steal_count / (hammer_end_count || 0)),
     [STAT_TYPES.HAMMER_LAST_END]: ({hammer_last_end_count}) => hammer_last_end_count / 1,
     [STAT_TYPES.POINTS_PER_END]: ({points_for, ends_played}) => points_for / ends_played,
     [STAT_FIELDS.WITH_HAMMER]: ({points_with_hammer, hammer_end_count}) => points_with_hammer / hammer_end_count,
@@ -653,6 +658,7 @@ export const STAT_RANK_ORDER = {
     [STAT_TYPES.ENDS_AGAINST_PER_GAME]: ({ends_against}) => ends_against,
     [STAT_TYPES.STEAL_DEFENSE]: ({steal_defense}) => steal_defense,
     [STAT_TYPES.STEAL_EFFICIENCY]: ({steal_efficiency}) => steal_efficiency,
+    [STAT_TYPES.HAMMER_PERFORMANCE]: ({hammer_conversion_average, steal_defense}) => hammer_conversion_average - (100 - steal_defense),
     [STAT_TYPES.POINTS_PER_END]: (data) => {
         const { points_for, ends_played } = data;
 
@@ -669,3 +675,5 @@ export const NEG_STATS = [
      STAT_FIELDS.WITHOUT_HAMMER_3LE,
      STAT_FIELDS.WITHOUT_HAMMER_EE
 ];
+
+export const CUMULATIVE_CHART_STATS = [STAT_TYPES.WINS, STAT_TYPES.HAMMER_LAST_END];

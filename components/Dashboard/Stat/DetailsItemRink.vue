@@ -65,6 +65,13 @@ const rinkStats = computed(() =>
     }))
 );
 
+const all = computed(() => useRepo(TeamStatsTotal)
+        .query()
+        .with("team")
+        .where("rink_id", props.rinkId)
+        .get()
+)
+
 // const {getCumulativeStat} = useStats()
 
 // const avgAtThisRink = computed(() => 

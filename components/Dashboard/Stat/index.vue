@@ -3,33 +3,22 @@
         :type="type"
         :style="{ width: expanded ? '100%' : '' }"
         :percent="totalTile"
-
         :expanded="expanded"
         :betterThanAverage="betterThanAverage"
         ref="tile"
         @close="emit('close')"
     >
         <template v-slot:stat>
-         
             <div
-                
-                v-if="!expanded"
+                v-if="!expanded && chartPoints?.length && chartPoints[0]"
                 :style="`width: ${tileWidth}px; height: 80px`"
             >
                 <DashboardLineChart
-                    :data="
-                        [...chartPoints].slice(
-                            chartPoints.length < 5 ? 0 : chartPoints.length - 5
-                        )
-                    "
+                    :data="chartPointsPreview"
                     :maintain="false"
                     :color="getColor(STAT_COLORS[type])"
-                 
                 />
-             
             </div>
-         
-          
         </template>
         <template v-slot:stat-expanded>
             <div
@@ -37,20 +26,21 @@
                 class="line-chart__container"
             >
                 <!--  -->
-             
+
                 <DashboardStatGameDetails
                     :data="gameInfo"
                     :type="type"
+                    :comparisonType="showComparison"
                     v-model="showGameInfo"
                 />
-               
-                <div style="height: 250px" >
+
+                <div style="height: 250px">
                     <div
                         class="game-line__indicator"
                         v-if="showGameInfo"
                         :style="{
                             left: `${leftPoint}px`,
-                            borderColor: 'rgba(255,255,255,0.6)'
+                            borderColor: 'rgba(255,255,255,0.6)',
                         }"
                     />
                     <!-- borderColor: getColor(STAT_COLORS[type]), -->
@@ -62,31 +52,42 @@
                         @click="onClick"
                         v-model="chart"
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
-              
-                 
                     />
-                     
-                 
                 </div>
                 <div
-                    class="full-width row justify-center clickable q-pt-lg text-caption"
-                    v-if="!isCumulative"
-                    @click="showCumulative = !showCumulative"
+                    class="full-width row justify-around clickable q-pt-lg text-caption"
+                    
                 >
-                    <Rings
-                        :twelveft="
-                            showCumulative
-                                ? getColor(STAT_COLORS[type])
-                                : getColor('slate')
-                        "
-                        :fourft="
-                            showCumulative
-                                ? getColor(STAT_COLORS[type])
-                                : getColor('slate')
-                        "
-                        size="1.5em"
-                        class="q-mr-xs"
-                    />Cumulative
+                    <ButtonRings
+                        @click="showCumulative = !showCumulative"
+                        :active="showCumulative"
+                        :color="STAT_COLORS[type]"
+                       
+                        >Cumulative</ButtonRings
+                    >
+                    <ButtonRings
+                        @click="onCompareClick"
+                       :active="!!showComparison"
+                        :color="STAT_COLORS[type]"
+                        >Compare
+                        <q-menu auto-close v-model="showComparisonMenu" no-parent-event>
+                            <q-list>
+                                <q-item
+                                clickable
+                                v-ripple
+                                    v-for="statType in comparisonOptions"
+                                    :key="statType"
+                                    @click="showComparison = statType"
+                                >
+                                    <q-item-section>
+                                        <q-item-label
+                                            >{{ STAT_NAMES[statType] }}
+                                        </q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </ButtonRings>
                 </div>
             </div>
         </template>
@@ -98,7 +99,6 @@
                 :average="totalTile"
                 :betterThanAverage="betterThanAverage"
                 :worldwide="average"
-              
             />
         </div>
     </DashboardTile>
@@ -129,8 +129,10 @@
 </style>
 <script setup>
 import {
+    CUMULATIVE_CHART_STATS,
     NON_PERCENT_STATS,
     STAT_COLORS,
+    STAT_NAMES,
     STAT_FIELDS_TOTAL,
     STAT_RANK_ORDER,
     STAT_TYPES,
@@ -158,7 +160,7 @@ const slots = useSlots();
 
 const { userTeamIds } = useTeam();
 
-const { getCumulativeStat } = useStats();
+const { getCumulativeStat, getChartPoints } = useStats();
 
 const filteredTeamIds = computed(() => {
     if (!props.filters?.teams?.length) return userTeamIds.value;
@@ -171,35 +173,84 @@ const allStats = computed(() =>
     useRepo(TeamStats)
         .query()
         .whereIn("team_id", filteredTeamIds.value)
-         .where('rink_id', (val) => {
-            return props.filters.rink ? val === props.filters.rink : true
+        .where("rink_id", (val) => {
+            return props.filters.rink ? val === props.filters.rink : true;
         })
-        .where('sheet_id', (val) => {
-            return props.filters.sheet ? val === props.filters.sheet : true
+        .where("sheet_id", (val) => {
+            return props.filters.sheet ? val === props.filters.sheet : true;
         })
-        .orderBy("start_time")
+        .orderBy("start_time", "asc")
         .get()
 );
 
-const CUMULATIVE_CHART_STATS = [STAT_TYPES.WINS, STAT_TYPES.HAMMER_LAST_END];
 const isCumulative = CUMULATIVE_CHART_STATS.includes(props.type);
-const showCumulative = ref(false);
+const showCumulative = ref(isCumulative);
+const showComparison = ref(null);
 const chartPoints = computed(() => {
-    const points = allStats.value.map((data, index) => {
-        if (isCumulative || showCumulative.value) {
-            return (
-                getCumulativeStat(
-                    allStats.value.slice(0, index + 1),
-                    STAT_FIELDS_TOTAL[props.type]
-                ) * (isPercent ? 100 : 1)
-            );
-        }
-
-        return STAT_FIELDS_TOTAL[props.type](data) * (isPercent ? 100 : 1);
-    });
-    if (points.length === 1) return [points[0], points[0]]
-    return points;
+    return [
+       
+        {
+            points: getChartPoints(
+                allStats.value,
+                props.type,
+                showCumulative.value,
+                isPercent
+            ),
+            color: getColor(STAT_COLORS[props.type]),
+            label: STAT_NAMES[props.type],
+        },
+         ...(showComparison.value
+            ? [
+                  {
+                      points: getChartPoints(
+                          allStats.value,
+                          showComparison.value,
+                          showCumulative.value,
+                          isPercent
+                      ),
+                      color: STAT_COLORS[showComparison.value] === STAT_COLORS[props.type] ? '#FFFFFF' : getColor(STAT_COLORS[showComparison.value]),
+                      label: STAT_NAMES[showComparison.value],
+                  },
+              ]
+            : []),
+        
+    ];
 });
+
+const chartPointsPreview = computed(() => {
+    const data = chartPoints.value[0];
+    return [
+        {
+            points: data.points.slice(
+                data.points.length < 5 ? 0 : data.points.length - 5
+            ),
+            color: data.color,
+        },
+    ];
+});
+
+const comparisonOptions = [
+            STAT_TYPES.WINS,
+            STAT_TYPES.POINTS_PER_END,
+            STAT_TYPES.HAMMER_EFFICIENCY,
+            STAT_TYPES.POINTS_FOR_PER_GAME,
+            STAT_TYPES.ENDS_FOR_PER_GAME,
+            STAT_TYPES.POINTS_AGAINST_PER_GAME,
+            STAT_TYPES.ENDS_AGAINST_PER_GAME,
+            STAT_TYPES.STEAL_EFFICIENCY,
+            STAT_TYPES.FORCE_EFFICIENCY,
+            STAT_TYPES.STEAL_DEFENSE,
+            STAT_TYPES.BLANK_ENDS,
+].filter((t) => t !== props.type)
+
+const showComparisonMenu = ref(false);
+const onCompareClick = () => {
+    if (showComparison.value) {
+        showComparison.value = null;
+        return;
+    }
+    showComparisonMenu.value = true;
+};
 
 const totalTile = computed(() =>
     cleanNumber(
@@ -207,22 +258,16 @@ const totalTile = computed(() =>
     )
 );
 
-
-
-
-
 const average = computed(() => {
     const all = useRepo(TeamStatsTotal).query().get();
     // .orderBy(STAT_RANK_ORDER[props.type], "desc")
 
     const total = all.reduce((all, current) => {
-            return all + STAT_RANK_ORDER[props.type](current);
+        return all + STAT_RANK_ORDER[props.type](current);
     }, 0);
 
     return total / all.length;
 });
-
-
 
 const LESS_THAN_STATS = [
     STAT_TYPES.ENDS_AGAINST_PER_GAME,
@@ -255,38 +300,43 @@ const onClick = useDebounceFn((e) => {
         gameInfo.value = null;
         return;
     }
-    const { x, y, index, raw } = e;
+    const { x, y, index, raw, raw2 } = e;
     if (x - 1.5 === leftPoint.value) return;
     showGameInfo.value = false;
     nextTick(() => {
         topPoint.value = y;
         leftPoint.value = x - 1.5;
-        gameInfo.value = {...allStats.value[index], raw};
+        gameInfo.value = { ...allStats.value[index], raw, raw2 };
         showGameInfo.value = true;
     });
-},50);
+}, 50);
 
-const chart = ref(null)
+const chart = ref(null);
 
 const viewOnChart = (index) => {
-    const datasetMeta = chart.value?.getDatasetMeta(0)
-    const {data} = datasetMeta ?? {};
-    if (!data)return;
+    const datasetMeta = chart.value?.getDatasetMeta(0);
+    const { data } = datasetMeta ?? {};
+    if (!data) return;
 
-    const {x,y} = data[index];
+    const { x, y } = data[index];
 
-    emit('scroll')
-    onClick({x,y,index})
-}
+    emit("scroll");
+    onClick({ x, y, index });
+};
 
-watch(() => props.expanded, (val) => {
-    if (val) return;
-    showGameInfo.value = false;
-    gameInfo.value = null;
-})
+watch(
+    () => props.expanded,
+    (val) => {
+        if (val) return;
+        showGameInfo.value = false;
+        gameInfo.value = null;
+        showComparison.value = false;
+        showCumulative.value = isCumulative
+    }
+);
 </script>
 <script>
 export default {
-    name: 'Stat'
-}
+    name: "Stat",
+};
 </script>

@@ -1,4 +1,4 @@
-import { STAT_TYPES } from "@/constants/stats";
+import { STAT_TYPES, CUMULATIVE_CHART_STATS, NON_PERCENT_STATS, STAT_FIELDS_TOTAL } from "@/constants/stats";
 export const useStats = () => {
     const calcHammerEfficiency = ({hammer_conversion_count, hammer_blank_count, hammer_end_count}) => {
         return hammer_conversion_count / (hammer_end_count - hammer_blank_count)
@@ -100,7 +100,26 @@ export const useStats = () => {
 
     }
 
+    const getChartPoints = (stats, type, cumulative, isPercent) => {
+        // const isCumulative = CUMULATIVE_CHART_STATS.includes(type);
+        const isThisStatPercent = !NON_PERCENT_STATS.includes(type)
+        const points = stats.map((data, index) => {
+            if (cumulative) {
+                return (
+                    getCumulativeStat(
+                        stats.slice(0, index + 1),
+                        STAT_FIELDS_TOTAL[type]
+                    ) * (!isThisStatPercent ? 1 : isPercent ? 100 : 1)
+                );
+            }
+    
+            return STAT_FIELDS_TOTAL[type](data) * (!isThisStatPercent ? 1 : isPercent ? 100 : 1);
+        });
+        if (points.length === 1) return [points[0], points[0]]
+        return points;
+    };
 
 
-    return { calcStat, getCumulativeStat, getCumulativeHighestLowest };
+
+    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints };
 };

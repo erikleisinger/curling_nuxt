@@ -717,13 +717,14 @@ const highestLowest = computed(() => {
             statsByGame.value,
             STAT_FIELDS_TOTAL[props.type]
         );
+        if (props.type === STAT_TYPES.HAMMER_EFFICIENCY) console.log([...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
     return {
         highest: Math.max(
             ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
-        ),
+        ) * (isPercent ? 100 : 1),
         lowest: Math.min(
             ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
-        ),
+        ) * (isPercent ? 100 : 1),
         highestIndex: [...statsByGame.value]
             .map(STAT_FIELDS_TOTAL[props.type])
             .indexOf(

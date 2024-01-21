@@ -30,20 +30,25 @@ const chart = ref(null);
 
 const setChartData = () => {
     if (!myChart) return;
-    myChart.data.labels = Array.from(Array(props.data.length).keys()).map(
+    myChart.data.labels = Array.from(Array(props.data[0]?.points?.length).keys()).map(
         (d, index) => index
     );
-    myChart.data.datasets = [
-        {
-            data: props.data,
-            label: "data",
+    myChart.data.datasets = props.data.map(({color, points, label}, index) => {
+        return {
+            data: points,
+            label,
             fill: true,
-            borderColor: props.color,
-            backgroundColor: (context) => setBgGradient(context, props.color),
+            borderColor: color,
+            // backgroundColor: props.data.length === 1 || index === 1 ? (context) => setBgGradient(context, color) : 'transparent',
+            backgroundColor: !index ? (context) => setBgGradient(context, color) : 'transparent',
             tension: 0.4,
             pointRadius: 0,
-        },
-    ];
+            order: props.data.length > 1 && !index ? 2 : props.data.length > 1 ? 1 : 1,
+    }
+    })
+
+    myChart.options.plugins.legend.display = props.data?.length > 1;
+
     myChart.update();
     chartForParent.value = myChart;
 };
@@ -59,18 +64,40 @@ onMounted(() => {
             maintainAspectRatio: props.maintain,
             onClick: (e) => {
                 if (!props.clickable) return;
-                const [point] = myChart.getElementsAtEventForMode(e, 'index', { intersect: false }, false) ?? [];
+                const points = myChart.getElementsAtEventForMode(e, 'index', { intersect: false }, false) ?? [];
+                let point;
+                if (points.length === 2) {
+                    point = points[1]
+                } else {
+                    point = points[0]
+                }
                 if (!point)return;
                 const {index, element} = point;
                 const {$context} = element;
                 const {raw} = $context;
                 const {x,y} = element;
 
-                emit('click', {index, x, y, raw})
+                let raw2 = null;
+                if (points[1]) {
+                    const {$context: context2} = points[0].element;
+                    raw2 = context2.raw;
+                }
+
+                emit('click', {index, x, y, raw, raw2})
             },
             plugins: {
                 legend: {
                     display: false,
+                    labels: {
+                        pointStyle: 'circle',
+                        usePointStyle: true,
+                        color: 'white',
+                    
+                    },
+                    reverse: true,
+                    title: {
+                        color: 'white'
+                    }
                 },
                 tooltips: {
                     enabled: false,

@@ -17,7 +17,17 @@
                         class="q-mr-xs"
                         v-if="HAMMER_STATS.includes(statField)"
                     />
-                    <q-icon
+                    <!-- <q-icon
+                     size="0.9em"
+                     class="q-mr-xs"
+                    v-if="statField === STAT_FIELDS.WITH_HAMMER_LE"
+                    name="o_home" :style="{color: getColor('mint')}"/>
+                      <q-icon
+                     size="0.9em"
+                     class="q-mr-xs"
+                    v-if="statField === STAT_FIELDS.WITHOUT_HAMMER_LE"
+                    name="o_home" :style="{color: getColor('red')}"/> -->
+                    <!-- <q-icon
                         name="check_circle"
                         size="0.9em"
                         :style="{ color: getColor('mint') }"
@@ -30,7 +40,7 @@
                         :style="{ color: getColor('red') }"
                         class="q-mr-xs"
                         v-if="NEG_STATS.includes(statField)"
-                    />
+                    /> -->
     </template>
     <template v-slot:title>
 {{ STAT_FIELD_TITLES[statField](statType) }}
