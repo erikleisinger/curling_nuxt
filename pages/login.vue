@@ -3,14 +3,14 @@
         class="full-width full-height row justify-center items-center login--container"
     >
         <div
-            class="column  items-center full-height q-pb-md q-pt-lg"
+            class="column items-center full-height q-pb-md q-pt-lg"
             :class="$q.screen.xs ? 'justify-center' : 'justify-end'"
         >
             <LogoFull width="125" />
         </div>
         <q-form class="login__form q-pa-md" @submit="onSubmit" ref="loginForm">
-            <q-card :flat="$q.screen.lt.sm" class="login-card" >
-                <q-tabs v-model="tab" class=" login-tabs">
+            <q-card :flat="$q.screen.lt.sm" class="login-card">
+                <q-tabs v-model="tab" class="login-tabs">
                     <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
                     <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
                 </q-tabs>
@@ -27,7 +27,7 @@
                         ]"
                         lazy-rules
                         v-if="tab === TAB_NAMES.SIGN_UP"
-                       filled
+                        filled
                         outlined
                         standout
                         dark
@@ -89,7 +89,6 @@
                         ]"
                         lazy-rules
                         standout
-                   
                         :error="isError"
                         :error-message="errorMessage"
                         @update:modelValue="
@@ -100,8 +99,6 @@
                         "
                         dark
                         filled
-                         
-
                     />
                     <q-input
                         name="password verification"
@@ -114,7 +111,7 @@
                             validatePassword,
                         ]"
                         lazy-rules
-                         standout
+                        standout
                         outlined
                         v-if="tab === TAB_NAMES.SIGN_UP"
                         dark
@@ -134,6 +131,17 @@
                         >Submit</Button
                     >
                 </q-card-actions>
+                <!-- <div
+                    class="full-width row justify-center text-caption text-underline q-pb-sm clickable"
+                    style="
+                        margin-top: calc(-1 * var(--space-md));
+                        color: rgba(255, 255, 255, 0.6);
+                    "
+                    v-if="tab === TAB_NAMES.SIGN_IN"
+                    @click="showForgotPasswordMenu"
+                >
+                    Forgot password
+                </div> -->
             </q-card>
         </q-form>
         <div />
@@ -161,21 +169,18 @@
 }
 .login-input__container {
     padding-top: var(--space-lg);
-padding-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
     .q-field {
         &:not(:first-child) {
-margin-top: var(--space-md)
+            margin-top: var(--space-md);
         }
-        
     }
 }
 .login--container {
     display: grid;
-   
 
-   grid-auto-rows: 1fr;
+    grid-auto-rows: 1fr;
 
- 
     position: fixed;
     top: 0;
     left: 0;
@@ -186,8 +191,8 @@ margin-top: var(--space-md)
 .login-card {
     border-radius: 16px;
     box-shadow: unset;
-    background: rgba(0,0,0,0.1);
-   
+    background: rgba(0, 0, 0, 0.1);
+
     color: white;
 }
 .login__form {

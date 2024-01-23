@@ -1,5 +1,5 @@
 <template>
-    <q-layout view="hhh lpr fff" class="app-layout">
+    <q-layout view="hhh lpr fff" class="app-layout" id="global-app-layout">
 
             <q-header class="layout-header" elevated reveal v-show="!isLoggedOutRoute">
                 <LayoutHeader  @openFeedback="feedbackOpen = true">

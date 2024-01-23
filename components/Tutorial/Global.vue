@@ -5,6 +5,8 @@
             elementId="global-menu-toggle"
             tutorialText="Let's get your profile set up! Click on the menu button to open the navigation drawer."
             :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+            :currentStep="currentStep"
+            :steps="steps"
         />
         <TutorialHighlight
             v-else-if="
@@ -15,6 +17,8 @@
             target="nav-drawer-player-avatar"
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
         <TutorialHighlight
             v-else-if="showAddTeam"
@@ -22,6 +26,8 @@
             tutorialText="Looks like you aren't on any teams! Click the add button to get started."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
          <TutorialHighlight
             v-else-if="showAddTeamMenu"
@@ -30,6 +36,8 @@
             bottom
             square
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
            <TutorialHighlight
             v-else-if="showTeamRequest"
@@ -37,6 +45,8 @@
             tutorialText="If you'd like to join this team, click on Request to join team."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
                 <TutorialHighlight
             v-else-if="showTeamRequestDone"
@@ -44,6 +54,8 @@
             tutorialText="Great! You've requested to join the team. while you wait for a member of the team to approve your request, you can head back to the dashboard to check out your team statistics."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
                  <TutorialHighlight
             v-else-if="showTeamCreateDone"
@@ -51,6 +63,8 @@
             tutorialText="Great! You've created a team. Now let's go back to dashboard to view your stats."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+              :currentStep="currentStep"
+               :steps="steps"
         />
       
         <TutorialHighlight
@@ -60,6 +74,8 @@
             bottom
             square
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+                :currentStep="currentStep"
+                 :steps="steps"
         />
         <TutorialHighlight
             v-else-if="showRinkHighlight"
@@ -67,6 +83,8 @@
             tutorialText="Click the edit button to select a home rink."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+                :currentStep="currentStep"
+                 :steps="steps"
         />
         <TutorialHighlight
             v-else-if="showAvatarHighlight"
@@ -75,6 +93,8 @@
             bottom
             rounded
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+                :currentStep="currentStep"
+                 :steps="steps"
         />
          <TutorialHighlight
             v-else-if="showBackFromProfile"
@@ -82,6 +102,8 @@
             tutorialText="Great! Now lets go back to the dashboard and get you on a team."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+                :currentStep="currentStep"
+                 :steps="steps"
         />
          <TutorialHighlight
             v-else-if="showAddGame"
@@ -89,9 +111,19 @@
             tutorialText="To see your team stats, you'll first need to add a game. To do that, click on the rings menu and select 'New game'."
             bottom
               :darken="!isSearchOpen && !isAvatarGeneratorOpen && !isRingsMenuOpen"
+                :currentStep="currentStep"
+                 :steps="steps"
         />
     </div>
 </template>
+<style lang="scss" scoped>
+    .tutorial-progress__wrapper {
+        position: fixed;
+        top: 0;
+        z-index: 10000000;
+        background-color: red;
+    }
+</style>
 <script setup>
 import { useSessionStore } from "@/store/session";
 import { useDialogStore } from "@/store/dialog";
@@ -170,6 +202,29 @@ const showAddGame = computed(() => !games.value?.length && !isPlayerPage.value &
 const isAddMenuVisible = computed(() => useSessionStore().addTeamMenuOpen);
 
 const menuReady = ref(false);
+
+const currentStep = computed(() => {
+    if (!hasRink.value) return 0;
+    if (!hasAvatar.value) return 1;
+    if (!hasTeams.value) return 2;
+})
+
+const steps = computed(() => {
+    return [
+            {
+                label: "Set home rink",
+                completed: hasRink.value,
+            },
+            {
+                label: "Set avatar",
+                completed: hasAvatar.value,
+            },
+            {
+                label: "Find a team",
+                completed: hasTeams.value,
+            },
+        ]
+})
 
 watch(isAddMenuVisible, (val) => {
     setTimeout(() => {
