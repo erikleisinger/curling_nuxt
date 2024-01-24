@@ -1,4 +1,5 @@
 import { STAT_TYPES, CUMULATIVE_CHART_STATS, NON_PERCENT_STATS, STAT_FIELDS_TOTAL } from "@/constants/stats";
+import {isPercentStat, cleanStatValue, getCumulativeStat} from '@/utils/stats'
 export const useStats = () => {
     const calcHammerEfficiency = ({hammer_conversion_count, hammer_blank_count, hammer_end_count}) => {
         return hammer_conversion_count / (hammer_end_count - hammer_blank_count)
@@ -59,17 +60,9 @@ export const useStats = () => {
         return total * 100;
     }
 
-    const getCumulativeStat = (statsArray, val) => { 
-        const cumulative = statsArray.reduce((all, current) => {
-            const value = typeof val === 'function' ? val(current) : current[val]
-            if (Number.isNaN(value)) return all;
-            return all + value;
-        }, 0)
-        return cumulative / statsArray.length;
-        
-    }
 
-    const getCumulativeHighestLowest = (statsArray, calcFunction) => {
+
+    const getCumulativeHighestLowest = (statsArray, type) => {
         let lowest = 0;
         let highest = 0;
         let highestIndex = 0;
@@ -77,7 +70,7 @@ export const useStats = () => {
 
         statsArray.forEach((stat, index) => {
             const array = [...statsArray].splice(0, index + 1)
-            const value = getCumulativeStat(array, calcFunction);
+            const value = getCumulativeStat(array, type);
             if (!index) {
                 lowest = value;
                 highest = value;
@@ -108,7 +101,7 @@ export const useStats = () => {
                 return (
                     getCumulativeStat(
                         stats.slice(0, index + 1),
-                        STAT_FIELDS_TOTAL[type]
+                        type
                     ) * (!isThisStatPercent ? 1 : isPercent ? 100 : 1)
                 );
             }
@@ -121,5 +114,5 @@ export const useStats = () => {
 
 
 
-    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints };
+    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints, isPercentStat, cleanStatValue };
 };

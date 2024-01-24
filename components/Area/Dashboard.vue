@@ -147,10 +147,7 @@ const filters = ref({
     sheet: null,
 });
 
-const teamIds = computed(() => [
-    ...useUserTeamStore().userTeams.map(({ id }) => id),
-    ...useTeamRequestStore().requests.map(({ team_id }) => team_id),
-]);
+const {userTeamIds} = useTeam();
 
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
@@ -185,7 +182,7 @@ const getAllTeamStats = async () => {
     const { data } = await client
         .from("team_stats")
         .select(`*`)
-        .in("team_id", teamIds.value);
+        .in("team_id", userTeamIds.value);
 
 
     data.forEach((stat) => {

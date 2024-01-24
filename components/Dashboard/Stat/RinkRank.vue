@@ -13,7 +13,7 @@
         </h2>
         </div>
         <h4>
-            {{STAT_RANK_ORDER[type](stat).toFixed(isPercent ? 2 : 3)}}
+            {{STAT_RANK_ORDER[type](stat).toFixed(isPercent ? 0 : 1)}}{{isPercent ? '%' : ''}}
         </h4>
     </div> 
 
@@ -55,6 +55,7 @@ import {STAT_RANK_ORDER, NON_PERCENT_STATS} from '@/constants/stats'
         stat: Object,
         type: String,
     })
-    const isPercent = !NON_PERCENT_STATS.includes(props.type);
+    const {isPercentStat} = useStats()
+    const isPercent = isPercentStat(props.type);
     const {userTeamIds} = useTeam();
 </script>

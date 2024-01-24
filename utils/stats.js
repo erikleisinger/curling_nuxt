@@ -1,69 +1,45 @@
-
+import { NON_PERCENT_STATS, STAT_CALCULATION_PARAMS, STAT_TYPES, STAT_FIELD_FILTER_FUNCTIONS, STAT_FIELDS } from "@/constants/stats";
 
 const toPercent = (num) => {
     return (num * 100).toFixed();
 };
 
-export const calculateTeamStats = (stats) => {
-    const {
-        avg_points_conceded,
-        forced_end_count,
-        hammer_1_point_count,
-        hammer_blank_count,
-        hammer_ends_count,
-        stolen_end_count,
-        total_ends_played,
-        team_avg
-    } = stats;
+export const isPercentStat = (type, field) => {
+    if (field === STAT_FIELDS.WITH_HAMMER && type === STAT_TYPES.HAMMER_EFFICIENCY) return false;
+    return !NON_PERCENT_STATS.includes(type)
+}
 
-    const addPointCounts = (start, end) => {
-        if (start < 1 || end > 8) return;
-        let sum = 0;
-        for (let x = start; x < end; x++) {
-            sum += stats[`hammer_${x}_point_count`];
-        }
-        return sum;
-    };
-
-    // Average points conceded without hammer
-    const avgPointsConceded = avg_points_conceded.toFixed(2);
-
-    // Blank ends: % of ends with hammer when score was 0
-    const blankEnds = toPercent(hammer_blank_count / hammer_ends_count);
-
-    // Of all ends played, what % of the time did the team have the hammer?
-    const controlOfGame = toPercent(hammer_ends_count / total_ends_played);
-
-    // forced with hammer: % of ends with hammer when team only scored 1
-    const forcedWith = toPercent(
-        hammer_1_point_count / (hammer_ends_count - hammer_blank_count)
-    );
-    // forced opposition to take one when they had hammer
-    const forceWithout = toPercent(
-        forced_end_count / (total_ends_played - hammer_ends_count)
-    );
-
-    // Hammer efficiency -- scored 2+ points with hammer. NOT INCLUDING blanks
-    const hammerConversion = toPercent(
-        addPointCounts(2, 8) / (hammer_ends_count - hammer_blank_count)
-    );
-
-    // How many ends did they steal?
-    const stolenEnds = toPercent(
-        stolen_end_count / (total_ends_played - hammer_ends_count)
-    );
-
-    // Average shot % for whole team
-    const teamAverage = toPercent(Number(team_avg) / 4);
-
-    return {
-        avgPointsConceded,
-        blankEnds,
-        controlOfGame,
-        forcedWith,
-        forceWithout,
-        hammerConversion,
-        stolenEnds,
-        teamAverage
-    };
+export const cleanStatValue = (num, type, fallback = '-', field) => {
+    if (Number.isNaN(num)) return fallback;
+    const isPercent = isPercentStat(type, field)
+   
+    return (num * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1);
 };
+
+export const getCumulativeStat = (statsArray, type, field) => { 
+    const filterFunc = STAT_FIELD_FILTER_FUNCTIONS[field];
+    let stats;
+    if (filterFunc) {
+        stats = [...statsArray].filter(filterFunc)
+    } else {
+        stats = statsArray;
+    }
+    const {numerator, denominator} = STAT_CALCULATION_PARAMS[type]
+    const cumulative = stats.reduce((all, current) => {
+        const thisNumerator = numerator(current);
+        const thisDenominator = denominator(current)
+        return {
+            numerator: all.numerator + (Number.isNaN(thisNumerator) ? 0 : thisNumerator),
+            denominator: all.denominator + (Number.isNaN(thisDenominator) ? 0 : thisDenominator),
+
+        }
+    }, {
+        numerator: 0,
+        denominator: 0,
+    })
+    const total = cumulative.numerator / cumulative.denominator
+    const returnTotal = Number.isNaN(total) ? 0 : total;
+    return type === STAT_TYPES.STEAL_DEFENSE ? 1 - returnTotal : returnTotal
+  
+    
+}

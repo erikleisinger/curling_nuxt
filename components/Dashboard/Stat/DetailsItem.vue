@@ -66,7 +66,7 @@
                    <span v-if="avgDiff"> {{ avgDiff }}{{ isPercent ? "%" : "" }}</span>
                    <span v-else>-</span>
                 </div>
-                <h5 :style="{ color }">{{ cleanNumber(value) }}</h5>
+                <h5 :style="{ color }">{{ cleanNumber(value) }}{{isPercent ? '%' : ''}}</h5>
     </template>
     <template v-slot:more v-if="slots.more">
         <slot name="more"/>
@@ -266,11 +266,13 @@ const subtitle = computed(() => {
     return STAT_TYPE_SUBTITLES[props.statField](stats.value)
 })
 
-const { getCumulativeStat } = useStats();
+const { getCumulativeStat, isPercentStat, cleanStatValue } = useStats();
 
 const value = computed(() => getCumulativeStat(
-        stats.value.filter(STAT_FIELD_FILTER_FUNCTIONS[props.statField]),
-        STAT_FIELDS_TOTAL[props.statField] ?? STAT_FIELDS_TOTAL[props.statType]
+        stats.value,
+        props.statType,
+        props.statField
+        // STAT_FIELDS_TOTAL[props.statField] ?? STAT_FIELDS_TOTAL[props.statType]
     )  
 );
 const color = computed(() =>
@@ -282,23 +284,18 @@ const color = computed(() =>
 );
 
 const isPercent =
-    !props.alwaysNumber && !NON_PERCENT_STATS.includes(props.statType);
+    !props.alwaysNumber && isPercentStat(props.statType, props.statField);
 
 const hasValue = computed(() => !Number.isNaN(value.value));
 
 const showAvgDiff = computed(() => props.statField !== STAT_FIELDS.WITH_HAMMER && props.statType !== STAT_TYPES.HAMMER_EFFICIENCY)
 
 const avgDiff = computed(() =>
-    Number((value.value * (isPercent ? 100 : 1) - props.average).toFixed(1))
+    Number((value.value * (isPercent ? 100 : 1) - props.average).toFixed(isPercent ? 0 : 1))
 );
 
 const cleanNumber = (num) => {
-    if (!hasValue.value) return "-";
-    if (isPercent) {
-        return `${Number((num * 100).toFixed())}%`;
-    }
-
-    return `${num > 0 ? "" : ""}${num.toFixed(1)}`;
+    return cleanStatValue(num, props.statType, null, props.statField)
 };
 
 const expanded = ref(false);

@@ -39,7 +39,8 @@ export default class TeamStatsTotal extends Model {
             wins_average: this.number(0),
             wins_percentile: this.number(0),
             ends_played: this.number(0),
-            rink_id: this.number()
+            rink_id: this.number(),
+            points_per_end: this.number()
         };
     }
     get winPercent () {

@@ -88,16 +88,6 @@
                         v-if="!!lowestGame"
                     >
                         {{ toTimezone(highestGame.start_time, "MMMM D, YYYY") }}
-                        <!-- <q-btn
-                            flat
-                            round
-                            icon="open_in_new"
-                            size="0.6em"
-                            dense
-                            @click="emit('view', highestLowest?.highestIndex)"
-                            class="q-ml-xs"
-                            color="white"
-                        /> -->
                     </div>
                 </div>
                 <div class="row items-end">
@@ -116,9 +106,9 @@
                             }"
                         />
 
-                        {{ cleanNumber(highestDiff) }}
+                        {{ highestDiff }}{{isPercent ? '%' : ''}}
                     </div>
-                    <h5>{{ cleanNumber(highest) }}</h5>
+                    <h5>{{ cleanNumber(highest) }}{{isPercent ? '%' : ''}}</h5>
                 </div>
             </div>
             <div class="row__container row justify-between items-center">
@@ -138,16 +128,7 @@
                         v-if="!!lowestGame"
                     >
                         {{ toTimezone(lowestGame.start_time, "MMMM D, YYYY") }}
-                        <!-- <q-btn
-                            flat
-                            round
-                            icon="open_in_new"
-                            size="0.6em"
-                            dense
-                            @click="emit('view', highestLowest?.lowestIndex)"
-                            class="q-ml-xs"
-                            color="white"
-                        /> -->
+
                     </div>
                 </div>
 
@@ -167,9 +148,9 @@
                             }"
                         />
 
-                        {{ cleanNumber(lowestDiff) }}
+                        {{ lowestDiff }}{{isPercent ? '%' : ''}}
                     </div>
-                    <h5>{{ cleanNumber(lowest) }}</h5>
+                    <h5>{{ cleanNumber(lowest) }}{{isPercent ? '%' : ''}}</h5>
                 </div>
             </div>
         </section>
@@ -178,39 +159,6 @@
 
          <section name="global stats">
             <q-separator class="separator" />
-            <!-- <div class="row__container row justify-between items-center">
-                <div>
-                    <h4>Worldwide</h4>
-                        <caption class="text-caption">
-                            Average among all teams
-                        </caption>
-                </div>
-                <div class="row items-end">
-                    <div
-                        class="text-caption q-mr-sm"
-                        v-if="worldwideDiff !== 'NaN'"
-                    >
-                        <q-icon
-                            :name="
-                                worldwideDiff > 0
-                                    ? 'arrow_drop_up'
-                                    : 'arrow_drop_down'
-                            "
-                            :style="{
-                                color:
-                                    worldwideDiff > 0
-                                        ? getColor('mint')
-                                        : getColor('red'),
-                            }"
-                        />
-
-                        <span
-                            >{{ worldwideDiff }}{{ isPercent ? "%" : "" }}</span
-                        >
-                    </div>
-                    <h5>{{ cleanNumber(worldwide) }}</h5>
-                </div>
-            </div> -->
             <DashboardStatDetailsItemRink :rinkId="homeRink" :teamId="props.filters.teams[0]" :type="type" :average="average" v-if="homeRink"/>
         </section>
 
@@ -619,11 +567,9 @@ import Team from '@/store/models/team'
 import Player from "@/store/models/player";
 const props = defineProps({
     average: Number,
-    betterThanAverage: Boolean,
     chart: Object,
     filters: Object,
     type: String,
-    worldwide: Number,
 });
 
 const emit = defineEmits(["view"]);
@@ -673,15 +619,10 @@ const statsByGame = computed(() => {
         .get();
 });
 
-const { getCumulativeStat, getCumulativeHighestLowest } = useStats();
+
 
 const cleanNumber = (num) => {
-    if (Number.isNaN(num)) return "-";
-
-    if (isPercent) {
-        return `${Number(num.toFixed())}%`;
-    }
-    return `${num > 0 ? "" : ""}${num.toFixed(1)}`;
+    return cleanStatValue(num, props.type, 0)
 };
 
 const SHOW_HAMMER_STATS = [STAT_TYPES.WINS];
@@ -704,7 +645,9 @@ const shouldShowWithoutHammerStats = SHOW_WITHOUT_HAMMER_STATS.includes(
     props.type
 );
 
-const isPercent = !NON_PERCENT_STATS.includes(props.type);
+const { getCumulativeStat, getCumulativeHighestLowest, isPercentStat, cleanStatValue } = useStats();
+
+const isPercent = isPercentStat(props.type);
 
 const DISABLE_HIGHEST_LOWEST = [STAT_TYPES.WINS];
 
@@ -715,16 +658,15 @@ const highestLowest = computed(() => {
     if (isCumulative)
         return getCumulativeHighestLowest(
             statsByGame.value,
-            STAT_FIELDS_TOTAL[props.type]
+            props.type
         );
-        if (props.type === STAT_TYPES.HAMMER_EFFICIENCY) console.log([...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type]))
     return {
         highest: Math.max(
             ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
-        ) * (isPercent ? 100 : 1),
+        ),
         lowest: Math.min(
             ...[...statsByGame.value].map(STAT_FIELDS_TOTAL[props.type])
-        ) * (isPercent ? 100 : 1),
+        ),
         highestIndex: [...statsByGame.value]
             .map(STAT_FIELDS_TOTAL[props.type])
             .indexOf(
@@ -749,7 +691,7 @@ const highest = computed(() => {
     return highestLowest.value?.highest;
 });
 
-const highestDiff = computed(() => highest.value - props.average);
+const highestDiff = computed(() => (highest.value * (isPercent ? 100 : 1)) - props.average);
 
 const highestGame = computed(() => {
     let index; 
@@ -766,7 +708,7 @@ const lowest = computed(() => {
     if(INVERTED_STATS.includes(props.type)) return highestLowest.value?.highest;
     return highestLowest.value?.lowest;
 });
-const lowestDiff = computed(() => lowest.value - props.average);
+const lowestDiff = computed(() => (lowest.value * (isPercent ? 100 : 1)) - props.average);
 
 const lowestGame = computed(() => {
     let index; 
@@ -778,10 +720,6 @@ const lowestGame = computed(() => {
 
     return statsByGame.value[index];
 });
-
-const worldwideDiff = computed(() =>
-    (props.average - props.worldwide).toFixed()
-);
 </script>
 <script>
 export default {

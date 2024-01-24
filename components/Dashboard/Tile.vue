@@ -183,7 +183,6 @@ $min-height: min(175px, calc(50% - 12px));
 </style>
 <script setup>
 import {
-    NON_PERCENT_STATS,
     STAT_DESCRIPTIONS,
     STAT_NAMES,
     STAT_COLORS,
@@ -206,7 +205,8 @@ const emit = defineEmits(['close'])
 
 const { getColor } = useColor();
 
-const isPercent = !NON_PERCENT_STATS.includes(props.type);
+const {isPercentStat} = useStats();
+const isPercent = isPercentStat(props.type);
 
 const name = STAT_NAMES[props.type];
 

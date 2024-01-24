@@ -29,13 +29,13 @@
                     </div>
                 </div>  
                 <div class="total-container">
-                <h2 :style="{ color: getColor(STAT_COLORS[type]) }" style="white-space:nowrap">{{props.data.raw.toFixed(isPercent ? 0 : 1)}}
+                <h2 :style="{ color: getColor(STAT_COLORS[type]) }" style="white-space:nowrap">{{(value * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1)}}
                     <span v-if="isPercent" class="text-caption" style="margin-left: -0.8em">
                         %
                     </span>
                 
                     <span  v-if="comparisonType" :style="{ color: getColor(STAT_COLORS[comparisonType]) }" style="font-size: 1.5rem">
-                        {{(props.data.raw2 * (isComparisonPercent && !isPercent ? 100 : 1)).toFixed(isComparisonPercent ? 0 : 1)}}
+                        {{(comparisonValue * (isComparisonPercent ? 100 : 1)).toFixed(isComparisonPercent ? 0 : 1)}}
                     <span v-if="isComparisonPercent" class="text-caption" style="margin-left: -0.4em">
                         %
                     </span>
@@ -145,14 +145,17 @@ import {
     STAT_COLORS,
     NON_PERCENT_STATS
 } from "@/constants/stats";
+
 const props = defineProps({
     comparisonType: String,
     data: Object,
     gameId: Number,
     type: String,
 });
-const isPercent = !NON_PERCENT_STATS.includes(props.type);
-const isComparisonPercent = !NON_PERCENT_STATS.includes(props.comparisonType)
+
+const {isPercentStat} = useStats()
+const isPercent = isPercentStat(props.type);
+const isComparisonPercent = isPercentStat(props.comparisonType)
 const { toTimezone } = useTime();
 const dayjs = useDayjs();
 const { getColor } = useColor();
@@ -164,6 +167,7 @@ const BOOLEAN_STAT_TYPES = [
 ];
 
 const value = computed(() => STAT_FIELDS_TOTAL[props.type](props.data));
+const comparisonValue = computed(() => STAT_FIELDS_TOTAL[props.comparisonType](props.data));
 
 const title = STAT_NAMES[props.type];
 

@@ -117,6 +117,120 @@ export const STAT_FIELDS = {
 
 };
 
+export const STAT_CALCULATION_PARAMS = {
+    [STAT_TYPES.WINS]: {
+        numerator: ({win}) => win,
+        denominator: () => 1
+    },
+    [STAT_TYPES.POINTS_FOR_PER_GAME]: {
+        numerator: ({points_for}) => points_for,
+        denominator: () => 1
+    },
+    [STAT_TYPES.POINTS_AGAINST_PER_GAME]: {
+        numerator: ({points_against}) => points_against,
+        denominator: () => 1
+    },
+    [STAT_TYPES.HAMMER_EFFICIENCY]: {
+        numerator: ({hammer_conversion_count}) => hammer_conversion_count,
+        denominator: ({hammer_blank_count, hammer_end_count}) => (hammer_end_count ?? 0) - (hammer_blank_count ?? 0)
+    },
+    [STAT_TYPES.STEAL_EFFICIENCY]: {
+        numerator: ({non_hammer_steal_count}) => non_hammer_steal_count,
+        denominator: ({non_hammer_end_count}) => non_hammer_end_count
+    },
+    [STAT_TYPES.FORCE_EFFICIENCY]: {
+        numerator: ({non_hammer_force_count}) => non_hammer_force_count,
+        denominator: ({non_hammer_end_count}) => non_hammer_end_count
+    },
+    [STAT_TYPES.STEAL_DEFENSE]: {
+        numerator: ({hammer_steal_count}) => hammer_steal_count,
+        denominator: ({hammer_end_count}) => hammer_end_count
+    },
+    [STAT_TYPES.BLANK_ENDS]: {
+        numerator: ({hammer_blank_count}) => hammer_blank_count,
+        denominator: ({hammer_end_count}) => hammer_end_count
+    },
+    [STAT_TYPES.ENDS_FOR_PER_GAME]: {
+        numerator: ({ends_for}) => ends_for,
+        denominator: () => 1
+    },
+    [STAT_TYPES.ENDS_AGAINST_PER_GAME]: {
+        numerator: ({ends_against}) => ends_against,
+        denominator: () => 1
+    },
+    [STAT_TYPES.HAMMER_LAST_END]: {
+        numerator: ({hammer_last_end_count}) => hammer_last_end_count,
+        denominator: () => 1
+    },
+    [STAT_TYPES.POINTS_PER_END]: {
+        numerator: ({points_for}) => points_for,
+        denominator: ({ends_played}) => ends_played
+    },
+    [STAT_FIELDS.WITH_HAMMER]: {
+        numerator: ({points_with_hammer}) => points_with_hammer,
+        denominator: ({hammer_end_count}) => hammer_end_count
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER]: {
+        numerator: ({points_without_hammer}) => points_without_hammer,
+        denominator: ({non_hammer_end_count}) => non_hammer_end_count
+    },
+
+    // WITH hammer last end
+
+    [STAT_FIELDS.WITH_HAMMER_LE]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_U2]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_U1]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_TIE]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_D1]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITH_HAMMER_LE_D2]: {
+        numerator: ({hammer_le, win}) => !!hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+
+    // WITHOUT hammer last end
+
+    [STAT_FIELDS.WITHOUT_HAMMER_LE]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+    [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: {
+        numerator: ({hammer_le, win}) => !hammer_le && !!win ? 1 : 0,
+        denominator: () => 1
+    },
+
+}
+
 export const STAT_FIELDS_TOTAL = {
     [STAT_TYPES.WINS]: ({win}) => win,
     // [STAT_TYPES.POINTS_FOR_PER_GAME]: ({points_for, points_against}) => points_for - points_against,
@@ -659,11 +773,7 @@ export const STAT_RANK_ORDER = {
     [STAT_TYPES.STEAL_DEFENSE]: ({steal_defense}) => steal_defense,
     [STAT_TYPES.STEAL_EFFICIENCY]: ({steal_efficiency}) => steal_efficiency,
     [STAT_TYPES.HAMMER_PERFORMANCE]: ({hammer_conversion_average, steal_defense}) => hammer_conversion_average - (100 - steal_defense),
-    [STAT_TYPES.POINTS_PER_END]: (data) => {
-        const { points_for, ends_played } = data;
-
-        return points_for / ends_played;
-    },
+    [STAT_TYPES.POINTS_PER_END]: ({points_per_end}) => points_per_end,
 };
 
 export const INVERTED_STATS = [STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME]

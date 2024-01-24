@@ -116,8 +116,8 @@ const rinkName = computed(
     () =>
         useRepo(Rink).where("id", props.rinkId).first()?.name ?? "Unknown rink"
 );
-
-const isPercent = !NON_PERCENT_STATS.includes(props.type);
+const {isPercentStat} = useStats()
+const isPercent = isPercentStat(props.type);
 
 // const diff = computed(() => avgAtThisRink.value - props.average);
 
