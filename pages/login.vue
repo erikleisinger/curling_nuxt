@@ -1,5 +1,155 @@
 <template>
-    <div
+    <NuxtLayout name="login">
+        <q-form class="login__form" @submit="onSubmit" ref="loginForm">
+            <q-tabs
+                v-model="tab"
+                class="login-tabs"
+                v-if="!showForgotPasswordMenu"
+            >
+                <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
+                <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
+            </q-tabs>
+            <q-card-section
+                class=" login-input__container"
+                v-if="!showForgotPasswordMenu"
+            >
+                <q-input
+                    name="first name"
+                    label="First name"
+                    v-model.trim="firstName"
+                    :rules="[
+                        VALIDATION_RULES.REQUIRED,
+                        VALIDATION_RULES.MIN_LENGTH(2),
+                        VALIDATION_RULES.MAX_LENGTH(25),
+                        VALIDATION_RULES.ALPHA_ONLY,
+                    ]"
+                    lazy-rules
+                    v-if="tab === TAB_NAMES.SIGN_UP"
+                    filled
+                    outlined
+                    standout
+                    dark
+                />
+                <q-input
+                    name="last name"
+                    label="Last name"
+                    v-model.trim="lastName"
+                    :rules="[
+                        VALIDATION_RULES.REQUIRED,
+                        VALIDATION_RULES.MIN_LENGTH(2),
+                        VALIDATION_RULES.MAX_LENGTH(25),
+                        VALIDATION_RULES.ALPHA_ONLY,
+                    ]"
+                    lazy-rules
+                    v-if="tab === TAB_NAMES.SIGN_UP"
+                    filled
+                    outlined
+                    standout
+                    dark
+                />
+                <q-input
+                    name="username"
+                    label="Username"
+                    v-model.trim="username"
+                    :rules="[
+                        VALIDATION_RULES.REQUIRED,
+                        VALIDATION_RULES.MIN_LENGTH(6),
+                        VALIDATION_RULES.MAX_LENGTH(16),
+                        VALIDATION_RULES.NO_SPECIAL,
+                    ]"
+                    lazy-rules
+                    v-if="tab === TAB_NAMES.SIGN_UP"
+                    filled
+                    outlined
+                    standout
+                    dark
+                />
+                <q-input
+                    name="email"
+                    label="Email"
+                    type="email"
+                    v-model="email"
+                    :rules="[VALIDATION_RULES.REQUIRED]"
+                    lazy-rules
+                    standout
+                    filled
+                    outlined
+                    dark
+                />
+                <q-input
+                v-if="tab === TAB_NAMES.SIGN_IN"
+                    name="password"
+                    label="Password"
+                    type="password"
+                    v-model="password"
+                    :rules="[
+                        VALIDATION_RULES.REQUIRED,
+                        VALIDATION_RULES.MIN_LENGTH(6),
+                    ]"
+                    lazy-rules
+                    standout
+                    :error="isError"
+                    :error-message="errorMessage"
+                    @update:modelValue="
+                        () => {
+                            isError = false;
+                            errorMessage = null;
+                        }
+                    "
+                    dark
+                    filled
+                />
+                <LoginSetPassword v-else v-model="password"/>
+                <!-- <q-input
+                    name="password verification"
+                    label="Verify your password"
+                    type="password"
+                    v-model="passwordCheck"
+                    :rules="[
+                        VALIDATION_RULES.REQUIRED,
+                        VALIDATION_RULES.MIN_LENGTH(6),
+                        validatePassword,
+                    ]"
+                    lazy-rules
+                    standout
+                    outlined
+                    v-if="tab === TAB_NAMES.SIGN_UP"
+                    dark
+                    filled
+                /> -->
+            </q-card-section>
+            <LoginPasswordRecovery
+                v-else
+                @close="showForgotPasswordMenu = false"
+            />
+            <q-card-actions
+                v-if="!showForgotPasswordMenu"
+                class="row justify-center q-pb-lg q-px-lg"
+                style="padding-top: 0"
+            >
+                <Button
+                    type="submit"
+                    :disabled="loading"
+                    style="padding: 0px 32px; min-width: 125px"
+                    color="mint"
+                    :loading="loading"
+                    >Submit</Button
+                >
+            </q-card-actions>
+            <div
+                class="full-width row justify-center text-caption text-underline q-pb-sm clickable"
+                style="
+                    margin-top: calc(-1 * var(--space-md));
+                    color: rgba(255, 255, 255, 0.6);
+                "
+                v-if="tab === TAB_NAMES.SIGN_IN && !showForgotPasswordMenu"
+                @click="showForgotPasswordMenu = true"
+            >
+                Forgot password
+            </div>
+        </q-form>
+    </NuxtLayout>
+    <!-- <div
         class="full-width full-height row justify-center items-center login--container"
     >
         <div
@@ -8,144 +158,10 @@
         >
             <LogoFull width="125" />
         </div>
-        <q-form class="login__form q-pa-md" @submit="onSubmit" ref="loginForm">
-            <q-card :flat="$q.screen.lt.sm" class="login-card">
-                <q-tabs v-model="tab" class="login-tabs">
-                    <q-tab label="Sign in" :name="TAB_NAMES.SIGN_IN" />
-                    <q-tab label="Sign up" :name="TAB_NAMES.SIGN_UP" />
-                </q-tabs>
-                <q-card-section class="q-px-lg login-input__container">
-                    <q-input
-                        name="first name"
-                        label="First name"
-                        v-model.trim="firstName"
-                        :rules="[
-                            VALIDATION_RULES.REQUIRED,
-                            VALIDATION_RULES.MIN_LENGTH(2),
-                            VALIDATION_RULES.MAX_LENGTH(25),
-                            VALIDATION_RULES.ALPHA_ONLY,
-                        ]"
-                        lazy-rules
-                        v-if="tab === TAB_NAMES.SIGN_UP"
-                        filled
-                        outlined
-                        standout
-                        dark
-                    />
-                    <q-input
-                        name="last name"
-                        label="Last name"
-                        v-model.trim="lastName"
-                        :rules="[
-                            VALIDATION_RULES.REQUIRED,
-                            VALIDATION_RULES.MIN_LENGTH(2),
-                            VALIDATION_RULES.MAX_LENGTH(25),
-                            VALIDATION_RULES.ALPHA_ONLY,
-                        ]"
-                        lazy-rules
-                        v-if="tab === TAB_NAMES.SIGN_UP"
-                        filled
-                        outlined
-                        standout
-                        dark
-                    />
-                    <q-input
-                        name="username"
-                        label="Username"
-                        v-model.trim="username"
-                        :rules="[
-                            VALIDATION_RULES.REQUIRED,
-                            VALIDATION_RULES.MIN_LENGTH(6),
-                            VALIDATION_RULES.MAX_LENGTH(16),
-                            VALIDATION_RULES.NO_SPECIAL,
-                        ]"
-                        lazy-rules
-                        v-if="tab === TAB_NAMES.SIGN_UP"
-                        filled
-                        outlined
-                        standout
-                        dark
-                    />
-                    <q-input
-                        name="email"
-                        label="Email"
-                        type="email"
-                        v-model="email"
-                        :rules="[VALIDATION_RULES.REQUIRED]"
-                        lazy-rules
-                        standout
-                        filled
-                        outlined
-                        dark
-                    />
-                    <q-input
-                        name="password"
-                        label="Password"
-                        type="password"
-                        v-model="password"
-                        :rules="[
-                            VALIDATION_RULES.REQUIRED,
-                            VALIDATION_RULES.MIN_LENGTH(6),
-                        ]"
-                        lazy-rules
-                        standout
-                        :error="isError"
-                        :error-message="errorMessage"
-                        @update:modelValue="
-                            () => {
-                                isError = false;
-                                errorMessage = null;
-                            }
-                        "
-                        dark
-                        filled
-                    />
-                    <q-input
-                        name="password verification"
-                        label="Verify your password"
-                        type="password"
-                        v-model="passwordCheck"
-                        :rules="[
-                            VALIDATION_RULES.REQUIRED,
-                            VALIDATION_RULES.MIN_LENGTH(6),
-                            validatePassword,
-                        ]"
-                        lazy-rules
-                        standout
-                        outlined
-                        v-if="tab === TAB_NAMES.SIGN_UP"
-                        dark
-                        filled
-                    />
-                </q-card-section>
-                <q-card-actions
-                    class="row justify-center q-pb-lg q-px-lg"
-                    style="padding-top: 0"
-                >
-                    <Button
-                        type="submit"
-                        :disabled="loading"
-                        style="padding: 0px 32px; min-width: 125px"
-                        color="mint"
-                        :loading="loading"
-                        >Submit</Button
-                    >
-                </q-card-actions>
-                <!-- <div
-                    class="full-width row justify-center text-caption text-underline q-pb-sm clickable"
-                    style="
-                        margin-top: calc(-1 * var(--space-md));
-                        color: rgba(255, 255, 255, 0.6);
-                    "
-                    v-if="tab === TAB_NAMES.SIGN_IN"
-                    @click="showForgotPasswordMenu"
-                >
-                    Forgot password
-                </div> -->
-            </q-card>
-        </q-form>
-        <div />
-    </div>
+      
+
+      
+    </div> -->
 </template>
 
 <style lang="scss">
@@ -170,11 +186,7 @@
 .login-input__container {
     padding-top: var(--space-lg);
     padding-bottom: var(--space-lg);
-    .q-field {
-        &:not(:first-child) {
-            margin-top: var(--space-md);
-        }
-    }
+    
 }
 .login--container {
     display: grid;
@@ -195,9 +207,7 @@
 
     color: white;
 }
-.login__form {
-    width: min(400px, 100vw);
-}
+
 @media all and (max-width: 600px) {
     .login__form {
         .q-card {
@@ -279,4 +289,5 @@ const onSubmit = async (e) => {
     }
     loading.value = false;
 };
+const showForgotPasswordMenu = ref(false);
 </script>

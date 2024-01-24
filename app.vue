@@ -95,15 +95,19 @@ onBeforeMount(async () => {
     useEventListener(window, "resize", setVh);
 });
 
-const isPublicRoute = computed(() => PUBLIC_ROUTES.includes(route.fullPath))
+const isPublicRoute = computed(() => PUBLIC_ROUTES.includes(route.path))
 
 onBeforeMount(async () => {
     const user = useSupabaseUser();
+    console.log(route.path)
     if (
-        !PUBLIC_ROUTES.includes(route.fullPath) &&
+        !isPublicRoute.value &&
         user.value &&
         route.name !== "gateway"
-    ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
+    ) {
+        console.log('app redi')
+        return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
+    }
     
         
 });

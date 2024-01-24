@@ -83,6 +83,7 @@ export default defineNuxtConfig({
                 debug: true,
             },
         },
+        redirect: false,
     },
     typescript: {
         typeCheck: false,

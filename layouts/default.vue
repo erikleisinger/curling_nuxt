@@ -128,7 +128,7 @@ const leftDrawerOpen = ref(false);
 
 const route = useRoute();
 const isLoggedOutRoute = computed(() =>
-    ["/login", "/gateway"].includes(route.path)
+    ["/login", "/gateway", '/update-password'].includes(route.path)
 );
 
 // POPUP STATE
