@@ -1,7 +1,7 @@
 import {TEAM_STATS} from './__mock__/team-stats';
-import { getCumulativeStat } from '../utils/stats';
+import { getCumulativeStat } from '../utils/stats/index';
 import { STAT_TYPES, STAT_FIELDS_TOTAL, STAT_FIELDS } from '../constants/stats';
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("it should output correct total stats for a team", () => {
     it('should output correct win total', () => {

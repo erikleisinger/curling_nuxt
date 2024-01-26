@@ -1,20 +1,13 @@
 <template>
-    <div class="tile" :class="{ highlight: betterThanAverage, expanded }">
+    <div class="tile" :class="{ highlight: betterThanAverage, expanded }" >
         <header
             class="row items-center no-wrap justify-between q-mb-md"
             v-if="!expanded"
         >
-            <h3 class="position-relative row no-wrap">
-                <!-- <q-icon
-                    v-if="betterThanAverage"
-                    size="0.9em"
-                    class="q-mr-xs"
-                    name="stars"
-                    :style="{ color: getColor('yellow') }"
-                /> -->
+            <h3 class="position-relative row no-wrap" :data-flip-id="`tile-header-${type}`" :class="`tile-header-${type}`">
                 {{ name }}
             </h3>
-            <h2 :class="{green: betterThanAverage}" style="white-space: nowrap">
+            <h2 :class="{green: betterThanAverage, [`tile-value-${type}`]: true}" style="white-space: nowrap" :data-flip-id="`tile-value-${type}`" >
                 {{ percent.toFixed(isPercent ? 0 : 1) }}
                 <span class="text-caption" style="margin-left: -1.3em" v-if="isPercent">%</span>
             </h2>
@@ -23,8 +16,8 @@
             <div class="close-container__floating">
                 <q-btn icon="close" flat round @click="emit('close')"/>
             </div>
-            <div class="column items-center justify-center q-py-md">
-                <h3 class="position-relative">
+            <div class="column items-center" :class="{'q-py-md justify-center': $q.screen.xs}">
+                <h3 class="position-relative " :data-flip-id="`tile-header-${type}`" :class="`tile-header-${type}`">
                     <q-icon
                         v-if="betterThanAverage"
                         size="0.9em"
@@ -48,7 +41,7 @@
                     :style="{ color: getColor(STAT_COLORS[type] ?? 'blue') }"
                 >
                     <div class="knob--text">
-                        <h2 style="white-space: nowrap; position: relative">
+                        <h2 style="white-space: nowrap; position: relative" :data-flip-id="`tile-value-${type}`" :class="`tile-value-${type}`">
                             {{ percent.toFixed(isPercent ? 0 : 1) }}
                              <span class="text-caption" style="margin-left: -1.3em; position: absolute;bottom:0.5em;right:-0.8em" v-if="isPercent">%</span>
                         </h2>
@@ -91,6 +84,7 @@ $min-height: min(175px, calc(50% - 12px));
     @include sm {
         grid-template-rows: unset;
         grid-template-columns: repeat(2, 1fr);
+        margin-top: var(--space-lg)
     }
 }
 .tile {
@@ -152,6 +146,9 @@ $min-height: min(175px, calc(50% - 12px));
         position: absolute;
         top: var(--space-sm);
         right: 0;
+        @include sm {
+            right: var(--space-sm)
+        }
     }
     :deep(.q-circular-progress__track) {
         color: rgba(211, 211, 211, 0.7) !important;
@@ -203,6 +200,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+const $q = useQuasar()
 const { getColor } = useColor();
 
 const {isPercentStat} = useStats();

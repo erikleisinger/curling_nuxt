@@ -99,15 +99,12 @@ const isPublicRoute = computed(() => PUBLIC_ROUTES.includes(route.path))
 
 onBeforeMount(async () => {
     const user = useSupabaseUser();
-    console.log(route.path)
     if (
         !isPublicRoute.value &&
         user.value &&
         route.name !== "gateway"
-    ) {
-        console.log('app redi')
-        return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
-    }
+    ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
+    
     
         
 });

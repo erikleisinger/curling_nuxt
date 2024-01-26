@@ -1,85 +1,48 @@
 <template>
-<DashboardStatDetailsItemTemplate :color="POS_STATS.includes(statField) ? getColor('mint') : getColor('red')" :subitem="subitem" v-model="expanded">
-    <template v-slot:icon>
-  <q-icon
-                        name="circle"
-                        size="0.7em"
-                        :style="{ color: getColor(statField) }"
-                        class="q-mr-xs"
-                        v-if="COLOR_STATS.includes(statField)"
-                    />
-                    <q-icon
-                        name="o_hardware"
-                        size="0.9em"
-                        :style="{
-                            color: 'white',
-                        }"
-                        class="q-mr-xs"
-                        v-if="HAMMER_STATS.includes(statField)"
-                    />
-                    <!-- <q-icon
-                     size="0.9em"
-                     class="q-mr-xs"
-                    v-if="statField === STAT_FIELDS.WITH_HAMMER_LE"
-                    name="o_home" :style="{color: getColor('mint')}"/>
-                      <q-icon
-                     size="0.9em"
-                     class="q-mr-xs"
-                    v-if="statField === STAT_FIELDS.WITHOUT_HAMMER_LE"
-                    name="o_home" :style="{color: getColor('red')}"/> -->
-                    <!-- <q-icon
-                        name="check_circle"
-                        size="0.9em"
-                        :style="{ color: getColor('mint') }"
-                        class="q-mr-xs"
-                        v-if="POS_STATS.includes(statField)"
-                    />
-                    <q-icon
-                        name="cancel"
-                        size="0.9em"
-                        :style="{ color: getColor('red') }"
-                        class="q-mr-xs"
-                        v-if="NEG_STATS.includes(statField)"
-                    /> -->
-    </template>
-    <template v-slot:title>
-{{ STAT_FIELD_TITLES[statField](statType) }}
-    </template>
-    <template v-slot:subtitle v-if="subtitle">
-   {{subtitle}}
-    </template>
-    <template v-slot:value>
-         <div class="text-caption q-mr-sm row no-wrap items-center" v-if="hasValue && showAvgDiff">
-                    <q-icon
-                    v-if="avgDiff !== 0"
-                        :name="
-                            avgDiff > 0 ? 'arrow_drop_up' : 'arrow_drop_down'
-                        "
-                        :style="{
-                            color:
-                                avgDiff > 0
-                                    ? getColor('mint')
-                                    : getColor('red'),
-                        }"
-                    />
+    <DashboardStatDetailsItemTemplate
+        :subitem="subitem"
+        v-model="expanded"
+        :color="backgroundColor && getColor(backgroundColor)"
+    >
+        <template v-slot:icon v-if="props.icon">
+            <q-icon
+                :name="props.icon"
+                size="0.7em"
+                :style="{ color: getColor(props.iconColor ?? 'white') }"
+                class="q-mr-xs"
+            />
+        </template>
+        <template v-slot:title>
+            {{ props.title }}
+        </template>
+        <template v-slot:subtitle v-if="subtitle">
+            {{ subtitle }}
+        </template>
+        <template v-slot:diff>
+            <q-icon
+                v-if="avgDiff !== 0"
+                :name="avgDiff > 0 ? 'arrow_drop_up' : 'arrow_drop_down'"
+                :style="{
+                    color: avgDiff > 0 ? getColor('mint') : getColor('red'),
+                }"
+            />
 
-                   <span v-if="avgDiff"> {{ avgDiff }}{{ isPercent ? "%" : "" }}</span>
-                   <span v-else>-</span>
-                </div>
-                <h5 :style="{ color }">{{ cleanNumber(value) }}{{isPercent ? '%' : ''}}</h5>
-    </template>
-    <template v-slot:more v-if="slots.more">
-        <slot name="more"/>
-    </template>
-</DashboardStatDetailsItemTemplate>
-
+            <span v-if="avgDiff"> {{ avgDiff }}{{ isPercent ? "%" : "" }}</span>
+            <span v-else>-</span>
+        </template>
+        <template v-slot:value>
+            <h5>{{ cleanNumber(value) }}{{ isPercent ? "%" : "" }}</h5>
+        </template>
+        <template v-slot:more v-if="slots.more">
+            <slot name="more" />
+        </template>
+    </DashboardStatDetailsItemTemplate>
 </template>
 <style lang="scss" scoped>
 $upcoming-color: rgba(255, 255, 255, 0.7);
 .details-item__container {
     .row__container {
         margin-bottom: var(--space-sm);
-      
 
         h5 {
             @include md-text;
@@ -135,10 +98,6 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
             margin-top: -4px;
             font-weight: normal;
             font-style: italic;
-
-            &.hasIcon {
-                margin-left: 2em;
-            }
         }
     }
 
@@ -180,7 +139,7 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
     }
 
     .stat-line {
-        flex-grow: 1; 
+        flex-grow: 1;
         height: 100%;
         position: relative;
         overflow: hidden;
@@ -204,100 +163,53 @@ import TeamStats from "@/store/models/team-stats";
 const props = defineProps({
     alwaysNumber: Boolean,
     average: Number,
+    backgroundColor: String,
+    calculator: Function,
     filters: Object,
+    icon: String,
+    iconColor: String,
     statField: String,
     statType: String,
+    stats: Array,
     subitem: Boolean,
+    title: String,
 });
-
-
 
 const { getColor } = useColor();
 
 const slots = useSlots();
 
-const COLOR_STATS = [STAT_FIELDS.YELLOW, STAT_FIELDS.RED, STAT_FIELDS.BLUE];
-
-const HAMMER_STATS = [
-    STAT_FIELDS.WITH_HAMMER,
-    STAT_FIELDS.WITHOUT_HAMMER,
-
-];
-const HAMMER_POS = [
-    STAT_FIELDS.WITH_HAMMER,
-    STAT_FIELDS.WITH_HAMMER_LE,
-    STAT_FIELDS.WITH_HAMMER_2LE,
-     STAT_FIELDS.WITH_HAMMER_3LE,
-];
-
-
-
-
-const hasIcon =
-    COLOR_STATS.includes(props.statField) ||
-    HAMMER_STATS.includes(props.statField) ||
-    POS_STATS.includes(props.statField) ||
-    NEG_STATS.includes(props.statField);
-
-const { userTeamIds } = useTeam();
-
-const filteredTeamIds = computed(() => {
-    if (!props.filters?.teams?.length) return userTeamIds.value;
-    return [...userTeamIds.value].filter((id) =>
-        props.filters.teams.includes(id)
-    );
-});
-
-const stats = computed(() => {
-    return useRepo(TeamStats)
-        .query()
-        .whereIn("team_id", filteredTeamIds.value)
-        .where("rink_id", (val) => {
-            return props.filters?.rink ? val === props.filters?.rink : true;
-        })
-        .where("sheet_id", (val) => {
-            return props.filters?.sheet ? val === props.filters?.sheet : true;
-        })
-        .get();
-});
-
 const subtitle = computed(() => {
     if (!STAT_TYPE_SUBTITLES[props.statField]) return null;
-    return STAT_TYPE_SUBTITLES[props.statField](stats.value)
-})
+    return STAT_TYPE_SUBTITLES[props.statField](props.stats);
+});
 
-const { getCumulativeStat, isPercentStat, cleanStatValue } = useStats();
+const { isPercentStat, cleanStatValue } = useStats();
 
-const value = computed(() => getCumulativeStat(
-        stats.value,
-        props.statType,
-        props.statField
-        // STAT_FIELDS_TOTAL[props.statField] ?? STAT_FIELDS_TOTAL[props.statType]
-    )  
-);
-const color = computed(() =>
-    Number.isNaN(value.value)
-        ? "inherit"
-        : value.value > props.average
-        ? "inherit"
-        : "inherit"
-);
+const value = computed(() => props.calculator({ stats: props.stats, statType: props.statType }));
 
 const isPercent =
     !props.alwaysNumber && isPercentStat(props.statType, props.statField);
 
 const hasValue = computed(() => !Number.isNaN(value.value));
 
-const showAvgDiff = computed(() => props.statField !== STAT_FIELDS.WITH_HAMMER && props.statType !== STAT_TYPES.HAMMER_EFFICIENCY)
+const showAvgDiff = computed(
+    () =>
+        props.statType !== STAT_TYPES.HAMMER_EFFICIENCY ||
+        props.statField !== STAT_FIELDS.WITH_HAMMER
+);
 
 const avgDiff = computed(() =>
-    Number((value.value * (isPercent ? 100 : 1) - props.average).toFixed(isPercent ? 0 : 1))
+    Number(
+        (value.value * (isPercent ? 100 : 1) - props.average).toFixed(
+            isPercent ? 0 : 1
+        )
+    )
 );
 
 const cleanNumber = (num) => {
-    return cleanStatValue(num, props.statType, null, props.statField)
+    return cleanStatValue(num, props.statType, null, props.statField);
 };
 
 const expanded = ref(false);
-
 </script>

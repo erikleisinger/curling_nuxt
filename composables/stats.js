@@ -1,5 +1,5 @@
 import { STAT_TYPES, CUMULATIVE_CHART_STATS, NON_PERCENT_STATS, STAT_FIELDS_TOTAL } from "@/constants/stats";
-import {isPercentStat, cleanStatValue, getCumulativeStat} from '@/utils/stats'
+import {isPercentStat, cleanStatValue, getCumulativeStat, getHighestLowest} from '@/utils/stats/index'
 export const useStats = () => {
     const calcHammerEfficiency = ({hammer_conversion_count, hammer_blank_count, hammer_end_count}) => {
         return hammer_conversion_count / (hammer_end_count - hammer_blank_count)
@@ -114,5 +114,5 @@ export const useStats = () => {
 
 
 
-    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints, isPercentStat, cleanStatValue };
+    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints, isPercentStat, cleanStatValue, getHighestLowest };
 };

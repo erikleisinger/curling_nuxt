@@ -11,6 +11,8 @@
             <div
                 v-if="!expanded && chartPoints?.length && chartPoints[0]"
                 :style="`width: ${tileWidth}px; height: 80px`"
+                 :class="`tile-chart-${type}`"
+                        :data-flip-id="`tile-chart-${type}`"
             >
                 <DashboardLineChart
                     :data="chartPointsPreview"
@@ -24,7 +26,6 @@
                 style="width: 100%; height: 100%"
                 class="line-chart__container"
             >
-                <!--  -->
 
                 <DashboardStatGameDetails
                     :data="gameInfo"
@@ -41,6 +42,8 @@
                             left: `${leftPoint}px`,
                             borderColor: 'rgba(255,255,255,0.6)',
                         }"
+                        :class="`tile-chart-${type}`"
+                        :data-flip-id="`tile-chart-${type}`"
                     />
                     <!-- borderColor: getColor(STAT_COLORS[type]), -->
                     <DashboardLineChart
@@ -108,6 +111,7 @@
 }
 .line-chart__container {
     position: relative;
+
 }
 .game-line__indicator {
     position: absolute;
@@ -306,7 +310,7 @@ watch(
         if (val) return;
         showGameInfo.value = false;
         gameInfo.value = null;
-        showComparison.value = false;
+        showComparison.value = null;
         showCumulative.value = isCumulative;
     }
 );

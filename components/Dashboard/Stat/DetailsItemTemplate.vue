@@ -1,5 +1,5 @@
 <template>
-     <div class="details-item__container">
+    <div class="details-item__container">
         <div
             class="row__container row no-wrap justify-between items-center"
             :class="{
@@ -11,24 +11,45 @@
             }"
             @click="onClick"
         >
-            <div >
-                <h4 class="row no-wrap items-center" >
-                  <slot name="icon"/>
-                 <slot name="title"/>
-                  
-                       <span class="text-caption font-secondary" v-if="slots.subtitle && subitem">
-                        {{' '}}
-                        <slot name="subtitle"/>
+            <div>
+                <h4 class="row no-wrap items-center">
+                    <slot name="icon" />
+                    <slot name="title" />
+
+                    <span
+                        class="text-caption font-secondary"
+                        v-if="slots.subtitle && subitem"
+                    >
+                        {{ " " }}
+                        <slot name="subtitle" />
                     </span>
-                    <q-btn dense flat round :icon="expanded ? 'arrow_drop_down' : 'arrow_drop_up'" size="0.5em" v-if="slots.more"/>
+                    <q-btn
+                        dense
+                        flat
+                        round
+                        :icon="expanded ? 'arrow_drop_down' : 'arrow_drop_up'"
+                        size="0.5em"
+                        v-if="slots.more"
+                    />
                 </h4>
-                <h6 :class="{ hasIcon: !!slots.icon }" v-if="slots.subtitle && !subitem">
-                    <slot name="subtitle"/>
+                <h6
+                    :class="{ hasIcon: !!slots.icon }"
+                    v-if="slots.subtitle && !subitem"
+                >
+                    <slot name="subtitle" />
                 </h6>
             </div>
 
             <div class="row items-end no-wrap">
-                <slot name="value"/>
+                <div
+                    class="text-caption q-mr-sm row no-wrap items-center"
+                    
+                >
+                    <slot name="diff" />
+                </div>
+                <h5>
+                    <slot name="value" />
+                </h5>
             </div>
         </div>
         <div
@@ -48,7 +69,6 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 .details-item__container {
     .row__container {
         margin-bottom: var(--space-sm);
-      
 
         h5 {
             @include md-text;
@@ -134,15 +154,13 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
         }
         &.pos {
             &:before {
-                
             }
         }
         &.neg {
-            
         }
         &:before {
-                background-color: v-bind(color);;
-            }
+            background-color: v-bind(color);
+        }
         .row__container {
             &:last-child {
                 margin-bottom: unset !important;
@@ -151,7 +169,7 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
     }
 
     .stat-line {
-        flex-grow: 1; 
+        flex-grow: 1;
         height: 100%;
         position: relative;
         overflow: hidden;
@@ -159,25 +177,24 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
 }
 </style>
 <script setup>
-   const slots = useSlots()
-    const props = defineProps({
-        color: String,
-        positive: Boolean,
-        subitem: Boolean,
-        modelValue: Boolean,
-    })
+const slots = useSlots();
+const props = defineProps({
+    color: String,
+    positive: Boolean,
+    subitem: Boolean,
+    modelValue: Boolean,
+});
 
-    const emit = defineEmits(['update:modelValue'])
- 
+const emit = defineEmits(["update:modelValue"]);
 
-    const expanded = computed({
-        get() {
-            return props.modelValue
-        },
-        set(val) {
-            emit('update:modelValue', val)
-        }
-    })
+const expanded = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit("update:modelValue", val);
+    },
+});
 
 const onClick = () => {
     if (!slots.more) return;

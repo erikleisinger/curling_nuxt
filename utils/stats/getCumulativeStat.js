@@ -1,21 +1,4 @@
-import { NON_PERCENT_STATS, STAT_CALCULATION_PARAMS, STAT_TYPES, STAT_FIELD_FILTER_FUNCTIONS, STAT_FIELDS } from "@/constants/stats";
-
-const toPercent = (num) => {
-    return (num * 100).toFixed();
-};
-
-export const isPercentStat = (type, field) => {
-    if (field === STAT_FIELDS.WITH_HAMMER && type === STAT_TYPES.HAMMER_EFFICIENCY) return false;
-    return !NON_PERCENT_STATS.includes(type)
-}
-
-export const cleanStatValue = (num, type, fallback = '-', field) => {
-    if (Number.isNaN(num)) return fallback;
-    const isPercent = isPercentStat(type, field)
-   
-    return (num * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1);
-};
-
+import { STAT_FIELD_FILTER_FUNCTIONS, STAT_CALCULATION_PARAMS, STAT_TYPES } from "@/constants/stats";
 export const getCumulativeStat = (statsArray, type, field) => { 
     const filterFunc = STAT_FIELD_FILTER_FUNCTIONS[field];
     let stats;

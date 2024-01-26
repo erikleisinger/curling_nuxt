@@ -4,37 +4,6 @@
             <section class="filter__container row justify-center" >
                 <DashboardFilters v-model="filters" />
             </section>
-            <!-- <div class="row no-wrap">
-       <DashboardStat
-                    
-                    :type="STAT_TYPES.WINS"
-                    @click="setSelected(STAT_TYPES.WINS)"
-                    :expanded="expanded === STAT_TYPES.WINS"
-                   
-                    :filters="filters"
-                    @close="endView"
-                    @scroll="scrollUp"
-                    style="margin-bottom: 2px; flex-grow: 1"
-                    
-                >
-                <template v-slot:tileAppend>
-                      <div style="max-width: 50%;margin-left: 2px">
- <div  v-for="stat in [...values.color].splice(0, 1)" :key="stat.name">
-                    <h4>{{STAT_FIELD_TITLES_FULL[stat.name]}}</h4>
-                </div>
-             
-                  <div  v-for="stat in [...values.hammer].splice(0, 1)" :key="stat.name">   
-                    <h4>{{STAT_FIELD_TITLES_FULL[stat.name]}}</h4>
-                    </div>
-                    
-                </div>
-                </template>
-                </DashboardStat> 
-              
-               
-
-             
-            </div> -->
             <section
                 class="tile__container"
                 :class="{ expanded }"
@@ -50,6 +19,7 @@
                     :filters="filters"
                     @close="endView"
                     @scroll="scrollUp"
+                    :id="`dashboard-stat-${statType}`"
                     
                 >
                 </DashboardStat>
@@ -137,6 +107,9 @@ import Team from "@/store/models/team";
 import Rink from "@/store/models/rink";
 import Sheet from "@/store/models/sheet";
 import { useDialogStore } from "@/store/dialog";
+import gsap from 'gsap';
+import {Flip} from 'gsap/Flip';
+gsap.registerPlugin(Flip)
 
 const { getColor } = useColor();
 
@@ -251,12 +224,20 @@ const setSelected = (type) => {
         preventExpand.value = false;
         return;
     }
-    if (expanded.value === type) {
-        // expanded.value = null;
-    } else {
+    if (expanded.value === type) return;
+
+    const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
+    const state = Flip.getState(targets)
         expanded.value = type;
         scrollUp();
-    }
+        nextTick(() => {
+            Flip.from(state, {
+                targets,
+                duration: 0.2,
+                scale: `#dashboard-stat-${type}`
+            })
+        })
+    
 };
 
 const scrollUp = () => {
@@ -305,65 +286,4 @@ const { direction } = useSwipe(tileContainer, {
         }
     },
 });
-
-// const {userTeamIds} = useTeam();
-
-// const { getCumulativeStat } = useStats();
-
-//   const values = computed(() => {
-//     const teams = filters.value?.teams?.length ? filters.value.teams : userTeamIds.value;
-//     // const teams = filters.value.teams;
-//     const teamStats = useRepo(TeamStats).query().whereIn('team_id', teams).get()
-//     console.log('teams changed: ', teams)
-//     console.log('team stats: ', teamStats)
-//     return [
-//             STAT_FIELDS.YELLOW,
-//             STAT_FIELDS.RED,
-//             STAT_FIELDS.BLUE,
-//             STAT_FIELDS.WITH_HAMMER_LE,
-//             STAT_FIELDS.WITH_HAMMER_LE_TIE,
-//             STAT_FIELDS.WITH_HAMMER_LE_D1,
-//             STAT_FIELDS.WITH_HAMMER_LE_D2,
-//             STAT_FIELDS.WITHOUT_HAMMER_LE,
-//             STAT_FIELDS.WITHOUT_HAMMER_LE_TIE,
-//             STAT_FIELDS.WITHOUT_HAMMER_LE_D1,
-//             STAT_FIELDS.WITHOUT_HAMMER_LE_D2,
-//             STAT_FIELDS.WITHOUT_HAMMER_EE,
-//             STAT_FIELDS.WITH_HAMMER_2LE,
-//             STAT_FIELDS.WITH_HAMMER_2LE_U1,
-//             STAT_FIELDS.WITH_HAMMER_2LE_U2,
-//             STAT_FIELDS.WITH_HAMMER_2LE_TIE,
-//             STAT_FIELDS.WITH_HAMMER_2LE_D1,
-//             STAT_FIELDS.WITH_HAMMER_2LE_D2,
-//             STAT_FIELDS.WITH_HAMMER_3LE,
-//             STAT_FIELDS.WITH_HAMMER_3LE_TIE,
-//             STAT_FIELDS.WITH_HAMMER_3LE_D1,
-//             STAT_FIELDS.WITH_HAMMER_3LE_D2,
-            
-//         ].map((field) => ({
-//             name: field,
-//             value: getCumulativeStat(
-//         teamStats.filter(STAT_FIELD_FILTER_FUNCTIONS[field]),
-//         STAT_FIELDS_TOTAL['wins']
-//     ) 
-//         })).sort((a,b) => (Number.isNaN(b.value) ? 0 : b.value) - (Number.isNaN(a.value) ? 0 : a.value)).reduce((all, current) => {
-//             // STAT_FIELD_TITLES_FULL[field]('')
-//             console.log([STAT_FIELDS.YELLOW, STAT_FIELDS.RED, STAT_FIELDS.BLUE].includes(current.name))
-//             if ([STAT_FIELDS.YELLOW, STAT_FIELDS.RED, STAT_FIELDS.BLUE].includes(current.name)) {
-//                 console.log(current.name)
-//                 return {
-//                 ...all, 
-//                 color: [...all.color, current]
-//             }
-//             }
-//             return {
-//                 ...all,
-//                 hammer: [...all.hammer, current]
-//             }
-//         }, {
-//             color: [],
-//             hammer: [],
-//         })   
-//         }
-//   ); 
 </script>
