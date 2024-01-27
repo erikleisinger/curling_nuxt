@@ -6,11 +6,13 @@
     >
         <template v-slot:icon v-if="props.icon">
             <q-icon
+            v-if="icon !== 'ends'"
                 :name="props.icon"
                 size="0.7em"
                 :style="{ color: getColor(props.iconColor ?? 'white') }"
                 class="q-mr-xs"
             />
+            <IconEnd v-else :num="props.iconParams"/>
         </template>
         <template v-slot:title>
             {{ props.title }}
@@ -23,7 +25,7 @@
                 v-if="avgDiff !== 0"
                 :name="avgDiff > 0 ? 'arrow_drop_up' : 'arrow_drop_down'"
                 :style="{
-                    color: avgDiff > 0 ? getColor('mint') : getColor('red'),
+                    color: avgDiff > 0 ? (backgroundColor === 'mint' ? 'white' : getColor('mint')) : (backgroundColor === 'red' ? 'white' : getColor('red')),
                 }"
             />
 
@@ -31,121 +33,13 @@
             <span v-else>-</span>
         </template>
         <template v-slot:value>
-            <h5>{{ cleanNumber(value) }}{{ isPercent ? "%" : "" }}</h5>
+            {{ cleanNumber(value) }}<span v-if="isPercent" style="font-size: 0.8rem">%</span>
         </template>
         <template v-slot:more v-if="slots.more">
             <slot name="more" />
         </template>
     </DashboardStatDetailsItemTemplate>
 </template>
-<style lang="scss" scoped>
-$upcoming-color: rgba(255, 255, 255, 0.7);
-.details-item__container {
-    .row__container {
-        margin-bottom: var(--space-sm);
-
-        h5 {
-            @include md-text;
-        }
-        &.upcoming {
-            h4 {
-                color: $upcoming-color;
-            }
-        }
-        caption {
-            line-height: 1;
-            white-space: nowrap;
-            font-style: italic;
-            color: $upcoming-color;
-        }
-        .plus-minus__text {
-            @include text-caption;
-            font-family: $font-family-secondary;
-            color: white;
-        }
-        &.subitem {
-            margin-left: var(--space-xs);
-
-            margin-bottom: var(--space-xxs) !important;
-            h4 {
-                @include reg-text;
-            }
-            h5 {
-                @include smmd-text;
-            }
-        }
-        transition: all 0.2s;
-        &.expanded {
-            &.pos {
-                background-color: $app-mint;
-            }
-            &.neg {
-                background-color: $app-red;
-            }
-
-            padding: var(--space-xs);
-            border-radius: 8px;
-            .q-icon {
-                color: white !important;
-            }
-            margin-bottom: unset;
-            transform: scale(1.04);
-        }
-
-        h6 {
-            font-family: $font-family-secondary;
-            @include text-caption;
-            margin-top: -4px;
-            font-weight: normal;
-            font-style: italic;
-        }
-    }
-
-    .more__container {
-        width: 100%;
-        padding: var(--space-sm) var(--space-md);
-        position: relative;
-        border-radius: 8px;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        overflow: hidden;
-        background-color: rgba(0, 0, 0, 0.2);
-        margin-bottom: var(--space-sm);
-        &:before {
-            content: "";
-
-            height: 100%;
-            width: 8px;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            position: absolute;
-        }
-        &.pos {
-            &:before {
-                background-color: $app-mint;
-            }
-        }
-        &.neg {
-            &:before {
-                background-color: $app-red;
-            }
-        }
-        .row__container {
-            &:last-child {
-                margin-bottom: unset !important;
-            }
-        }
-    }
-
-    .stat-line {
-        flex-grow: 1;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-}
-</style>
 <script setup>
 import {
     NEG_STATS,
@@ -211,5 +105,5 @@ const cleanNumber = (num) => {
     return cleanStatValue(num, props.statType, null, props.statField);
 };
 
-const expanded = ref(false);
+const expanded = ref(true);
 </script>

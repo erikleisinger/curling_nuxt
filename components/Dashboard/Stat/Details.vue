@@ -11,10 +11,9 @@
             :key="index"
         >
             <q-separator class="separator" />
-            <div
-                v-for="[key, subsection] in Object.entries(section)"
-                :key="key"
-            >
+      
+
+          
                 <DashboardStatDetailsItem
                     :statType="type"
                     :statField="key"
@@ -22,6 +21,8 @@
                     :filters="filters"
                     :average="average"
                     v-bind="subsection"
+                    v-for="[key, subsection] in Object.entries(section)"
+                :key="key"
                 >
                     <template v-slot:more v-if="subsection.subitems">
                         <DashboardStatDetailsItem
@@ -39,7 +40,19 @@
                         />
                     </template>
                 </DashboardStatDetailsItem>
-            </div>
+        
+      
+        </section>
+
+        <section name="hammer wins" v-if="type === STAT_TYPES.WINS">
+               <q-separator class="separator" />
+            <DashboardStatDetailsItemHammer :stats="statsByGame" :average="average" field="last_end" />
+            <q-separator class="separator" />
+             <DashboardStatDetailsItemHammer :stats="statsByGame" :average="average" field="2nd_last_end"/>
+             <q-separator class="separator" />
+              <DashboardStatDetailsItemHammer :stats="statsByGame" :average="average" field="3rd_last_end"/>
+              <q-separator class="separator" />
+               <DashboardStatDetailsItemHammer :stats="statsByGame" :average="average" field="extra_end"/>
         </section>
 
         <!-- SEASON HIGH/LOW -->
@@ -70,9 +83,9 @@
             />
         </section>
 
-        <div class="q-pa-sm full-width row justify-center text-caption">
+        <!-- <div class="q-pa-sm full-width row justify-center text-caption">
             *does not include games that finish early (handshakes, bell, etc.)
-        </div>
+        </div> -->
     </div>
 </template>
 <style lang="scss" scoped>

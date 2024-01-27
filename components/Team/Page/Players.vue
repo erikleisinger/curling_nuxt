@@ -230,7 +230,6 @@ import { useDialogStore } from "@/store/dialog";
 import { parseAvatar } from "@/utils/avatar";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
-import { onClickOutside } from "@vueuse/core";
 import { useNotificationStore } from "@/store/notification";
 import { useQueryClient } from "@tanstack/vue-query";
 import { TEAM_POSITIONS } from "@/constants/team";
@@ -381,14 +380,16 @@ const onDeselect = (e) => {
     if (e.composedPath().includes(positionSelectMenu.value?.$el)) return;
     if (e.composedPath().includes(editMenu.value)) return;
     if (e.composedPath().includes(confirmDelete.value?.$el)) return;
-    nextTick(() => {
-        if (showMenu.value) {
-            endEdit();
-        } else {
-            selectPlayer(null);
-        }
-    });
+    
+    setTimeout(() => {
+        selectPlayer(null);
+    }, 1);
 };
+
+watch(showMenu, (val) => {
+    if (val)return;
+    endEdit()
+})
 
 const inviteUser = async (e) => {
     await useTeamRequestStore().sendTeamInvitation({

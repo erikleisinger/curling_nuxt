@@ -234,7 +234,7 @@ const setSelected = (type) => {
             Flip.from(state, {
                 targets,
                 duration: 0.2,
-                scale: `#dashboard-stat-${type}`
+                scale: `#dashboard-stat-${type}`,
             })
         })
     

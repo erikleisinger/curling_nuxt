@@ -1,5 +1,5 @@
 <template>
-    <div class="details-item__container">
+    <div class="details-item__container" :class="{subitem}">
         <div
             class="row__container row no-wrap justify-between items-center"
             :class="{
@@ -17,10 +17,10 @@
                     <slot name="title" />
 
                     <span
-                        class="text-caption font-secondary"
+                        class="text-caption font-secondary q-ml-xs"
                         v-if="slots.subtitle && subitem"
                     >
-                        {{ " " }}
+                        
                         <slot name="subtitle" />
                     </span>
                     <q-btn
@@ -42,13 +42,23 @@
 
             <div class="row items-end no-wrap">
                 <div
-                    class="text-caption q-mr-sm row no-wrap items-center"
+                    class="text-caption q-mr-sm row no-wrap items-center" v-if="slots.diff"
                     
                 >
                     <slot name="diff" />
                 </div>
-                <h5>
+                <h5 v-if="slots.value">
                     <slot name="value" />
+                </h5>
+                 <div
+                    class="text-caption q-mr-sm row no-wrap items-center"
+                    v-if="slots.diff2"
+                    
+                >
+                    <slot name="diff2" />
+                </div>
+                 <h5 v-if="slots.value2" class="q-pl-md">
+                    <slot name="value2" />
                 </h5>
             </div>
         </div>
@@ -67,11 +77,21 @@
 <style lang="scss" scoped>
 $upcoming-color: rgba(255, 255, 255, 0.7);
 .details-item__container {
+    &.subitem {
+&:nth-child(odd) {
+        background-color: rgba(0,0,0,0.1);
+    }
+    }
+    
     .row__container {
         margin-bottom: var(--space-sm);
 
         h5 {
             @include md-text;
+        }
+        h4 {
+            color: rgba(255,255,255, 0.9);
+            
         }
         &.upcoming {
             h4 {
@@ -110,13 +130,16 @@ $upcoming-color: rgba(255, 255, 255, 0.7);
             //     background-color: $app-red;
             // }
 
-            padding: var(--space-xs);
+            
             border-radius: 8px;
             .q-icon {
                 color: white !important;
             }
             margin-bottom: unset;
             transform: scale(1.04);
+            &:not(.subitem) {
+                padding: var(--space-xs);
+            }
         }
 
         h6 {

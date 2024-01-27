@@ -1019,8 +1019,9 @@ const stat_subsections = {
     hammer_last_end: {
         [STAT_FIELDS.WITH_HAMMER_LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER_LE),
-            title: 'Coming home with',
+            title: 'With hammer',
             backgroundColor: 'mint',
+           
             subitems: {
                 [STAT_FIELDS.WITH_HAMMER_LE_U2]: {
                     calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER_LE_U2),
@@ -1046,8 +1047,8 @@ const stat_subsections = {
         },
         [STAT_FIELDS.WITHOUT_HAMMER_LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_LE),
-            title: 'Coming home without',
-            backgroundColor: 'mint',
+            title: 'Without hammer',
+            backgroundColor: 'red',
             subitems: {
                 [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: {
                     calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_LE_U2),
@@ -1076,19 +1077,19 @@ const stat_subsections = {
     hammer_extra_end: {
         [STAT_FIELDS.WITH_HAMMER_EE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER_EE),
-            title: 'Extra end with',
+            title: 'With hammer',
             
         },
         [STAT_FIELDS.WITHOUT_HAMMER_EE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_EE),
-            title: 'Extra end without',
+            title: 'Without hammer',
             
         }
     },
     hammer_2le: {
         [STAT_FIELDS.WITH_HAMMER_2LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER_2LE),
-            title: '2nd-last end with',
+            title: 'With hammer',
             backgroundColor: 'mint',
             subitems: {
                 [STAT_FIELDS.WITH_HAMMER_2LE_U2]: {
@@ -1115,8 +1116,8 @@ const stat_subsections = {
         },
         [STAT_FIELDS.WITHOUT_HAMMER_2LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_2LE),
-            title: '2nd-last end without',
-            backgroundColor: 'mint',
+            title: 'Without hammer',
+            backgroundColor: 'red',
             subitems: {
                 [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: {
                     calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_2LE_U2),
@@ -1145,7 +1146,7 @@ const stat_subsections = {
     hammer_3le: {
         [STAT_FIELDS.WITH_HAMMER_3LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER_3LE),
-            title: '3rd-last end with',
+            title: 'With hammer',
             backgroundColor: 'mint',
             subitems: {
                 [STAT_FIELDS.WITH_HAMMER_3LE_U2]: {
@@ -1172,8 +1173,8 @@ const stat_subsections = {
         },
         [STAT_FIELDS.WITHOUT_HAMMER_3LE]: {
             calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_3LE),
-            title: '3rd-last end without',
-            backgroundColor: 'mint',
+            title: 'Without hammer',
+            backgroundColor: 'red',
             subitems: {
                 [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: {
                     calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER_3LE_U2),
@@ -1204,10 +1205,11 @@ export const STAT_SUBSECTIONS = {
     [STAT_TYPES.WINS]: [
         // stat_subsections.hammer_simple,
         stat_subsections.color,
-        stat_subsections.hammer_last_end,
-        stat_subsections.hammer_extra_end,
-        stat_subsections.hammer_2le,
-        stat_subsections.hammer_3le
+        // stat_subsections.hammer_last_end,
+      
+        // stat_subsections.hammer_2le,
+        // stat_subsections.hammer_3le,
+        // stat_subsections.hammer_extra_end,
     ],
     [STAT_TYPES.POINTS_PER_END]: [
         stat_subsections.hammer_simple,
