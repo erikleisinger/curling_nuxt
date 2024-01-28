@@ -1,28 +1,33 @@
 <template>
-      <div class="rink__container" ref="rinkContainer">
-        <div class="row justify-center no-wrap">
-            <q-icon
-                name="location_on"
-                color="red"
-                size="1.7em"
-                class="q-mr-md"
-            />
+      <div class="rink__container" ref="rinkContainer" :style="{background}">
+        <div class="underlay"/>
+        <div class="overlay">
+            <div class="row no-wrap flags__container justify-center">
+            </div>
+        
+        <div class="row no-wrap  items-center justify-between full-height">
+            <div class="q-mr-md">
+              <FlagChip :name="'CA'" size="40px" />
+            </div>
             <div>
                 <h2>{{ rink?.name ?? 'Rink name' }}</h2>
-                <div class="text-caption">
+                <div class="text-caption" style="line-height: 1">
                     {{ rink?.city ?? 'City' }}, {{ rink?.province ?? 'Province' }}
                 </div>
             </div>
+            
+        </div>
         </div>
     </div>
 </template>
 <style lang="scss" scoped>
+$svg-color: rgba(0,0,0,0.2);
+$padding: var(--space-sm);
     .rink__container {
-    padding: var(--space-sm);
+    padding: $padding;
     @include chunky-border(6px);
     position: relative;
-    border-radius: 24px;
-    margin: var(--space-md);
+    border-radius: 24px;;
     z-index: 0;
     width: fit-content;
     margin-left: auto;
@@ -30,10 +35,55 @@
     background-color: $app-slate;
     color: white;
     @include smmd-text;
+    min-width: 300px;
+    max-width: 450px;
+
+    .underlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        z-index: 0;
+        background-color: rgba(0,0,0,0.7);
+        border-radius: 19px;
+        :deep(path) {
+            stroke: $svg-color;
+            fill: $svg-color;
+        }
+        overflow: hidden;
+    }
+    .overlay {
+        position: relative;
+        z-index: 1;
+    }
+
+    .flags__container {
+        position: absolute;
+        top: calc(-1 * ($padding + 25px));
+        // left: calc(-1 * ($padding + 25px));
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
 }
 </style>
 <script setup>
     const props = defineProps({
         rink: Object
     })
+
+    const glob = import.meta.glob("~/assets/flags/*", {
+  eager: true,
+});
+
+const backgroundUrl = computed(() => {
+        try {
+            return glob[`/assets/flags/${props.rink?.province}.svg`]['default']
+        } catch {
+            return ''
+        }
+    })
+    const background = computed(() => `url(${backgroundUrl.value}) center / cover`)
 </script>

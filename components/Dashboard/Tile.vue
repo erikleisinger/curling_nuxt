@@ -94,10 +94,12 @@ $min-height: min(175px, calc(50% - 12px));
     .knob--text {
         color: rgb(250, 250, 250);
     }
-    // color: $app-royal-blue;
-    &:hover:not(.expanded) {
+    @include md {
+&:hover:not(.expanded) {
         background-color: rgba(225, 225, 225, 0.5);
     }
+    }
+    
     &.expanded {
         padding-top: var(--space-sm);
     }

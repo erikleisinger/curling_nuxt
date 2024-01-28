@@ -29,11 +29,17 @@
                 :class="$q.screen.xs ? 'col-12' : 'col-6'"
             >
                 <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">
-                    Players
+                    Info
                 </h2>
                 <div  class="player-section">
+                   
+                    <RinkCard :rink="team?.rink" v-if="!$q.screen.xs" class="q-mb-lg"/>
+                    
                     <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
+                    <div class="row full-width justify-center">
                     <TeamPagePlayers :teamId="teamId" />
+                    </div>
+                   
                 </div>
             </div>
             <div

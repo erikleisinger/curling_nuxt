@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="800"
+   height="533"
+   viewBox="0 0 6400 4264"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="Flag_of_Nunavut.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs16" />
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.2575"
+     inkscape:cx="366.99801"
+     inkscape:cy="188.46918"
+     inkscape:window-width="2560"
+     inkscape:window-height="1334"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg12" />
+  <title
+     id="title2">Flag of Nunavut</title>
+  <path
+     fill="#ffffff"
+     d="M 3200,0 H 6400 V 4264 H 3200 Z"
+     id="path4"
+     style="stroke-width:0.725548" />
+  <path
+     fill="#fdd500"
+     d="M 0,0 H 3200 V 4264 H 0 Z"
+     id="path6"
+     style="stroke-width:0.725548" />
+  <path
+     stroke="#000000"
+     stroke-linejoin="round"
+     stroke-width="59.1095"
+     fill="#d51516"
+     d="m 3200.3286,31.05472 c 65.4145,14.186344 342.0467,328.64896 365.691,401.94479 18.9152,75.66015 -74.0845,730.59369 -160.7776,946.54039 -159.9905,34.6777 -416.1312,13.3981 -563.5108,-30.7369 -29.1615,-60.6858 -89.8469,-850.38901 -62.2628,-965.45548 29.1615,-55.9571 360.963,-342.835202 420.8602,-352.2928 z M 1557.0838,1333.8286 c 684.0945,79.6008 2060.9523,73.2958 3008.281,97.7277 89.8459,11.0337 -65.4145,241.955 -104.033,335.742 -37.8304,93.7872 -44.923,302.6408 -264.0225,297.1239 -804.6782,-23.6438 -1533.6956,-45.7113 -2316.3048,-70.1433 -284.514,-8.6693 -504.4017,-680.1535 -323.9207,-660.4503 z m 1052.9381,695.1279 c 138.7097,15.7626 688.0343,6.3051 893.7359,33.8895 140.286,21.2794 138.7097,499.6724 73.2952,573.7564 -71.7189,82.7533 -418.4946,28.3725 -610.7982,85.1176 -182.8455,52.0164 -197.8198,108.7616 -539.8665,70.1434 85.1178,-451.5968 31.5249,-781.8219 183.6336,-762.9069 z m -293.1839,825.957 c 52.8047,-70.1433 151.3205,-50.4401 268.7515,-41.7707 159.9905,7.0931 511.4942,-126.8884 744.7799,-124.5241 141.8634,5.5169 251.4126,62.2621 248.2599,190.7267 -4.728,101.6684 5.5173,345.1997 -58.3208,483.1219 -37.8304,89.8464 -587.1551,72.5076 -839.3559,-18.1269 -73.2952,-26.0083 -346.7758,24.4319 -378.3008,-22.8558 -36.254,-50.4401 -59.109,-369.6315 14.1862,-466.5711 z m 39.4067,523.3163 c 21.2798,-40.1945 123.7364,-54.3808 188.3628,-49.652 170.2346,11.8219 493.3672,154.4729 855.1172,88.2702 217.5232,-39.4063 453.1734,428.741 375.9363,551.6889 -78.8125,129.2528 -170.2347,189.1504 -264.8107,260.0818 -740.839,6.305 -1272.0366,70.1434 -1262.5784,-213.5823 4.728,-145.0154 18.9141,-479.9694 107.9728,-636.8066 z"
+     id="path8" />
+  <path
+     fill="#0164bb"
+     d="m 5907.581,593.77738 -617.8918,314.46264 684.8826,108.76148 -490.2156,-490.21493 108.7621,684.88233 z"
+     id="path10"
+     style="stroke-width:0.788126" />
+  <metadata
+     id="metadata176">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Flag of Nunavut</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

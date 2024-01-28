@@ -1,23 +1,17 @@
 <template>
     <div class="player-tile__container--outer">
-        <!-- <div class="player-tiles__header full-width row justify-center">
-        <div class="player-tiles__header--inner">
-            Players
-        </div>
-
-    </div> -->
         <div class="player-tile__container">
             <TeamPagePlayerTile
                 v-for="(player, index) in teamPlayers"
-                :key="player.id"
+                :key="index"
                 :playerId="player.id"
                 :teamId="teamId"
                 :style="{
                     ...getStyle(index),
-                    order: PLAYER_SORT_ORDER.indexOf(player.pivot.position),
+                    
                 }"
                 :index="index"
-                :columns="columns"
+                :columns="2"
                 @click="selectPlayer(player.id)"
                 :selected="selectedPlayer?.id === player.id"
                 @deselect="onDeselect"
@@ -152,11 +146,12 @@
 .player-tile__container {
     display: grid;
     position: relative;
-    grid-template-columns: v-bind(columnStyle);
+    grid-template-columns: repeat(2, 1fr);
     @include chunky-border(8px);
     background-color: rgb(203, 203, 203);
     border-radius: 83px;
     min-height: 316px;
+    max-width: 336px;
     @include sm {
         border-radius: 85px;
     }
@@ -310,6 +305,8 @@ const teamPlayers = computed(() => {
         });
 });
 
+
+
 const pendingPlayers = computed(() =>
     team.value.players?.filter(({ pivot }) => !!pivot.status)
 );
@@ -320,52 +317,33 @@ const hasRequested = computed(
         pendingPlayers.value.some(({ id }) => id === userId.value)
 );
 
-const columns = computed(() => (teamPlayers.value?.length < 4 ? 2 : 3));
 
 const emptySlots = computed(() => {
-    if (columns.value === 2) {
-        return 4 - teamPlayers.value?.length ?? 4;
-    }
-    return 6 - teamPlayers.value?.length ?? 4;
+    if (teamPlayers.value.length < 4) return 4 - teamPlayers.value.length;
+    return teamPlayers.value.length % 2;
 });
-// const columns = computed(() => 3)
-const columnStyle = computed(() => {
-    if ($q.screen.xs) {
-        return `repeat(2, 1fr)`;
-    }
-    return `repeat(${columns.value}, 1fr)`;
-});
+
 
 const getStyle = (index) => {
     let directions;
-
-    // if (false) {
-    if (columns.value === 2) {
+    const numPlayers = teamPlayers.value.length
+    if (numPlayers <= 4) {
         directions = {
             0: "top-left",
             1: "top-right",
             2: "bottom-left",
             3: "bottom-right",
         };
-    } else if (!$q.screen.xs) {
-        directions = {
-            0: "top-left",
-            1: null,
-            2: "top-right",
-            3: "bottom-left",
-            4: null,
-            5: "bottom-right",
-        };
     } else {
+        const numSlots = 2 * Math.round(numPlayers / 2);
         directions = {
             0: "top-left",
             1: "top-right",
-            2: null,
-            3: null,
-            4: "bottom-left",
-            5: "bottom-right",
+            [numSlots - 2]: "bottom-left",
+            [numSlots - 1]: "bottom-right",
         };
     }
+ 
     if (!directions[index]) return {};
     return {
         [`border-${directions[index]}-radius`]: "50%",
@@ -521,11 +499,7 @@ const updatePlayerPosition = async (position, playerId) => {
 };
 
 const tileWidth = computed(() => {
-    if (props.columns === 3) {
-        return $q.screen.xs ? "120px" : "150px";
-    } else {
-        return $q.screen.xs ? "150px" : "160px";
-    }
+    return $q.screen.xs ? "150px" : "160px";
 });
 
 

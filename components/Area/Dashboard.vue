@@ -1,7 +1,7 @@
 <template>
     <div class="dashboard__container" id="dashboard">
         <main class="main-content" ref="mainContent" id="dashboard-scroller">
-            <section class="filter__container row justify-center" >
+            <section class="filter__container row justify-center">
                 <DashboardFilters v-model="filters" />
             </section>
             <section
@@ -20,12 +20,12 @@
                     @close="closeStat(statType)"
                     @scroll="scrollUp"
                     :id="`dashboard-stat-${statType}`"
-                    
                 >
                 </DashboardStat>
-                <div v-if="!!expanded" class="full-width q-pa-md row justify-center">
-                    
-                </div>
+                <div
+                    v-if="!!expanded"
+                    class="full-width q-pa-md row justify-center"
+                ></div>
             </section>
         </main>
     </div>
@@ -77,13 +77,11 @@
         }
         &.expanded {
             grid-template-columns: 1fr;
-            
         }
     }
 
     .filter__container {
         margin: var(--space-lg) 0px;
-
     }
 }
 </style>
@@ -95,7 +93,7 @@ import {
     STAT_FIELDS,
     STAT_FIELD_TITLES,
     STAT_FIELD_TITLES_FULL,
-    STAT_FIELD_FILTER_FUNCTIONS
+    STAT_FIELD_FILTER_FUNCTIONS,
 } from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";
@@ -107,9 +105,9 @@ import Team from "@/store/models/team";
 import Rink from "@/store/models/rink";
 import Sheet from "@/store/models/sheet";
 import { useDialogStore } from "@/store/dialog";
-import gsap from 'gsap';
-import {Flip} from 'gsap/Flip';
-gsap.registerPlugin(Flip)
+import gsap from "gsap";
+import { Flip } from "gsap/Flip";
+gsap.registerPlugin(Flip);
 
 const { getColor } = useColor();
 
@@ -120,11 +118,11 @@ const filters = ref({
     sheet: null,
 });
 
-const {userTeamIds} = useTeam();
+const { userTeamIds } = useTeam();
 
 const getTeamStatsTotal = async () => {
     const client = useSupabaseClient();
-    const { data } = await client.from("team_stats_total").select('*');
+    const { data } = await client.from("team_stats_total").select("*");
 
     data.forEach((totalStat) => {
         useRepo(TeamStatsTotal).save({
@@ -134,8 +132,8 @@ const getTeamStatsTotal = async () => {
         useRepo(Team).save({
             id: totalStat?.id,
             name: totalStat.name,
-            avatar_url: totalStat.avatar_url
-        })
+            avatar_url: totalStat.avatar_url,
+        });
     });
     return data;
 };
@@ -156,7 +154,6 @@ const getAllTeamStats = async () => {
         .from("team_stats")
         .select(`*`)
         .in("team_id", userTeamIds.value);
-
 
     data.forEach((stat) => {
         useRepo(TeamStats).save(stat);
@@ -181,12 +178,11 @@ const stats = computed(() => {
             // STAT_TYPES.HAMMER_LAST_END,
             STAT_TYPES.HAMMER_EFFICIENCY,
             STAT_TYPES.POINTS_FOR_PER_GAME,
-            
+
             STAT_TYPES.ENDS_FOR_PER_GAME,
             STAT_TYPES.POINTS_AGAINST_PER_GAME,
             STAT_TYPES.ENDS_AGAINST_PER_GAME,
 
-            
             STAT_TYPES.STEAL_EFFICIENCY,
             STAT_TYPES.FORCE_EFFICIENCY,
             STAT_TYPES.STEAL_DEFENSE,
@@ -222,7 +218,7 @@ const mainContent = ref(null);
 const startView = (type) => {
     expanded.value = type;
     scrollUp();
-}
+};
 
 const endView = () => {
     preventExpand.value = true;
@@ -230,21 +226,21 @@ const endView = () => {
 };
 
 const animateStateChange = (callback, type) => {
- const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
-    const state = Flip.getState(targets)
+    const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
+    const state = Flip.getState(targets);
     callback(type);
-nextTick(() => {
-            Flip.from(state, {
-                targets,
-                duration: 0.2,
-                scale: `#dashboard-stat-${type}`,
-            })
-        })
-}
+    nextTick(() => {
+        Flip.from(state, {
+            targets,
+            duration: 0.2,
+            scale: `#dashboard-stat-${type}`,
+        });
+    });
+};
 
 const closeStat = (type) => {
-    animateStateChange(endView, type)
-}
+    animateStateChange(endView, type);
+};
 
 const setSelected = (type) => {
     if (preventExpand.value) {
@@ -253,10 +249,7 @@ const setSelected = (type) => {
     }
     if (expanded.value === type) return;
 
-   
- animateStateChange(startView, type)
-        
-    
+    animateStateChange(startView, type);
 };
 
 const scrollUp = () => {
@@ -266,14 +259,11 @@ const scrollUp = () => {
     });
 };
 
-
-
 onBeforeRouteLeave((to) => {
-    const {query} = to;
-    const {force} = query ?? {};
-    if (force)  return true;
-       
-    
+    const { query } = to;
+    const { force } = query ?? {};
+    if (force) return true;
+
     if (expanded.value) {
         expanded.value = null;
         return false;

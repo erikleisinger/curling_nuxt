@@ -23,7 +23,7 @@
         </template>
     </LayoutCircleTitle>
 
-    <RinkCard :rink="editedRink"/>
+    <RinkCard :rink="editedRink" v-if="$q.screen.xs" class="rink__card"/>
     <TeamEditOverlay
         v-if="editing"
         @close="editing = false"
@@ -54,6 +54,9 @@
     @include sm {
         line-height: 50px;
     }
+}
+.rink__card {
+    margin: var(--space-md) var(--space-xs);
 }
 
 </style>
