@@ -305,6 +305,10 @@ const games = computed(() => {
 
 const getGames = async () => {
     const client = useSupabaseClient();
+
+    const gameIds = await client.from('game_scores').select('game_id').eq('team_id', props.teamId).then(({data}) => {
+        return data.map((game) => game?.game_id)
+    })
     const {data} = await client.from('game_scores').select(`
         team:team_id(
             id,
@@ -317,7 +321,7 @@ const getGames = async () => {
         placeholder,
         points_scored
 
-    `).eq('team_id', props.teamId)
+    `).in('game_id', gameIds)
 
     data.forEach((gameTeam) => {
         const {team, game_id, points_scored, color, placeholder} = gameTeam;
