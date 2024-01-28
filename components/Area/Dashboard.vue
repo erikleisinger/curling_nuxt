@@ -41,7 +41,6 @@
         height: 100%;
         overflow: auto;
     }
-    @include lines;
     min-height: 100%;
     color: rgb(250, 250, 250);
     position: relative;
