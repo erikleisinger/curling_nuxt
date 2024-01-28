@@ -17,7 +17,7 @@
                     :expanded="expanded === statType"
                     :style="{ order: expanded === statType ? 0 : 1 }"
                     :filters="filters"
-                    @close="endView"
+                    @close="closeStat(statType)"
                     @scroll="scrollUp"
                     :id="`dashboard-stat-${statType}`"
                     
@@ -219,6 +219,33 @@ const preventExpand = ref(false);
 
 const mainContent = ref(null);
 
+const startView = (type) => {
+    expanded.value = type;
+    scrollUp();
+}
+
+const endView = () => {
+    preventExpand.value = true;
+    expanded.value = null;
+};
+
+const animateStateChange = (callback, type) => {
+ const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
+    const state = Flip.getState(targets)
+    callback(type);
+nextTick(() => {
+            Flip.from(state, {
+                targets,
+                duration: 0.2,
+                scale: `#dashboard-stat-${type}`,
+            })
+        })
+}
+
+const closeStat = (type) => {
+    animateStateChange(endView, type)
+}
+
 const setSelected = (type) => {
     if (preventExpand.value) {
         preventExpand.value = false;
@@ -226,17 +253,9 @@ const setSelected = (type) => {
     }
     if (expanded.value === type) return;
 
-    const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
-    const state = Flip.getState(targets)
-        expanded.value = type;
-        scrollUp();
-        nextTick(() => {
-            Flip.from(state, {
-                targets,
-                duration: 0.2,
-                scale: `#dashboard-stat-${type}`,
-            })
-        })
+   
+ animateStateChange(startView, type)
+        
     
 };
 
@@ -247,10 +266,7 @@ const scrollUp = () => {
     });
 };
 
-const endView = (e) => {
-    preventExpand.value = true;
-    expanded.value = null;
-};
+
 
 onBeforeRouteLeave((to) => {
     const {query} = to;
