@@ -34,7 +34,7 @@
                     v-model="showGameInfo"
                 />
 
-                <div style="height: 250px">
+                <div class="expanded-chart__container">
                     <div
                         class="game-line__indicator"
                         v-if="showGameInfo"
@@ -120,6 +120,13 @@
     border-left: 1px solid;
     border-right: 1px solid;
     animation: scale 0.2s forwards;
+}
+
+.expanded-chart__container {
+    height: 250px;
+    @include sm {
+        height: 400px;
+    }
 }
 @keyframes scale {
     0% {

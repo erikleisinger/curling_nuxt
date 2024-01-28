@@ -1,33 +1,61 @@
 <template>
-    <div class="tile" :class="{ highlight: betterThanAverage, expanded }" >
+    <div class="tile" :class="{ highlight: betterThanAverage, expanded }">
         <header
             class="row items-center no-wrap justify-between q-mb-md"
             v-if="!expanded"
         >
-            <h3 class="position-relative row no-wrap" :data-flip-id="`tile-header-${type}`" :class="`tile-header-${type}`">
+            <h3
+                class="position-relative row no-wrap"
+                :data-flip-id="`tile-header-${type}`"
+                :class="`tile-header-${type}`"
+            >
                 {{ name }}
             </h3>
-            <h2 :class="{green: betterThanAverage, [`tile-value-${type}`]: true}" style="white-space: nowrap" :data-flip-id="`tile-value-${type}`" >
+            <h2
+                :class="{
+                    green: betterThanAverage,
+                    [`tile-value-${type}`]: true,
+                }"
+                style="white-space: nowrap"
+                :data-flip-id="`tile-value-${type}`"
+            >
                 {{ percent.toFixed(isPercent ? 0 : 1) }}
-                <span class="text-caption" style="margin-left: -1.3em" v-if="isPercent">%</span>
+                <span
+                    class="text-caption"
+                    style="margin-left: -1.3em"
+                    v-if="isPercent"
+                    >%</span
+                >
             </h2>
         </header>
         <header v-else class="full-width header-expanded">
             <div class="close-container__floating">
-                <q-btn icon="close" flat round @click="emit('close')"/>
+                <q-btn icon="close" flat round @click="emit('close')" />
             </div>
-            <div class="column items-center" :class="{'q-py-md justify-center': $q.screen.xs}">
-                <h3 class="position-relative " :data-flip-id="`tile-header-${type}`" :class="`tile-header-${type}`">
-                    <q-icon
-                        v-if="betterThanAverage"
-                        size="0.9em"
-                        class="q-mr-xs"
-                        name="stars"
-                        :style="{ color: getColor('yellow') }"
-                    />
-                    {{ name }}
-                </h3>
-                <h4>{{STAT_DESCRIPTIONS[type]}}</h4>
+            <div
+                :class="
+                    $q.screen.xs
+                        ? ' column items-center q-py-md justify-center'
+                        : 'row no-wrap items-center justify-center'
+                "
+            >
+                <div class="column justify-center" :class="{'q-mr-lg': !$q.screen.xs}">
+                    <h3
+                        class="position-relative text-center"
+                        :data-flip-id="`tile-header-${type}`"
+                        :class="`tile-header-${type}`"
+                    >
+                        <q-icon
+                            v-if="betterThanAverage"
+                            size="0.9em"
+                            class="q-mr-xs"
+                            name="stars"
+                            :style="{ color: getColor('yellow') }"
+                        />
+                        {{ name }}
+                    </h3>
+                    <h4 class="text-center">{{ STAT_DESCRIPTIONS[type] }}</h4>
+                </div>
                 <q-knob
                     show-value
                     :model-value="isPercent ? percent : 100"
@@ -41,36 +69,32 @@
                     :style="{ color: getColor(STAT_COLORS[type] ?? 'blue') }"
                 >
                     <div class="knob--text">
-                        <h2 style="white-space: nowrap; position: relative" :data-flip-id="`tile-value-${type}`" :class="`tile-value-${type}`">
+                        <h2
+                            style="white-space: nowrap; position: relative"
+                            :data-flip-id="`tile-value-${type}`"
+                            :class="`tile-value-${type}`"
+                        >
                             {{ percent.toFixed(isPercent ? 0 : 1) }}
-                             <span class="text-caption" style="margin-left: -1.3em; position: absolute;bottom:0.5em;right:-0.8em" v-if="isPercent">%</span>
+                            <span
+                                class="text-caption"
+                                style="
+                                    margin-left: -1.3em;
+                                    position: absolute;
+                                    bottom: 0.5em;
+                                    right: -0.8em;
+                                "
+                                v-if="isPercent"
+                                >%</span
+                            >
                         </h2>
                     </div>
                 </q-knob>
-               
             </div>
             <div>
                 <slot name="stat-expanded" />
             </div>
         </header>
-
         <slot name="stat" v-if="!expanded" />
-<!-- 
-         <div class="row justify-center full-width">
-                    <h5 v-if="betterThanAverage && expanded">
-                        <div
-                            class="better--floating"
-                            style="right: unset; left: -1.2em"
-                        >
-                            <q-icon
-                                name="stars"
-                                :style="{ color: getColor('yellow') }"
-                            />
-                        </div>
-                        Better than the worldwide average
-                    </h5>
-                </div> -->
-
         <slot />
     </div>
 </template>
@@ -79,13 +103,13 @@ $min-height: min(175px, calc(50% - 12px));
 .header-expanded {
     display: grid;
     grid-template-rows: auto auto;
- 
+
     row-gap: var(--space-sm);
-    @include sm {
-        grid-template-rows: unset;
-        grid-template-columns: repeat(2, 1fr);
-        margin-top: var(--space-lg)
-    }
+    // @include sm {
+    //     grid-template-rows: unset;
+    //     grid-template-columns: repeat(2, 1fr);
+    //     margin-top: var(--space-lg);
+    // }
 }
 .tile {
     padding: var(--space-sm);
@@ -95,11 +119,11 @@ $min-height: min(175px, calc(50% - 12px));
         color: rgb(250, 250, 250);
     }
     @include md {
-&:hover:not(.expanded) {
-        background-color: rgba(225, 225, 225, 0.5);
+        &:hover:not(.expanded) {
+            background-color: rgba(225, 225, 225, 0.5);
+        }
     }
-    }
-    
+
     &.expanded {
         padding-top: var(--space-sm);
     }
@@ -135,7 +159,11 @@ $min-height: min(175px, calc(50% - 12px));
         }
         h4 {
             margin-top: var(--space-xxxs);
-            margin-bottom: calc(var(--space-xl) - 8px)
+            margin-bottom: calc(var(--space-xl) - 8px);
+            @include sm {
+                margin-top: unset;
+                margin-bottom: unset;
+            }
         }
         h5 {
             font-family: $font-family-secondary;
@@ -149,7 +177,7 @@ $min-height: min(175px, calc(50% - 12px));
         top: var(--space-sm);
         right: 0;
         @include sm {
-            right: var(--space-sm)
+            right: var(--space-sm);
         }
     }
     :deep(.q-circular-progress__track) {
@@ -157,7 +185,6 @@ $min-height: min(175px, calc(50% - 12px));
     }
     h2 {
         @include xl-text;
-       
     }
     .percent {
         z-index: 1;
@@ -194,18 +221,18 @@ const props = defineProps({
     betterThanAverage: Boolean,
     expanded: Boolean,
     percent: {
-        type: Number,   
+        type: Number,
         default: 0,
     },
     type: String,
 });
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(["close"]);
 
-const $q = useQuasar()
+const $q = useQuasar();
 const { getColor } = useColor();
 
-const {isPercentStat} = useStats();
+const { isPercentStat } = useStats();
 const isPercent = isPercentStat(props.type);
 
 const name = STAT_NAMES[props.type];

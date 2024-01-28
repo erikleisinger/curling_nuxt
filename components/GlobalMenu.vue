@@ -7,7 +7,8 @@
                     left: leftVal === 'unset' ? leftVal : `${leftVal}px`,
                     right: rightVal === 'unset' ? rightVal : `${rightVal}px`,
                     top: topVal === 'unset' ? topVal : `${topVal}px`,
-                    bottom: bottomVal === 'unset' ? bottomVal : `${bottomVal}px`,
+                    bottom:
+                        bottomVal === 'unset' ? bottomVal : `${bottomVal}px`,
                     visibility: showing ? 'visible' : 'hidden',
                 }"
                 ref="menu"
@@ -48,6 +49,7 @@ import {
     useParentElement,
 } from "@vueuse/core";
 import gsap from "gsap";
+import { timeout } from "@/utils/async";
 
 const props = defineProps({
     closeAnimation: {
@@ -56,12 +58,12 @@ const props = defineProps({
     },
     closeOnOutsideClick: {
         type: Boolean,
-        default: true
+        default: true,
     },
     modelValue: Boolean,
 });
 
-const emit = defineEmits(["update:modelValue", 'close']);
+const emit = defineEmits(["update:modelValue", "close"]);
 
 const open = computed({
     get() {
@@ -74,7 +76,9 @@ const open = computed({
 
 const uniqueId = `global-menu-${(Math.random() * 1000000000000).toFixed()}`;
 
-const { x, y } = useMouse();
+const { x: mouseX, y: mouseY } = useMouse();
+const x = ref(0);
+const y = ref(0);
 
 const menu = ref(null);
 const { height, width } = useElementSize(menu);
@@ -83,26 +87,19 @@ const xVal = ref(0);
 const yVal = ref(0);
 const bottomVal = ref("unset");
 const topVal = ref("unset");
-const leftVal = ref('unset');
-const rightVal = ref('unset')
+const leftVal = ref("unset");
+const rightVal = ref("unset");
 
 const getXVal = () => {
-    if (x.value + (width.value / 2) >= window.innerWidth) {
+    const canBeRight = x.value + width.value < window.innerWidth;
+    const canBeLeft = x.value - width.value > 0;
+    if (canBeLeft) {
+        leftVal.value = x.value - width.value;
+    } else if (canBeRight) {
+        leftVal.value = x.value;
+    } else {
         leftVal.value = 0;
-    } else {
-        leftVal.value = 'unset'
     }
-    if (x.value - width.value < 0) {
-        rightVal.value = 0;
-    } else {
-        rightVal.value = 'unset'
-    }
-    if (x.value <= 0) return 0;
-    if (x.value >= window.innerWidth) return window.innerWidth - width.value;
-    if (x.value + (width.value / 2) > window.innerWidth) {
-        return x.value - width.value;
-    }
-    return x.value - width.value / 2;
 };
 const getYVal = () => {
     if (y.value >= window.innerHeight / 2) {
@@ -115,13 +112,15 @@ const getYVal = () => {
         reverseY.value = false;
     }
 };
-const calcMenuPos = () => {
+const calcMenuPos = async (attempt = 1) => {
+    if (attempt > 9) return;
+    if (!width.value) {
+        await timeout(50);
+        return calcMenuPos(attempt + 1);
+    }
     getYVal();
     getXVal();
-    // getXVal()
-    // const newYVal = getYVal()
-    // xVal.value = 
-    // yVal.value = newYVal < 0 ? 0 : newYVal;
+    return;
 };
 
 const reverseY = ref(false);
@@ -135,16 +134,18 @@ watch(
             close();
             return;
         }
-
-        
-        setTimeout(() => {
-            calcMenuPos();
-        showing.value = true;
-        setMaxHeight();
-            animateOpen();
-        }, 50);
+        openMenu();
     }
 );
+
+const openMenu = async () => {
+    x.value = mouseX.value;
+    y.value = mouseY.value;
+    await calcMenuPos();
+    showing.value = true;
+    setMaxHeight();
+    animateOpen();
+};
 
 const animateOpen = () => {
     gsap.fromTo(
@@ -162,8 +163,8 @@ const animateOpen = () => {
 
 const close = () => {
     showing.value = false;
-                open.value = false;
-                emit('close')
+    open.value = false;
+    emit("close");
 };
 
 onClickOutside(menu, (e) => {
