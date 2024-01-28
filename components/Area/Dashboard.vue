@@ -225,15 +225,18 @@ const endView = () => {
     expanded.value = null;
 };
 
+const flipState = ref(null)
+
 const animateStateChange = (callback, type) => {
     const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
-    const state = Flip.getState(targets);
+    flipState.value = Flip.getState(targets);
     callback(type);
     nextTick(() => {
-        Flip.from(state, {
+        Flip.from(flipState.value, {
             targets,
             duration: 0.2,
             scale: `#dashboard-stat-${type}`,
+            prune: true,
         });
     });
 };
