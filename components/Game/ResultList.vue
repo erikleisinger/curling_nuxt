@@ -303,6 +303,8 @@ const games = computed(() => {
         );
 });
 
+const dayjs = useDayjs()
+
 const getGames = async () => {
     const client = useSupabaseClient();
 
@@ -316,22 +318,26 @@ const getGames = async () => {
             avatar_url
         ),
         pending,
-        game_id,
+        game:game_id (
+            id,
+            start_time
+        ),
         color,
         placeholder,
         points_scored
 
     `).in('game_id', gameIds)
-
+    console.log(data)
     data.forEach((gameTeam) => {
-        const {team, game_id, points_scored, color, placeholder} = gameTeam;
+        const {team, game, points_scored, color, placeholder} = gameTeam;
         useRepo(Game).save({
-            id: game_id
+            id: game?.id,
+            start_time: dayjs(game.start_time).unix()
         })
         useRepo(Team).save(team)
         useRepo(GameTeam).save({
             team_id: team?.id,
-            game_id,
+            game_id: game?.id,
             points_scored,
             color,
             placeholder

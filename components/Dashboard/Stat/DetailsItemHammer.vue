@@ -30,21 +30,26 @@
         </div>
     </div>
 
+
+
     <DashboardStatDetailsItemTemplate>
         <template v-slot:title> Overall </template>
       
         <template v-slot:value>
-            <div class="row hammer-col">
+            <div class="row hammer-col" >
     
         
             <div
                 :style="{ color: getColor('mint') }"
                 class=""
             >
-            
+            <div v-if="!Number.isNaN(stats.overall.field1)">
                 {{ stats.overall.field1.toFixed()
                 }}<span style="font-size: 0.9rem">%</span>
             </div>
+            <div v-else>-</div>
+            </div>
+            <div class="games-counter">({{stats.overall.field1Count}}/{{props.stats.length}})</div>
             </div>
         </template>
       
@@ -55,14 +60,51 @@
                 :style="{ color: getColor('red') }"
              
             >
+            <div v-if="!Number.isNaN(stats.overall.field2)">
                 {{ stats.overall.field2.toFixed()
                 }}<span style="font-size: 0.9rem">%</span>
             </div>
+            <div v-else>-</div>
+            </div>
+              <div class="games-counter">({{stats.overall.field2Count}}/{{props.stats.length}})</div>
             </div>
         </template>
     </DashboardStatDetailsItemTemplate>
     <div v-if="showMore" class="showmore-container">
-        <DashboardStatDetailsItemTemplate subitem>
+         <DashboardStatDetailsItemTemplate subitem v-for="stat in Object.keys(stats).filter((key) => key !== 'overall')" :key="stat">
+            <template v-slot:title>
+                {{fieldTitles[stat]}} <span>{{ stats[stat].field1sub }}</span>
+            </template>
+            <template v-slot:value>
+                <div
+                    :style="{ color: getColor('mint') }"
+                    class="hammer-col text-right"
+                >
+                <div v-if="!Number.isNaN(stats[stat].field1)">
+                    {{ stats[stat].field1.toFixed()
+                    }}
+                    <span style="font-size: 0.9rem">%</span>
+                </div>
+                  <div v-else>-</div>
+                    <div class="games-counter">({{stats[stat].field1Count}}/{{props.stats.length}})</div>
+                </div>
+            </template>
+            <template v-slot:value2>
+                <div
+                    :style="{ color: getColor('red') }"
+                    class="hammer-col text-right"
+                >
+                <div v-if="!Number.isNaN(stats[stat].field2)">
+                    {{ stats[stat].field2.toFixed()
+                    }}
+                    <span style="font-size: 0.9rem">%</span>
+                </div>
+                <div v-else>-</div>
+                  <div class="games-counter">({{stats[stat].field2Count}}/{{props.stats.length}})</div>
+                </div>
+            </template>
+        </DashboardStatDetailsItemTemplate>
+        <!-- <DashboardStatDetailsItemTemplate subitem>
             <template v-slot:title>
                 Up 2+ <span>{{ stats.up2.field1sub }}</span>
             </template>
@@ -71,8 +113,11 @@
                     :style="{ color: getColor('mint') }"
                     class="hammer-col text-right"
                 >
-                    {{ stats.up2.field1
+                <div>
+                    {{ stats.up2.field1.toFixed()
                     }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                    <div class="games-counter">({{stats.up2.field1Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
             <template v-slot:value2>
@@ -80,8 +125,11 @@
                     :style="{ color: getColor('red') }"
                     class="hammer-col text-right"
                 >
-                    {{ stats.up2.field2
+                <div>
+                    {{ stats.up2.field2.toFixed()
                     }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                  <div class="games-counter">({{stats.up2.field2Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
         </DashboardStatDetailsItemTemplate>
@@ -92,7 +140,11 @@
                     :style="{ color: getColor('mint') }"
                     class="hammer-col text-right"
                 >
-                    0<span style="font-size: 0.9rem">%</span>
+                <div>
+                    {{ stats.up1.field1.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                    <div class="games-counter">({{stats.up1.field1Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
             <template v-slot:value2>
@@ -100,7 +152,13 @@
                     :style="{ color: getColor('red') }"
                     class="hammer-col text-right"
                 >
-                    100<span style="font-size: 0.9rem">%</span>
+                <div v-if="stats.up1.field2">
+                    {{ stats.up1.field2.toFixed()
+                    }}
+                    <span style="font-size: 0.9rem">%</span>
+                </div>
+                <div v-else>-</div>
+                <div class="games-counter">({{stats.up1.field2Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
         </DashboardStatDetailsItemTemplate>
@@ -111,7 +169,11 @@
                     :style="{ color: getColor('mint') }"
                     class="hammer-col text-right"
                 >
-                    0<span style="font-size: 0.9rem">%</span>
+                  <div>
+                    {{ stats.tied.field1.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                <div class="games-counter">({{stats.tied.field1Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
             <template v-slot:value2>
@@ -119,7 +181,11 @@
                     :style="{ color: getColor('red') }"
                     class="hammer-col text-right"
                 >
-                    0<span style="font-size: 0.9rem">%</span>
+                 <div>
+                    {{ stats.tied.field2.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                <div class="games-counter">({{stats.tied.field2Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
         </DashboardStatDetailsItemTemplate>
@@ -130,7 +196,11 @@
                     :style="{ color: getColor('mint') }"
                     class="hammer-col text-right"
                 >
-                    100<span style="font-size: 0.9rem">%</span>
+                  <div>
+                    {{ stats.down1.field1.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                <div class="games-counter">({{stats.down1.field1Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
             <template v-slot:value2>
@@ -138,7 +208,11 @@
                     :style="{ color: getColor('red') }"
                     class="hammer-col text-right"
                 >
-                    100<span style="font-size: 0.9rem">%</span>
+                   <div>
+                    {{ stats.down1.field2.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                <div class="games-counter">({{stats.down1.field2Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
         </DashboardStatDetailsItemTemplate>
@@ -149,7 +223,11 @@
                     :style="{ color: getColor('mint') }"
                     class="hammer-col text-right"
                 >
-                    0<span style="font-size: 0.9rem">%</span>
+                   <div>
+                    {{ stats.down2.field1.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                      <div class="games-counter">({{stats.down2.field1Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
             <template v-slot:value2>
@@ -157,18 +235,30 @@
                     :style="{ color: getColor('red') }"
                     class="hammer-col text-right"
                 >
-                    100<span style="font-size: 0.9rem">%</span>
+                 <div>
+                    {{ stats.down2.field2.toFixed()
+                    }}<span style="font-size: 0.9rem">%</span>
+                </div>
+                      <div class="games-counter">({{stats.down2.field2Count}}/{{props.stats.length}})</div>
                 </div>
             </template>
-        </DashboardStatDetailsItemTemplate>
+        </DashboardStatDetailsItemTemplate> -->
     </div>
 </template>
 <style lang="scss" scoped>
 .hammer-col {
-    width: 50px;
+    width: 100px;
     text-align: right;
     justify-content: flex-end;
-    align-items: center;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    display: flex;
+    .games-counter {
+        @include text-caption;
+        margin-left: var(--space-xs);
+        font-family: $font-family-secondary;
+        color: rgba(255,255,255,0.8);
+    }
 }
 .showmore-container {
     border-left: 2px solid;
@@ -191,6 +281,14 @@ const props = defineProps({
 });
 const { getColor } = useColor();
 const showMore = ref(false);
+
+const fieldTitles = {
+    down1: 'Down 1',
+    down2: 'Down 2+',
+    tied: 'Tied',
+    up1: 'Up 1',
+    up2: 'Up 2+'
+}
 
 const title = {
     last_end: "Last end",
@@ -301,12 +399,14 @@ const stats = computed(() => {
                     stats: props.stats,
                     statType: STAT_TYPES.WINS,
                 }) * 100,
+                field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].overall.field1]).length,
 
             field2: 
                 defaultFieldCalculator(fields[props.field].overall.field2)({
                     stats: props.stats,
                     statType: STAT_TYPES.WINS,
                 }) * 100,
+                field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].overall.field2]).length,
         },
         ...(props.field === "extra_end"
             ? {}
@@ -317,11 +417,13 @@ const stats = computed(() => {
                               fields[props.field].up2.field1
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].up2.field1]).length,
                       field2:
                           defaultFieldCalculator(
                               fields[props.field].up2.field2
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].up2.field2]).length,
                   },
                   up1: {
                       field1:
@@ -329,11 +431,13 @@ const stats = computed(() => {
                               fields[props.field].up1.field1
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].up1.field1]).length,
                       field2:
                           defaultFieldCalculator(
                               fields[props.field].up1.field2
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].up1.field2]).length,
                   },
                   tied: {
                       field1:
@@ -341,11 +445,13 @@ const stats = computed(() => {
                               fields[props.field].tied.field1
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].tied.field1]).length,
                       field2:
                           defaultFieldCalculator(
                               fields[props.field].tied.field2
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].tied.field2]).length,
                   },
                   down1: {
                       field1:
@@ -353,11 +459,13 @@ const stats = computed(() => {
                               fields[props.field].down1.field1
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].down1.field1]).length,
                       field2:
                           defaultFieldCalculator(
                               fields[props.field].down1.field2
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].down1.field2]).length,
                   },
                   down2: {
                       field1:
@@ -365,11 +473,13 @@ const stats = computed(() => {
                               fields[props.field].down2.field1
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field1Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].down2.field1]).length,
                       field2:
                           defaultFieldCalculator(
                               fields[props.field].down2.field2
                           )({ stats: props.stats, statType: STAT_TYPES.WINS }) *
                           100,
+                          field2Count: props.stats.filter(STAT_FIELD_FILTER_FUNCTIONS[fields[props.field].down2.field2]).length,
                   },
               }),
     };

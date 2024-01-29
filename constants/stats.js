@@ -338,112 +338,112 @@ export const STAT_FIELD_FILTER_FUNCTIONS = {
     [STAT_FIELDS.WITHOUT_HAMMER_EE]: ({ hammer_ee, ee }) => !!ee && !hammer_ee,
 
     [STAT_FIELDS.WITH_HAMMER_LE]: ({ hammer_le, early_end }) =>
-        !early_end && !!hammer_le,
+        !!hammer_le,
     [STAT_FIELDS.WITH_HAMMER_LE_TIE]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !!hammer_le && diff_le === 0,
+        !!hammer_le && diff_le === 0,
     [STAT_FIELDS.WITH_HAMMER_LE_U1]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !!hammer_le && diff_le === 1,
+        !!hammer_le && diff_le === 1,
     [STAT_FIELDS.WITH_HAMMER_LE_U2]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !!hammer_le && diff_le > 1,
+        !!hammer_le && diff_le > 1,
     [STAT_FIELDS.WITH_HAMMER_LE_D1]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !!hammer_le && diff_le === -1,
+        !!hammer_le && diff_le === -1,
     [STAT_FIELDS.WITH_HAMMER_LE_D2]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !!hammer_le && diff_le < -1,
+        !!hammer_le && diff_le < -1,
 
     [STAT_FIELDS.WITHOUT_HAMMER_LE]: ({ hammer_le, early_end }) =>
-        !early_end && !hammer_le,
+        !hammer_le,
     [STAT_FIELDS.WITHOUT_HAMMER_LE_TIE]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !hammer_le && diff_le === 0,
+        !hammer_le && diff_le === 0,
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U1]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !hammer_le && diff_le === 1,
+        !hammer_le && diff_le === 1,
     [STAT_FIELDS.WITHOUT_HAMMER_LE_U2]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !hammer_le && diff_le > 1,
+        !hammer_le && diff_le > 1,
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D1]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !hammer_le && diff_le === -1,
+        !hammer_le && diff_le === -1,
     [STAT_FIELDS.WITHOUT_HAMMER_LE_D2]: ({ hammer_le, diff_le, early_end }) =>
-        !early_end && !hammer_le && diff_le < -1,
+        !hammer_le && diff_le < -1,
 
     [STAT_FIELDS.WITH_HAMMER_2LE]: ({ hammer_2le, early_end }) =>
-        !early_end && !!hammer_2le,
+        !!hammer_2le,
     [STAT_FIELDS.WITH_HAMMER_2LE_TIE]: ({ hammer_2le, diff_2le, early_end }) =>
-        !early_end && !!hammer_2le && diff_2le === 0,
+        !!hammer_2le && diff_2le === 0,
     [STAT_FIELDS.WITH_HAMMER_2LE_U1]: ({ hammer_2le, diff_2le, early_end }) =>
-        !early_end && !!hammer_2le && diff_2le === 1,
+        !!hammer_2le && diff_2le === 1,
     [STAT_FIELDS.WITH_HAMMER_2LE_U2]: ({ hammer_2le, diff_2le, early_end }) =>
-        !early_end && !!hammer_2le && diff_2le > 1,
+        !!hammer_2le && diff_2le > 1,
     [STAT_FIELDS.WITH_HAMMER_2LE_D1]: ({ hammer_2le, diff_2le, early_end }) =>
-        !early_end && !!hammer_2le && diff_2le === -1,
+        !!hammer_2le && diff_2le === -1,
     [STAT_FIELDS.WITH_HAMMER_2LE_D2]: ({ hammer_2le, diff_2le, early_end }) =>
-        !early_end && !!hammer_2le && diff_2le < -1,
+        !!hammer_2le && diff_2le < -1,
 
     [STAT_FIELDS.WITHOUT_HAMMER_2LE]: ({ hammer_2le, early_end }) =>
-        !early_end && !hammer_2le,
+        !hammer_2le,
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_TIE]: ({
         hammer_2le,
         diff_2le,
         early_end,
-    }) => !early_end && !hammer_2le && diff_2le === 0,
+    }) => !hammer_2le && diff_2le === 0,
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_U1]: ({
         hammer_2le,
         diff_2le,
         early_end,
-    }) => !early_end && !hammer_2le && diff_2le === 1,
+    }) => !hammer_2le && diff_2le === 1,
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_U2]: ({
         hammer_2le,
         diff_2le,
         early_end,
-    }) => !early_end && !hammer_2le && diff_2le > 1,
+    }) => !hammer_2le && diff_2le > 1,
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_D1]: ({
         hammer_2le,
         diff_2le,
         early_end,
-    }) => !early_end && !hammer_2le && diff_2le === -1,
+    }) => !hammer_2le && diff_2le === -1,
     [STAT_FIELDS.WITHOUT_HAMMER_2LE_D2]: ({
         hammer_2le,
         diff_2le,
         early_end,
-    }) => !early_end && !hammer_2le && diff_2le < -1,
+    }) => !hammer_2le && diff_2le < -1,
 
     [STAT_FIELDS.WITH_HAMMER_3LE]: ({ hammer_3le, early_end }) =>
-        !early_end && !!hammer_3le,
+        !!hammer_3le,
     [STAT_FIELDS.WITH_HAMMER_3LE_TIE]: ({ hammer_3le, diff_3le, early_end }) =>
-        !early_end && !!hammer_3le && diff_3le === 0,
+        !!hammer_3le && diff_3le === 0,
     [STAT_FIELDS.WITH_HAMMER_3LE_U1]: ({ hammer_3le, diff_3le, early_end }) =>
-        !early_end && !!hammer_3le && diff_3le === 1,
+        !!hammer_3le && diff_3le === 1,
     [STAT_FIELDS.WITH_HAMMER_3LE_U2]: ({ hammer_3le, diff_3le, early_end }) =>
-        !early_end && !!hammer_3le && diff_3le > 1,
+        !!hammer_3le && diff_3le > 1,
     [STAT_FIELDS.WITH_HAMMER_3LE_D1]: ({ hammer_3le, diff_3le, early_end }) =>
-        !early_end && !!hammer_3le && diff_3le === -1,
+        !!hammer_3le && diff_3le === -1,
     [STAT_FIELDS.WITH_HAMMER_3LE_D2]: ({ hammer_3le, diff_3le, early_end }) =>
-        !early_end && !!hammer_3le && diff_3le < -1,
+        !!hammer_3le && diff_3le < -1,
 
     [STAT_FIELDS.WITHOUT_HAMMER_3LE]: ({ hammer_3le, early_end }) =>
-        !early_end && !hammer_3le,
+        !hammer_3le,
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_TIE]: ({
         hammer_3le,
         diff_3le,
         early_end,
-    }) => !early_end && !hammer_3le && diff_3le === 0,
+    }) => !hammer_3le && diff_3le === 0,
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_U1]: ({
         hammer_3le,
         diff_3le,
         early_end,
-    }) => !early_end && !hammer_3le && diff_3le === 1,
+    }) => !hammer_3le && diff_3le === 1,
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_U2]: ({
         hammer_3le,
         diff_3le,
         early_end,
-    }) => !early_end && !hammer_3le && diff_3le > 1,
+    }) => !hammer_3le && diff_3le > 1,
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_D1]: ({
         hammer_3le,
         diff_3le,
         early_end,
-    }) => !early_end && !hammer_3le && diff_3le === -1,
+    }) => !hammer_3le && diff_3le === -1,
     [STAT_FIELDS.WITHOUT_HAMMER_3LE_D2]: ({
         hammer_3le,
         diff_3le,
         early_end,
-    }) => !early_end && !hammer_3le && diff_3le < -1,
+    }) => !hammer_3le && diff_3le < -1,
 };
 
 export const STAT_FIELD_TITLES = {
@@ -989,7 +989,7 @@ const stat_subsections = {
             alwaysNumber: true,
         },
         [STAT_FIELDS.WITHOUT_HAMMER]: {
-            calculator: defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER),
+            calculator: defaultFieldCalculator(STAT_FIELDS.WITHOUT_HAMMER),
             icon: 'o_hardware',
             iconColor: 'white',
             title: 'Without hammer',

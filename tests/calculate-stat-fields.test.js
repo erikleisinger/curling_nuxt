@@ -75,4 +75,23 @@ describe("it should calculate the correct stats for stat subfields", () => {
             statType: STAT_TYPES.HAMMER_EFFICIENCY
         })).toBe(1)
     })
+
+    it('should calculate points per end with hammer', () => {
+        expect(defaultFieldCalculator(STAT_FIELDS.WITH_HAMMER)({
+            stats: [
+                {
+                    points_with_hammer: 6,
+                    hammer_end_count: 4,
+                    
+                },
+                {
+                    points_with_hammer: 2,
+                    hammer_end_count: 4,
+                    
+                },
+               
+            ],
+            statType: STAT_TYPES.POINTS_PER_END
+        })).toBe(1)
+    })
 })

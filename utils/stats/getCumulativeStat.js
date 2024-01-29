@@ -7,7 +7,7 @@ export const getCumulativeStat = (statsArray, type, field) => {
     } else {
         stats = statsArray;
     }
-    const {numerator, denominator} = STAT_CALCULATION_PARAMS[type]
+    const {numerator, denominator} = STAT_CALCULATION_PARAMS[field] || STAT_CALCULATION_PARAMS[type]
     const cumulative = stats.reduce((all, current) => {
         const thisNumerator = numerator(current);
         const thisDenominator = denominator(current)
@@ -21,7 +21,8 @@ export const getCumulativeStat = (statsArray, type, field) => {
         denominator: 0,
     })
     const total = cumulative.numerator / cumulative.denominator
-    const returnTotal = Number.isNaN(total) ? 0 : total;
+    // const returnTotal = Number.isNaN(total) ? 0 : total;
+    const returnTotal = total;
     return type === STAT_TYPES.STEAL_DEFENSE ? 1 - returnTotal : returnTotal
   
     
