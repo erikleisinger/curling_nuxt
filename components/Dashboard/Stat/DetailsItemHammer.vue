@@ -62,7 +62,7 @@
             >
             <div v-if="!Number.isNaN(stats.overall.field2)">
                 {{ stats.overall.field2.toFixed()
-                }}<span style="font-size: 0.9rem">%</span>
+                }}<span style="font-size: 0.9rem;">%</span>
             </div>
             <div v-else>-</div>
             </div>
@@ -83,7 +83,7 @@
                 <div v-if="!Number.isNaN(stats[stat].field1)">
                     {{ stats[stat].field1.toFixed()
                     }}
-                    <span style="font-size: 0.9rem">%</span>
+                    <span style="font-size: 0.8rem; margin-left: -6px">%</span>
                 </div>
                   <div v-else>-</div>
                     <div class="games-counter">({{stats[stat].field1Count}}/{{props.stats.length}})</div>
@@ -97,7 +97,7 @@
                 <div v-if="!Number.isNaN(stats[stat].field2)">
                     {{ stats[stat].field2.toFixed()
                     }}
-                    <span style="font-size: 0.9rem">%</span>
+                      <span style="font-size: 0.8rem; margin-left: -6px">%</span>
                 </div>
                 <div v-else>-</div>
                   <div class="games-counter">({{stats[stat].field2Count}}/{{props.stats.length}})</div>

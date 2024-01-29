@@ -24,7 +24,7 @@
             />
 
             <span v-if="values.highestDiff">
-                {{ values.highestDiff }}{{ isPercent ? "%" : "" }}</span
+                {{ cleanNumber(values.highestDiff) }}{{ isPercent ? "%" : "" }}</span
             >
             <span v-else>-</span>
         </template>
@@ -58,7 +58,7 @@
             />
 
             <span v-if="values.lowestDiff">
-                {{ values.lowestDiff }}{{ isPercent ? "%" : "" }}</span
+                {{ cleanNumber(values.lowestDiff) }}{{ isPercent ? "%" : "" }}</span
             >
             <span v-else>-</span>
         </template>
