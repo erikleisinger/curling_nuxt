@@ -31,18 +31,7 @@
         {{ tutorialText }}
     </div>
     <slot/>
-        <div class="row justify-between tutorial-step__container no-wrap">
-            <div
-                class="tutorial-step no-wrap"
-                v-for="(step, index) in steps"
-                :key="index"
-                :class="{ completed: step.completed, active: currentStep === index }"
-            >
-                <q-icon :name="step.completed ? 'check_circle' : 'o_circle'" :class="{animated: currentStep === index}" v-if="step.completed"/>
-                <div v-else>{{index + 1}}.</div>
-                {{ step.label }}
-            </div>
-        </div>
+
     </div>
 </template>
 <style lang="scss" scoped>
@@ -83,56 +72,7 @@
  .tutorial__inner {
        padding: var(--space-sm);
  }
-    .tutorial-step__container {
 
-
-        .tutorial-step {
-            font-family: $font-family-header;
-            flex-grow: 1;
-            text-align: center;
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-xxs);
-             font-size: 0.9rem;
-             color: $app-slate;
-             white-space: nowrap;
-            &:not(:first-child) {
-                border-left: 1px solid rgba(0,0,0,0.1);
-            }
-            &.completed {
-                color: $app-mint;
-                // background-color: $app-mint;
-                .q-icon {
-                    // color: white;
-                    &.animated {
-                        animation: bounce 2s infinite;
-                    }
-                }
-            }
-            &.active {
-                // border: 2px solid $app-mint;
-                background-color: $app-mint;
-                color: white;
-                position: relative;
-                // &:after {
-                //     content: '•';
-                //     font-size: 2rem;
-                //     position: absolute;
-                //     color: $app-mint;
-                //     top: -1em;
-                //     left: 0;
-                //     right: 0;
-                  
-                //     width: fit-content;
-                //     margin: auto;
-
-                // }
-            }
-          
-        }
-    }
 }
 @keyframes bounce {
     0% {

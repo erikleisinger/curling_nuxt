@@ -17,25 +17,30 @@
                 clickable
                 class="request-chip"
                 @click="showRequestsMenu = true"
-                >{{ pendingPlayers.length }} pending request{{pendingPlayers.length > 1 ? 's' : ''}}</q-chip
+                >{{ pendingPlayers.length }} pending </q-chip
             >
         </div>
         <GlobalMenu v-model="showRequestsMenu" closeOnOutsideClick>
             <DialogCard ref="confirmDelete" maxWidth="95vw">
                 <template v-slot:title>
-                    {{ pendingPlayers.length }} pending request{{
+                 
+                    {{ pendingPlayers.length }} pending player{{
                         pendingPlayers.length > 1 ? "s" : ""
                     }}
+                 
+                   
                 </template>
 
                 <template v-slot:content>
-                    <q-list separator class="q-mx-xs">
+                    <q-list separator >
                         <q-item
                             v-for="player in pendingPlayers"
                             :key="player.id"
-                            style="padding: unset"
+                            class="q-px-none"
+                           
+                           
                         >
-                            <q-item-section avatar>
+                            <q-item-section avatar >
                                 <div style="width: 40px">
                                     <Avataaar
                                         v-bind="parseAvatar(player.avatar)"
@@ -43,11 +48,12 @@
                                 </div>
                             </q-item-section>
                             <q-item-section class="request-name-section">
+                                <q-item-label overline style="text-transform: uppercase">{{player.pivot.status === 'requested' ? 'Requested' : 'Invited'}}</q-item-label>
                                 <q-item-label class="text-caption truncate-text"
                                     >{{ player.first_name }}
                                     {{ player.last_name }}</q-item-label
                                 >
-                                <q-item-label caption
+                                <q-item-label caption 
                                     >@{{ player.username }}</q-item-label
                                 >
                             </q-item-section>
@@ -81,6 +87,7 @@
                                     "
                                     :disable="responding"
                                     :loading="responding"
+                                    v-if="player.pivot.status === 'requested'"
                                 />
                                 </div>
                             </q-item-section>
@@ -186,6 +193,9 @@ const pendingPlayers = computed(() =>
     team.value.players?.filter(({ pivot }) => !!pivot.status)
 );
 
+const pendingRequests = computed(() => pendingPlayers.value.filter(({pivot}) => pivot.status === 'requested'))
+const pendingInvitations = computed(() => pendingPlayers.value.filter(({pivot}) => pivot.status === 'invited'))
+
 // REQUEST TO JOIN
 
 const { user: userId } = useUser();
@@ -222,9 +232,12 @@ const respondToRequest = async (status, playerId) => {
         status,
     });
     await useUserTeamStore().fetchUserTeams(true);
+
+    const isInvitation = pivot.status === 'invited'
+
     useNotificationStore().addNotification({
         state: "completed",
-        text: `Request ${status}`,
+        text: `${isInvitation ? 'Invitation' : 'Request'} ${isInvitation && status === 'rejected' ? 'cancelled' : status}`,
         timeout: 3000,
     });
     queryClient.invalidateQueries({
