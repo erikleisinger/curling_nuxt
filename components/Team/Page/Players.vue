@@ -33,20 +33,22 @@
                 @click="onAddPlayer"
             />
 
-            <div class="rings row justify-center items-center" @click.stop>
+            <div class="rings-menu row justify-center items-center clickable" @click.stop >
                 <Rings
                     :size="$q.screen.xs ? '35px' : '40px'"
-                    :twelveft="getColor('slate')"
-                    :fourft="getColor('slate')"
-                    v-show="!selectedPlayer?.id"
-                    id="players-rings"
-                    data-flip-id="players-menu"
+                    :twelveft="getColor('mint')"
+                    :fourft="getColor('mint')"
+                    v-show="!selectedPlayer?.id && !showRingsMenu"
+                    id="menu-rings"
+                    data-flip-id="rings-menu"
+                    @click="onRingsClick"
+                    ref="ringsMenu"
                 />
                 <div
-                    v-show="!!selectedPlayer?.id"
+                    v-show="showRingsMenu || !!selectedPlayer?.id"
                     class="edit-menu"
-                    id="player-edit-menu"
-                    data-flip-id="players-menu"
+                    id="rings-menu"
+                    data-flip-id="rings-menu"
                     ref="editMenu"
                 >
                     <div class="row menu-inner">
@@ -75,9 +77,14 @@
                         <q-btn
                             flat
                             round
-                            icon="add"
-                            v-if="!selectedPlayer?.id"
-                        />
+                            icon="person_add"
+                            v-if="canEdit && !selectedPlayer?.id"
+                            @click="onAddPlayer"
+                        >
+                      
+                        </q-btn>
+                       <TeamPageRequestsHandler :teamId="teamId" v-if="!selectedPlayer?.id && !canEdit"/>
+                  
                     </div>
                 </div>
             </div>
@@ -171,26 +178,18 @@
         pointer-events: none;
     }
 
-    .rings {
+    .rings-menu {
         position: absolute;
         left: 0;
         right: 0;
-        bottom: 0;
-        top: 0;
+        top: v-bind(ringsMenuTop);
         margin: auto;
         pointer-events: none;
 
         z-index: 6;
-        &.left {
-            right: unset;
-            left: 29%;
-        }
-        &.right {
-            left: unset;
-            right: 37%;
-        }
 
-        #players-rings {
+
+        #menu-rings {
             pointer-events: all;
         }
 
@@ -228,6 +227,7 @@ import { useUserTeamStore } from "@/store/user-teams";
 import { useNotificationStore } from "@/store/notification";
 import { useQueryClient } from "@tanstack/vue-query";
 import { TEAM_POSITIONS } from "@/constants/team";
+import {onClickOutside} from '@vueuse/core'
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 
@@ -247,13 +247,14 @@ const doAnimation = (state) => {
         duration: 0.2,
         fade: true,
         scale: true,
+        targets: "#menu-rings,#rings-menu"
     });
 };
 
 const selectedPlayer = ref(null);
 
 const selectPlayer = (id) => {
-    const state = Flip.getState("#players-rings,#player-edit-menu");
+    const state = Flip.getState("#menu-rings,#rings-menu");
     const shouldDoAnimation = !id || selectedPlayer.value?.id !== id;
     if (selectedPlayer.value?.id === id) {
         selectedPlayer.value = null;
@@ -302,7 +303,8 @@ const teamPlayers = computed(() => {
                 PLAYER_SORT_ORDER.indexOf(positionA) -
                 PLAYER_SORT_ORDER.indexOf(positionB)
             );
-        });
+        })
+        
 });
 
 
@@ -320,13 +322,15 @@ const hasRequested = computed(
 
 const emptySlots = computed(() => {
     if (teamPlayers.value.length < 4) return 4 - teamPlayers.value.length;
-    return teamPlayers.value.length % 2;
+    
+    return teamPlayers.value.length % 2
+    
 });
 
 
 const getStyle = (index) => {
     let directions;
-    const numPlayers = teamPlayers.value.length
+    const numPlayers = teamPlayers.value.length + emptySlots.value;
     if (numPlayers <= 4) {
         directions = {
             0: "top-left",
@@ -363,6 +367,8 @@ const onDeselect = (e) => {
         selectPlayer(null);
     }, 1);
 };
+
+
 
 watch(showMenu, (val) => {
     if (val)return;
@@ -502,7 +508,27 @@ const tileWidth = computed(() => {
     return $q.screen.xs ? "150px" : "160px";
 });
 
+const showRingsMenu = ref(false)
 
+const onRingsClick = () => {
+    toggleRingsMenu();
+}
 
+const toggleRingsMenu = () => {
+const state = Flip.getState("#menu-rings,#rings-menu");
+    showRingsMenu.value = !showRingsMenu.value;
+    nextTick(() => {
+        doAnimation(state)
+    })
+}
+
+onClickOutside(editMenu, () => {
+    if (!showRingsMenu.value) return;
+    toggleRingsMenu();
+})
+
+const ringsMenuTop = computed(() => {
+    return $q.screen.xs ? '135px' : '140px'
+})
 
 </script>

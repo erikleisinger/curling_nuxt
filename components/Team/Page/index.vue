@@ -35,7 +35,7 @@
                    
                     <RinkCard :rink="team?.rink" v-if="!$q.screen.xs" class="q-mb-lg"/>
                     
-                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{'float-mid': !isOnTeam(teamId), 'float-page-top': !!helpRequest}"/>
+                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{ 'float-page-top': !!helpRequest}" v-if="helpRequest || isOnTeam(teamId)"/>
                     <div class="row full-width justify-center">
                     <TeamPagePlayers :teamId="teamId" />
                     </div>
@@ -80,12 +80,7 @@
     right: 0;
     top:0;
     width: fit-content;
-    &.float-mid {
-        top: 0;
-        bottom: 0;
-        height: fit-content;
-        z-index: 7;
-    }
+
     &.float-page-top {
         position: fixed;
         top: calc($app-header-height-xs + var(--space-sm));

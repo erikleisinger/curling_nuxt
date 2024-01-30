@@ -327,7 +327,6 @@ const getGames = async () => {
         points_scored
 
     `).in('game_id', gameIds)
-    console.log(data)
     data.forEach((gameTeam) => {
         const {team, game, points_scored, color, placeholder} = gameTeam;
         useRepo(Game).save({

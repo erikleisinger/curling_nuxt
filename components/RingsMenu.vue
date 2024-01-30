@@ -115,9 +115,6 @@ $button-dimension: 38.5%;
     padding: var(--space-lg);
     margin-top: var(--space-md);
     border-radius: 32px;
-    @include sm {
-        padding: var(--space-xxl) 0px;
-    }
     .rings-menu__option {
         cursor: pointer;
         pointer-events: all;
