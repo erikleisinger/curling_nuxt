@@ -47,6 +47,7 @@
                 <div
                     v-show="showRingsMenu || !!selectedPlayer?.id"
                     class="edit-menu"
+                    :class="{dense: !canEdit && !selectedPlayer?.id}"
                     id="rings-menu"
                     data-flip-id="rings-menu"
                     ref="editMenu"
@@ -83,7 +84,7 @@
                         >
                       
                         </q-btn>
-                       <TeamPageRequestsHandler :teamId="teamId" v-if="!selectedPlayer?.id && !canEdit"/>
+                       <TeamPageRequestsHandler :teamId="teamId" v-if="!selectedPlayer?.id && !canEdit" />
                   
                     </div>
                 </div>
@@ -201,6 +202,14 @@
             pointer-events: all;
             color: $app-slate;
             position: relative;
+
+            &.dense {
+                padding: unset;
+            }
+
+            :deep(.q-chip) {
+                margin: unset;
+            }
 
             #position-select-menu {
                 position: absolute;

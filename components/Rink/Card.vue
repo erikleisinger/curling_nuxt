@@ -5,14 +5,14 @@
             <div class="row no-wrap flags__container justify-center">
             </div>
         
-        <div class="row no-wrap  items-center justify-between full-height">
+        <div class="row no-wrap  items-center  full-height">
             <div class="q-mr-md">
               <FlagChip :name="'CA'" size="40px" />
             </div>
             <div>
-                <h2>{{ rink?.name ?? 'Rink name' }}</h2>
+                <h2>{{ rink?.name ?? 'Unspecified rink' }}</h2>
                 <div class="text-caption" style="line-height: 1">
-                    {{ rink?.city ?? 'City' }}, {{ rink?.province ?? 'Province' }}
+                    {{ rink?.city ?? 'North' }}, {{ rink?.province ?? 'Pole' }}
                 </div>
             </div>
             

@@ -22,8 +22,9 @@
             <TeamPageName :name="editedName ?? 'team Name'"  ref="teamName" />
         </template>
     </LayoutCircleTitle>
-
-    <RinkCard :rink="editedRink" v-if="$q.screen.xs" class="rink__card"/>
+<div class="full-width row justify-center" v-if="$q.screen.xs">
+    <RinkCard :rink="editedRink"  class="rink__card"/>
+</div>
     <TeamEditOverlay
         v-if="editing"
         @close="editing = false"
