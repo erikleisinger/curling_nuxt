@@ -54,6 +54,8 @@
                         @click="onClick"
                         v-model="chart"
                         :color="getColor(STAT_COLORS[type] ?? 'blue')"
+                        :start="lineGraphStartEnd.start"
+                        :end="lineGraphStartEnd.end"
                     />
                 </div>
                 <div
@@ -169,6 +171,7 @@ const { userTeamIds } = useTeam();
 
 
 
+
 const filteredTeamIds = computed(() => {
     if (!props.filters?.teams?.length) return userTeamIds.value;
     return [...userTeamIds.value].filter((id) =>
@@ -186,9 +189,23 @@ const allStats = computed(() =>
         .where("sheet_id", (val) => {
             return props.filters.sheet ? val === props.filters.sheet : true;
         })
+        .where('start_time', (val) => {
+            if (!props.filters.start) return true;
+ 
+            return toTimezone(val, null, false, true).unix() > props.filters.start
+        })
         .orderBy("start_time", "asc")
         .get()
 );
+
+const {toTimezone} = useTime()
+
+const lineGraphStartEnd = computed(() => {
+    return {
+        start: toTimezone(allStats.value[0]?.start_time, 'MMM D'),
+        end: toTimezone(allStats.value[allStats.value.length - 1]?.start_time, 'MMM D')
+    }
+})
 
 const isCumulative = CUMULATIVE_CHART_STATS.includes(props.type);
 const showCumulative = ref(isCumulative);

@@ -115,6 +115,7 @@ const filters = ref({
     opposition: null,
     rink: null,
     sheet: null,
+    start: null,
 });
 
 const { userTeamIds } = useTeam();
