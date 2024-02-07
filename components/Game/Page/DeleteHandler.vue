@@ -1,7 +1,5 @@
 <template>
-    <div class="full-width row justify-center">
-        <Button color="red" v-if="canDelete" @click="showDeleteConfirm = true" :disabled="deleting" :loading="deleting">Delete game</Button>
-    </div>
+        <Button color="red" v-if="canDelete" @click="showDeleteConfirm = true" :disabled="deleting" :loading="deleting" :disable="isVerified">Delete game</Button>
     <GlobalMenu v-model="showDeleteConfirm" >
     <DialogCard ref="confirmDelete" maxWidth="95vw">
          <template v-slot:title>
@@ -13,7 +11,7 @@
                  <template v-slot:footer>
                  
                     <Button color="white" textColor="slate" @click="showDeleteConfirm = false">Close</Button>
-                    <Button color="red" @click="deleteGame" >Delete</Button>
+                    <Button color="red" @click="deleteGame" >   Delete</Button>
                     
                 </template>
     </DialogCard>
@@ -26,7 +24,11 @@ import {useNotificationStore} from '@/store/notification'
         gameId: Number,
     })
 
-    const teams = computed(() => useRepo(Game).with('teams').where('id', props.gameId).first()?.teams.map(({team_id}) => team_id))
+    const game = computed(() => useRepo(Game).with('teams').where('id', props.gameId).first())
+
+    const isVerified = computed(() => game.value.isVerified)
+
+    const teams = computed(() => game.value?.teams.map(({team_id}) => team_id))
 
     const {isOnTeam} = useTeam()
 

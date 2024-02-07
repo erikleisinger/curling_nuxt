@@ -100,6 +100,75 @@ export const useGame = () => {
         return []
     }
 
+    const getGame = async (gameId) => {
+        const dayjs = useDayjs();
+        const client = useSupabaseClient();
+        const {data } = await client.from('games_full').select(`
+            id,
+            start_time,
+            rink:rink_id(
+                id,
+                name,
+                city,
+                province,
+                sheets
+            ),
+            conceded,
+            sheet:sheet_id(
+                id,
+                number
+            ),
+            hammer_first_end,
+            end_early,
+            ends_played,
+            end_count
+        `).eq('id', gameId).single()
+        const {rink, sheet, start_time, ...rest} = data;
+        if(rink) useRepo(Rink).save(rink);
+        if (sheet) useRepo(Sheet).save(sheet);
+        useRepo(Game).save({
+            ...rest,
+            start_time: dayjs(start_time).unix(),
+            rink_id: rink?.id,
+            sheet_id: sheet?.id
+        })
+    
+         const {data: gameScoreData} = await client.from('game_scores').select(`
+            team:team_id(
+                id,
+                name,
+                avatar_url
+            ),
+            pending,
+            game_id,
+            color,
+            placeholder,
+            points_scored
+    
+        `).eq('game_id', gameId);
+        useRepo(GameTeam).where('game_id', gameId).delete();
+        gameScoreData.forEach((gameScore) => {
+             const {team, game_id, points_scored, color, placeholder, pending} = gameScore;
+            useRepo(Team).save(team);
+           
+            useRepo(GameTeam).save({
+                team_id: team?.id,
+                game_id,
+                points_scored,
+                color,
+                placeholder,
+                pending
+    
+            })
+        })
+    
+    
+       
+    
+    
+    return {...data, ...gameScoreData};
+    }
+
     const getHeadToHead = async (homeTeamId: number, awayTeamId: number) => {
          
         const {data} = await useSupabaseClient().from('game_team_junction').select(`
@@ -175,5 +244,71 @@ export const useGame = () => {
         return data;
     }
 
-    return { getGameResult, getHeadToHead, getTeamGames, getGames, getLeagueGames };
+    const getScoreDetails = async (gameId) => {
+        const client = useSupabaseClient();
+        const { data } = await client
+            .from("ends")
+            .select(
+                `
+            id,
+            end_number,
+            scoring_team_id,
+            hammer_team_id,
+            points_scored
+        `
+            )
+            .eq("game_id", gameId);
+        return data;
+    };
+    
+    const generateScore = async (gameId) => {
+        const details = await getScoreDetails(gameId);
+        const endCount = useRepo(Game).where('id', gameId).first()?.end_count;
+        const home =  useRepo(GameTeam).where('game_id', gameId).offset(0).first()
+        const away = useRepo(GameTeam).where('game_id', gameId).offset(1).first()
+        const s = Array.from(
+            {
+                length: Math.max(endCount, details?.length),
+            },
+            (_, i) => i + 1
+        ).reduce((all, current, index) => {
+            if (!details[index]) {
+                return {
+                    ...all,
+                    [index + 1]: {
+                        home: "X",
+                        away: "X",
+                    },
+                };
+            } else {
+                return {
+                    ...all,
+                    [index + 1]: {
+                        home:
+                            details[index]?.points_scored === null
+                                ? "X"
+                                : details[index]?.scoring_team_id ===
+                                      home?.team_id ||
+                                  (home?.pending &&
+                                      !details[index]?.scoring_team_id)
+                                ? details[index]?.points_scored
+                                : 0,
+                        away:
+                            details[index]?.points_scored === null
+                                ? "X"
+                                : details[index]?.scoring_team_id ===
+                                      away?.team_id ||
+                                  (away?.pending &&
+                                      !details[index]?.scoring_team_id)
+                                ? details[index]?.points_scored
+                                : 0,
+                        ...details[index],
+                    },
+                };
+            }
+        }, {});
+        return s;
+    };
+
+    return { getGameResult, getHeadToHead, getTeamGames, getGames, getLeagueGames, getGame, generateScore };
 };

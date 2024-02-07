@@ -94,8 +94,7 @@
 
 
 .team-page__tabs {
-    position: sticky;
-    top: 0;
+
     background-color: transparent;
     transition: all 0.2s;
     font-family: $font-family-header;

@@ -7,6 +7,7 @@
             overflow: hidden;
         "
         class="full-height"
+       
     >
         <div
             class="nav--container row justify-between full-width"
@@ -140,13 +141,13 @@
                                 class="start__padding col-grow"
                                 id="scrollstart"
                             />
-
                             <LinescoreScrollerSection
                                 @visible="setVisible(end)"
                                 v-for="end in endNumbers"
                                 :key="`end-input-${end}`"
                                 :endno="end"
                             >
+                            
                                 <div
                                     :id="`scoreboard-end-${end}`"
                                     class="scoreboard__end-container full-height"
@@ -312,7 +313,6 @@
                 v-if="view === views.DETAILS"
                 :endCount="endCount"
                 :score="score"
-                @save="save"
                 :saving="saving"
             >
                 <template v-slot:save>
@@ -447,6 +447,12 @@ import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import Team from '@/store/models/team';
 import Player from '@/store/models/player'
+import {useQuery, useQueryClient} from '@tanstack/vue-query'
+import Game from '@/store/models/game'
+import GameTeam from '@/store/models/game-team'
+import {timeout} from '@/utils/async'
+
+const queryClient = useQueryClient();
 
 const dayjs = useDayjs();
 const { getColor } = useColor();
@@ -593,7 +599,6 @@ const scrollTo = (end) => {
  * SAVE
  */
 
-const editedId = ref(null);
 
 const getSheet = async () => {
     const client = useSupabaseClient();
@@ -615,7 +620,6 @@ const save = async () => {
     const rinkCopy = gameParams.value.rink;
     const sheetCopy = gameParams.value.sheet;
     const leagueCopy = gameParams.value.league;
-    const editedIdCopy = editedId.value;
 
     let shouldSendInvitation = false;
 
@@ -644,8 +648,8 @@ const save = async () => {
     };
 
 
-    if (editedIdCopy) {
-        gameToCreate.id = editedIdCopy.value;
+    if (editedGameId) {
+        gameToCreate.id = editedGameId;
     }
 
     const gameId = await createGame(gameToCreate);
@@ -659,7 +663,7 @@ const save = async () => {
         params?.away?.id ?? 0,
         gameId
     );
-    await createEnds(ends, !!editedIdCopy);
+    await createEnds(ends, !!editedGameId);
 
     await createTeamGameJunction(
         { ...gameToCreate, home: params?.home?.id, away: !params?.away?.id ? {
@@ -670,12 +674,18 @@ const save = async () => {
     );
 
     if (shouldSendInvitation && params.away?.id)
-        useGameRequestStore().sendGameRequest(params.away, gameId);
+        await useGameRequestStore().sendGameRequest(params.away, gameId);
+
+    if (editedGameId) queryClient.invalidateQueries({
+        queryKey: ["game", editedGameId],
+    })
 
     return navigateTo(`/games/view/${gameId}`);
 };
 
 const createTeamGameJunction = async (game, isPending) => {
+    const client = useSupabaseClient();
+    
     const {
         id: game_id,
         home_color,
@@ -683,9 +693,11 @@ const createTeamGameJunction = async (game, isPending) => {
         home,
         away,
     } = game;
-    const { errors } = await useSupabaseClient()
+
+    await client.from('game_team_junction').delete().eq('game_id', game_id)
+    const { errors } = await client
         .from("game_team_junction")
-        .insert([
+        .upsert([
             {
                 game_id,
                 team_id: home,
@@ -771,28 +783,20 @@ const fetchEndsForGame = async ({ gameId, homeId, awayId }) => {
     });
 };
 
+const route = useRoute();
+const editedGameId = Number(route.query.gameId);
+
 const loading = ref();
 
 onMounted(async () => {
     loading.value = true;
-    const { editedGame, options } = dialogStore.linescore;
-
-    if (editedGame) {
-        view.value = views.LINESCORE;
-        editedId.value = editedGame.id;
-        await fetchGame(editedGame);
+    if (editedGameId) {
+        view.value = views.DETAILS;   
     } else {
-        if (options?.homeTeam) {
-            gameParams.value.home = options.homeTeam;
-            view.value = views.HOME_SELECT;
-        } else if (!userTeams.value.length) {
-            view.value = views.NO_TEAM;
-        } else {
-            view.value = views.END_COUNT_SELECT;
-        }
-
-        // view.value = views.CONFIRM
+        view.value = views.END_COUNT_SELECT;    
     }
+    
+    
     loading.value = false;
     useEventListener(
         window,
@@ -925,8 +929,6 @@ const {user: userId} = useUser();
 
 const getPlayerRink = () => {
     return useRepo(Player).with('rink').where('id', userId.value).first()?.rink;;
-
-
 }
 
 const getHomeRink = () => {
@@ -948,5 +950,66 @@ const setRink = () => {
 watch(() => gameParams.value.home, (val) => {
     setRink();
 })
+
+// Edited game
+
+const {getGame, generateScore} = useGame()
+
+const initEditedGame = async (attempt = 0) => {
+    if (attempt > 9) return;
+    const teamsInitialized =  useRepo(GameTeam).where('game_id', editedGameId).first();
+    if (!teamsInitialized) {
+        await timeout(1000)
+            return initEditedGame(attempt + 1);
+        
+        
+    } else {
+    const editedGame = useRepo(Game).withAllRecursive().where('id', editedGameId).first();
+    const home = useRepo(GameTeam).query().with('team').where('game_id', editedGameId).whereIn('team_id', (val) => userTeams.value.some(({id}) => id === val)).first()
+    const away = useRepo(GameTeam).query().with('team').where('game_id', editedGameId).whereIn('team_id', (val) => val !== home.team_id).first()
+
+    gameParams.value.home = {
+        ...home?.team,
+        name: home?.placeholder || home?.team?.name
+    };
+    gameParams.value.away = {
+        ...away?.team,
+        name: away?.placeholder || away?.team?.name
+    };
+    gameParams.value.homeColor = home.color;
+    gameParams.value.awayColor = away.color;
+    gameParams.value.rink = editedGame?.rink;
+    gameParams.value.sheet = editedGame.sheet?.number;
+    gameParams.value.hammerFirstEndTeam = editedGame.hammer_first_end;
+
+    gameParams.value.start_time = dayjs.unix(editedGame.start_time).format('YYYY-MM-DD hh:mm')
+
+
+    const editedScore = await generateScore(editedGameId);
+    score.value = editedScore;
+    
+    }
+    
+}
+
+
+
+const {
+    isLoading: isLoadingGames,
+    isSuccess: isGamesDone,
+    data: currentGame,
+} = useQuery({
+    queryKey: ["game", editedGameId],
+    queryFn: () => getGame(editedGameId),
+    enabled: !!editedGameId,
+
+});
+
+watch(isGamesDone, async (val) => {
+    if (!val) return;
+await initEditedGame()
+}, {immediate: true})
+
+
 
 </script>

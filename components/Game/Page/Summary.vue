@@ -100,6 +100,11 @@
         line-height: 1;
         font-size: 1.1rem;
     }
+    .team-name {
+        width: 100%;
+        overflow: hidden;
+        word-break: break-word
+    }
 
     .score {
         @include lg-text;
