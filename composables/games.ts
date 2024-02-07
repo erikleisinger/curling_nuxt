@@ -103,7 +103,7 @@ export const useGame = () => {
     const getGame = async (gameId) => {
         const dayjs = useDayjs();
         const client = useSupabaseClient();
-        const {data } = await client.from('games_full').select(`
+        const {data, error } = await client.from('games_full').select(`
             id,
             start_time,
             rink:rink_id(
@@ -123,6 +123,8 @@ export const useGame = () => {
             ends_played,
             end_count
         `).eq('id', gameId).single()
+
+        if (error) throw new Error('Game does not exist')
         const {rink, sheet, start_time, ...rest} = data;
         if(rink) useRepo(Rink).save(rink);
         if (sheet) useRepo(Sheet).save(sheet);
@@ -133,7 +135,7 @@ export const useGame = () => {
             sheet_id: sheet?.id
         })
     
-         const {data: gameScoreData} = await client.from('game_scores').select(`
+         const {data: gameScoreData, error: gameScoreError} = await client.from('game_scores').select(`
             team:team_id(
                 id,
                 name,
@@ -146,6 +148,8 @@ export const useGame = () => {
             points_scored
     
         `).eq('game_id', gameId);
+        if (error) throw new Error('Game does not exist')
+
         useRepo(GameTeam).where('game_id', gameId).delete();
         gameScoreData.forEach((gameScore) => {
              const {team, game_id, points_scored, color, placeholder, pending} = gameScore;

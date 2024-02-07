@@ -1,5 +1,6 @@
 <template>
-    <div class="container" v-if="!isLoadingGames" ref="container">
+<q-inner-loading :showing="isLoadingGames"/>
+    <div class="container" v-if="!isLoadingGames && !isError" ref="container">
         <GamePageHeader :gameId="gameId" />
         <GamePageSummary :gameId="gameId" />
         <div class="details">
@@ -12,6 +13,9 @@
         <GamePageEditHandler :gameId="gameId"/>
         </div>
     </div>
+    <ErrorPage v-else-if="isError" >
+        {{error}}
+    </ErrorPage>  
 </template>
 <style lang="scss" scoped>
 .container {
@@ -53,14 +57,22 @@ const gameLoaded = ref(false);
 const {
     isLoading: isLoadingGames,
     isSuccess: isGamesDone,
+    isError,
+    error,
     data: currentGame,
 } = useQuery({
     queryKey: ["game", props.gameId],
     queryFn: () => getGame(props.gameId),
     select: (val) => {
+        console.log('got game: ', val)
         gameLoaded.value = true;
         return val;
     },
+    onError: (e) => {
+        console.log('error: ', e)
+    },
+    retry: false,
+    refetchOnWindowFocus: false
 });
 
 const pageReady = computed(() => gameLoaded.value);

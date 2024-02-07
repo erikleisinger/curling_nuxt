@@ -7,7 +7,7 @@
             <slot name="content"> </slot>
         </p>
         <div v-else style="margin-top: var(--space-sm)"/>
-         <div class="row no-wrap justify-between q-px-sm">
+         <div class="row no-wrap justify-between q-px-sm q-pb-sm">
         <slot name="footer"> 
 
         </slot>
