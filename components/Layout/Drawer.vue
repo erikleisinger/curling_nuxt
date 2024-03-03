@@ -50,6 +50,14 @@
                 :style="{ opacity: open ? 1 : 0 }"
             />
             <q-list class="nav-drawer__list">
+                <q-item clickable v-ripple class="list-item">
+ <q-item-section avatar class="items-center">
+    <q-icon name="insights" size="2.1em"/>
+ </q-item-section>
+   <q-item-section class="q-ml-md">
+    <q-item-label>Dashboard</q-item-label>
+   </q-item-section>
+                </q-item>
                 <q-item
                     clickable
                     v-ripple
@@ -59,7 +67,7 @@
                     :key="team.id"
                     @click="navigateTo(`/teams/${team.id}`)"
                 >
-                    <q-item-section avatar>
+                    <q-item-section avatar >
                         <div
                             style="width: 40px; min-width: 40px"
                             class="clickable"
