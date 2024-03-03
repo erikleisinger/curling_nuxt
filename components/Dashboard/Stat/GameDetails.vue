@@ -1,5 +1,6 @@
 <template>
     <GlobalMenu v-model="showGameInfo">
+      
         <DashboardLineChartGameInfo
                     :data="data"
                     :type="type"

@@ -210,14 +210,15 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-const expanded = computed({
-    get() {
-        return props.modelValue;
-    },
-    set(val) {
-        emit("update:modelValue", val);
-    },
-});
+// const expanded = computed({
+//     get() {
+//         return props.modelValue;
+//     },
+//     set(val) {
+//         emit("update:modelValue", val);
+//     },
+// });
+const expanded = ref(false)
 
 const onClick = () => {
     if (!slots.more) return;

@@ -135,7 +135,8 @@ const timeline = ref(null)
 
 const ready = ref(false)
 
-const uniqueId = `id-${(Math.random() * 1000000000000).toFixed()}`;
+const {generateUniqueId} = useUniqueId()
+const uniqueId = generateUniqueId('id');
 
 const onOpen = () => {
   

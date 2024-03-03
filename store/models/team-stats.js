@@ -47,7 +47,6 @@ export default class TeamStats extends Model {
             hammer_ee: this.number(),
             ee: this.boolean(),
             early_end: this.boolean()
-        }
-       
+        }    
     }
 }

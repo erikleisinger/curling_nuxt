@@ -60,38 +60,20 @@ export const useUserStore = defineStore("user", {
                 const {data:rink} = await client.from('rinks').select('*').eq('id', user.rink_id).single();
                 useRepo(Rink).save(rink)
             }
-        },
-        async getUserTeams() {
-            const { client, fetchHandler } = useSupabaseFetch();
-            const { id: profileId } = this;
-            const { data } = await fetchHandler(
-                () =>
-                    client
-                        .from("team_profile_junction")
-                        .select("team_id")
-                        .eq("profile_id", profileId),
-                { onError: "Error getting user teams" }
-            );
-            if (!data) return;
-            const teams = data.map(({ team_id }) => team_id);
-            this.setUserTeams(teams);
-        },
+     },
+
         setAvatar(path: string) {
             this.avatarUrl = path;
         },
         setEmail(email: string | null) {
             this.email = email;
         },
-
         setId(id: string) {
             this.id = id;
         },
         setTimezone(timezone: string | null | undefined) {
             if (!timezone) return;
             this.timezone = timezone;
-        },
-        setUserTeams(teams: number[]) {
-            this.userTeams = teams;
         },
         toggleShowNumbers() {
             this.showNumbers = !this.showNumbers;

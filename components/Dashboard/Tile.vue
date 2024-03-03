@@ -1,31 +1,25 @@
 <template>
-    <div class="tile" :class="{ highlight: betterThanAverage, expanded }">
+    <div class="tile" :class="{  expanded }" :style="{ width: expanded ? '100%' : '' }">
         <header
             class="row items-center no-wrap justify-between q-mb-md"
             v-if="!expanded"
         >
             <h3
                 class="position-relative row no-wrap"
-                :data-flip-id="`tile-header-${type}`"
-                :class="`tile-header-${type}`"
+                :data-flip-id="headerFlipId"
+                :class="headerFlipId"
             >
-                {{ name }}
+                {{name}}
             </h3>
             <h2
                 :class="{
-                    green: betterThanAverage,
-                    [`tile-value-${type}`]: true,
+                    [valueFlipId]: true,
                 }"
                 style="white-space: nowrap"
-                :data-flip-id="`tile-value-${type}`"
+                :data-flip-id="valueFlipId"
             >
-                {{ percent.toFixed(isPercent ? 0 : 1) }}
-                <span
-                    class="text-caption"
-                    style="margin-left: -1.3em"
-                    v-if="isPercent"
-                    >%</span
-                >
+                  <slot name="value"/>
+               
             </h2>
         </header>
         <header v-else class="full-width header-expanded">
@@ -42,23 +36,19 @@
                 <div class="column justify-center" :class="{'q-mr-lg': !$q.screen.xs}">
                     <h3
                         class="position-relative text-center"
-                        :data-flip-id="`tile-header-${type}`"
-                        :class="`tile-header-${type}`"
+                        :data-flip-id="headerFlipId"
+                        :class="headerFlipId"
                     >
-                        <q-icon
-                            v-if="betterThanAverage"
-                            size="0.9em"
-                            class="q-mr-xs"
-                            name="stars"
-                            :style="{ color: getColor('yellow') }"
-                        />
+                    
                         {{ name }}
                     </h3>
-                    <h4 class="text-center">{{ STAT_DESCRIPTIONS[type] }}</h4>
+                    <h4 class="text-center">
+                        <slot name="description"/>
+                    </h4>
                 </div>
                 <q-knob
                     show-value
-                    :model-value="isPercent ? percent : 100"
+                    :model-value="percent"
                     size="150px"
                     :thickness="0.15"
                     :angle="70"
@@ -66,26 +56,15 @@
                     class="percent q-mt-md"
                     readonly
                     track-color="grey-9"
-                    :style="{ color: getColor(STAT_COLORS[type] ?? 'blue') }"
+                    :style="{ color }"
                 >
                     <div class="knob--text">
                         <h2
-                            style="white-space: nowrap; position: relative"
-                            :data-flip-id="`tile-value-${type}`"
-                            :class="`tile-value-${type}`"
+                            style="white-space: nowrap; position: relative; margin-right: -6px;"
+                            :data-flip-id="valueFlipId"
+                            :class="valueFlipId"
                         >
-                            {{ percent.toFixed(isPercent ? 0 : 1) }}
-                            <span
-                                class="text-caption"
-                                style="
-                                    margin-left: -1.3em;
-                                    position: absolute;
-                                    bottom: 0.5em;
-                                    right: -0.8em;
-                                "
-                                v-if="isPercent"
-                                >%</span
-                            >
+                        <slot name="value"/>
                         </h2>
                     </div>
                 </q-knob>
@@ -105,14 +84,12 @@ $min-height: min(175px, calc(50% - 12px));
     grid-template-rows: auto auto;
 
     row-gap: var(--space-sm);
-    // @include sm {
-    //     grid-template-rows: unset;
-    //     grid-template-columns: repeat(2, 1fr);
-    //     margin-top: var(--space-lg);
-    // }
 }
 .tile {
     padding: var(--space-sm);
+    &:not(.expanded) {
+        padding-top: var(--space-md);
+    }
     background-color: rgba(240, 238, 238, 0.1);
 
     .knob--text {
@@ -124,9 +101,7 @@ $min-height: min(175px, calc(50% - 12px));
         }
     }
 
-    &.expanded {
-        padding-top: var(--space-sm);
-    }
+   
 
     cursor: pointer;
     min-height: $min-height;
@@ -138,15 +113,10 @@ $min-height: min(175px, calc(50% - 12px));
 
     h3 {
         margin-bottom: var(--space-xs);
-
-        // position: absolute;
         top: 0;
-        // @include reg-text;
         font-size: 1.4rem;
         line-height: 0.8;
-        // padding: 0px var(--space-sm);
         padding-right: var(--space-sm);
-        // color: rgba(255, 255, 255, 0.782);
 
         z-index: 1;
         position: relative;
@@ -185,6 +155,7 @@ $min-height: min(175px, calc(50% - 12px));
     }
     h2 {
         @include xl-text;
+        line-height: 0.8em;
     }
     .percent {
         z-index: 1;
@@ -199,43 +170,29 @@ $min-height: min(175px, calc(50% - 12px));
         position: relative;
         font-style: italic;
     }
-    .better--floating {
-        position: absolute;
-        left: -0.5em;
-        top: -0.1em;
-        // color: $app-royal-blue;
-    }
 }
 </style>
 <script setup>
-import {
-    STAT_DESCRIPTIONS,
-    STAT_NAMES,
-    STAT_COLORS,
-    STAT_TYPES,
-} from "@/constants/stats";
-import { useElementBounding } from "@vueuse/core";
-import TeamStatsTotal from "@/store/models/team-stats-total";
-import { START_LOCATION } from "vue-router";
 const props = defineProps({
-    betterThanAverage: Boolean,
+    color: String,
     expanded: Boolean,
+    name: String,
     percent: {
         type: Number,
         default: 0,
     },
-    type: String,
 });
 
 const emit = defineEmits(["close"]);
 
 const $q = useQuasar();
-const { getColor } = useColor();
 
-const { isPercentStat } = useStats();
-const isPercent = isPercentStat(props.type);
 
-const name = STAT_NAMES[props.type];
+/**
+ * Unique selectors for each tile
+ */
 
-const color = computed(() => (props.betterThanAverage ? "mint" : "yellow"));
+const {generateUniqueId} = useUniqueId();
+const headerFlipId = generateUniqueId('tile-header');
+const valueFlipId = generateUniqueId('tile-value')
 </script>

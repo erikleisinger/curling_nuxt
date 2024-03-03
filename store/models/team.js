@@ -7,6 +7,10 @@ import TeamPlayer from '@/store/models/team-player'
 import TeamStatsTotal from '@/store/models/team-stats-total'
 import Badge from '@/store/models/badge'
 import Rink from '@/store/models/rink'
+import {Wins} from '@/store/models/stats/wins'
+import { HammerEfficiency } from '@/store/models/stats/hammer-efficiency';
+import {STAT_TYPES} from '@/constants/stats'
+
 
 export default class Team extends Model {
     static entity = 'teams'
@@ -32,7 +36,32 @@ export default class Team extends Model {
         }
        
     }
-    get winPercent () {
-        return Number.parseInt((this.totalStats.wins_average * 100).toFixed(2))
+    _winsCache = null;
+    _hammerEfficiencyCache = null;
+
+    get gamesPlayed() {
+        return this.stats.length ?? 0;
     }
+
+    /**
+     * WIN STATS
+     */
+
+    get [STAT_TYPES.WINS]() {
+        if (!this._winsCache) {
+            this._winsCache = new Wins(this.stats);
+        }
+        return this._winsCache;
+    }
+
+    get [STAT_TYPES.HAMMER_EFFICIENCY] () {
+        if (!this._hammerEfficiencyCache) {
+            this._hammerEfficiencyCache = new HammerEfficiency(this.stats)
+        }
+        return this._hammerEfficiencyCache;
+        
+    }
+
+
+
 }
