@@ -25,7 +25,7 @@
                     <template v-slot:value>
                         <DashboardStatValue
                             isPercent
-                            :value="stats?.wins.hammerEfficiency"
+                            :value="stats[STAT_TYPES.HAMMER_EFFICIENCY].winAverage"
                         />
                     </template>
                 </DashboardStatDetailsItemTemplate>
@@ -46,7 +46,7 @@
                     <template v-slot:value>
                         <DashboardStatValue
                             isPercent
-                            :value="stats?.wins.lossHammerEfficiency"
+                            :value="stats[STAT_TYPES.HAMMER_EFFICIENCY].lossAverage"
                         />
                     </template>
                 </DashboardStatDetailsItemTemplate>
