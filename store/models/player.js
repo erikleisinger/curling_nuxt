@@ -3,6 +3,9 @@ import Team from '@/store/models/team';
 import TeamPlayer from '@/store/models/team-player'
 import Rink from '@/store/models/rink'
 
+
+
+
 class FormatAvatar extends CastAttribute {
     get(value) {
       if (!value) return {};
@@ -27,12 +30,31 @@ export default class Player extends Model {
             last_name: this.string(),
             rink_id: this.number(),
             rink: this.belongsTo(Rink, 'rink_id'),
-            teams: this.belongsToMany(Team, TeamPlayer, 'team_id', 'player_id'),
+            teams: this.belongsToMany(Team, TeamPlayer, 'player_id', 'team_id'),
             timezone: this.string(),
             username: this.string(),
-            has_completed_tutorial: this.boolean()
+            has_completed_tutorial: this.boolean(),
         }
        
+    }
+
+
+
+    
+
+    get teamStats () {
+        return this.teams?.reduce((all, {stats}) => {
+            return [...all, ...stats]
+        }, [])
+    }
+
+    get gamesPlayed() {
+        return this.teamStats.length ?? 0
+    }
+
+
+    get fullName() {
+        return `${this.first_name} ${this.last_name}`
     }
 
     static casts() {

@@ -74,7 +74,8 @@ const open = computed({
     },
 });
 
-const uniqueId = `global-menu-${(Math.random() * 1000000000000).toFixed()}`;
+const {generateUniqueId} = useUniqueId()
+const uniqueId = generateUniqueId('global-menu');
 
 const { x: mouseX, y: mouseY } = useMouse();
 const x = ref(0);

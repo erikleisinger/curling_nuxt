@@ -8,20 +8,95 @@
                 class="tile__container"
                 :class="{ expanded }"
                 ref="tileContainer"
+                v-if="statsObj"
+                 v-memo="[filters.teams.length, filters.opposition, filters.rink, filters.sheet, filters.start, statsObj.id, expanded, mainContent]"
             >
-                <DashboardStat
-                    v-for="statType in stats"
-                    :key="statType"
-                    :type="statType"
-                    @click="setSelected(statType)"
-                    :expanded="expanded === statType"
-                    :style="{ order: expanded === statType ? 0 : 1 }"
+           
+                <DashboardStatWins
+                    @click="setSelected(STAT_TYPES.WINS)"
+                    :expanded="expanded === STAT_TYPES.WINS"
+                    :style="{ order: expanded === STAT_TYPES.WINS ? 0 : 1 }"
                     :filters="filters"
-                    @close="closeStat(statType)"
+                    @close="closeStat(STAT_TYPES.WINS)"
                     @scroll="scrollUp"
-                    :id="`dashboard-stat-${statType}`"
+                    :id="`dashboard-stat-${STAT_TYPES.WINS}`"
+                    :stats="statsObj"
                 >
-                </DashboardStat>
+                </DashboardStatWins>
+                <DashboardStatHammerEfficiency
+                    @click="setSelected(STAT_TYPES.HAMMER_EFFICIENCY)"
+                    :expanded="expanded === STAT_TYPES.HAMMER_EFFICIENCY"
+                    :style="{
+                        order:
+                            expanded === STAT_TYPES.HAMMER_EFFICIENCY ? 0 : 1,
+                    }"
+                    :filters="filters"
+                    @close="closeStat(STAT_TYPES.HAMMER_EFFICIENCY)"
+                    @scroll="scrollUp"
+                    :id="`dashboard-stat-${STAT_TYPES.HAMMER_EFFICIENCY}`"
+                    :stats="statsObj"
+                >
+                </DashboardStatHammerEfficiency>
+
+                  <DashboardStatStealEfficiency
+                    @click="setSelected(STAT_TYPES.STEAL_EFFICIENCY)"
+                    :expanded="expanded === STAT_TYPES.STEAL_EFFICIENCY"
+                    :style="{
+                        order:
+                            expanded === STAT_TYPES.STEAL_EFFICIENCY ? 0 : 1,
+                    }"
+                    :filters="filters"
+                    @close="closeStat(STAT_TYPES.STEAL_EFFICIENCY)"
+                    @scroll="scrollUp"
+                    :id="`dashboard-stat-${STAT_TYPES.STEAL_EFFICIENCY}`"
+                    :stats="statsObj"
+                >
+                </DashboardStatStealEfficiency>
+
+                   <DashboardStatForceEfficiency
+                    @click="setSelected(STAT_TYPES.FORCE_EFFICIENCY)"
+                    :expanded="expanded === STAT_TYPES.FORCE_EFFICIENCY"
+                    :style="{
+                        order:
+                            expanded === STAT_TYPES.FORCE_EFFICIENCY ? 0 : 1,
+                    }"
+                    :filters="filters"
+                    @close="closeStat(STAT_TYPES.FORCE_EFFICIENCY)"
+                    @scroll="scrollUp"
+                    :id="`dashboard-stat-${STAT_TYPES.FORCE_EFFICIENCY}`"
+                    :stats="statsObj"
+                >
+                </DashboardStatForceEfficiency>
+
+                      <DashboardStatStealDefense
+                    @click="setSelected(STAT_TYPES.STEAL_DEFENSE)"
+                    :expanded="expanded === STAT_TYPES.STEAL_DEFENSE"
+                    :style="{
+                        order:
+                            expanded === STAT_TYPES.STEAL_DEFENSE ? 0 : 1,
+                    }"
+                    :filters="filters"
+                    @close="closeStat(STAT_TYPES.STEAL_DEFENSE)"
+                    @scroll="scrollUp"
+                    :id="`dashboard-stat-${STAT_TYPES.STEAL_DEFENSE}`"
+                    :stats="statsObj"
+                >
+                </DashboardStatStealDefense>
+
+                 <DashboardStatPointsPerEnd
+                    @click="setSelected(STAT_TYPES.POINTS_PER_END)"
+                    :expanded="expanded === STAT_TYPES.POINTS_PER_END"
+                    :style="{
+                        order:
+                            expanded === STAT_TYPES.POINTS_PER_END ? 0 : 1,
+                    }"
+                    :filters="filters"
+                    @close="closeStat(STAT_TYPES.POINTS_PER_END)"
+                    @scroll="scrollUp"
+                    :id="`dashboard-stat-${STAT_TYPES.POINTS_PER_END}`"
+                    :stats="statsObj"
+                >
+                </DashboardStatPointsPerEnd>
                 <div
                     v-if="!!expanded"
                     class="full-width q-pa-md row justify-center"
@@ -84,6 +159,13 @@
     }
 }
 </style>
+<style lang="scss">
+.separator {
+    background-color: v-bind(color);
+    margin-bottom: var(--space-md);
+    margin-top: calc(var(--space-md) - 4px);
+}
+</style>
 <script setup>
 import {
     NON_PERCENT_STATS,
@@ -103,9 +185,11 @@ import TeamStats from "@/store/models/team-stats";
 import Team from "@/store/models/team";
 import Rink from "@/store/models/rink";
 import Sheet from "@/store/models/sheet";
+import Player from "@/store/models/player";
 import { useDialogStore } from "@/store/dialog";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
+import {Stats} from '@/store/models/stats/stats'
 gsap.registerPlugin(Flip);
 
 const { getColor } = useColor();
@@ -139,6 +223,10 @@ const getTeamStatsTotal = async () => {
 };
 
 const { user: userId } = useUser();
+
+const currentUser = computed(() =>
+    useRepo(Player).withAllRecursive().where("id", userId.value).first()
+);
 
 const { isLoading, data: totalStats } = useQuery({
     queryKey: ["stats", "total", userId.value],
@@ -208,6 +296,33 @@ const stats = computed(() => {
     ];
 });
 
+const {toTimezone} = useTime();
+
+const statsObj = computed(() => {
+    let stats;
+    if (filters.value?.teams?.length) {
+        stats =  useRepo(Team)
+            .query()
+            .with("stats")
+            .whereIn("id", filters.value?.teams)
+            .first()?.stats || {}
+    } else {
+ stats = useRepo(Player).withAllRecursive().where("id", userId.value).first()?.teamStats || 0;
+    }
+
+   return new Stats(stats.filter((stat) => {
+
+    if (filters.value.rink && stat.rink_id !== filters.value.rink) return false;   
+    
+    if (filters.value.sheet & stat.sheet_id !== filters.value.sheet) return false;
+    
+  
+    if (filters.value.start && toTimezone(stat.start_time, null, false, true).unix() < filters.value.start) return false;
+
+    return true;
+   }))   
+});
+
 const tileContainer = ref(null);
 
 const expanded = ref(null);
@@ -225,7 +340,7 @@ const endView = () => {
     expanded.value = null;
 };
 
-const flipState = ref(null)
+const flipState = ref(null);
 
 const animateStateChange = (callback, type) => {
     const targets = `.tile-header-${type}, .tile-chart-${type}, #dashboard-stat-${type}, .tile-value-${type}`;
@@ -295,4 +410,6 @@ const { direction } = useSwipe(tileContainer, {
         }
     },
 });
+
+
 </script>

@@ -8,6 +8,8 @@ import TeamStatsTotal from '@/store/models/team-stats-total'
 import Badge from '@/store/models/badge'
 import Rink from '@/store/models/rink'
 
+
+
 export default class Team extends Model {
     static entity = 'teams'
 
@@ -32,7 +34,8 @@ export default class Team extends Model {
         }
        
     }
-    get winPercent () {
-        return Number.parseInt((this.totalStats.wins_average * 100).toFixed(2))
-    }
+
+
+  
+
 }

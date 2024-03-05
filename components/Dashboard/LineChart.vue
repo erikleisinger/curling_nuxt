@@ -10,7 +10,6 @@ const props = defineProps({
     },
     data: Array,
     maintain: Boolean,
-    modelValue: Object,
     labels: Boolean,
     clickable: Boolean,
     start: String,
@@ -19,14 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(["click", "update:modelValue"]);
 
-const chartForParent = computed({
-    get() {
-        return props.modelValue;
-    },
-    set(val) {
-        emit("update:modelValue", val);
-    },
-});
+
 let myChart;
 const chart = ref(null);
 
@@ -61,7 +53,6 @@ const setChartData = () => {
     myChart.options.plugins.legend.display = props.data?.length > 1;
 
     myChart.update();
-    chartForParent.value = myChart;
 };
 
 const { setBgGradient } = useColor();
@@ -132,6 +123,7 @@ onMounted(() => {
                 },
                 y: {
                     display: !!props.labels,
+                
                     border: {
                         display: false,
                     },

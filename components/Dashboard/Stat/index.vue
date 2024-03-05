@@ -11,8 +11,8 @@
             <div
                 v-if="!expanded && chartPoints?.length && chartPoints[0]"
                 :style="`width: ${tileWidth}px; height: 80px`"
-                 :class="`tile-chart-${type}`"
-                        :data-flip-id="`tile-chart-${type}`"
+                :class="`tile-chart-${type}`"
+                :data-flip-id="`tile-chart-${type}`"
             >
                 <DashboardLineChart
                     :data="chartPointsPreview"
@@ -26,7 +26,6 @@
                 style="width: 100%; height: 100%"
                 class="line-chart__container"
             >
-
                 <DashboardStatGameDetails
                     :data="gameInfo"
                     :type="type"
@@ -45,7 +44,6 @@
                         :class="`tile-chart-${type}`"
                         :data-flip-id="`tile-chart-${type}`"
                     />
-                    <!-- borderColor: getColor(STAT_COLORS[type]), -->
                     <DashboardLineChart
                         :data="chartPoints"
                         :maintain="false"
@@ -105,6 +103,8 @@
                 :average="totalTile"
             />
         </div>
+        <div>
+        </div>
     </DashboardTile>
 </template>
 <style lang="scss" scoped>
@@ -113,7 +113,6 @@
 }
 .line-chart__container {
     position: relative;
-
 }
 .game-line__indicator {
     position: absolute;
@@ -151,6 +150,7 @@ import {
 } from "@/constants/stats";
 import TeamStats from "@/store/models/team-stats";
 import TeamStatsTotal from "@/store/models/team-stats-total";
+import Team from "@/store/models/team";
 import { useElementSize, onClickOutside, useDebounceFn } from "@vueuse/core";
 
 const props = defineProps({
@@ -160,7 +160,8 @@ const props = defineProps({
 });
 
 const { getColor } = useColor();
-const { getCumulativeStat, getChartPoints, isPercentStat, cleanStatValue } = useStats();
+const { getCumulativeStat, getChartPoints, isPercentStat, cleanStatValue } =
+    useStats();
 const emit = defineEmits(["close", "scroll"]);
 
 const isPercent = isPercentStat(props.type);
@@ -168,9 +169,6 @@ const isPercent = isPercentStat(props.type);
 const slots = useSlots();
 
 const { userTeamIds } = useTeam();
-
-
-
 
 const filteredTeamIds = computed(() => {
     if (!props.filters?.teams?.length) return userTeamIds.value;
@@ -189,23 +187,32 @@ const allStats = computed(() =>
         .where("sheet_id", (val) => {
             return props.filters.sheet ? val === props.filters.sheet : true;
         })
-        .where('start_time', (val) => {
+        .where("start_time", (val) => {
             if (!props.filters.start) return true;
- 
-            return toTimezone(val, null, false, true).unix() > props.filters.start
+
+            return (
+                toTimezone(val, null, false, true).unix() > props.filters.start
+            );
         })
         .orderBy("start_time", "asc")
         .get()
 );
 
-const {toTimezone} = useTime()
+const teams = computed(() =>
+    useRepo(Team).query().withAll().whereIn("id", filteredTeamIds.value).get()
+);
+
+const { toTimezone } = useTime();
 
 const lineGraphStartEnd = computed(() => {
     return {
-        start: toTimezone(allStats.value[0]?.start_time, 'MMM D'),
-        end: toTimezone(allStats.value[allStats.value.length - 1]?.start_time, 'MMM D')
-    }
-})
+        start: toTimezone(allStats.value[0]?.start_time, "MMM D"),
+        end: toTimezone(
+            allStats.value[allStats.value.length - 1]?.start_time,
+            "MMM D"
+        ),
+    };
+});
 
 const isCumulative = CUMULATIVE_CHART_STATS.includes(props.type);
 const showCumulative = ref(isCumulative);
@@ -279,9 +286,13 @@ const onCompareClick = () => {
 };
 
 const totalTile = computed(() =>
-    Number(cleanStatValue(
-        getCumulativeStat(allStats.value, props.type), props.type, 0 
-    ))
+    Number(
+        cleanStatValue(
+            getCumulativeStat(allStats.value, props.type),
+            props.type,
+            0
+        )
+    )
 );
 
 const tile = ref(null);

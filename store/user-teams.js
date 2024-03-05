@@ -3,6 +3,7 @@ import { useStorage } from "@vueuse/core";
 import { useNotificationStore } from "@/store/notification";
 import Team from '@/store/models/team'
 import Rink from '@/store/models/rink'
+import TeamPlayer from '@/store/models/team-player'
 
 export const useUserTeamStore = defineStore("user-teams", {
     state: () => {
@@ -74,19 +75,24 @@ export const useUserTeamStore = defineStore("user-teams", {
                 return [...all, current.rink]
             }, []))
 
-            useRepo(Team).save(data.map((t) => {
-                return    {
+            data.forEach((t) => {
+                useRepo(Team).save({
                     id: t.id,
                     name: t.name,
                     avatar_url: t.avatar_url,
                     rink_id: t.rink?.id,
-                }
+                })
+                useRepo(TeamPlayer).save({
+                    team_id: t.id,
+                    player_id: userId.value
+                })
             }
          
 
 
           
-            ))
+            )
+            
           
 
 
