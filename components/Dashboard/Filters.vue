@@ -117,8 +117,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row align-center justify-between full-width filter-row">
-                <div class="row items-center">
+ <transition appear enter-active-class="animated slideInLeft" leave-active-class="animated slideOutRight" mode="out-in">
+            <div class="row align-center justify-between full-width filter-row" v-if="selectedRink">
+                <div class="row items-center" >
                     <Button flat color="mint" dense @click="sheetFilterClick">
                         <Rings
                             size="1.4em"
@@ -144,6 +145,7 @@
                     />
                 </div>
             </div>
+ </transition>
             <div class="row align-center justify-between full-width filter-row">
                 <div class="row items-center">
                     <Button flat color="mint" dense @click="onTimeRangeClick">

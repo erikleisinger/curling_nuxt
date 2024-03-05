@@ -18,7 +18,9 @@
                 style="white-space: nowrap"
                 :data-flip-id="valueFlipId"
             >
-                  <slot name="value"/>
+                  <slot name="value">
+                       <DashboardStatValue :isPercent="isPercent" :value="props.stats[props.type].percent" />
+                  </slot>
                
             </h2>
         </header>
@@ -48,7 +50,7 @@
                 </div>
                 <q-knob
                     show-value
-                    :model-value="percent"
+                    :model-value="knobValue"
                     size="150px"
                     :thickness="0.15"
                     :angle="70"
@@ -64,17 +66,34 @@
                             :data-flip-id="valueFlipId"
                             :class="valueFlipId"
                         >
-                        <slot name="value"/>
+                        <slot name="value">
+                             <DashboardStatValue :isPercent="isPercent" :value="props.stats[props.type].percent" />
+                        </slot>
                         </h2>
                     </div>
                 </q-knob>
             </div>
             <div>
-                <slot name="stat-expanded" />
+                <slot name="stat-expanded" >
+                     <DashboardLineChartHandler
+                :type="type"
+                :cumulative="true"
+                :stats="stats"
+            />
+                </slot>
             </div>
         </header>
-        <slot name="stat" v-if="!expanded" />
+        <slot name="stat" v-if="!expanded" >
+             <DashboardLineChartPreview :type="type" :stats="stats" />
+        </slot>
         <slot />
+
+           <div class="details__container" v-if="expanded">
+            <div class="stat-expanded__container">
+                <slot name="expanded"/>
+            </div>
+
+           </div>
     </div>
 </template>
 <style lang="scss" scoped>
@@ -165,28 +184,36 @@ $min-height: min(175px, calc(50% - 12px));
         font-family: $font-family-secondary;
         @include text-caption;
         line-height: 1;
-        // color: rgba(255,255,255,0.8);
         margin-top: var(--space-lg);
         position: relative;
         font-style: italic;
     }
 }
+
+.details__container {
+    margin-top: var(--space-lg);
+}
+.stat-expanded__container {
+    width: 100%;
+}
 </style>
 <script setup>
+import {STAT_COLORS,STAT_NAMES, NON_PERCENT_STATS} from '@/constants/stats'
 const props = defineProps({
-    color: String,
     expanded: Boolean,
-    name: String,
     percent: {
-        type: Number,
+        type: [Number, String],
         default: 0,
     },
+    stats: Object,
+    type: String,
 });
 
 const emit = defineEmits(["close"]);
 
 const $q = useQuasar();
 
+const name = STAT_NAMES[props.type]
 
 /**
  * Unique selectors for each tile
@@ -195,4 +222,12 @@ const $q = useQuasar();
 const {generateUniqueId} = useUniqueId();
 const headerFlipId = generateUniqueId('tile-header');
 const valueFlipId = generateUniqueId('tile-value')
+
+const {getColor} = useColor();
+const color = getColor(STAT_COLORS[props.type])
+
+const isPercent = !NON_PERCENT_STATS.includes(props.type);
+
+const knobValue = isPercent ? props.percent : 100
+
 </script>

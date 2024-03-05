@@ -1,15 +1,10 @@
-import {calcWins, calcHammerEfficiency, calcStealEfficiency,  formatPercent} from '@/store/models/stats/utils'
+import {calcWins, calcHammerEfficiency, calcStealEfficiency,  formatPercent, cleanNumber, sortByStartTime} from '@/store/models/stats/utils'
 import {getColor} from '@/utils/color'
 import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 
 export class Wins {
-    constructor(stats, sort = true) {
-        this.stats = stats.sort((a,b) => {
-            if (!sort) return 1;
-            const aDate = new Date(a.start_time);
-            const bDate = new Date(b.start_time);
-            return aDate - bDate;
-        });
+    constructor(stats, filterFunc = () => true) {
+        this.stats = stats.filter(filterFunc)
     }
 
     get percent() {
@@ -19,18 +14,21 @@ export class Wins {
     get yellow() {
         const gamesPlayed = this.stats?.length;
         const winsYellow = this.stats.filter(({win, color}) => !!win && color === 'yellow');
+        if (!winsYellow?.length) return '-'
         return formatPercent(winsYellow?.length / gamesPlayed);
     }
 
     get red() {
         const gamesPlayed = this.stats?.length;
         const winsRed = this.stats.filter(({win, color}) => !!win && color === 'red');
+        if (!winsRed?.length) return '-'
         return formatPercent(winsRed?.length / gamesPlayed);
     }
 
     get blue() {
         const gamesPlayed = this.stats?.length;
         const winsBlue = this.stats.filter(({win, color}) => !!win && color === 'blue');
+        if (!winsBlue?.length) return '-'
         return formatPercent(winsBlue?.length / gamesPlayed);
     }
 
@@ -41,13 +39,13 @@ export class Wins {
     get hammerEfficiency () {
        const ordered = this.stats.filter(({win, tie}) => !!win && !tie).map((stat) => calcHammerEfficiency([stat])).sort((a,b) => a-b);
        const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-       return median;
+       return cleanNumber(median);
     }
 
     get lossHammerEfficiency () {
         const ordered = this.stats.filter(({win, tie}) => !win && !tie).map((stat) => calcHammerEfficiency([stat])).sort((a,b) => a-b);
         const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-        return median;
+        return cleanNumber(median);
     }
 
     get lowestWinningHammerEfficiency () {
@@ -59,7 +57,8 @@ export class Wins {
                 lowest = he;
             }
         })
-        return lowest;
+       
+        return formatPercent(lowest);
     }
 
     get highestLosingHammerEfficiency () {
@@ -69,7 +68,7 @@ export class Wins {
             const he = calcHammerEfficiency([stat]);
             if (he > highest) highest = he;
         })
-        return highest;
+        return formatPercent(highest);
     }
 
 
@@ -81,14 +80,13 @@ export class Wins {
     get stealEfficiency () {
         const ordered = this.stats.filter(({win, tie}) => !!win && !tie).map((stat) => calcStealEfficiency([stat])).sort((a,b) => a-b);
        const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-       return median;
+       return cleanNumber(median);
     }
 
     get lossStealEfficiency() {
         const ordered = this.stats.filter(({win, tie}) => !win && !tie).map((stat) => calcStealEfficiency([stat])).sort((a,b) => a-b);
-        console.log(ordered)
         const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-        return median;
+        return cleanNumber(median);
     }
 
     byEnd ({
@@ -142,7 +140,11 @@ export class Wins {
         })
 
 
-        return calcWins(stats)
+        return {
+            value: calcWins(stats),
+            count: stats.length,
+            totalCount: this.stats.length
+        }
     }
 
     chartPoints(cumulative = true) {
@@ -157,7 +159,7 @@ export class Wins {
         }
 
         return {
-            points: allStats,
+            points: allStats.sort(sortByStartTime),
             color: getColor(STAT_COLORS[STAT_TYPES.WINS]),
             label: STAT_NAMES[STAT_TYPES.WINS]
         }

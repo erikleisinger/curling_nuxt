@@ -1,6 +1,8 @@
 <template>
     <div class="badge__content--container">
+          <div class="grey__overlay" v-if="!badge.earned"/>
         <div class="badge-overlay--container">
+          
             <slot />
         </div>
         <div
@@ -540,7 +542,22 @@ $icon-height: 4em;
         margin: auto;
 
         width: calc(100% - 6px);
+   
     }
+         .grey__overlay {
+            position: absolute;
+        overflow: hidden;
+
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        
+        z-index: 2;
+        backdrop-filter: grayscale(1);
+
+        }
     .badge-icon__container {
         height: v-bind(height);
         min-height: 18px;

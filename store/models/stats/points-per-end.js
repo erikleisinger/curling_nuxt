@@ -1,0 +1,60 @@
+import {calcPointsPerEnd, calcPointsWithHammer, calcPointsWithoutHammer} from '@/store/models/stats/utils'
+import {getColor} from '@/utils/color'
+import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
+
+export class PointsPerEnd {
+    constructor(stats) {
+        this.stats = stats
+    }
+
+    get percent() {
+        return calcPointsPerEnd(this.stats)
+    }
+
+    get withHammer() {
+        
+        return calcPointsWithHammer(this.stats)
+    }
+
+    get withoutHammer() {
+        return calcPointsWithoutHammer(this.stats)
+    }
+
+    get yellow() {
+            return calcPointsPerEnd(this.stats.filter(({color}) => color === 'yellow'))
+    }
+
+    get red() {
+        return calcPointsPerEnd(this.stats.filter(({color}) => color === 'red'))
+    }
+
+    get blue() {
+        return calcPointsPerEnd(this.stats.filter(({color}) => color === 'blue'))
+    }
+
+    get seasonHigh () {
+        return Math.max(...this.stats.map((stat) => calcPointsPerEnd([stat])))
+    }
+
+    get seasonLow() {
+        return Math.min(...this.stats.map((stat) => calcPointsPerEnd([stat])))
+    }
+
+    chartPoints(cumulative = false) {
+        let allStats = []
+        if (cumulative) {
+            allStats = this.stats.reduce((all, current, index) => {
+                return [...all, calcPointsPerEnd([...this.stats.slice(0, index), current])]
+            }, [])
+        } else {
+            allStats = this.stats.map((stat) => calcPointsPerEnd([stat]))
+        }
+        return {
+            points: allStats,
+            color: getColor(STAT_COLORS[STAT_TYPES.POINTS_PER_END]),
+            label: STAT_NAMES[STAT_TYPES.POINTS_PER_END]
+        }
+        
+    }
+}
+

@@ -1,17 +1,22 @@
-import {calcHammerEfficiency} from '@/store/models/stats/utils'
+import {calcHammerEfficiency, sortByStartTime} from '@/store/models/stats/utils'
 import {getColor} from '@/utils/color'
 import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 
 export class HammerEfficiency {
-    constructor(stats, sort = true) {
-        this.stats = stats.sort((a,b) => {
-            if (!sort) return 1;
-            return a.start_time - b.start_time
-        });
+    constructor(stats) {
+        this.stats = stats
     }
 
     get percent() {
         return calcHammerEfficiency(this.stats)
+    }
+
+    get seasonHigh () {
+        return Math.max(...this.stats.map((stat) => calcHammerEfficiency([stat])))
+    }
+
+    get seasonLow() {
+        return Math.min(...this.stats.map((stat) => calcHammerEfficiency([stat])))
     }
 
     chartPoints(cumulative = false) {
@@ -24,7 +29,7 @@ export class HammerEfficiency {
             allStats = this.stats.map((stat) => calcHammerEfficiency([stat]))
         }
         return {
-            points: allStats,
+            points: allStats.sort(sortByStartTime),
             color: getColor(STAT_COLORS[STAT_TYPES.HAMMER_EFFICIENCY]),
             label: STAT_NAMES[STAT_TYPES.HAMMER_EFFICIENCY]
         }
