@@ -64,7 +64,6 @@ const {
     queryKey: ["game", props.gameId],
     queryFn: () => getGame(props.gameId),
     select: (val) => {
-        console.log('got game: ', val)
         gameLoaded.value = true;
         return val;
     },

@@ -1,108 +1,114 @@
 <template>
-<div>
-    <div class="underlay" v-if="$q.screen.xs && open"/>
-    <div
-        class="nav-drawer"
-        :class="{ open, mobile: $q.screen.xs }"
-        ref="drawer"
-        @click="onDrawerClick"
-    >
-
+    <div>
+        <div class="underlay" v-if="$q.screen.xs && open" />
         <div
-            :style="{ opacity: open || !$q.screen.xs ? 1 : 0 }"
-            class="nav-drawer--content"
+            class="nav-drawer"
+            :class="{ open, mobile: $q.screen.xs }"
+            ref="drawer"
+            @click="onDrawerClick"
         >
-            <div class="row items-center no-wrap">
-                <div
-                    style="width: 50px"
-                    class="clickable"
-                    id="nav-drawer-player-avatar"
-                    @click="navigateTo(`/player/${user?.id}`)"
-                >
-                    <Avataaar v-bind="parseAvatar(user?.avatar)" svgId="global-drawer-user-avatar"/>
-                </div>
-                <div class="q-ml-md q-pt-xs" style="max-width: 68%">
+            <div
+                :style="{ opacity: open || !$q.screen.xs ? 1 : 0 }"
+                class="nav-drawer--content"
+            >
+                <div class="row items-center no-wrap">
                     <div
-                        class="smmd-text text-bold font-header player-name__text"
+                        style="width: 50px"
+                        class="clickable"
+                        id="nav-drawer-player-avatar"
+                        @click.stop="goTo(`/player/${user?.id}`)"
                     >
-                        {{ user?.first_name }} {{ user?.last_name }}
-                    </div>
-                    <div class="row items-center no-wrap">
-                        <q-icon
-                            color="red"
-                            name="location_on"
-                            size="1.1em"
-                            class="q-mr-xs"
+                        <Avataaar
+                            v-bind="parseAvatar(user?.avatar)"
+                            svgId="global-drawer-user-avatar"
                         />
+                    </div>
+                    <div class="q-ml-md q-pt-xs" style="max-width: 68%">
                         <div
-                            class="text-caption"
-                            style="line-height: 1; margin-top: 2px"
+                            class="smmd-text text-bold font-header player-name__text"
                         >
-                            {{ rink?.name ?? 'No home rink' }}
+                            {{ user?.first_name }} {{ user?.last_name }}
+                        </div>
+                        <div class="row items-center no-wrap">
+                            <q-icon
+                                color="red"
+                                name="location_on"
+                                size="1.1em"
+                                class="q-mr-xs"
+                            />
+                            <div
+                                class="text-caption"
+                                style="line-height: 1; margin-top: 2px"
+                            >
+                                {{ rink?.name ?? "No home rink" }}
+                            </div>
                         </div>
                     </div>
                 </div>
+                <q-separator
+                    v-show="true"
+                    size="3px"
+                    class="separator q-mt-md"
+                    :style="{ opacity: open ? 1 : 0 }"
+                />
+                <q-list class="nav-drawer__list">
+                    <q-item clickable v-ripple class="list-item" @click.stop="goTo('/')" :disable="route.path === '/'">
+                        <q-item-section avatar class="items-center">
+                            <q-icon name="insights" size="2.1em" />
+                        </q-item-section>
+                        <q-item-section class="q-ml-md">
+                            <q-item-label>Dashboard</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                    <q-item
+                        clickable
+                        v-ripple
+                        class="row items-center no-wrap list-item"
+                        :style="{ width: open ? '' : 'fit-content' }"
+                        v-for="team in userTeams"
+                        :key="team.id"
+                        @click.stop="goTo(`/teams/${team.id}`)"
+                        :disable="route.path === `/teams/${team.id}`"
+                    >
+                        <q-item-section avatar>
+                            <div
+                                style="width: 40px; min-width: 40px"
+                                class="clickable"
+                            >
+                                <TeamAvatar
+                                    :teamId="team.id"
+                                    :disableMenu="true"
+                                />
+                            </div>
+                        </q-item-section>
+                        <q-item-section class="q-ml-md">
+                            <q-item-label>
+                                {{ team.name }}
+                            </q-item-label>
+                            <q-item-label
+                                caption
+                                v-if="
+                                    requests.some(
+                                        ({ team_id }) => team_id === team.id
+                                    )
+                                "
+                            >
+                                Requested
+                            </q-item-label>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+                <q-list v-if="open" class="q-mt-xl">
+                    <q-item clickable v-ripple @click="logout">
+                        <q-item-section avatar>
+                            <q-icon name="logout" />
+                        </q-item-section>
+                        <q-item-section> Logout </q-item-section>
+                    </q-item>
+                </q-list>
             </div>
-            <q-separator
-                v-show="true"
-                size="3px"
-                class="separator q-mt-md"
-                :style="{ opacity: open ? 1 : 0 }"
-            />
-            <q-list class="nav-drawer__list">
-                <q-item clickable v-ripple class="list-item">
- <q-item-section avatar class="items-center">
-    <q-icon name="insights" size="2.1em"/>
- </q-item-section>
-   <q-item-section class="q-ml-md">
-    <q-item-label>Dashboard</q-item-label>
-   </q-item-section>
-                </q-item>
-                <q-item
-                    clickable
-                    v-ripple
-                    class="row items-center no-wrap list-item"
-                    :style="{ width: open ? '' : 'fit-content' }"
-                    v-for="team in userTeams"
-                    :key="team.id"
-                    @click="navigateTo(`/teams/${team.id}`)"
-                >
-                    <q-item-section avatar >
-                        <div
-                            style="width: 40px; min-width: 40px"
-                            class="clickable"
-                        >
-                            <TeamAvatar :teamId="team.id" :disableMenu="true" />
-                        </div>
-                    </q-item-section>
-                    <q-item-section class="q-ml-md">
-                        <q-item-label>
-                            {{ team.name }}
-                        </q-item-label>
-                        <q-item-label
-                            caption
-                            v-if="
-                                requests.some(
-                                    ({ team_id }) => team_id === team.id
-                                )
-                            "
-                        >
-                            Requested
-                        </q-item-label>
-                    </q-item-section>
-                </q-item>
-            </q-list>
-            <q-list v-if="open" class="q-mt-xl">
-                <q-item clickable v-ripple @click="logout">
-                    <q-item-section avatar>
-                        <q-icon name="logout" />
-                    </q-item-section>
-                    <q-item-section> Logout </q-item-section>
-                </q-item>
-            </q-list>
         </div>
     </div>
-</div>
 </template>
 <style lang="scss" scoped>
 .player-name__text {
@@ -116,7 +122,6 @@
     top: 0;
     width: 80px;
     transition: width 0.2s;
-
 
     padding-top: calc(4em + var(--space-sm));
     color: white;
@@ -169,6 +174,11 @@
                 font-style: italic;
             }
         }
+
+        &.disabled {
+            opacity: 1!important;
+            color: $app-mint;
+        }
     }
     .nav-drawer__list {
         margin-top: var(--space-sm);
@@ -200,25 +210,23 @@
             line-height: 40px;
         }
     }
-
- 
 }
-   .underlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        pointer-events: all;
-        background-color: rgba(0,0,0,0.4);
-        z-index: 12;
-    }
+.underlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: all;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 12;
+}
 </style>
 <script setup>
 import { onClickOutside, useSwipe } from "@vueuse/core";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useTeamRequestStore } from "@/store/team-requests";
-import {useSessionStore} from '@/store/session'
+import { useSessionStore } from "@/store/session";
 import Rink from "@/store/models/rink";
 import { parseAvatar } from "@/utils/avatar";
 import { useQuery } from "@tanstack/vue-query";
@@ -250,7 +258,7 @@ const doLogout = () => {
 
 const { user: userId } = useUser();
 const user = computed(() => useRepo(Player).where("id", userId.value).first());
-const {userTeamIds} = useTeam();
+const { userTeamIds } = useTeam();
 const userTeams = computed(() =>
     userTeamIds.value
         .map((id) => useRepo(Team).where("id", id).first())
@@ -297,61 +305,15 @@ const onDrawerClick = () => {
 };
 
 watch(open, (val) => {
-    useSessionStore().toggleDrawer(val)
-})
-
-// LEAGUES -- FOR LATER
-
-// const getAbbrev = (name) => {
-//     const words = name.split(' ').map((w) => w.substring(0,1).toUpperCase())
-//     if (words.length < 4) {
-//         return words.join('')
-//     }
-
-//     return `${words[0]}${words[words.length - 1]}`
-
-// }
-
-// const getUserLeagues = async () => {
-//     const client = useSupabaseClient();
-
-//     const { data } = await client
-//         .from("league_teams")
-//         .select(
-//             `
-//             team_id,
-//             league:league_id (
-//                 id,
-//                 name,
-//                 color,
-//                 font_color,
-//                 icon,
-//                 rink:rink_id (
-//                     id,
-//                     name,
-//                     city,
-//                     province,
-//                     sheets
-//                 )
-//             )
-//         `
-//         )
-//         .in(
-//             "team_id",
-//             userTeams.value.map(({ id }) => id)
-//         );
-
-//     return data.reduce((all, current) => {
-//         if (all.some(({league}) => league.id === current.league?.id)) return all;
-//         return [...all, current]
-//     }, []).map(({league}) => ({
-//         ...league
-//     }))
-// };
-
-// const {isLoading: isLoadingLeagues, data: leagues} = useQuery({
-//     queryKey: ['user', 'leagues', userId.value],
-//     queryFn: getUserLeagues,
-//     refetchOnWindowFocus: false,
-// })
+    useSessionStore().toggleDrawer(val);
+});
+const { setLoading } = useLoading();
+const goTo = (path) => {
+    setLoading(true)
+    open.value = false;
+    setTimeout(() => {
+ return navigateTo(path)
+    }, 250)
+   
+}
 </script>
