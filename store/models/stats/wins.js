@@ -40,21 +40,9 @@ export class Wins {
         return this.blueGames.length;
     }
 
-    /**
-     * hammer efficiency
-     */
 
-    get hammerEfficiency () {
-       const ordered = this.stats.filter(({win, tie}) => !!win && !tie).map((stat) => calcHammerEfficiency([stat])).sort((a,b) => a-b);
-       const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-       return cleanNumber(median);
-    }
 
-    get lossHammerEfficiency () {
-        const ordered = this.stats.filter(({win, tie}) => !win && !tie).map((stat) => calcHammerEfficiency([stat])).sort((a,b) => a-b);
-        const median = ordered.length % 2 === 0 ? (ordered[ordered.length / 2] + ordered[ordered.length / 2 - 1]) / 2 : ordered[Math.floor(ordered.length / 2)];
-        return cleanNumber(median);
-    }
+ 
 
     get lowestWinningHammerEfficiency () {
         let lowest = 100;
