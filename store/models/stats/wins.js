@@ -4,7 +4,12 @@ import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 
 export class Wins {
     constructor(stats, filterFunc = () => true) {
-        this.stats = stats.filter(filterFunc)
+    
+        this.stats = stats.filter(filterFunc);
+        this.yellowGames = stats.filter(({color}) => color === 'yellow');
+        this.blueGames = stats.filter(({color}) => color === 'blue');
+        this.redGames = stats.filter(({color}) => color === 'red')
+       
     }
 
     get percent() {
@@ -12,24 +17,27 @@ export class Wins {
     }
 
     get yellow() {
-        const gamesPlayed = this.stats?.length;
-        const winsYellow = this.stats.filter(({win, color}) => !!win && color === 'yellow');
-        if (!winsYellow?.length) return '-'
-        return formatPercent(winsYellow?.length / gamesPlayed);
+        return calcWins(this.yellowGames);
     }
 
     get red() {
-        const gamesPlayed = this.stats?.length;
-        const winsRed = this.stats.filter(({win, color}) => !!win && color === 'red');
-        if (!winsRed?.length) return '-'
-        return formatPercent(winsRed?.length / gamesPlayed);
+        return calcWins(this.redGames);
     }
 
     get blue() {
-        const gamesPlayed = this.stats?.length;
-        const winsBlue = this.stats.filter(({win, color}) => !!win && color === 'blue');
-        if (!winsBlue?.length) return '-'
-        return formatPercent(winsBlue?.length / gamesPlayed);
+        return calcWins(this.blueGames);
+    }
+
+    get yellowGameCount() {
+        return this.yellowGames.length;
+    }
+
+    get redGameCount() {
+        return this.redGames.length;
+    }
+
+    get blueGameCount() {
+        return this.blueGames.length;
     }
 
     /**

@@ -4,7 +4,8 @@ import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 
 export class PointsPerEnd {
     constructor(stats) {
-        this.stats = stats
+        this.stats = stats;
+
     }
 
     get percent() {
@@ -20,17 +21,6 @@ export class PointsPerEnd {
         return calcPointsWithoutHammer(this.stats)
     }
 
-    get yellow() {
-            return calcPointsPerEnd(this.stats.filter(({color}) => color === 'yellow'))
-    }
-
-    get red() {
-        return calcPointsPerEnd(this.stats.filter(({color}) => color === 'red'))
-    }
-
-    get blue() {
-        return calcPointsPerEnd(this.stats.filter(({color}) => color === 'blue'))
-    }
 
     get seasonHigh () {
         return Math.max(...this.stats.map((stat) => calcPointsPerEnd([stat])))

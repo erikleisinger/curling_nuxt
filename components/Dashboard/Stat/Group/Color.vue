@@ -9,6 +9,7 @@
                         />
                     </template>
                     <template v-slot:title>Yellow rocks</template>
+                    <template v-slot:subtitle>{{stats[type].yellowGameCount}}/{{stats.gamesPlayed}} games</template>
                     <template v-slot:value>
                         <DashboardStatValue :isPercent="isPercent" :diff="stats[type].yellow - average" :value="stats[type].yellow"/>
                     </template>
@@ -23,6 +24,7 @@
                         />
                     </template>
                     <template v-slot:title>Blue rocks</template>
+                         <template v-slot:subtitle>{{stats[type].blueGameCount}}/{{stats.gamesPlayed}} games</template>
                     <template v-slot:value>
                         <DashboardStatValue :isPercent="isPercent" :diff="stats[type].blue - average" :value="stats[type].blue"/>
                     </template>
@@ -37,6 +39,7 @@
                         />
                     </template>
                     <template v-slot:title>Red rocks</template>
+                         <template v-slot:subtitle>{{stats[type].redGameCount}}/{{stats.gamesPlayed}} games</template>
                     <template v-slot:value>
                         <DashboardStatValue :isPercent="isPercent" :diff="stats[type].red -average" :value="stats[type].red"/>
                     </template>

@@ -47,12 +47,6 @@
 
                 <q-separator class="separator"/>
                 
-                <DashboardStatGroupColor
-                    :stats="stats"
-                    :type="STAT_TYPES.POINTS_PER_END"
-                />
-
-    <q-separator class="separator"/>
 
                  <DashboardStatDetailsItemTemplate>
                     <template v-slot:icon>

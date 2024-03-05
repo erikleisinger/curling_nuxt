@@ -14,7 +14,9 @@ export class Stats {
         this[STAT_TYPES.POINTS_PER_END] = new PointsPerEnd(stats)
         this[STAT_TYPES.STEAL_EFFICIENCY] = new StealEfficiency(stats)
         this[STAT_TYPES.FORCE_EFFICIENCY] = new ForceEfficiency(stats)
-        this[STAT_TYPES.STEAL_DEFENSE] = new StealDefense(stats)
+        this[STAT_TYPES.STEAL_DEFENSE] = new StealDefense(stats);
+      
+ 
     }
 
 }
