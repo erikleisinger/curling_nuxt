@@ -431,7 +431,6 @@ export const useTeamStore = defineStore("team", {
                 });
     
                 const [updates] = data;
-                console.log('store upload done')
                 return updates;
             }
         },

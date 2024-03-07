@@ -74,6 +74,12 @@ export default defineNuxtConfig({
     image: {
         inject: true,
     },
+    runtimeConfig: {
+        public: {
+            SUPABASE_KEY: process.env.SUPABASE_KEY,
+            SUPABASE_URL: process.env.SUPABASE_URL
+        },
+    },
     ssr: false,
     supabase: {
         url: process.env.SUPABASE_URL,

@@ -140,7 +140,7 @@ import {useElementSize, useElementBounding} from '@vueuse/core'
 const props = defineProps<{
     backgroundImage?: string;
     minHeight?: string;
-    title: string;
+    title?: string | null;
 }>();
 const emit = defineEmits(["loaded"]);
 

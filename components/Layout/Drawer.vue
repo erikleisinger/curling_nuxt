@@ -18,9 +18,9 @@
                         id="nav-drawer-player-avatar"
                         @click.stop="goTo(`/player/${user?.id}`)"
                     >
-                        <Avataaar
-                            v-bind="parseAvatar(user?.avatar)"
-                            svgId="global-drawer-user-avatar"
+                        <AvataaarPlayer
+                        v-if="user?.id"
+                            :playerId="user?.id"
                         />
                     </div>
                     <div class="q-ml-md q-pt-xs" style="max-width: 68%">
@@ -230,7 +230,7 @@ import { useSessionStore } from "@/store/session";
 import Rink from "@/store/models/rink";
 import { parseAvatar } from "@/utils/avatar";
 import { useQuery } from "@tanstack/vue-query";
-import Player from "@/store/models/player";
+    import Player from "@/store/models/player";
 import Team from "@/store/models/team";
 const props = defineProps({
     modelValue: Boolean,

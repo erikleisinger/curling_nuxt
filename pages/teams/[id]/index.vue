@@ -3,56 +3,22 @@
 
 </template>
 <script setup>
-import Team from '@/store/models/team';
-import Player from '@/store/models/player';
-import TeamPlayer from '@/store/models/team-player';
-import Rink from '@/store/models/rink'
-import { useQuery} from '@tanstack/vue-query'
+import getTeam from '@/business/api/fetch/getTeam'
 
 const route = useRoute();
 const teamId = Number(route.params.id)
 
-const getTeam = async () => {
-    const client = useSupabaseClient();
-    const {data} = await client.from('teams').select(`
-        id,
-        name,
-        avatar_url,
-        rink:rink_id (
-            id,
-            name,
-            city,
-            province,
-            sheets
-        )
-        `).eq('id', teamId)
-
-    data.forEach((team) => {
-        const {rink} = team;
-        useRepo(Team).save(team);
-        if (rink) useRepo(Rink).save(rink)
-    })
-
-
-    
-    return data;
-}
-
-const enabled = computed(() => !Number.isNaN(teamId))
-
-
 const {setLoading} = useLoading();
+const {$api} = useNuxtApp();
 
-const {isLoading} = useQuery({
-    queryKey: ['team', 'full', Number(route.params.id)],
-    queryFn: getTeam,
-    refetchOnWindowFocus: false,
-    keepPreviousData: true,
-    enabled,
+const enabled = !!route.params.id && route.params.id !== 'create'
+
+const {isLoading} = $api.getTeam(route.params.id, {
     select: (val) => {
-        setLoading(false)
+        setLoading(false);
         return val;
-    }
+    },
+    enabled
 })
 
 </script>

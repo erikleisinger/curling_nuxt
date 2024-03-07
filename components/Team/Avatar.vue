@@ -191,7 +191,6 @@
 </style>
 <script setup>
 import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
-import { useQuery} from '@tanstack/vue-query'
 
 
 
@@ -238,16 +237,15 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-const {getTeamAvatar} = useAvatar();
 
 
 
 const avatar_url = computed(() => team.value.avatar_url)
 const {teamId} = toRefs(props)
 
-const { isLoading,  data: avatarUrl, refetch } =  getTeamAvatar(teamId.value, {
-    // enabled,
-})
+const {$api} = useNuxtApp();
+
+const { isLoading,  data: avatarUrl } =  $api.getTeamAvatar(teamId.value)
 
 const avatar = ref(null);
 const loaded = ref(true);

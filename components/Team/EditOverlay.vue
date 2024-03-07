@@ -20,14 +20,16 @@
                         rounded
                         outlined
                         bg-color="white"
-                        v-model="editedName"
-                        :rules="[VALIDATION_RULES.MAX_LENGTH(MAX_NAME_LENGTH), VALIDATION_RULES.REQUIRED]"
+                        v-model="editedTeam.name"
+                        :rules="[
+                            VALIDATION_RULES.MAX_LENGTH(MAX_NAME_LENGTH),
+                            VALIDATION_RULES.REQUIRED,
+                        ]"
                         ref="nameInput"
                         placeholder="Team name"
                     >
                         <template v-slot:after>
                             <Button
-                                
                                 round
                                 icon="check"
                                 size="14px"
@@ -42,15 +44,17 @@
         </div>
         <div class="help__container" v-else>
             <div class="help__header row justify-between items-center">
-                <h3>{{isCreating ? 'Create new' : 'Edit'}} team</h3>
+                <h3>{{ isCreating ? "Create new" : "Edit" }} team</h3>
                 <q-btn flat round icon="more_vert" color="white" dense>
                     <q-menu>
                         <q-list separator>
-                            <q-item @click="deleteConfirmationOpen = true" clickable v-ripple>
+                            <q-item
+                                @click="deleteConfirmationOpen = true"
+                                clickable
+                                v-ripple
+                            >
                                 <q-item-section no-wrap>
-                                    <q-item-label>
-                                    Delete team
-                                    </q-item-label>
+                                    <q-item-label> Delete team </q-item-label>
                                 </q-item-section>
                             </q-item>
                         </q-list>
@@ -64,7 +68,9 @@
             >
                 <q-icon
                     :name="
-                        editedName ? 'check_circle' : 'radio_button_unchecked'
+                        editedTeam?.name
+                            ? 'check_circle'
+                            : 'radio_button_unchecked'
                     "
                     size="1.1em"
                 />
@@ -76,7 +82,9 @@
             >
                 <q-icon
                     :name="
-                        editedAvatar?.file || (editedAvatar?.url && editedAvatar?.url !== defaultAvatar)
+                        editedTeam.avatar?.file ||
+                        (editedTeam.avatar?.url &&
+                            editedTeam.avatar?.url !== defaultAvatar)
                             ? 'check_circle'
                             : 'radio_button_unchecked'
                     "
@@ -95,26 +103,41 @@
             >
                 <q-icon
                     :name="
-                        editedRink?.id ? 'check_circle' : 'radio_button_unchecked'
+                        editedTeam?.rink?.id
+                            ? 'check_circle'
+                            : 'radio_button_unchecked'
                     "
                     size="1.1em"
                 />
                 <div>Set team rink</div>
             </div>
-       
+
             <div class="row justify-between items-center q-pa-sm help__footer">
-                <Button color="white" text-color="slate" @click="close"
+                <Button
+                    color="white"
+                    text-color="slate"
+                    @click="close"
+                    :disabled="saving"
                     >Cancel</Button
                 >
-                <Button color="mint" @click="save" :disable="saveDisabled">Save</Button>
+                <Button
+                    color="mint"
+                    @click="save"
+                    :disable="saveDisabled || saving"
+                    :loading="saving"
+                    >Save</Button
+                >
             </div>
         </div>
-        <TeamDelete :teamId="teamId" @close="deleteConfirmationOpen = false" v-if="!isCreating && deleteConfirmationOpen"/>
+        <TeamDelete
+            :teamId="teamId"
+            @close="deleteConfirmationOpen = false"
+            v-if="!isCreating && deleteConfirmationOpen"
+        />
     </div>
 </template>
 <style lang="scss" scoped>
 .edit__container {
-    // position: absolute;
     left: 0;
     right: 0;
 
@@ -199,70 +222,45 @@
         }
     }
     .delete--container {
-         pointer-events: all;
-            margin: var(--space-xs);
-            padding: var(--space-xs);
+        pointer-events: all;
+        margin: var(--space-xs);
+        padding: var(--space-xs);
     }
 }
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import {VALIDATION_RULES} from '@/constants/validation'
+import { VALIDATION_RULES } from "@/constants/validation";
 import { useTeamStore } from "@/store/teams";
-import {useUserTeamStore} from '@/store/user-teams'
+import { useUserTeamStore } from "@/store/user-teams";
 import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
 const MAX_NAME_LENGTH = 25;
 const nameInput = ref(null);
-const nameError = computed(() => nameInput.value?.hasError)
-const {defaultAvatar} = useAvatar();
+const nameError = computed(() => nameInput.value?.hasError);
+const { defaultAvatar } = useAvatar();
 
 const props = defineProps({
-    name: String,
-    avatar: Object,
-    rink: Object,
     teamId: Number,
 });
 
-const isCreating = computed(() => Number.isNaN(props.teamId))
+const isCreating = computed(() => Number.isNaN(props.teamId));
 
 const { getColor } = useColor();
 
-const emit = defineEmits([
-    "close",
-    "update:avatar",
-    "update:name",
-    "update:rink",
-]);
+const emit = defineEmits(["close"]);
 
 const editingName = ref(false);
 
-const editedName = computed({
-    get() {
-        return props.name;
-    },
-    set(val) {
-        emit("update:name", val);
-    },
-});
-const editedAvatar = ref(null);
-const editedRink = computed({
-    get() {
-        return props.rink;
-    },
-    set(val) {
-        emit("update:rink", val);
-    },
-});
+const { editedTeam, init, toggleEditing } = useEditTeam();
 
 const setNewAvatar = (file) => {
     const { file: img, path } = file;
-    editedAvatar.value = {
+    editedTeam.value.avatar = {
         file: img,
         url: window.URL.createObjectURL(img),
         path,
     };
-    emit("update:avatar", editedAvatar.value);
 };
 
 const searchRink = () => {
@@ -272,85 +270,44 @@ const searchRink = () => {
             resourceTypes: ["rink"],
             inputLabel: "Search for a home rink",
             callback: (val) => {
-                editedRink.value = val;
+                editedTeam.value.rink = val;
             },
         },
     });
 };
 
-onMounted(() => {
-    editedAvatar.value = props.avatar;
-});
+const saveDisabled = computed(
+    () => !editedTeam?.value?.name || !editedTeam.value?.rink?.id
+);
 
-const saveDisabled = computed(() => !editedName?.value || !editedRink?.value?.id);
-
+const saving = ref(false);
 const save = async () => {
-    emit("close");
-    const client = useSupabaseClient();
+    saving.value = true;
+    const { $api } = useNuxtApp();
     if (props.teamId) {
-        await client
-            .from("teams")
-            .update({
-                name: editedName.value,
-                rink_id: editedRink.value?.id,
-            })
-            .eq("id", props.teamId);
-
-        if (editedAvatar.value?.file) {
-            await updateAvatar(props.teamId);
-        }
-            refreshTeam();
+        await $api.updateTeam(editedTeam.value);
+        queryClient.invalidateQueries(["team", "full", props.teamId]);
     } else {
-        const { data } = await client
-            .from("teams")
-            .insert({
-                name: editedName.value,
-                rink_id: editedRink?.value?.id,
-            })
-            .select("id")
-            .single();
-
-        const { id: teamId } = data;
-
-        if (editedAvatar.value?.file) {
-            await updateAvatar(teamId);
-        }
-           
-            await useUserTeamStore().fetchUserTeams(true)
-
-            navigateTo(`/teams/${teamId}`)
+        const teamId = await $api.createTeam(editedTeam.value);
+        queryClient.invalidateQueries(["team", "full", props.teamId]);
+        await useUserTeamStore().fetchUserTeams(true);
+        toggleEditing(false);
+        return navigateTo(`/teams/${teamId}`);
     }
-
-
-
-};
-
-const updateAvatar = async (teamId) => {
-    await useTeamStore().uploadAvatarToTeam(
-        editedAvatar.value.path,
-        editedAvatar.value.file,
-        teamId
-    );
+    saving.value = false;
 };
 
 const close = () => {
     if (isCreating.value) {
-        navigateTo('/')
+        navigateTo("/");
     } else {
-refreshTeam();
-    emit("close");
+        toggleEditing(false, true);
     }
-    
 };
 
-const refreshTeam = () => {
-    queryClient.invalidateQueries({
-        queryKey: ["teamavatar", props.teamId],
-    });
-    queryClient.invalidateQueries({
-        queryKey: ["team", "full", props.teamId],
-    });
-};
+const deleteConfirmationOpen = ref(false);
 
-const deleteConfirmationOpen = ref(false)
+onBeforeMount(() => {
+    init(props.teamId);
+});
 </script>

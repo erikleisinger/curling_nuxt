@@ -9,6 +9,8 @@
         :flat="flat"
         :icon="icon"
         :size="size"
+        :loading="loading"
+        :disable="disabled"
         class="app-button"
     >
         <slot />
@@ -26,7 +28,9 @@ const props = defineProps({
         type: String,
         default: "yellow",
     },
+    disabled: Boolean,
     flat: Boolean,
+    loading: Boolean,
     round: Boolean,
     icon: String,
     size: String,

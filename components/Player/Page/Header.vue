@@ -2,7 +2,7 @@
     <header class="player-page__header">
         <section name="avatar" class="avatar__section row items-center">
             <div class="avatar-container" :class="{clickable: canEdit}" @click="onAvatarClick">
-                <Avataaar v-bind="parseAvatar(player?.avatar)" />
+                <AvataaarPlayer :playerId="player.id" v-if="player?.id" />
             </div>
         </section>
         <section
@@ -28,6 +28,7 @@
     .avatar__section {
         justify-content: center;
         .avatar-container {
+            margin-top: var(--space-md);
             width: 125px;
             @include sm {
                 width: 200px;

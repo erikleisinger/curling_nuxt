@@ -43,6 +43,7 @@
     "@pinia-orm/nuxt": "^1.7.0",
     "@pinia/nuxt": "^0.4.11",
     "@quasar/extras": "^1.16.4",
+    "@supabase/supabase-js": "^2.39.7",
     "@tanstack/vue-query": "^4.35.3",
     "@vueuse/components": "^10.2.1",
     "@vueuse/router": "^10.2.1",

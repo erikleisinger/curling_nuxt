@@ -105,7 +105,7 @@ onBeforeMount(async () => {
         route.name !== "gateway"
     ) return navigateTo(`/gateway?redirect=${route.fullPath}`, {replace: true,});
     
-    
+
         
 });
 

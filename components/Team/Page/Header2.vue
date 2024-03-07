@@ -1,7 +1,7 @@
 <template>
     <LayoutCircleTitle
         :title="team.name"
-        :backgroundImage="editedAvatar?.url"
+        :backgroundImage="displayAvatar"
         ref="header"
     >
         <template v-slot:prepend>
@@ -13,27 +13,24 @@
                         color="white"
                         flat
                         round
-                        @click="editing = true"
+                        @click="toggleEditing(true)"
                     />
                 </div>
             </div>
         </template>
         <template v-slot:title>
-            <TeamPageName :name="editedName ?? 'team Name'"  ref="teamName" />
+            <TeamPageName :name="teamName"  ref="teamName" />
         </template>
     </LayoutCircleTitle>
 <div class="full-width row justify-center" v-if="$q.screen.xs">
-    <RinkCard :rink="editedRink"  class="rink__card"/>
+    <RinkCard :rink="editing ? editedTeam?.rink : team?.rink"  class="rink__card"/>
 </div>
     <TeamEditOverlay
         v-if="editing"
-        @close="editing = false"
-        :name="editedName"
-        :avatar="editedAvatar"
-        :rink="editedRink"
-        @update:avatar="editedAvatar = $event"
-        @update:name="editedName = $event"
-        @update:rink="editedRink = $event"
+        @close="toggleEditing(false)"
+        :name="editedTeam.name"
+        :avatar="editedTeam.avatar"
+        :rink="editedTeam.rink"
         :teamId="teamId"
     />
 </template>
@@ -98,36 +95,35 @@ const team = computed(() => {
         players: t.players?.filter(({ pivot }) => !pivot.status) ?? [],
     };
 });
-const editing = ref(false);
-const editedName = ref(null);
-const editedRink = ref(null);
-const editedAvatar = ref({});
 
-watch(team, (val) => {
-    const {name, rink} = val;
-    editedName.value = name;
-    editedRink.value = rink;
-}, {deep: true, immediate: true})
+const {editedTeam, toggleEditing, editing} = useEditTeam();
 
-const { getTeamAvatar } = useAvatar();
+const { $api } = useNuxtApp();
 
-const { data: avatar } = getTeamAvatar(props.teamId, {
-    enabled: !!team.value,
-    select: (val) => {
-        emit("loaded");
-        editedAvatar.value = {
-            path: null,
-            url: val,
-            file: null,
-        };
-        return val;
-    },
-});
+const { data: avatar } = $api.getTeamAvatar(props.teamId);
 
+
+const displayAvatar = computed(() => {
+    if (editing.value) {
+        return editedTeam.value.avatar.url
+    } else {
+        return avatar.value
+    }
+})
 
 const { isOnTeam } = useTeam();
 
 onMounted(() => {
-    if (props.create) editing.value = true;
+    if (props.create) toggleEditing(true);
+})
+
+const teamName = computed(() => {
+    let name;
+    if (editing.value) {
+        name = editedTeam.value.name
+    } else {
+        name = team.value.name
+    }
+    return name ?? 'team Name'
 })
 </script>

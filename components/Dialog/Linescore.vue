@@ -20,16 +20,6 @@
                 @click="goBack"
                 v-if="currentStep"
             />
-            <!-- <q-btn
-                    flat
-                    color="green"
-                    class="row items-center"
-                    @click="save"
-                    v-if="view === views.DETAILS && !saved"
-                >
-                    <q-icon size="xs" name="check" class="q-mr-xs q-pb-xs" />
-                    <div>Save game</div>
-                </q-btn> -->
         </div>
         <div class="linescore__container" style="z-index: 100">
             <div
@@ -68,7 +58,6 @@
                 v-model="endCount"
                 @select="view = views.HOME_SELECT"
             />
-            <!-- @update:modelValue="view = views.HOME_SELECT" -->
             <LinescoreTeamSelect
                 v-if="view === views.HOME_SELECT"
                 homeTeam
