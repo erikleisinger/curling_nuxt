@@ -498,4 +498,42 @@ $help-animation: attention 2s infinite linear;
       
 }
 
+@mixin tabs($color, $text-color: white) {
+
+    background-color: transparent;
+    transition: all 0.2s;
+    font-family: $font-family-header;
+    
+
+    :deep(.q-tab__label) {
+        font-size: 18px !important;
+    }
+    .tab__label {
+        font-size: 18px !important;
+    }
+    .q-tab {
+        margin: unset;
+    }
+    .q-tab--active {
+        color: $text-color;
+        background-color: $color;
+        border-radius: 2px;
+    }
+    .q-tab__indicator {
+        bottom: 12px;
+        background-color: $color;
+        display: none;
+    }
+    .q-focus-helper {
+        display: none;
+    }
+    .q-tab {
+        padding: unset;
+        // margin: 0px var(--space-xs);
+        @include sm {
+            padding: 0px var(--space-lg);
+        }
+    }
+}
+
 

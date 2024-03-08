@@ -1,5 +1,6 @@
 import useQuery from '@/business/api/query'
-import Team from '@/store/models/team'
+import Team from '@/store/models/team';
+import { useRepo } from 'pinia-orm';
 
 const defaultAvatar = new URL("~/assets/rink.jpg", import.meta.url).href;
 
@@ -28,13 +29,13 @@ const getAvatar = async (teamId: number, client: any) => {
 };
 
 export default (client: any, teamId: number, options: object) => {
-    return useQuery({
-        queryKey: ["teamavatar", teamId],
-        queryFn: () => getAvatar(teamId, client),
-        refetchOnWindowFocus: false,
-        cacheTime: Infinity,
-        staleTime: Infinity,
-        ...options,
-        placeholderData: defaultAvatar,
-    });
+        return useQuery({
+            queryKey: ["teamavatar", teamId],
+            queryFn: () => getAvatar(teamId, client),
+            refetchOnWindowFocus: false,
+            cacheTime: Infinity,
+            staleTime: Infinity,
+            ...options,
+            placeholderData: defaultAvatar,
+        });
 };

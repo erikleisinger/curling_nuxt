@@ -1,4 +1,5 @@
 import {
+    getGameScore,
     getTeam,
     getTeamAvatar
 } from '@/business/api/fetch'
@@ -15,6 +16,10 @@ export default class GatewayService {
     
     createTeam(...params) {
         return createTeam(this.client, ...params)
+    }
+
+    getGameScore(...params) {
+        return getGameScore(this.client, ...params)
     }
 
     getTeam(...params) {

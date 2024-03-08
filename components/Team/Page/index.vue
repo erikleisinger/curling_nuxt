@@ -95,39 +95,7 @@
 
 .team-page__tabs {
 
-    background-color: transparent;
-    transition: all 0.2s;
-    font-family: $font-family-header;
-
-    :deep(.q-tab__label) {
-        font-size: 18px !important;
-    }
-    .tab__label {
-        font-size: 18px !important;
-    }
-    :deep(.q-tab) {
-        margin: unset;
-    }
-    :deep(.q-tab--active) {
-        color: white;
-        background-color: $app-mint;
-        border-radius: 2px;
-    }
-    :deep(.q-tab__indicator) {
-        bottom: 12px;
-        background-color: $app-mint;
-        display: none;
-    }
-    :deep(.q-focus-helper) {
-        display: none;
-    }
-    :deep(.q-tab) {
-        padding: unset;
-        // margin: 0px var(--space-xs);
-        @include sm {
-            padding: 0px var(--space-lg);
-        }
-    }
+   @include tabs($app-mint)
 
 }
 .stats {

@@ -53,45 +53,19 @@
                     :style="{ backgroundColor: getColor(STAT_COLORS[type]) }"
                 ></div>
 
-                <LinescoreGrid
-                    v-if="score"
-                    :score="score"
+                <LinescoreGrid2
+                    :gameId="gameId"
                     style="padding: unset"
-                >
-                    <template v-slot:avatarHome>
-                        <div style="width: 18px">
-                            <TeamAvatar
-                                :teamId="home?.team_id"
-                                :color="home?.color"
-                                :hammer="
-                                    game?.hammer_first_end ===
-                                    home?.team_id
-                                "
-                            />
-                        </div>
-                    </template>
-                    <template v-slot:avatarAway>
-                        <div style="width: 18px">
-                            <TeamAvatar
-                                :teamId="away?.team_id"
-                                :color="away?.color"
-                                :hammer="
-                                    game?.hammer_first_end ===
-                                    away?.team_id
-                                "
-                            />
-                        </div>
-                    </template>
-                </LinescoreGrid>
-                <q-skeleton v-else type="rect" :height="$q.screen.xs ? '75px' : '120px'" width="100%">
+                />
+      
 
-                </q-skeleton>
-                <div class="footer-caption row justify-between items-center">
+               
+                <!-- <div class="footer-caption row justify-between items-center">
                     <div class="text-caption " v-if="gameData && gameData[0]">
                     {{ toTimezone(gameData[0].game?.start_time, "MMMM D, YYYY") }}
                     </div>
                     <q-btn flat round icon="open_in_new"   :style="{ color: getColor(STAT_COLORS[type]) }" dense size="0.5em" @click="goToGame"/>
-                </div>
+                </div> -->
             </template>
         </DialogCard>
     </div>
@@ -171,146 +145,10 @@ const comparisonValue = computed(() => STAT_FIELDS_TOTAL[props.comparisonType](p
 
 const title = STAT_NAMES[props.type];
 
-const game = computed(() => useRepo(Game).where('id', props.data.game_id).first())
-const home = computed(() => useRepo(GameTeam).with('team').where('game_id', props.data.game_id).offset(0).first())
-const away = computed(() => useRepo(GameTeam).with('team').where('game_id', props.data.game_id).offset(1).first())
+const game = computed(() => useRepo(Game).where('id', props.gameId).first())
+const home = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).offset(0).first())
+const away = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).offset(1).first())
 
-const getScoreDetails = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("ends")
-        .select(
-            `
-        id,
-        end_number,
-        scoring_team_id,
-        hammer_team_id,
-        points_scored
-    `
-        )
-        .eq("game_id", props.gameId);
-    return data;
-};
-
-const generateScore = async () => {
-    const details = await getScoreDetails();
-    const s = Array.from(
-        {
-            length: Math.max(game?.value?.end_count, details?.length),
-        },
-        (_, i) => i + 1
-    ).reduce((all, current, index) => {
-        if (!details[index]) {
-            return {
-                ...all,
-                [index + 1]: {
-                    home: "X",
-                    away: "X",
-                },
-            };
-        } else {
-            return {
-                ...all,
-                [index + 1]: {
-                    home:
-                        details[index]?.points_scored === null
-                            ? "X"
-                            : details[index]?.scoring_team_id ===
-                              home.value?.team_id
-                            ? details[index]?.points_scored
-                            : 0,
-                    away:
-                        details[index]?.points_scored === null
-                            ? "X"
-                            : details[index]?.scoring_team_id ===
-                                  away.value?.team_id 
-                            ? details[index]?.points_scored
-                            : 0,
-                    ...details[index],
-                },
-            };
-        }
-    }, {});
-    return s;
-};
-
-const score = ref(null);
-
-const getScore = async () => {
-    score.value = await generateScore();
-};
-
-const getGameInfo = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("game_scores")
-        .select(
-            `
-            team:team_id (
-                id,
-                name,
-                avatar_url
-            ),
-            game:game_id(
-                id,
-                start_time,
-                end_count
-            ),
-            color,
-            placeholder,
-            pending,
-            points_scored
-        `
-        )
-        .eq("game_id", props.data.game_id)
-    
-    const {data:gameInfoData} = await client.from('games_full').select(`
-        end_count,
-        hammer_first_end,
-        conceded
-        
-    `).eq('id', props.data.game_id).single()
-      
-
-    data.forEach((item) => {
-        const {team, game, pending, color, placeholder, points_scored} = item;
-        const {end_count, hammer_first_end, conceded} = gameInfoData;
-        useRepo(Team).save({
-            ...team
-        });
-        useRepo(Game).save({
-            ...game,
-            start_time: dayjs(game.start_time).unix(),
-            end_count,
-            hammer_first_end,
-            conceded
-        })
-        useRepo(GameTeam).save({
-            game_id: game?.id,
-            team_id: team?.id,
-            pending,
-            color,
-            placeholder,
-            points_scored
-        })
-
-    })
-    
-
-    return data;
-};
-
-const { gameId } = toRefs(props);
-
-const { isLoading, data: gameData } = useQuery({
-    queryKey: ["game", "info", gameId],
-    queryFn: getGameInfo,
-    refetchOnWindowFocus: false,
-    select: (val) => {
-        getScore();
-        return val;
-    },
-});
 
 const opposition = computed(() => {
     if (home.value?.team_id === props.data.team_id)

@@ -86,20 +86,13 @@
             />
 
             <LinescoreEditor
-                v-model="gameParams"
                 :score="score"
-                @linescore="goBackToLinescore"
-                @edit="showLinescore = false"
                 :canEdit="true"
                 :selected="visible"
+                :selections="gameParams"
                 ref="editorContainer"
                 @scroll="scrollTo"
-                :summary="view === views.DETAILS"
-                :canEditDetails="!showLinescore && view === views.DETAILS"
-                @ready="showLinescore = true"
-                :compact="showLinescore && view !== views.DETAILS"
                 v-if="view === views.LINESCORE"
-                @endcount="view = views.END_COUNT_SELECT"
                 style="padding-top: 58px; height: 100%"
                 :inverted="inverted"
             >
@@ -703,6 +696,8 @@ const createTeamGameJunction = async (game, isPending) => {
         ]);
 };
 
+const gameStore = useGameStore();
+
 const createGame = async (game) => {
     const gameId = await gameStore.insertGame(game);
     return gameId;
@@ -716,61 +711,6 @@ const createEnds = async (ends, isEdited) => {
     }
 };
 
-/**
- * INIT
- */
-
-const gameStore = useGameStore();
-
-const fetchGame = async (game) => {
-    const { id } = game;
-    if (!id) {
-        console.error("no game to initialize");
-        return;
-    }
-
-    const gameFromStore = await gameStore.getGame(id, true);
-    const {
-        away,
-        home,
-        home_color: homeColor,
-        away_color: awayColor,
-        hammer_first_end: hammerFirstEndTeam,
-    } = gameFromStore;
-
-    gameParams.value = {
-        homeColor,
-        awayColor,
-        home,
-        away,
-        hammerFirstEndTeam,
-    };
-    await fetchEndsForGame({
-        gameId: id,
-        homeId: home?.id,
-        awayId: away?.id,
-    });
-};
-
-const fetchEndsForGame = async ({ gameId, homeId, awayId }) => {
-    const { client, fetchHandler } = useSupabaseFetch();
-    const { data: ends, error } = await fetchHandler(() =>
-        client.from(TABLE_NAMES.ENDS).select("*").eq("game_id", gameId)
-    );
-
-    ends.forEach((end) => {
-        const {
-            end_number: endNo,
-            points_scored: points = 0,
-            scoring_team_id: whoScored,
-        } = end;
-        if (whoScored === homeId) {
-            score.value[endNo].home = points;
-        } else if (whoScored === awayId) {
-            score.value[endNo].away = points;
-        }
-    });
-};
 
 const route = useRoute();
 const editedGameId = Number(route.query.gameId);
@@ -787,20 +727,6 @@ onMounted(async () => {
     
     
     loading.value = false;
-    useEventListener(
-        window,
-        "popstate",
-        useThrottleFn(() => {
-            history.go(1);
-            if (view.value === views.DETAILS) {
-                goBackToLinescore();
-            } else if (showLinescore.value) {
-                showLinescore.value = false;
-            } else {
-                view.value = views.END_COUNT_SELECT;
-            }
-        }, 500)
-    );
 });
 
 /**
@@ -888,7 +814,6 @@ const colWidth = () => {
     // const numEnds = Object.keys(score.value)?.length;
     // return 100 / numEnds;
 };
-const showLinescore = ref(false);
 const linescoreContainer = ref(null);
 const editorContainer = ref(null);
 const { height: editorHeight } = useElementSize(editorContainer);
@@ -898,16 +823,10 @@ const linescoreHeight = computed(
 );
 
 const goSummary = () => {
-    showLinescore.value = false;
     view.value = views.DETAILS;
 };
 
-const goBackToLinescore = () => {
-    showLinescore.value = true;
-    view.value = null;
-};
 const goLinescore = () => {
-    showLinescore.value = true;
     view.value = views.LINESCORE;
 };
 

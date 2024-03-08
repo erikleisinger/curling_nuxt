@@ -249,7 +249,7 @@ const away = computed(() => {
     return {
         ...t,
         ...(t.team ?? {}),
-        name: t.team?.name || t.placeholder,
+        name: t.placeholder || t.team?.name,
     };
 });
 const home = computed(() => {
