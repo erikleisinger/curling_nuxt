@@ -2,7 +2,7 @@
     <div
         class="full-height no-wrap column"
 
-        v-if="!isLoading && teams?.home?.stats"
+       
     >
         <div
             class="stats__container column no-wrap col-12"
@@ -29,10 +29,10 @@
                             class="full-width"
                             :stat="stat"
                             dense
-                            :color="teams.home.color"
+                            :color="teams?.home?.color"
                             prependPercent
                             reverse
-                            :stats="teams.home.stats"
+                            :stats="homeStats || {}"
                             oneWay
                             height="20px"
                         />
@@ -44,15 +44,15 @@
                             class="full-width"
                             :stat="stat"
                           height="20px"
-                              :color="teams.away.color"
-                             :stats="teams.away.stats"
+                              :color="teams?.away?.color"
+                             :stats="awayStats || {}"
                              oneWay
                         />
                     </div>
                 </div>
-                <div class="full-width row justify-between text-caption">
-                    <GameAverageComparison v-if="homeTotalStats" :stats="teams.home.stats" :statName="stat"/>
-             <GameAverageComparison v-if="awayTotalStats" :stats="teams.away.stats" :statName="stat" reverse/>
+                <div class="full-width row justify-between text-caption"  v-if="!isLoading && teams?.home?.stats">
+                    <GameAverageComparison v-if="teams?.home?.team_id" :stats="teams.home.stats" :statName="stat"/>
+             <GameAverageComparison v-if="teams?.away?.team_id" :stats="teams.away.stats" :statName="stat" reverse />
       
                 </div>
             </div>
@@ -87,12 +87,13 @@ import GameTeam from '@/store/models/game-team'
 import TeamStats from '@/store/models/team-stats'
 import TeamStatsTotal from '@/store/models/team-stats-total'
 import {useQuery} from '@tanstack/vue-query'
+import {Stats} from '@/store/models/stats/stats'
 
 const props = defineProps({
     gameId: Number,
 });
 
-const EXCLUDE = [STAT_TYPES.HAMMER_PERFORMANCE, STAT_TYPES.HAMMER_FIRST_END, STAT_TYPES.HAMMER_LAST_END, STAT_TYPES.WINS, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_PER_END]
+const EXCLUDE = [STAT_TYPES.BLANK_ENDS, STAT_TYPES.HAMMER_PERFORMANCE, STAT_TYPES.HAMMER_FIRST_END, STAT_TYPES.HAMMER_LAST_END, STAT_TYPES.WINS, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.ENDS_FOR_PER_GAME, STAT_TYPES.ENDS_AGAINST_PER_GAME, STAT_TYPES.POINTS_AGAINST_PER_GAME, STAT_TYPES.POINTS_FOR_PER_GAME, STAT_TYPES.POINTS_PER_END]
 const statTypes = Object.values(STAT_TYPES).filter((type) => !EXCLUDE.includes(type))
 
 const teams = computed(() => {
@@ -102,8 +103,8 @@ const teams = computed(() => {
     }
 })
 
-const homeTotalStats = computed(() => useRepo(TeamStatsTotal).where('team_id', teams.value.home.team_id).first())
-const awayTotalStats = computed(() => useRepo(TeamStatsTotal).where('team_id', teams.value.away.team_id).first())
+const homeStats = computed(() => new Stats([teams.value?.home?.stats ?? {}] ));
+const awayStats = computed(() => new Stats([teams.value?.away?.stats ?? {}] ));
 
 const getStatsForGame = async () => {
     const { data } = await useSupabaseClient()

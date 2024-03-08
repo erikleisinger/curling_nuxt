@@ -18,6 +18,10 @@ const getScoreDetails = async (client: any, gameId: number) => {
     `
         )
         .eq("game_id", gameId);
+
+        const hammer_first_end = data.find(({end_number}) => end_number === 1).hammer_team_id ?? 0
+
+        useRepo(Game).save({id: gameId, hammer_first_end})
     return data;
 };
 
@@ -30,7 +34,7 @@ const getEndCount = async (client: any, gameId: number) => {
     `
         )
         .eq("id", gameId).single()
-    useRepo(Game).where('id', gameId).update({end_count: data.end_count})
+    useRepo(Game).save({id: gameId, end_count: data.end_count})
     return data.end_count;
 }
 

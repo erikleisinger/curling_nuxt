@@ -34,31 +34,6 @@ export const useStats = () => {
     //     if (Array.isArray(stats)) return stats.filter(filter)
     // }
 
-    const calcStat = (allStats, type, filter) => {
-        const stats = filter ? filter(allStats) : allStats;
-        if (!Object.values(STAT_TYPES).includes(type)) {
-            console.error(`stat types doesnt include ${type}`)
-            return 0;
-        }
-        const func = getStatCalculator(type);
-        if (!func) {
-            console.error(`no stat calculator for ${type}`)
-            return 0;
-        }
-
-        let total = 0;
-        if (Array.isArray(stats)) {
-            const cumulative = stats.reduce((all, current) => {
-                return all + func(current)
-            }, 0)
-            total = cumulative / stats.length;
-        } else {
-           total = func(stats);
-        }
-        if (Number.isNaN(total)) return 0;
-
-        return total * 100;
-    }
 
 
 
@@ -114,5 +89,5 @@ export const useStats = () => {
 
 
 
-    return { calcStat, getCumulativeStat, getCumulativeHighestLowest, getChartPoints, isPercentStat, cleanStatValue, getHighestLowest };
+    return { getCumulativeStat, getCumulativeHighestLowest, getChartPoints, isPercentStat, cleanStatValue, getHighestLowest };
 };

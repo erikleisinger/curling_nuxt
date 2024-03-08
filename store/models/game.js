@@ -10,7 +10,7 @@ export default class Game extends Model {
     static fields() {
         return {
             id: this.number(),
-            teams: this.hasMany(GameTeam, 'game_id', 'id'),
+            teams: this.hasMany(GameTeam, 'game_id'),
             hammer_first_end: this.number(),
             end_count: this.number(),
             ends_played: this.number(),

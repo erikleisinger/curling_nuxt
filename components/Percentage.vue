@@ -101,6 +101,10 @@ onMounted(() => {
     upTick(width, props.percent);
 });
 
+watch(() => props.percent, () => {
+    upTick(width, props.percent)
+})
+
 const bg = computed(() => {
     return getColor(props.color);
 });

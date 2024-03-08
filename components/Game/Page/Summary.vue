@@ -83,7 +83,7 @@
     grid-template-columns: 30% 40% 30%;
     padding: 0px var(--space-md);
     margin: var(--space-lg) auto;
-    max-width: 700px;
+    // max-width: 700px;
     position: sticky;
     top: 0;
     z-index: 2;
