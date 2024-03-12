@@ -1,18 +1,16 @@
 <template>
     <GlobalMenu v-model="showGameInfo">
-      
         <DashboardLineChartGameInfo
-                    :data="data"
-                    :type="type"
-                    :gameId="gameId"
-                    v-if="gameId"
-                    :comparisonType="comparisonType"
-                />
-       
+            :data="data"
+            :type="type"
+            :gameId="gameId"
+            v-if="gameId"
+            :comparisonType="comparisonType"
+        />
     </GlobalMenu>
 </template>
 <script setup>
-import {STAT_COLORS} from '@/constants/stats'
+import { STAT_COLORS } from "@/constants/stats";
 const props = defineProps({
     comparisonType: String,
     modelValue: Boolean,
@@ -22,9 +20,9 @@ const props = defineProps({
 
 const gameId = computed(() => props.data?.game_id);
 
-const emit = defineEmits(["update:modelValue", 'close']);
+const emit = defineEmits(["update:modelValue", "close"]);
 
-const {getColor} = useColor();
+const { getColor } = useColor();
 
 const showGameInfo = computed({
     get() {
@@ -34,5 +32,4 @@ const showGameInfo = computed({
         emit("update:modelValue", val);
     },
 });
-
 </script>

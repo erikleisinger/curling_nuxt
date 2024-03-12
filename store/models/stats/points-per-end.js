@@ -5,6 +5,7 @@ import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 export class PointsPerEnd {
     constructor(stats) {
         this.stats = stats;
+        this.isPercent = false;
 
     }
 

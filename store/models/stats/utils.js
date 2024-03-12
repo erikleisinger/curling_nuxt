@@ -135,25 +135,6 @@ export const calcPointsWithoutHammer = (stats) => {
     return Number.isNaN(total) ? '-' : Number((total).toFixed(1));
 }
 
-export const getChartPoints = (stats, type, cumulative, isPercent) => {
-    // const isCumulative = CUMULATIVE_CHART_STATS.includes(type);
-    const isThisStatPercent = !NON_PERCENT_STATS.includes(type)
-    const points = stats.map((data, index) => {
-        if (cumulative) {
-            return (
-                getCumulativeStat(
-                    stats.slice(0, index + 1),
-                    type
-                ) * (!isThisStatPercent ? 1 : isPercent ? 100 : 1)
-            );
-        }
-
-        return STAT_FIELDS_TOTAL[type](data) * (!isThisStatPercent ? 1 : isPercent ? 100 : 1);
-    });
-    if (points.length === 1) return [points[0], points[0]]
-    return points;
-};
-
 export const sortByStartTime = (a, b) => {
     const aDate = new Date(a.start_time);
     const bDate = new Date(b.start_time);

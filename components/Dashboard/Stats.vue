@@ -156,13 +156,7 @@
 </style>
 <script setup>
 import {
-    NON_PERCENT_STATS,
-    STAT_FIELDS_TOTAL,
-    STAT_TYPES,
-    STAT_FIELDS,
-    STAT_FIELD_TITLES,
-    STAT_FIELD_TITLES_FULL,
-    STAT_FIELD_FILTER_FUNCTIONS,
+    STAT_TYPES
 } from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useUserTeamStore } from "@/store/user-teams";

@@ -8,7 +8,8 @@ export class Wins {
         this.stats = stats.filter(filterFunc);
         this.yellowGames = stats.filter(({color}) => color === 'yellow');
         this.blueGames = stats.filter(({color}) => color === 'blue');
-        this.redGames = stats.filter(({color}) => color === 'red')
+        this.redGames = stats.filter(({color}) => color === 'red');
+        this.isPercent = true;
        
     }
 

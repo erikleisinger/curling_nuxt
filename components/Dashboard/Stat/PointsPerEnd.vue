@@ -4,6 +4,7 @@
         :percent="average"
         :color="color"
         :stats="stats"
+        :isPercent="false"
     >
         <template v-slot:expanded> 
                  <DashboardStatDetailsItemTemplate>

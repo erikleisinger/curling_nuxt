@@ -198,9 +198,13 @@ $min-height: min(175px, calc(50% - 12px));
 }
 </style>
 <script setup>
-import {STAT_COLORS,STAT_NAMES, NON_PERCENT_STATS} from '@/constants/stats'
+import {STAT_COLORS,STAT_NAMES} from '@/constants/stats'
 const props = defineProps({
     expanded: Boolean,
+    isPercent: {
+        type: Boolean,
+        default: true
+    },
     percent: {
         type: [Number, String],
         default: 0,
@@ -226,8 +230,7 @@ const valueFlipId = generateUniqueId('tile-value')
 const {getColor} = useColor();
 const color = getColor(STAT_COLORS[props.type])
 
-const isPercent = !NON_PERCENT_STATS.includes(props.type);
 
-const knobValue = computed(() => isPercent ? props.percent : 100)
+const knobValue = computed(() => props.isPercent ? props.percent : 100)
 
 </script>

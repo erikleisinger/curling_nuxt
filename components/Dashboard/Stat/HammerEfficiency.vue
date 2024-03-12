@@ -4,6 +4,7 @@
         :percent="average"
         :color="color"
         :stats="stats"
+        :isPercent="true"
     >
 
        <template v-slot:expanded>

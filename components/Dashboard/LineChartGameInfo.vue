@@ -7,43 +7,61 @@
         >
             <template v-slot:title>
                 <div class="row no-wrap">
-                <div class="relative-position">
-                    <h3>
-                        {{ props.data?.points_for ?? 0 }}-{{
-                            props.data?.points_against ?? 0
-                        }}
-                        {{
-                            props.data?.win
-                                ? "win"
-                                : props.data?.tie
-                                ? "tie"
-                                : "loss"
-                        }}
-                    </h3>
-                    <div class="text-caption title-caption">
-                        vs.
-                        <TeamChip
-                            :teamId="opposition?.id"
-                            :teamName="opposition?.name"
-                        />
+                    <div class="relative-position">
+                        <h3>
+                            {{ props.data?.points_for ?? 0 }}-{{
+                                props.data?.points_against ?? 0
+                            }}
+                            {{
+                                props.data?.win
+                                    ? "win"
+                                    : props.data?.tie
+                                    ? "tie"
+                                    : "loss"
+                            }}
+                        </h3>
+                        <div class="text-caption title-caption">
+                            vs.
+                            <TeamChip
+                                :teamId="opposition?.id"
+                                :teamName="opposition?.name"
+                            />
+                        </div>
                     </div>
-                </div>  
-                <div class="total-container">
-                <h2 :style="{ color: getColor(STAT_COLORS[type]) }" style="white-space:nowrap">{{(value * (isPercent ? 100 : 1)).toFixed(isPercent ? 0 : 1)}}
-                    <span v-if="isPercent" class="text-caption" style="margin-left: -0.8em">
-                        %
-                    </span>
-                
-                    <span  v-if="comparisonType" :style="{ color: getColor(STAT_COLORS[comparisonType]) }" style="font-size: 1.5rem">
-                        {{(comparisonValue * (isComparisonPercent ? 100 : 1)).toFixed(isComparisonPercent ? 0 : 1)}}
-                    <span v-if="isComparisonPercent" class="text-caption" style="margin-left: -0.4em">
-                        %
-                    </span>
-                    </span>
-                    
-                </h2> 
-               
-                </div>
+                    <div class="total-container">
+                        <h2
+                            :style="{ color: getColor(STAT_COLORS[type]) }"
+                            style="white-space: nowrap"
+                        >
+                            {{ percent }}
+                            <span
+                                v-if="isPercent"
+                                class="text-caption"
+                                style="margin-left: -0.8em"
+                            >
+                                %
+                            </span>
+
+                            <span
+                                v-if="comparisonType"
+                                :style="{
+                                    color: getColor(
+                                        STAT_COLORS[comparisonType]
+                                    ),
+                                }"
+                                style="font-size: 1.5rem"
+                            >
+                                {{ comparisonPercent }}
+                                <span
+                                    v-if="isComparisonPercent"
+                                    class="text-caption"
+                                    style="margin-left: -0.4em"
+                                >
+                                    %
+                                </span>
+                            </span>
+                        </h2>
+                    </div>
                 </div>
             </template>
 
@@ -53,19 +71,7 @@
                     :style="{ backgroundColor: getColor(STAT_COLORS[type]) }"
                 ></div>
 
-                <LinescoreGrid2
-                    :gameId="gameId"
-                    style="padding: unset"
-                />
-      
-
-               
-                <!-- <div class="footer-caption row justify-between items-center">
-                    <div class="text-caption " v-if="gameData && gameData[0]">
-                    {{ toTimezone(gameData[0].game?.start_time, "MMMM D, YYYY") }}
-                    </div>
-                    <q-btn flat round icon="open_in_new"   :style="{ color: getColor(STAT_COLORS[type]) }" dense size="0.5em" @click="goToGame"/>
-                </div> -->
+                <LinescoreGrid2 :gameId="gameId" style="padding: unset" />
             </template>
         </DialogCard>
     </div>
@@ -102,7 +108,6 @@
         h2 {
             @include lg-text;
             text-align: center;
-
         }
     }
 }
@@ -110,14 +115,13 @@
 <script setup>
 import { useQuery } from "@tanstack/vue-query";
 import Team from "@/store/models/team";
-import Game from '@/store/models/game';
-import GameTeam from '@/store/models/game-team'
+import Game from "@/store/models/game";
+import GameTeam from "@/store/models/game-team";
+import { Stats } from "@/store/models/stats/stats";
 import {
-    STAT_FIELDS_TOTAL,
     STAT_NAMES,
     STAT_TYPES,
     STAT_COLORS,
-    NON_PERCENT_STATS
 } from "@/constants/stats";
 
 const props = defineProps({
@@ -127,41 +131,52 @@ const props = defineProps({
     type: String,
 });
 
-const {isPercentStat} = useStats()
-const isPercent = isPercentStat(props.type);
-const isComparisonPercent = isPercentStat(props.comparisonType)
-const { toTimezone } = useTime();
-const dayjs = useDayjs();
 const { getColor } = useColor();
 
-const HIDE_TYPE_TYPES = [STAT_TYPES.WINS];
-const BOOLEAN_STAT_TYPES = [
-    STAT_TYPES.HAMMER_LAST_END,
-    STAT_TYPES.HAMMER_FIRST_END,
-];
+const stats = new Stats([props.data]);
 
-const value = computed(() => STAT_FIELDS_TOTAL[props.type](props.data));
-const comparisonValue = computed(() => STAT_FIELDS_TOTAL[props.comparisonType](props.data));
+const value = stats[props.type];
+const comparisonValue = stats[props.comparisonType];
+const percent = value?.percent;
+const comparisonPercent = comparisonValue?.percent;
+const isPercent = value?.isPercent || false;
+const isComparisonPercent = comparisonValue?.isPercent || false;
 
 const title = STAT_NAMES[props.type];
 
-const game = computed(() => useRepo(Game).where('id', props.gameId).first())
-const home = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).offset(0).first())
-const away = computed(() => useRepo(GameTeam).with('team').where('game_id', props.gameId).offset(1).first())
-
+const game = computed(() => useRepo(Game).where("id", props.gameId).first());
+const home = computed(() =>
+    useRepo(GameTeam)
+        .with("team")
+        .where("game_id", props.gameId)
+        .offset(0)
+        .first()
+);
+const away = computed(() =>
+    useRepo(GameTeam)
+        .with("team")
+        .where("game_id", props.gameId)
+        .offset(1)
+        .first()
+);
 
 const opposition = computed(() => {
     if (home.value?.team_id === props.data.team_id)
-        return !away.value?.team?.id ? {
-    id: 0,
-    name: away.value?.placeholder} : away.value?.team
-    return !home.value?.team?.id ? {
-        id: 0,
-        name: home.value?.placeholder
-    } : home.value?.team
+        return !away.value?.team?.id
+            ? {
+                  id: 0,
+                  name: away.value?.placeholder,
+              }
+            : away.value?.team;
+    return !home.value?.team?.id
+        ? {
+              id: 0,
+              name: home.value?.placeholder,
+          }
+        : home.value?.team;
 });
 
 const goToGame = () => {
-    return navigateTo(`/games/view/${props.data.game_id}?force=true`)
-}
+    return navigateTo(`/games/view/${props.data.game_id}?force=true`);
+};
 </script>

@@ -4,7 +4,8 @@ import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
 
 export class StealEfficiency {
     constructor(stats) {
-        this.stats = stats
+        this.stats = stats;
+        this.isPercent = true;
     }
 
     get percent() {
