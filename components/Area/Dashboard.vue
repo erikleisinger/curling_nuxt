@@ -1,7 +1,14 @@
 <template>
+
     <div class="dashboard__container" id="dashboard">
-          
+
         <main class="main-content" ref="mainContent" id="dashboard-scroller">
+            <div class="row">
+            <!-- <BadgeRankGreen/>
+            <BadgeRankPink/>
+            <BadgeRankAmber/>
+             <BadgeRankBlue/> -->
+            </div>
                  <!-- <nav>
          <q-tabs
         
@@ -44,5 +51,6 @@
 }
 </style>
 <script setup>
+const showMobilePopup = ref(true)
 const tab = ref(0)
 </script>

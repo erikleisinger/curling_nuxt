@@ -77,7 +77,9 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             SUPABASE_KEY: process.env.SUPABASE_KEY,
-            SUPABASE_URL: process.env.SUPABASE_URL
+            SUPABASE_URL: process.env.SUPABASE_URL,
+            DEMO_EMAIL: process.env.DEMO_EMAIL,
+            DEMO_PASSWORD: process.env.DEMO_PASSWORD
         },
     },
     ssr: false,

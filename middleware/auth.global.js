@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-    const publicroutes = ['/login', '/update-password']
+    const publicroutes = ['/login', '/update-password', '/demo']
     const {value: user} = useSupabaseUser()
     if (!user && !publicroutes.includes(to.path)) {
         console.log('auth redir')
