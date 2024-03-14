@@ -61,11 +61,8 @@
 
 <script setup lang="ts">
 import Team from "@/store/models/team";
-import { useElementBounding } from "@vueuse/core";
-import { useDialogStore } from "@/store/dialog";
-import { useTeamStore } from "@/store/teams";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-const queryClient = useQueryClient();
+
+import { useQueryClient } from "@tanstack/vue-query";
 const props = defineProps<{
     create: boolean;
     teamId: number | string;

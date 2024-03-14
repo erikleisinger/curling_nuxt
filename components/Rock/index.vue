@@ -42,9 +42,7 @@ import {
   useParentElement,
   useElementVisibility,
 } from "@vueuse/core";
-import {useEventStore} from "@/store/event";
-import type {OnClickOutsideHandler} from "@vueuse/core";
-import {ROCK_DIAMETER_PERCENT, ROCK_DIAMETER_PERCENT_X, ROCK_DIAMETER_PERCENT_Y} from '@/constants/dimensions'
+import {ROCK_DIAMETER_PERCENT_X, ROCK_DIAMETER_PERCENT_Y} from '@/constants/dimensions'
 
 const props = defineProps({
   onDrag: Function,
@@ -178,22 +176,19 @@ document.removeEventListener("touchend", endDrag);
 
 const rockId = `rock-${props.rock.shot_no}`;
 
-const eventStore = useEventStore();
-const selectedRock = computed(() => eventStore.rockSelected);
+const selectedRock = computed(() => null);
 const isSelected = computed(() => {
   return selectedRock.value === rockId;
 });
 const selectRock = () => {
-  if (isSelected.value) return;
-  eventStore.toggleRockSelected(rockId);
-};
+  return;
+}
 const deselectRock = (
   e: PointerEvent | TouchEvent | MouseEvent,
   isDragEnd: boolean = false
 ) => {
   const target = e.target as Element;
   if (Array.from(target.classList).includes("rock") && !isDragEnd) return;
-  eventStore.toggleRockSelected(null);
 };
 const rockClasses = computed(() => {
   return `${isSelected.value ? "selected" : ""}`;

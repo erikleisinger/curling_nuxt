@@ -3,6 +3,6 @@ export const useLoading = () => {
     const store = useSessionStore()
     const globalLoading = computed<boolean>(() => store.loading)
 
-    const {setLoading,setPageLoading} = store;
-    return {globalLoading, setLoading, setPageLoading}
+    const {setLoading} = store;
+    return {globalLoading, setLoading}
 };

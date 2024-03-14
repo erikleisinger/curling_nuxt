@@ -1,20 +1,11 @@
-import {useSessionStore} from "@/store/session";
-import {useTeamStore} from "@/store/teams";
-import {useGameStore} from "@/store/games";
-import {usePlayerStore} from "@/store/players";
 import {useUserStore} from '@/store/user'
 import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
-import {useRinkStore} from '@/store/rinks'
 import { useGameRequestStore } from "@/store/game-requests";
 
 export const useData = () => {
-    const teamStore = useTeamStore();
-    const playerStore = usePlayerStore();
     const userStore = useUserStore();
     const userTeamStore = useUserTeamStore();
-    const rinkStore = useRinkStore();
-    const gameRequestStore = useGameRequestStore();
   const progress = ref(0)
 
   const initData = async () => {
@@ -22,7 +13,6 @@ export const useData = () => {
       const {getCurrentUser} = userStore;
       const {fetchUserTeams} = userTeamStore;
       const {getTeamRequestsByUser} = useTeamRequestStore();
-      const {fetchRinks} = useRinkStore();
       const {getGameRequestsByUser} = useGameRequestStore();
 
       await getCurrentUser()
@@ -46,16 +36,7 @@ export const useData = () => {
       );
       await Promise.all(promises);
   };
-  const resetData = () => {
-    const {resetSession} = useSessionStore();
-    const {resetPlayers} = usePlayerStore();
-    const {resetTeams} = useTeamStore();
-    const {resetGames} = useGameStore();
-    resetSession();
-    resetPlayers();
-    resetTeams();
-    resetGames();
-  }
+
 
   const verifyData = async () => {
     try {
@@ -87,5 +68,5 @@ export const useData = () => {
         console.error(e)
     }
   }
-  return {initData, resetData, progress, verifyData};
+  return {initData, progress, verifyData};
 };

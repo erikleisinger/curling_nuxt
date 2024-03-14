@@ -41,14 +41,10 @@
 import { PUBLIC_ROUTES } from "@/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import { useSessionStore } from "@/store/session";
 import {useUserStore} from '@/store/user'
 import {useNotificationStore} from '@/store/notification'
 
 const { globalLoading } = useLoading();
-const sessionStore = useSessionStore();
-
-const pageLoading = computed(() => sessionStore.pageLoading);
 
 const nuxtApp = useNuxtApp();
 

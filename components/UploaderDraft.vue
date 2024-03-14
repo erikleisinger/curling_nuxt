@@ -17,9 +17,6 @@
 </style>
 <script setup>
 import imageCompression from "browser-image-compression";
-import { useTeamStore } from "@/store/teams";
-import { useNotificationStore } from "@/store/notification";
-import Team from "@/store/models/team";
 const props = defineProps({
     emitOnly: Boolean,
     resourceType: String,

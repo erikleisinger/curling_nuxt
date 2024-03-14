@@ -3,10 +3,7 @@ import { useStorage } from "@vueuse/core";
 import { TABLE_NAMES } from "@/constants/tables";
 import type Game from "@/types/game";
 import type End from "@/types/end";
-import type { SupabaseGameReturn } from "types/fetch";
-import type { Database } from "@/types/supabase";
 import { useNotificationStore } from "@/store/notification";
-import { useSessionStore } from "@/store/session";
 
 export const useGameStore = defineStore("game", {
     state: () => {

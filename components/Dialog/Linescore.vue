@@ -425,7 +425,6 @@ import {
 } from "@vueuse/core";
 import { generateEnds, createSheet } from "@/utils/create-game";
 import { parseAvatar } from "@/utils/avatar";
-import { TABLE_NAMES } from "@/constants/tables";
 import { views } from "@/constants/linescore";
 import Team from '@/store/models/team';
 import Player from '@/store/models/player'

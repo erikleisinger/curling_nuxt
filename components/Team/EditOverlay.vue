@@ -231,7 +231,6 @@
 <script setup>
 import { useDialogStore } from "@/store/dialog";
 import { VALIDATION_RULES } from "@/constants/validation";
-import { useTeamStore } from "@/store/teams";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQueryClient } from "@tanstack/vue-query";
 const queryClient = useQueryClient();
@@ -295,6 +294,7 @@ const save = async () => {
         return navigateTo(`/teams/${teamId}`);
     }
     saving.value = false;
+    close();
 };
 
 const close = () => {

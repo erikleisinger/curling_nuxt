@@ -23,7 +23,6 @@ onClickOutside,
   useElementBounding
 
 } from "@vueuse/core";
-import {useEventStore} from '@/store/event'
 
 const emit = defineEmits(['deselect', 'dragging', 'dragUp', 'select'])
 const props = defineProps({
@@ -41,7 +40,6 @@ const positionX = ref('1px')
 const positionY = ref('1px')
 const position = ref('relative')
 
-const store = useEventStore();
 const {x:conX, y: conY} = useElementBounding(document.querySelector('#curlingRockWrapper'))
 
 
