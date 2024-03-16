@@ -60,12 +60,13 @@
 </style>
 
 <script setup lang="ts">
+import { getAvatar } from "@/service/api/query";
 import Team from "@/store/models/team";
 
 import { useQueryClient } from "@tanstack/vue-query";
 const props = defineProps<{
     create: boolean;
-    teamId: number | string;
+    teamId: number;
 }>();
 
 const emit = defineEmits(["loaded"]);
@@ -95,9 +96,16 @@ const team = computed(() => {
 
 const {editedTeam, toggleEditing, editing} = useEditTeam();
 
-const { $api } = useNuxtApp();
+// const { $api } = useNuxtApp();
 
-const { data: avatar } = $api.getTeamAvatar(props.teamId);
+// const { data: avatar } = $api.getTeamAvatar(props.teamId);
+const {fetch, result: avatar} = useApi(`header-${props.teamId}`);
+
+fetch({
+        queryKey: `team-${props.teamId}-avatar`,
+        queryFunc: () => getAvatar(props.teamId)
+    })
+
 
 
 const displayAvatar = computed(() => {

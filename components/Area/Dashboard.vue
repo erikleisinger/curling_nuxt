@@ -1,7 +1,7 @@
 <template>
 
     <div class="dashboard__container" id="dashboard">
-
+      
         <main class="main-content" ref="mainContent" id="dashboard-scroller">
             <div class="row">
             <!-- <BadgeRankGreen/>
@@ -51,6 +51,7 @@
 }
 </style>
 <script setup>
-const showMobilePopup = ref(true)
+
 const tab = ref(0)
+
 </script>

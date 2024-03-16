@@ -26,6 +26,7 @@
                
                 <div>
                     <div class="uploaded-avatar__container">
+                        <div v-if="loading">hi</div>
                         <q-img
                             :src="pendingAvatarUrl || avatarUrl"
                             spinner-color="white"
@@ -33,6 +34,7 @@
                             v-if="pendingAvatarUrl || avatarUrl"
                             @load="loaded = true"
                         ></q-img>
+                       
                     </div>
                 </div>
             </div>
@@ -171,6 +173,8 @@
 </style>
 <script setup>
 import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
+import client from "@/service/client";
+import { getAvatar } from "@/service/api/query";
 
 
 
@@ -215,15 +219,29 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
+// onMounted(async () => {
+
+//     const data = await client.fetch({
+//         queryKey: `team-${props.teamId}`,
+//         queryFunc: () => getAvatarUrl(props.teamId)
+//     })
+//     console.log('GOT AVATAR FOR TEAM ', props.teamId, ': ', data)
+// })
+
 
 
 
 const avatar_url = computed(() => team.value.avatar_url)
 const {teamId} = toRefs(props)
 
-const {$api} = useNuxtApp();
+const {fetch, result: avatarUrl, loading} = useApi(`teamavatar-${props.teamId}`)
 
-const { isLoading,  data: avatarUrl } =  $api.getTeamAvatar(teamId.value)
+// const { isLoading,  data: avatarUrl } =  $api.getTeamAvatar(teamId.value)
+fetch({
+        queryKey: `team-${props.teamId}-avatar`,
+        queryFunc: () => getAvatar(props.teamId)
+    })
+
 
 const avatar = ref(null);
 const loaded = ref(true);
