@@ -1,14 +1,11 @@
 <template>
     <div class="team-page-container">
-
-       
         <TeamPageHeader2
             :teamId="teamId"
             @loaded="headerLoaded = true"
             ref="header"
             :create="isCreate"
         />
-     
 
         <q-tabs
             v-if="!isCreate && $q.screen.xs"
@@ -25,25 +22,33 @@
 
         <div class="row q-mt-lg full-width" v-if="!isCreate">
             <div
-                v-if="!isCreate && !$q.screen.xs || currentIndex === 0"
+                v-if="(!isCreate && !$q.screen.xs) || currentIndex === 0"
                 :class="$q.screen.xs ? 'col-12' : 'col-6'"
             >
                 <h2 v-if="!$q.screen.xs" class="text-center md-text q-pb-lg">
                     Info
                 </h2>
-                <div  class="player-section">
-                   
-                    <RinkCard :rink="team?.rink" v-if="!$q.screen.xs" class="q-mb-lg"/>
-                    
-                    <TeamPageRequestsHandler :teamId="teamId" class="team-requests__floating" id="team-page-requests-handler" :class="{ 'float-page-top': !!helpRequest}" v-if="helpRequest || isOnTeam(teamId)"/>
+                <div class="player-section">
+                    <RinkCard
+                        :rink="team?.rink"
+                        v-if="!$q.screen.xs"
+                        class="q-mb-lg"
+                    />
+
+                    <TeamPageRequestsHandler
+                        :teamId="teamId"
+                        class="team-requests__floating"
+                        id="team-page-requests-handler"
+                        :class="{ 'float-page-top': !!helpRequest }"
+                        v-if="helpRequest || isOnTeam(teamId)"
+                    />
                     <div class="row full-width justify-center">
-                    <TeamPagePlayers :teamId="teamId" />
+                        <TeamPagePlayers :teamId="teamId" />
                     </div>
-                   
                 </div>
             </div>
             <div
-                v-if="!isCreate && !$q.screen.xs || currentIndex === 1"
+                v-if="(!isCreate && !$q.screen.xs) || currentIndex === 1"
                 :class="$q.screen.xs ? 'col-12' : 'col-6'"
                 style="min-height: 300px"
             >
@@ -53,11 +58,10 @@
                 <GameResultList :teamId="teamId" />
             </div>
         </div>
-        <div v-else style="height: 500px"/>
+        <div v-else style="height: 500px" />
     </div>
 </template>
 <style lang="scss" scoped>
-
 .team-page-container {
     position: relative;
     @include lines;
@@ -65,10 +69,10 @@
 }
 
 .player-section {
-    width: fit-content; 
-    margin: auto; 
+    width: fit-content;
+    margin: auto;
     position: relative;
-    margin-bottom: var(--space-md)
+    margin-bottom: var(--space-md);
 }
 
 .team-requests__floating {
@@ -77,7 +81,7 @@
     margin: auto;
     left: 0;
     right: 0;
-    top:0;
+    top: 0;
     width: fit-content;
 
     &.float-page-top {
@@ -91,21 +95,9 @@
     }
 }
 
-
 .team-page__tabs {
-
-   @include tabs($app-mint)
-
+    @include tabs($app-mint);
 }
-.stats {
-    margin-left: -16px;
-    margin-right: -16px;
-    margin-top: calc(-1 * var(--space-lg));
-}
-
-
-
-
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
@@ -116,19 +108,15 @@ const route = useRoute();
 
 const teamId = Number(route.params.id);
 
-const isCreate = computed(() => Number.isNaN(teamId))
+const isCreate = computed(() => Number.isNaN(teamId));
 
 const team = computed(() =>
     useRepo(Team).withAllRecursive().where("id", teamId).first()
 );
 
 const { isOnTeam } = useTeam();
-const canEdit = computed(() => isOnTeam(teamId));
 
 const currentIndex = ref(0);
-const changeTab = (newTab) => {
-    currentIndex.value = newTab;
-};
 
 const headerLoaded = ref(false);
 
@@ -143,7 +131,7 @@ watch(pageReady, (val) => {
     }, 50);
 });
 
-const helpRequest = computed(() => !!route?.query?.request)
+const helpRequest = computed(() => !!route?.query?.request);
 </script>
 <script lang="ts">
 export default {
