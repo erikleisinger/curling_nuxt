@@ -91,8 +91,7 @@
                     size="1.1em"
                 />
                 <div>Set team avatar</div>
-                <UploaderDraft
-                    emitOnly
+                <AvatarUpload
                     style="left: 0; top: 0; cursor: pointer"
                     @upload="setNewAvatar"
                 />
@@ -118,13 +117,13 @@
                     text-color="slate"
                     @click="close"
                     :disabled="saving"
+                    :loading="saving"
                     >Cancel</Button
                 >
                 <Button
                     color="mint"
-                    @click="save"
+                    @click="handleSave"
                     :disable="saveDisabled || saving"
-                    :loading="saving"
                     >Save</Button
                 >
             </div>
@@ -279,22 +278,35 @@ const saveDisabled = computed(
     () => !editedTeam?.value?.name || !editedTeam.value?.rink?.id
 );
 
+const { runNotifyFunction } = useNotification();
+
 const saving = ref(false);
+
+const handleSave = async () => {
+    toggleEditing(false, false);
+    try {
+        const teamId = await runNotifyFunction({
+            callback: save,
+            onProgress: props.teamId ? "Updating team..." : "Creating team...",
+            onSuccess: props.teamId ? "Team updated!" : "Team created!",
+        });
+        return navigateTo(`/teams/${teamId}`);
+    } catch {
+        return;
+    }
+};
 const save = async () => {
-    saving.value = true;
     const { $api } = useNuxtApp();
     if (props.teamId) {
         await $api.updateTeam(editedTeam.value);
         queryClient.invalidateQueries(["team", "full", props.teamId]);
+        return props.teamId;
     } else {
         const teamId = await $api.createTeam(editedTeam.value);
         queryClient.invalidateQueries(["team", "full", props.teamId]);
         await useUserTeamStore().fetchUserTeams(true);
-        toggleEditing(false);
-        return navigateTo(`/teams/${teamId}`);
+        return teamId;
     }
-    saving.value = false;
-    close();
 };
 
 const close = () => {

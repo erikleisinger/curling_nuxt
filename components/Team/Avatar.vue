@@ -12,19 +12,7 @@
             :style="{ height: teamId === null ? '100%' : 'unset' }"
             ref="innerContainer"
         >
-            <div
-                class="overlay row justify-center items-center"
-                :class="{
-                    desktop: $q.platform.is.desktop,
-                    visible: editable || visible,
-                    editable,
-                }"
-            >
-             <q-circular-progress v-if="avatarUploading" indeterminate color="white" size="md" />
-                
-
-                <q-icon v-else-if="editable" name="edit" color="white" size="md" />
-            </div>
+           
             <div
                 class="ring"
                 :class="{ 'help--highlight': highlight }"
@@ -35,15 +23,7 @@
             <div class="ring animated" v-if="animateRing && color" />
 
             <div class="inner-wrap">
-                <UploaderDraft
-                    v-if="editable"
-                    style="z-index: 10"
-                    @upload="setPendingAvatar"
-                    :emitOnly="emitOnly"
-                    resourceType="team"
-                    :resourceId="teamId"
-                    @loading="avatarUploading = $event"
-                />
+               
                 <div>
                     <div class="uploaded-avatar__container">
                         <q-img
@@ -200,8 +180,6 @@ const props = defineProps({
     color: String,
     create: Boolean,
     disableMenu: Boolean,
-    editable: Boolean,
-    emitOnly: Boolean,
     hammer: Boolean,
     highlight: Boolean,
     invitable: Boolean,
@@ -260,14 +238,7 @@ watch(hovered, (val) => {
     visible.value = val;
 });
 
-const clickAvatar = () => {
-    if (props.disableMenu || (!props.viewable && !props.invitable && !props.editable)) return;
-    if (props.viewable) {
-        return navigateTo(`/teams/${props.teamId}`);
-    } else if (props.invitable) {
-        emit("invite");
-    }
-};
+
 const { getColor } = useColor();
 
 const avatarColor = computed(() => getColor(props.color));

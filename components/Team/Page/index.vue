@@ -59,7 +59,6 @@
 <style lang="scss" scoped>
 
 .team-page-container {
-    // @include $bg-blue-side;
     position: relative;
     @include lines;
     height: 100%;
@@ -110,10 +109,6 @@
 </style>
 <script setup lang="ts">
 import Team from "@/store/models/team";
-
-const { toTimezone } = useTime();
-
-const viewing = ref(false);
 
 const $q = useQuasar();
 
