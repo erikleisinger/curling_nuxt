@@ -45,7 +45,7 @@
         <div class="help__container" v-else>
             <div class="help__header row justify-between items-center">
                 <h3>{{ isCreating ? "Create new" : "Edit" }} team</h3>
-                <q-btn flat round icon="more_vert" color="white" dense>
+                <q-btn flat round icon="more_vert" color="white" dense :disable="isCreating">
                     <q-menu>
                         <q-list separator>
                             <q-item
@@ -124,6 +124,7 @@
                     color="mint"
                     @click="handleSave"
                     :disable="saveDisabled || saving"
+                    :loading="saving"
                     >Save</Button
                 >
             </div>
@@ -193,7 +194,7 @@
             cursor: pointer;
             &:hover,
             &.active {
-                transform: scale(1.1);
+                transform: scale(1.04);
                 background-color: $app-mint;
                 color: white;
 
@@ -232,6 +233,7 @@ import { useDialogStore } from "@/store/dialog";
 import { VALIDATION_RULES } from "@/constants/validation";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQueryClient } from "@tanstack/vue-query";
+import client from '@/service/client'
 const queryClient = useQueryClient();
 const MAX_NAME_LENGTH = 25;
 const nameInput = ref(null);
@@ -246,11 +248,9 @@ const isCreating = computed(() => Number.isNaN(props.teamId));
 
 const { getColor } = useColor();
 
-const emit = defineEmits(["close"]);
-
 const editingName = ref(false);
 
-const { editedTeam, init, toggleEditing } = useEditTeam();
+const { editedTeam, init, toggleEditing, resetEditedTeam } = useEditTeam();
 
 const setNewAvatar = (file) => {
     const { file: img, path } = file;
@@ -275,7 +275,15 @@ const searchRink = () => {
 };
 
 const saveDisabled = computed(
-    () => !editedTeam?.value?.name || !editedTeam.value?.rink?.id
+    () => {
+        try {
+            return !editedTeam.value.validate()
+            
+        } catch {
+            
+            return true;
+        }
+    }
 );
 
 const { runNotifyFunction } = useNotification();
@@ -283,30 +291,37 @@ const { runNotifyFunction } = useNotification();
 const saving = ref(false);
 
 const handleSave = async () => {
-    toggleEditing(false, false);
+    saving.value = true;
     try {
         const teamId = await runNotifyFunction({
             callback: save,
             onProgress: props.teamId ? "Updating team..." : "Creating team...",
             onSuccess: props.teamId ? "Team updated!" : "Team created!",
         });
+        saving.value = false;
         return navigateTo(`/teams/${teamId}`);
     } catch {
+        saving.value = false;
         return;
     }
+
 };
 const save = async () => {
+    
     const { $api } = useNuxtApp();
     if (props.teamId) {
         await $api.updateTeam(editedTeam.value);
-        queryClient.invalidateQueries(["team", "full", props.teamId]);
+        client.cache.delete(`team-${props.teamId}-full`)
+        toggleEditing(false)
         return props.teamId;
     } else {
         const teamId = await $api.createTeam(editedTeam.value);
-        queryClient.invalidateQueries(["team", "full", props.teamId]);
+        client.cache.delete(`team-${teamId}-full`)
         await useUserTeamStore().fetchUserTeams(true);
+        toggleEditing(false, true)
         return teamId;
     }
+
 };
 
 const close = () => {

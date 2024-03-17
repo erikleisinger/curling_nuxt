@@ -27,7 +27,6 @@
 </div>
     <TeamEditOverlay
         v-if="editing"
-        @close="toggleEditing(false)"
         :name="editedTeam.name"
         :avatar="editedTeam.avatar"
         :rink="editedTeam.rink"
@@ -60,8 +59,9 @@
 </style>
 
 <script setup lang="ts">
-import { getAvatar } from "@/service/api/query";
 import Team from "@/store/models/team";
+import { getTeamAvatar } from "@/business/api/query/team"
+
 
 import { useQueryClient } from "@tanstack/vue-query";
 const props = defineProps<{
@@ -94,7 +94,11 @@ const team = computed(() => {
     };
 });
 
-const {editedTeam, toggleEditing, editing} = useEditTeam();
+const {editedTeam, toggleEditing, editing, resetEditedTeam} = useEditTeam();
+
+const {fetch, result: avatar, loading} = useApi()
+
+fetch(getTeamAvatar(props.teamId))
 
 const displayAvatar = computed(() => {
     if (editing.value) {
@@ -107,7 +111,8 @@ const displayAvatar = computed(() => {
 const { isOnTeam } = useTeam();
 
 onMounted(() => {
-    if (props.create) toggleEditing(true);
+    toggleEditing(props.create);
+    if (props.create) resetEditedTeam();
 })
 
 const teamName = computed(() => {

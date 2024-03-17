@@ -3,22 +3,23 @@
 
 </template>
 <script setup>
-import getTeam from '@/business/api/fetch/getTeam'
+import {getTeam} from '@/business/api/query/team'
 
 const route = useRoute();
 const teamId = Number(route.params.id)
 
 const {setLoading} = useLoading();
-const {$api} = useNuxtApp();
+const {fetch, loading: isLoading} = useApi()
 
 const enabled = !!route.params.id && route.params.id !== 'create'
 
-const {isLoading} = $api.getTeam(route.params.id, {
-    select: (val) => {
-        setLoading(false);
-        return val;
-    },
-    enabled
+if (enabled) {
+    fetch(getTeam(teamId)).then(() => setLoading(false))
+}
+
+onMounted(() =>{
+    console.log('MOUNTED TEAM PAGE: ', teamId)
 })
+
 
 </script>

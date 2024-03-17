@@ -173,7 +173,7 @@
 </style>
 <script setup>
 import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
-import { getTeamAvatar } from "@/business/api/query/team/avatar"
+import { getTeamAvatar } from "@/business/api/query/team"
 
 
 

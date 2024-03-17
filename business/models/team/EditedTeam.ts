@@ -1,3 +1,4 @@
+import { ValidationError } from "@/business/types/error/ValidationError";
 type EditedAvatar = {
     path?: string;
     file?: File;
@@ -36,6 +37,22 @@ export default class EditedTeam {
         };
         if (this.id) teamToInsert.id = this.id;
         return teamToInsert;
+    }
+
+    validateName() {
+        return !!this.name || false
+
+    }
+
+    validateRink() {
+        return !!this.rink || false
+    }
+
+    validate() {
+
+        if (!this.validateName()) throw new ValidationError('Missing team name')
+        if (!this.validateRink()) throw new ValidationError('Missing home rink')
+        return true;
     }
 
 
