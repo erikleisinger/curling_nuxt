@@ -1,7 +1,7 @@
 <template>
     <div class="linescore-container" ref="container">
         <q-inner-loading
-            :showing="(isLoading || !isFetched) && !!fetchEnabled"
+            :showing="(loading) && !!fetchEnabled"
         />
         <div class="linescore-row" style="order: 0">
             <div>
@@ -142,6 +142,7 @@
 import { useElementBounding } from "@vueuse/core";
 import GameTeam from "@/store/models/game-team";
 import Game from '@/store/models/game'
+import { getGameScore } from "@/business/api/query/game"
 const props = defineProps({
     gameId: [Number, null],
     editedScore: Object,
@@ -149,19 +150,14 @@ const props = defineProps({
     selected: Number,
 });
 
-const { $api } = useNuxtApp();
 
 const fetchEnabled = ref(!!props.gameId);
 
-const {
-    isLoading,
-    isFetched,
-    data: scoreFetched = defaultScore,
-} = $api.getGameScore(props.gameId, {
-    enabled: fetchEnabled,
-});
+const {fetch, result: gameScore, loading} = useApi(`teamavatar-${props.teamId}`)
 
-const score = computed(() => props.editedScore || scoreFetched.value);
+fetch(getGameScore(props.gameId))
+
+const score = computed(() => props.editedScore || gameScore.value);
 
 const emit = defineEmits(["select"]);
 

@@ -18,6 +18,7 @@ export default class Team extends Model {
             id: this.number(),
             name: this.string('Unnamed team'),
             avatar_url: this.string(null),
+            avatar_blob: this.string(null),
             games: this.belongsToMany(Game, GameTeam, 'team_id', 'game_id'),
             players: this.belongsToMany(Player, TeamPlayer, 'team_id', 'player_id'),
             rink_id: this.number(),

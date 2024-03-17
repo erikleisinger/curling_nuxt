@@ -4,7 +4,6 @@ import {Cache as CacheClass} from '@/service/cache'
 import cache from '@/service/cache';
 
 import {
-    getGameScore,
     getTeam,
     getTeamAvatar
 } from '@/business/api/fetch'
@@ -29,17 +28,10 @@ export default class GatewayService {
         return createTeam(this.client, ...params)
     }
 
-    getGameScore(...params) {
-        return getGameScore(this.client, ...params)
-    }
-
     getTeam(...params) {
         return getTeam(this.client, ...params)
     }
 
-    getTeamAvatar(...params) {
-        return getTeamAvatar(this.client, ...params)
-    }
 
     updateTeamAvatar(...params) {
         return updateTeamAvatar(this.client, ...params)

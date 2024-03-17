@@ -173,8 +173,7 @@
 </style>
 <script setup>
 import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
-import client from "@/service/client";
-import { getAvatar } from "@/service/api/query";
+import { getTeamAvatar } from "@/business/api/query/team/avatar"
 
 
 
@@ -236,11 +235,10 @@ const {teamId} = toRefs(props)
 
 const {fetch, result: avatarUrl, loading} = useApi(`teamavatar-${props.teamId}`)
 
-// const { isLoading,  data: avatarUrl } =  $api.getTeamAvatar(teamId.value)
-fetch({
-        queryKey: `team-${props.teamId}-avatar`,
-        queryFunc: () => getAvatar(props.teamId)
-    })
+fetch(getTeamAvatar(props.teamId))
+
+
+
 
 
 const avatar = ref(null);

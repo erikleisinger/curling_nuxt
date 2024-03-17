@@ -4,10 +4,10 @@ export class FunctionQueue {
       this.running = false;
     }
   
-    add(func) {
+    async add(func) {
       this.queue.push(func);
       if (!this.running) {
-        this.executeNext();
+        await this.executeNext();
       }
     }
   

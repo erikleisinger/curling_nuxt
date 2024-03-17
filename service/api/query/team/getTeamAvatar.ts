@@ -1,10 +1,9 @@
-import { supabaseClient } from '@/service/client/createClient';
+import client from '@/service/client';
 
 const defaultAvatar = new URL("~/assets/rink.jpg", import.meta.url).href;
 
 export const getAvatarUrl = async (teamId: number) => {
-    const client = supabaseClient();
-    const { data } = await client
+    const { data } = await client.client
         .from("teams")
         .select("avatar_url")
         .eq("id", teamId);
@@ -18,9 +17,8 @@ export const getAvatar = async (teamId: number) => {
 
     if (!url) return defaultAvatar
 
-    const client = supabaseClient();
 
-    const { data } = await client.storage.from("Avatars").download(url);
+    const { data } = await client.client.storage.from("Avatars").download(url);
     if (!data) return defaultAvatar;
 
     const avatar_url = window.URL.createObjectURL(data);

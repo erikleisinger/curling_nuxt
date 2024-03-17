@@ -73,7 +73,7 @@ $outer-border-width: 2px;
 import Player from "@/store/models/player";
 import { parseAvatar } from "@/utils/avatar";
 const props = defineProps({
-    playerId: Number,
+    playerId: String,
 });
 
 const user = computed(() =>

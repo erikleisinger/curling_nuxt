@@ -96,18 +96,6 @@ const team = computed(() => {
 
 const {editedTeam, toggleEditing, editing} = useEditTeam();
 
-// const { $api } = useNuxtApp();
-
-// const { data: avatar } = $api.getTeamAvatar(props.teamId);
-const {fetch, result: avatar} = useApi(`header-${props.teamId}`);
-
-fetch({
-        queryKey: `team-${props.teamId}-avatar`,
-        queryFunc: () => getAvatar(props.teamId)
-    })
-
-
-
 const displayAvatar = computed(() => {
     if (editing.value) {
         return editedTeam.value.avatar.url

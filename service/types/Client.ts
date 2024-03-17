@@ -24,53 +24,61 @@ export class Client {
     }
 
 
-    private fetchFunction = ({
+    private fetchFunction = async ({
         queryKey,
         queryFunc,
-        changeListener
+        onChange
   
         
     }: {
         queryKey: string;
         queryFunc: Function;
-        changeListener: Function
+        onChange: Function
     
         
     }) => {
     const cachedValue = this.cache.get(queryKey)
         if (cachedValue) {
-            changeListener(cachedValue)
+            onChange(cachedValue);
             return;
         }
-            const returnVal = queryFunc();
+            const returnVal = await queryFunc();
             this.cache.set(queryKey, returnVal);
-            changeListener(returnVal)
+            onChange(this.cache.get(queryKey))
         
     }
 
-    public fetch = ({
+    public fetch = async ({
         queryKey,
         queryFunc,
-        changeListener
+        onChange
   
         
     }: {
         queryKey: string;
         queryFunc: Function;
-        changeListener: Function;
+        onChange: Function;
     
         
     }) => {
-        this.functionQueue.add(async () => this.fetchFunction({
+       
+        await this.functionQueue.add(async () => await this.fetchFunction({
             queryKey,
             queryFunc,
-            changeListener: changeListener
+            onChange
+
         }))
-        this.listenForChange(queryKey, () => this.fetch({
-            queryKey,
-            queryFunc,  
-            changeListener
-        }))
+        setTimeout(() => {
+            this.listenForChange(queryKey, async () => await this.fetch({
+                queryKey,
+                queryFunc,  
+                onChange
+            }))
+        }, 1)
+        
+
+        return this.cache.get(queryKey)
+       
     }
 
 
