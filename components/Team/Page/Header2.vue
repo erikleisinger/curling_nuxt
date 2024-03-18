@@ -23,7 +23,7 @@
         </template>
     </LayoutCircleTitle>
 <div class="full-width row justify-center" v-if="$q.screen.xs">
-    <RinkCard :rink="editing ? editedTeam?.rink : team?.rink"  class="rink__card"/>
+    <RinkCard :rinkId="editing ? editedTeam?.rink?.id : team?.rink?.id"  class="rink__card"/>
 </div>
     <TeamEditOverlay
         v-if="editing"

@@ -1,17 +1,10 @@
 import client from '@/service/client';
+import runQuery from '@/service/api/query/runQuery';
 export const getTeam = async (teamId: number) => {
-    const {data} = await client.client.from('teams').select(`
-        id,
-        name,
-        avatar_url,
-        rink:rink_id (
-            id,
-            name,
-            city,
-            province,
-            sheet_count
-        )
-        `).eq('id', teamId)
-    
-    return data;
+    return runQuery(async () => await client.client.from('teams').select(`
+    id,
+    name,
+    avatar_url,
+    rink_id
+    `).eq('id', teamId).single())
 }

@@ -30,7 +30,7 @@
                 </h2>
                 <div class="player-section">
                     <RinkCard
-                        :rink="team?.rink"
+                        :rinkId="team?.rink?.id"
                         v-if="!$q.screen.xs"
                         class="q-mb-lg"
                     />

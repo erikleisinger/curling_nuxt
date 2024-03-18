@@ -68,17 +68,21 @@ $padding: var(--space-sm);
 }
 </style>
 <script setup>
+import {getRink} from '@/business/api/query/rink'
 const props = defineProps({
-    rink: Object,
+    rinkId: Number,
 });
 
+const {fetch} = useApi();
+
+const {loading, result: rink} = fetch(getRink(props.rinkId))
 const glob = import.meta.glob("~/assets/flags/*", {
     eager: true,
 });
 
 const backgroundUrl = computed(() => {
     try {
-        return glob[`/assets/flags/${props.rink?.province}.svg`]["default"];
+        return glob[`/assets/flags/${rink.value?.province}.svg`]["default"];
     } catch {
         return "";
     }

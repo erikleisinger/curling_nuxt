@@ -51,10 +51,12 @@ export class Client {
         this.setQueueFunc(queryKey, queryFunc)
         await timeout(2)
         const func = this.queue.get(queryKey);
-        const val = await func();
-      
-        this.cache.set(queryKey, val)
-        return val
+   
+            const val = await func();
+            this.cache.set(queryKey, val)
+            return val
+
+        
        
     }
 

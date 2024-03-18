@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/notification";
 import Player from '@/store/models/player'
 import Rink from '@/store/models/rink'
+import { getRink } from "@/business/api/query/rink";
+import {getUser} from '@/business/api/query/user'
 export const useUserStore = defineStore("user", {
     state: () => {
         return {
@@ -31,34 +33,18 @@ export const useUserStore = defineStore("user", {
 
     actions: {
         async getCurrentUser() {
-            const { client, fetchHandler } = useSupabaseFetch();
+            const  client  = useSupabaseClient();
             const sesh = await client.auth.getUser();
 
-            const { id: profileId, email = null } = sesh.data.user || {};
+            const { id: profileId = '', email = null } = sesh.data.user || {};
             this.setEmail(email);
-            const { data } = await fetchHandler(
-                () => client.from("profiles").select(`
-                    id, 
-                    timezone,
-                    username,
-                    first_name,
-                    last_name,
-                    avatar,
-                    is_new,
-                    rink_id,
-                    has_completed_tutorial
-                `).eq('id', profileId),
-                { onError: "Error getting current user" }
-
-               
-            );
-            const [user] = data;
+            const data = await getUser(profileId)()
+            const user = data;
             if (!user) return;
             Object.assign(this, user);
             useRepo(Player).save(user)
             if (user.rink_id) {
-                const {data:rink} = await client.from('rinks').select('*').eq('id', user.rink_id).single();
-                useRepo(Rink).save(rink)
+                await getRink(user.rink_id)();
             }
      },
 

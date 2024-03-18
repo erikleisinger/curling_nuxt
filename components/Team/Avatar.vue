@@ -218,14 +218,6 @@ const $q = useQuasar();
 
 const visible = ref(false);
 
-// onMounted(async () => {
-
-//     const data = await client.fetch({
-//         queryKey: `team-${props.teamId}`,
-//         queryFunc: () => getAvatarUrl(props.teamId)
-//     })
-//     console.log('GOT AVATAR FOR TEAM ', props.teamId, ': ', data)
-// })
 
 
 
