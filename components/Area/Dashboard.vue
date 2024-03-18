@@ -51,7 +51,5 @@
 }
 </style>
 <script setup>
-
 const tab = ref(0)
-
 </script>

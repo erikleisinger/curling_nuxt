@@ -7,6 +7,7 @@
             overflow: hidden;
         "
         class="full-height"
+        v-if="!isLoadingEditedGame"
        
     >
         <div
@@ -432,6 +433,9 @@ import {useQuery, useQueryClient} from '@tanstack/vue-query'
 import Game from '@/store/models/game'
 import GameTeam from '@/store/models/game-team'
 import {timeout} from '@/utils/async'
+import {getFullGame} from '@/business/api/query/game'
+import generateLineScore from '@/business/utils/game/generateLineScore'
+import cache from '@/service/cache'
 
 const queryClient = useQueryClient();
 
@@ -646,9 +650,11 @@ const save = async () => {
     if (shouldSendInvitation && params.away?.id)
         await useGameRequestStore().sendGameRequest(params.away, gameId);
 
-    if (editedGameId) queryClient.invalidateQueries({
-        queryKey: ["game", editedGameId],
-    })
+    if (editedGameId) {
+        cache.delete(`game-${editedGameId}-info`)
+        cache.delete(`game-${editedGameId}-scoreDetails`)
+        cache.delete(`game-${editedGameId}-teams`)
+    }
 
     return navigateTo(`/games/view/${gameId}`);
 };
@@ -849,20 +855,18 @@ watch(() => gameParams.value.home, (val) => {
 
 // Edited game
 
-const {getGame, generateScore} = useGame()
-
-const initEditedGame = async (attempt = 0) => {
+const initEditedGame = async (attempt = 0, data) => {
     if (attempt > 9) return;
-    const teamsInitialized =  useRepo(GameTeam).where('game_id', editedGameId).first();
-    if (!teamsInitialized) {
-        await timeout(1000)
-            return initEditedGame(attempt + 1);
-        
-        
-    } else {
+    console.log('init edited game: ', data)
+
+    const {ends, teams} = data;
+    const [home, away] = teams;
+  
     const editedGame = useRepo(Game).withAllRecursive().where('id', editedGameId).first();
-    const home = useRepo(GameTeam).query().with('team').where('game_id', editedGameId).whereIn('team_id', (val) => userTeams.value.some(({id}) => id === val)).first()
-    const away = useRepo(GameTeam).query().with('team').where('game_id', editedGameId).whereIn('team_id', (val) => val !== home.team_id).first()
+
+    const {end_count} = editedGame;
+
+    console.log(editedGame)
 
     gameParams.value.home = {
         ...home?.team,
@@ -880,31 +884,23 @@ const initEditedGame = async (attempt = 0) => {
 
     gameParams.value.start_time = dayjs.unix(editedGame.start_time).format('YYYY-MM-DD hh:mm')
 
-
-    const editedScore = await generateScore(editedGameId);
+    const editedScore = generateLineScore(ends, end_count, {...home, team_id: home.team?.id}, {...away, team_id: away?.team?.id});
     score.value = editedScore;
     
-    }
     
 }
 
+const {fetch} = useApi();
 
+const fetchEnabled = computed(() => !!editedGameId);
 
-const {
-    isLoading: isLoadingGames,
-    isSuccess: isGamesDone,
-    data: currentGame,
-} = useQuery({
-    queryKey: ["game", editedGameId],
-    queryFn: () => getGame(editedGameId),
-    enabled: !!editedGameId,
+const {loading: isLoadingEditedGame} = fetch(getFullGame(editedGameId), {
+    enabled: fetchEnabled,
+    onComplete: (val) => {
+        initEditedGame(0, val)
+    }
+})
 
-});
-
-watch(isGamesDone, async (val) => {
-    if (!val) return;
-await initEditedGame()
-}, {immediate: true})
 
 
 

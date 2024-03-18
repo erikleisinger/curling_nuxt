@@ -1,6 +1,6 @@
 import client from "@/service/client";
 import runQuery from '@/service/api/query/runQuery';
-export const getGameScoreDetails = async (gameId: number) => {
+export const getGameEndDetails = async (gameId: number) => {
     return runQuery(async () => await client.client
     .from("ends")
     .select(

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading" class="game-info">
+    <div  class="game-info">
         <DialogCard
             maxWidth="95vw"
             minWidth="200px"

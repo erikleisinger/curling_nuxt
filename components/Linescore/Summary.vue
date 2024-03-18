@@ -141,6 +141,7 @@ const selections = computed({
 });
 
 const totalScore = computed(() => {
+    console.log('totalscore: ', props.score)
     return Object.keys(props.score).reduce(
         (all, current) => {
             const scoreObj = props.score[current];

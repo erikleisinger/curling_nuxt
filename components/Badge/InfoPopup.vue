@@ -24,7 +24,7 @@
                <q-skeleton v-else type="text" width="185px"/>
       
             </p>          
-            <p class="text-sm row justify-center text-center other-info" v-if="!!game">
+            <!-- <p class="text-sm row justify-center text-center other-info" v-if="!!game">
                    <div class="col-12 text-italic">
                          Earned on {{ toTimezone(badge.created_at, "MMMM DD, YYYY", false) }}
                    </div>
@@ -40,12 +40,12 @@
                     View game
                     </div>  
                     
-            </p>
-            <div v-else-if="isLoading" class="column items-center">
+            </p> -->
+            <!-- <div v-if="isLoading" class="column items-center">
                 <q-skeleton type="text" width="185px"/>
                  <q-skeleton  type="text" width="100px"/>
                 <q-skeleton  type="text" width="80px"/>
-            </div> 
+            </div>  -->
 
             <p v-if="isBlackBadge" class="black-badge row items-center full-width justify-center">
                 <q-icon name="auto_awesome" class="q-mr-xs"/>
@@ -168,31 +168,8 @@ const open = computed({
 
 const isBlackBadge = computed(() => EPHEMERAL_BADGES.includes(props.badge.name))
 const { toTimezone } = useTime();
-const { getGames } = useGame();
 const isShowing = computed(() => open.value);
 
-const { isLoading, data: game } = useQuery({
-  queryKey: ["game", Number(props.badge.game_id)],
-  queryFn: () =>
-    getGames({
-      team_id_param: null,
-      game_id_param: Number(props.badge.game_id),
-    }),
-  select: (teams) => {
-    if (!teams?.length) return null;
-    const opposition = teams.find(
-      ({ team_id }) => team_id !== props.badge.team_id
-    );
-    const home = teams.find(({ team_id }) => team_id === props.badge.team_id);
-    return {
-      opposition: opposition?.team,
-      home: home?.team,
-      points_for: home?.points_scored ?? 0,
-      points_against: opposition?.points_scored ?? 0,
-    };
-  },
-  enabled: isShowing,
-});
 
 const getBadgeCountGlobal = async () => {
   const client = useSupabaseClient();

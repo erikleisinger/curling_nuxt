@@ -1,9 +1,11 @@
 import { getGameEndCount } from "@/service/api/query/game/getGameEndCount";
-import { getGameScoreDetails } from "@/service/api/query/game/getGameScoreDetails";
+import { getGameEndDetails } from "@/service/api/query/game/getGameEndDetails";
 import { getGameTeams } from "@/service/api/query/game/getGameTeams";
+import { getGameInfo } from "@/service/api/query/game/getGameInfo";
 
 export {
     getGameEndCount,
-    getGameScoreDetails,
-    getGameTeams
+    getGameInfo,
+    getGameEndDetails,
+    getGameTeams,
 }

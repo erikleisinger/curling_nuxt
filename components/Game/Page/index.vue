@@ -1,6 +1,6 @@
 <template>
-<q-inner-loading :showing="isLoadingGames"/>
-    <div class="container" v-if="!isLoadingGames && !isError" ref="container">
+<q-inner-loading :showing="loading"/>
+    <div class="container" v-if="!loading && !error" ref="container">
         <GamePageHeader :gameId="gameId" />
         <GamePageSummary :gameId="gameId" />
         <div class="details">
@@ -13,7 +13,7 @@
         <GamePageEditHandler :gameId="gameId"/>
         </div>
     </div>
-    <ErrorPage v-else-if="isError" >
+    <ErrorPage v-else-if="error" >
         {{error}}
     </ErrorPage>  
 </template>
@@ -41,57 +41,22 @@
 }
 </style>
 <script setup>
-import { useQuery} from "@tanstack/vue-query";
+import { getFullGame } from "@/business/api/query/game";
 
 const props = defineProps({
     gameId: Number,
 });
 
-
 const { setLoading } = useLoading();
 
-const { getGame } = useGame();
 
-const gameLoaded = ref(false);
+const {fetch} = useApi();
 
-const {
-    isLoading: isLoadingGames,
-    isSuccess: isGamesDone,
-    isError,
-    error,
-    data: currentGame,
-} = useQuery({
-    queryKey: ["game", props.gameId],
-    queryFn: () => getGame(props.gameId),
-    select: (val) => {
-        gameLoaded.value = true;
-        return val;
-    },
-    onError: (e) => {
-        console.log('error: ', e)
-    },
-    retry: false,
-    refetchOnWindowFocus: false
-});
-
-const pageReady = computed(() => gameLoaded.value);
-
-watch(pageReady, (val) => {
-    if (!val) return;
-    setLoading(false);
-});
-
-const getBadges = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("badges")
-        .select("*")
-        .eq("game_id", props.gameId);
-};
-
-// onMounted(() => {
-//     getBadges()
-// })
+const {loading, error} = fetch(getFullGame(props.gameId), {
+    onComplete: () => {
+        setLoading(false);
+    }
+})
 
 </script>
 <script>
