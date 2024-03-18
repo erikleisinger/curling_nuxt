@@ -22,50 +22,58 @@ export const getGameScore = (gameId: number) => {
     return async (onChange: Function) => {
         onChange(defaultScore)
         try {
+            
+            const saveScoreDetails = (data) => {
+                const hammer_first_end =
+                    data?.find(({ end_number }) => end_number === 1)
+                        .hammer_team_id ?? 0;
+
+                useRepo(Game).save({ id: gameId, hammer_first_end });
+                return data;
+            }
             const scoreDetails = await client.fetch({
                 queryFunc: () => getGameScoreDetails(gameId),
                 queryKey: `game-${gameId}-scoreDetails`,
-                onChange: (val) => {
-                    const hammer_first_end =
-                        val?.find(({ end_number }) => end_number === 1)
-                            .hammer_team_id ?? 0;
+                onChange: saveScoreDetails,
+            }).then(saveScoreDetails)
     
-                    useRepo(Game).save({ id: gameId, hammer_first_end });
-                },
-            });
-    
+            
+            const saveEndCount = (val) => {
+                useRepo(Game).save({ id: gameId, end_count: val });
+                return val;
+            }
             const end_count = await client.fetch({
                 queryFunc: () => getGameEndCount(gameId),
                 queryKey: `game-${gameId}-endCount`,
-                onChange: (val) => {
-                    useRepo(Game).save({ id: gameId, end_count: val });
-                },
-            });
+                onChange: saveEndCount,
+            }).then(saveEndCount);
+
+            const saveGameTeams = (val) => {
+                val?.forEach((item) => {
+                    const { team, color, placeholder, pending } = item;
+                    useRepo(Team).save(team);
+                    useRepo(GameTeam).save({
+                        game_id: gameId,
+                        team_id: team.id,
+                        pending,
+                        color,
+                        placeholder,
+                    });
+                });
+                return val
+            }
     
             const [home, away] = await client.fetch({
                 queryFunc: () => getGameTeams(gameId),
                 queryKey: `game-${gameId}-teams`,
-                onChange: (val) => {
-                    val?.forEach((item) => {
-                        const { team, color, placeholder, pending } = item;
-                        useRepo(Team).save(team);
-                        useRepo(GameTeam).save({
-                            game_id: gameId,
-                            team_id: team.id,
-                            pending,
-                            color,
-                            placeholder,
-                        });
-                    });
-                },
-            });
+                onChange: saveGameTeams,
+            }).then(saveGameTeams)
 
             const score = generateLineScore(scoreDetails, end_count,{...home, team_id: home.team.id}, {...away, team_id: away.team.id})
 
     
             return score;
         } catch {
-           
             return defaultScore;
         }
        

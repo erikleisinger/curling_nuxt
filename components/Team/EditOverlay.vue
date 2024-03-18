@@ -234,6 +234,7 @@ import { VALIDATION_RULES } from "@/constants/validation";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useQueryClient } from "@tanstack/vue-query";
 import client from '@/service/client'
+import { createTeam, updateTeam } from "@/business/api/mutate/team";
 const queryClient = useQueryClient();
 const MAX_NAME_LENGTH = 25;
 const nameInput = ref(null);
@@ -308,18 +309,17 @@ const handleSave = async () => {
 };
 const save = async () => {
     
-    const { $api } = useNuxtApp();
+    const {mutate} = useApi()
     if (props.teamId) {
-        await $api.updateTeam(editedTeam.value);
-        client.cache.delete(`team-${props.teamId}-full`)
+        await mutate(updateTeam(editedTeam.value));
+        
         toggleEditing(false)
         return props.teamId;
     } else {
-        const teamId = await $api.createTeam(editedTeam.value);
-        client.cache.delete(`team-${teamId}-full`)
+        const teamId = await mutate(createTeam(editedTeam.value));
         await useUserTeamStore().fetchUserTeams(true);
         toggleEditing(false, true)
-        return teamId;
+        return teamId
     }
 
 };

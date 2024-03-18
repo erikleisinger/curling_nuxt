@@ -9,17 +9,15 @@ const route = useRoute();
 const teamId = Number(route.params.id)
 
 const {setLoading} = useLoading();
-const {fetch, loading: isLoading} = useApi()
+const {fetch} = useApi()
 
 const enabled = !!route.params.id && route.params.id !== 'create'
 
-if (enabled) {
-    fetch(getTeam(teamId)).then(() => setLoading(false))
-}
-
-onMounted(() =>{
-    console.log('MOUNTED TEAM PAGE: ', teamId)
+const {loading: isLoading} = fetch(getTeam(teamId), {
+    enabled,
+    onComplete: () => setLoading(false)
 })
+
 
 
 </script>

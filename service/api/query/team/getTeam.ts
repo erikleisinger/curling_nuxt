@@ -12,12 +12,6 @@ export const getTeam = async (teamId: number) => {
             sheets
         )
         `).eq('id', teamId)
-
-    // data.forEach((team) => {
-    //     const {rink} = team;
-    //     useRepo(Team).save(team);
-    //     if (rink) useRepo(Rink).save(rink)
-    // })
     
     return data;
 }

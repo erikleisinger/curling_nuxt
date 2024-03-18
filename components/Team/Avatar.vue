@@ -233,9 +233,9 @@ const visible = ref(false);
 const avatar_url = computed(() => team.value.avatar_url)
 const {teamId} = toRefs(props)
 
-const {fetch, result: avatarUrl, loading} = useApi(`teamavatar-${props.teamId}`)
+const {fetch} = useApi(`teamavatar-${props.teamId}`)
 
-fetch(getTeamAvatar(props.teamId))
+const {loading, result: avatarUrl}= fetch(getTeamAvatar(props.teamId))
 
 
 

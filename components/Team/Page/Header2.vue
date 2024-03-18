@@ -96,9 +96,9 @@ const team = computed(() => {
 
 const {editedTeam, toggleEditing, editing, resetEditedTeam} = useEditTeam();
 
-const {fetch, result: avatar, loading} = useApi()
+const {fetch} = useApi()
 
-fetch(getTeamAvatar(props.teamId))
+const {result: avatar, loading} = fetch(getTeamAvatar(props.teamId))
 
 const displayAvatar = computed(() => {
     if (editing.value) {

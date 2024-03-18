@@ -1,21 +1,19 @@
 import { updateTeamAvatar } from "@/business/api/mutate";
-
+import client from '@/service/client'
 export default async (
-    client: any,
     {
         id,
         name,
         rink,
-        avatar,
+
     }: {
         id: number;
         name: string;
         rink: number | object;
-        avatar: object;
     }
 ) => {
     const rink_id = typeof rink === "string" ? rink : rink?.id;
-    const { data } = await client
+    const { data } = await client.client
         .from("teams")
         .insert({
             name: name,
@@ -25,19 +23,6 @@ export default async (
         .single();
 
     const { id: teamId } = data;
-
-    if (avatar?.file) {
-        try {
-            await updateTeamAvatar(client, {
-                fileName: avatar.path,
-                file: avatar.file,
-                teamId,
-            });
-        } catch(e) {
-            console.log('ERROR UPDATING AVATAR: ', e)
-            // await client.from("teams").delete().eq("id", teamId);
-        }
-    }
 
     return teamId
 };

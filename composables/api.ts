@@ -1,18 +1,44 @@
 export const useApi = () => {
-    const result = ref(null);
-    const loading = ref(true)
-
-    const fetch = async (fetchFunction: Function) => {
-        const data = await fetchFunction(async (val) => {
+    const defaultFetchOptions = {
+        enabled: true,
+        onComplete: () => {}
+    }
+    const fetch = (fetchFunction: Function, {enabled, onComplete} : {enabled: boolean, onComplete: Function} = defaultFetchOptions) => {
+        
+        const result = ref(null);
+        const loading = ref(true);
+        if (!enabled) return {
+            result, 
+            loading
+        }
+        fetchFunction(async (val) => {
             const value = await val;
             result.value = value;
-        });
-        result.value = data;
-        loading.value = false;
+        }).then((data) => {
+            result.value = data;
+            loading.value = false;
 
-        return data;
+            onComplete(data)
+        });
+
+        watch(result, (val) => {
+            // console.log('result updated: ', val)
+        })
+      
+
+        return { result, loading };
     };
 
+    const mutate = async (mutateFunction: Function) => {
 
-    return { fetch, result, loading };
+
+        const data = await mutateFunction();
+    
+
+        return data;
+    }
+
+    
+
+    return { fetch, mutate };
 };

@@ -33,7 +33,7 @@ export const useEditTeam = () => {
         .where("id", teamId)
         .first() ?? {};
         editedTeam.value = reactive(new EditedTeam(team));
-        const avatar_blob = await fetch(getTeamAvatar(teamId))
+        const {result:avatar_blob} = await fetch(getTeamAvatar(teamId))
         editedTeam.value.avatar.url = toValue(avatar_blob);
     }
     return {editedTeam, init, toggleEditing, editing, resetEditedTeam} 
