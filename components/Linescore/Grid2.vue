@@ -155,7 +155,7 @@ const fetchEnabled = ref(!!props.gameId);
 
 const {fetch} = useApi(`teamavatar-${props.teamId}`)
 
-const {result: gameScore, loading} = fetch(getGameScore(props.gameId))
+const {result: gameScore, loading} = fetch(getGameScore(props.gameId), {enabled: fetchEnabled})
 
 const score = computed(() => props.editedScore || gameScore.value);
 

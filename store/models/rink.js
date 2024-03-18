@@ -1,5 +1,5 @@
 import {Model } from "pinia-orm";
-import Team from '@/store/models/team'
+import Sheet from '@/store/models/sheet'
 
 export default class Rink extends Model {
     static entity = "rinks";
@@ -9,7 +9,8 @@ export default class Rink extends Model {
             name: this.string("Unnamed rink"),
             province: this.string(''),
             city: this.string(''),
-            sheets: this.number()
+            sheets: this.hasMany(Sheet, 'rink_id'),
+            sheet_count: this.number()
            
         };
     }

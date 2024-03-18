@@ -159,22 +159,15 @@ import {
     STAT_TYPES
 } from "@/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
-import { useUserTeamStore } from "@/store/user-teams";
-import { useTeamRequestStore } from "@/store/team-requests";
-import { useEventListener, useSwipe } from "@vueuse/core";
+import { useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
 import TeamStats from "@/store/models/team-stats";
 import Team from "@/store/models/team";
-import Rink from "@/store/models/rink";
-import Sheet from "@/store/models/sheet";
 import Player from "@/store/models/player";
-import { useDialogStore } from "@/store/dialog";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 import {Stats} from '@/store/models/stats/stats'
 gsap.registerPlugin(Flip);
-
-const { getColor } = useColor();
 
 const filters = ref({
     teams: [],

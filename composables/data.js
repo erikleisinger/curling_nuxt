@@ -1,5 +1,4 @@
 import {useUserStore} from '@/store/user'
-import {useTeamRequestStore} from '@/store/team-requests'
 import {useUserTeamStore} from '@/store/user-teams'
 import { useGameRequestStore } from "@/store/game-requests";
 
@@ -12,7 +11,6 @@ export const useData = () => {
       progress.value = 0
       const {getCurrentUser} = userStore;
       const {fetchUserTeams} = userTeamStore;
-      const {getTeamRequestsByUser} = useTeamRequestStore();
       const {getGameRequestsByUser} = useGameRequestStore();
 
       await getCurrentUser()
@@ -20,7 +18,6 @@ export const useData = () => {
       const operations = [
         // () => fetchRinks(),
         () => fetchUserTeams(true),
-        () => getTeamRequestsByUser(userStore.id),
         () => getGameRequestsByUser(userStore.id)
        
       ];

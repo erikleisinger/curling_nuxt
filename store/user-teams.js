@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { useNotificationStore } from "@/store/notification";
-import Team from '@/store/models/team'
-import Rink from '@/store/models/rink'
-import TeamPlayer from '@/store/models/team-player'
+import Team from "@/store/models/team";
+import Rink from "@/store/models/rink";
+import TeamPlayer from "@/store/models/team-player";
 
 export const useUserTeamStore = defineStore("user-teams", {
     state: () => {
@@ -50,30 +50,41 @@ export const useUserTeamStore = defineStore("user-teams", {
             if (this.userTeams?.length && !force) return;
             const { user: userId } = useUser();
             const client = useSupabaseClient();
-            const {data:ids} = await client.from('team_profile_junction').select(`
+            const { data: ids } = await client
+                .from("team_profile_junction")
+                .select(
+                    `
                 team_id
-            `).eq('profile_id', userId.value)
-
-      
-            const teamIds = ids.map(({team_id}) => team_id)
-
-            const {data} = await client.from('teams').select(`
-            id,
-           name,
-             avatar_url,
-              rink:rink_id (
-                 id,
-                 name,
-             city,
-                   province,
-                   sheets     
+            `
                 )
-            `).in('id', teamIds)
-            
-            useRepo(Rink).save(data.reduce((all, current) => {
-                if (!current?.rink?.id) return all;
-                return [...all, current.rink]
-            }, []))
+                .eq("profile_id", userId.value);
+
+            const teamIds = ids.map(({ team_id }) => team_id);
+
+            const { data } = await client
+                .from("teams")
+                .select(
+                    `
+                    id,
+                    name,
+                    avatar_url,
+                    rink:rink_id (
+                        id,
+                        name,
+                        city,
+                        province,
+                        sheet_count     
+                )
+            `
+                )
+                .in("id", teamIds);
+
+            useRepo(Rink).save(
+                data.reduce((all, current) => {
+                    if (!current?.rink?.id) return all;
+                    return [...all, current.rink];
+                }, [])
+            );
 
             data.forEach((t) => {
                 useRepo(Team).save({
@@ -81,22 +92,13 @@ export const useUserTeamStore = defineStore("user-teams", {
                     name: t.name,
                     avatar_url: t.avatar_url,
                     rink_id: t.rink?.id,
-                })
+                });
                 useRepo(TeamPlayer).save({
                     team_id: t.id,
-                    player_id: userId.value
-                })
-            }
-         
+                    player_id: userId.value,
+                });
+            });
 
-
-          
-            )
-            
-          
-
-
-           
             this.userTeams = data ?? [];
         },
         async removeTeam(team) {

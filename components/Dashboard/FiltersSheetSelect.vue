@@ -1,7 +1,7 @@
 <template>
     <div class="row" style="gap: 2px">
         <div
-            v-for="number in [...Array(rink?.sheets).keys()].map((i) => i + 1)"
+            v-for="number in [...Array(rink?.sheet_count).keys()].map((i) => i + 1)"
             :key="`sheet-${number}`"
             class="sheet__number clickable"
             :class="{disabled: !sheets?.some(({number: sheetNumber}) => sheetNumber === number), selected: sheets?.find(({id}) => id === selectedSheet)?.number === number}"

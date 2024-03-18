@@ -581,17 +581,6 @@ const scrollTo = (end) => {
  */
 
 
-const getSheet = async () => {
-    const client = useSupabaseClient();
-    const { data } = await client
-        .from("sheets")
-        .select("id")
-        .eq("rink_id", gameParams.value.rink?.id)
-        .eq("number", gameParams.value.sheet);
-    const [sheetFromDb] = data || [];
-    return sheetFromDb?.id;
-};
-
 const saving = ref(false);
 const saved = ref(false);
 const save = async () => {

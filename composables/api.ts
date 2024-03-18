@@ -1,13 +1,14 @@
+import type { Ref } from 'vue'
 export const useApi = () => {
     const defaultFetchOptions = {
-        enabled: true,
+        enabled: ref(true),
         onComplete: () => {}
     }
-    const fetch = (fetchFunction: Function, {enabled, onComplete} : {enabled: boolean, onComplete: Function} = defaultFetchOptions) => {
+    const fetch = (fetchFunction: Function, {enabled, onComplete} : {enabled: Ref<boolean>, onComplete: Function} = defaultFetchOptions) => {
         
         const result = ref(null);
         const loading = ref(true);
-        if (!enabled) return {
+        if (!enabled.value) return {
             result, 
             loading
         }

@@ -9,7 +9,7 @@ export const getTeam = async (teamId: number) => {
             name,
             city,
             province,
-            sheets
+            sheet_count
         )
         `).eq('id', teamId)
     

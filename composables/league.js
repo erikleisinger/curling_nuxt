@@ -154,7 +154,7 @@ export const useLeague = () => {
             rink:rink_id (
                 id,
                 name,
-                sheets,
+                sheet_count,
                 city,
                 province
             ),

@@ -111,7 +111,7 @@ export const useGame = () => {
                 name,
                 city,
                 province,
-                sheets
+                sheet_count
             ),
             conceded,
             sheet:sheet_id(

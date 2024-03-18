@@ -11,7 +11,7 @@ const teamId = Number(route.params.id)
 const {setLoading} = useLoading();
 const {fetch} = useApi()
 
-const enabled = !!route.params.id && route.params.id !== 'create'
+const enabled = computed(() => !!route.params.id && route.params.id !== 'create')
 
 const {loading: isLoading} = fetch(getTeam(teamId), {
     enabled,

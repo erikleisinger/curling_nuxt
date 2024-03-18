@@ -230,7 +230,6 @@
 import Team from "@/store/models/team";
 import TeamPlayer from "@/store/models/team-player";
 import { useDialogStore } from "@/store/dialog";
-import { parseAvatar } from "@/utils/avatar";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useNotificationStore } from "@/store/notification";

@@ -70,7 +70,7 @@
             </div>
             <div class="row" v-if="rink?.id">
                 <div
-                    v-for="number in [...Array(rink?.sheets).keys()].map(
+                    v-for="number in [...Array(rink?.sheet_count).keys()].map(
                         (i) => i + 1
                     )"
                     :key="`sheet-${number}`"

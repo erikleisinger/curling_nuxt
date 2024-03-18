@@ -148,8 +148,6 @@ padding-right: 0px;
         bottom: 0;
         height: fit-content;
         margin: auto;
-        // right: 0;
-        // left: -12px;
         right: -12px;
         width: fit-content;
     }
@@ -158,8 +156,6 @@ padding-right: 0px;
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import { useGameRequestStore } from "@/store/game-requests";
-import { numberToLetter } from "@/utils/sheets";
 import GameTeam from "@/store/models/game-team";
 import Team from "@/store/models/team";
 import Game from "@/store/models/game";

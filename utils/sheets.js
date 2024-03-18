@@ -1,3 +1,8 @@
 export const numberToLetter = (num) => {
-return String.fromCharCode(97 + num - 1).toUpperCase()
+    try {
+        return String.fromCharCode(97 + num - 1).toUpperCase()
+    } catch {
+        return 'N/A'
+    }
+
 }
