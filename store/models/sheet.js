@@ -1,6 +1,6 @@
 import {Model } from "pinia-orm";
 import Rink from '@/store/models/rink'
-import { numberToLetter } from '@/utils/sheets'
+import { numberToLetter } from '@/business/utils/sheet'
 export default class Sheet extends Model {
     static entity = "sheets";
 

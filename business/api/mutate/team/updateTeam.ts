@@ -24,7 +24,6 @@ export default ({
             });    
             cache.delete(`team-${id}-avatar`)
         } 
-
         cache.delete(`team-${id}-full`)
     }
     

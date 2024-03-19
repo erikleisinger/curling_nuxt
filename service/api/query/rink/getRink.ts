@@ -4,5 +4,5 @@ export const getRink = async (rinkId: number) => {
     return runQuery(async () => await client.client
     .from("rinks")
     .select("*")
-    .eq("id", rinkId).single());
+    .eq("id", rinkId).single(), `getRink ${rinkId}`);
 };

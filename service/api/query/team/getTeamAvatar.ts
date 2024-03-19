@@ -1,6 +1,6 @@
 import client from '@/service/client';
 import runQuery from '@/service/api/query/runQuery';
-const defaultAvatar = new URL("~/assets/rink.jpg", import.meta.url).href;
+const defaultAvatar = new URL("~/presentation/assets/rink.jpg", import.meta.url).href;
 
 export const getAvatarUrl = async (teamId: number) => {
     const data = await runQuery(async () => await client.client
@@ -13,6 +13,7 @@ export const getAvatarUrl = async (teamId: number) => {
 };
 
 export const getAvatar = async (teamId: number) => {
+    if (!teamId) return defaultAvatar
     const url = await getAvatarUrl(teamId);
 
     if (!url) return defaultAvatar

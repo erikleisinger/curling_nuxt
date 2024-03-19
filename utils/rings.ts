@@ -2,7 +2,7 @@ import {
     ROCK_DIAMETER_PERCENT_Y,
     RINGS_HEIGHT_PERCENT,
     ROCK_DIAMETER_PERCENT_X,
-} from "@/constants/dimensions";
+} from "@/presentation/constants/dimensions";
 
 export const isRockInRings = (
     positionXPercent:number,

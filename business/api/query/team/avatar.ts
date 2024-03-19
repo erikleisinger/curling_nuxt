@@ -7,7 +7,7 @@ export const getTeamAvatar = (teamId: Number) => {
         useRepo(Team).where('id', teamId).update({'avatar_blob': data})
         return data;
     }
-    return async (onChange: Function) =>  await client.fetch({
+    return async (onChange: Function = (val) => val) =>  await client.fetch({
                 queryFunc: () => getAvatar(teamId),
                 queryKey: `team-${teamId}-avatar`,
                 onChange: (data) => {

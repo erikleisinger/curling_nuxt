@@ -1,6 +1,6 @@
 import {calcWins, calcHammerEfficiency, calcStealEfficiency,  formatPercent, cleanNumber, sortByStartTime} from '@/store/models/stats/utils'
-import {getColor} from '@/utils/color'
-import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
+import {getColor} from '@/business/utils/color'
+import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/presentation/constants/stats'
 
 export class Wins {
     constructor(stats, filterFunc = () => true) {

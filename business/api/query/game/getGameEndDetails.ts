@@ -2,8 +2,10 @@ import { useRepo } from "pinia-orm";
 import Game from "@/store/models/game";
 import client from "@/service/client";
 import { getGameEndDetails } from "@/service/api/query/game";
+import type {End} from '@/service/types/end/End'
+
 export default (gameId: number) => {
-    return async (onChange?: Function) =>
+    return async (onChange?: Function): Promise<Partial<End>[]> =>
     {
         const saveGameEndDetails = (data) => {
             const hammer_first_end =
@@ -17,9 +19,8 @@ export default (gameId: number) => {
             queryFunc: () => getGameEndDetails(gameId),
             queryKey: `game-${gameId}-scoreDetails`,
             onChange: saveGameEndDetails,
-        }).then(saveGameEndDetails)
+        }).then(saveGameEndDetails);
 
         return scoreDetails;
-    }
-       
+    }    
 };

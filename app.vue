@@ -38,7 +38,7 @@
 }
 </style>
 <script setup lang="ts">
-import { PUBLIC_ROUTES } from "@/constants/routes";
+import { PUBLIC_ROUTES } from "@/presentation/constants/routes";
 import { useEventListener, useScreenOrientation } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
 import {useUserStore} from '@/store/user'

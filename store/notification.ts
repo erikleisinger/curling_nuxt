@@ -19,7 +19,7 @@ export const useNotificationStore = defineStore("notification", {
             state = 'completed',
         }: {
             text: string;
-            timeout?: number;
+            timeout: number;
             state: NotificationState
         }) {
             const id = Math.floor(Math.random() * 1000000);
@@ -31,16 +31,20 @@ export const useNotificationStore = defineStore("notification", {
             return id;
         },
         updateNotification(
-            id: number,
-            updates: { state?: NotificationState; text?: string, timeout: number }
+            id: number | null | undefined,
+            updates: { state: NotificationState; text: string, timeout: number }
         ) {
             if (!updates || !Object.keys(updates)?.length) return;
-            const notification = this.notifications[id];
-            if (!notification) return;
-            Object.assign(notification, {
-                ...updates,
-                timeout: updates.timeout || 5000
-            });
+            const notification = !!id && this.notifications[id];
+            if (!notification) {
+                this.addNotification(updates)
+            } else {
+                Object.assign(notification, {
+                    ...updates,
+                    timeout: updates.timeout || 5000
+                });
+            }
+           
         },
         clearNotification(id: number) {
             delete this.notifications[id];

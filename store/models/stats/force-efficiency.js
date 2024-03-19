@@ -1,6 +1,6 @@
 import {calcForceEfficiency, sortByStartTime, cleanNumber} from '@/store/models/stats/utils'
-import {getColor} from '@/utils/color'
-import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/constants/stats'
+import {getColor} from '@/business/utils/color'
+import {STAT_COLORS, STAT_NAMES, STAT_TYPES} from '@/presentation/constants/stats'
 
 export class ForceEfficiency {
     constructor(stats) {

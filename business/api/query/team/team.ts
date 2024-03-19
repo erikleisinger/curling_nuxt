@@ -15,6 +15,8 @@ export const getTeam = (teamId: Number) => {
     };
     return async (onChange: Function) => {
 
+      
+
             const data = await client
             .fetch({
                 queryFunc: () => getTeamQuery(teamId),
@@ -31,6 +33,8 @@ export const getTeam = (teamId: Number) => {
                 const getRinkQuery = getRink(rink_id);
                 await getRinkQuery();
             }
+
+     
  
         
         

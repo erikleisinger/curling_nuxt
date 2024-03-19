@@ -1,4 +1,4 @@
-import {STAT_TYPES} from '@/constants/stats'
+import {STAT_TYPES} from '@/presentation/constants/stats'
 import {Wins} from '@/store/models/stats/wins'
 import { HammerEfficiency } from '@/store/models/stats/hammer-efficiency';
 import { PointsPerEnd } from '@/store/models/stats/points-per-end';

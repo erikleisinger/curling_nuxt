@@ -1,7 +1,7 @@
 import { Model } from "pinia-orm";
 import Team from "@/store/models/team";
 import Game from "@/store/models/team";
-import {EPHEMERAL_BADGES} from '@/constants/badges'
+import {EPHEMERAL_BADGES} from '@/presentation/constants/badges'
 
 export default class Badge extends Model {
     static entity = "badges";

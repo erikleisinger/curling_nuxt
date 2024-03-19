@@ -4,11 +4,14 @@ import cache from '@/service/cache'
 import { supabaseClient } from "@/service/client/createClient";
 import throttle from 'lodash.throttle'
 import { timeout } from "@/business/utils/async/timeout";
+import type {Query} from '@/service/types/Query'
+
+
 export class Client {
     client: SupabaseClient;
     cache: CacheType;
     id: string;
-    queue: Map<string, Function>
+    queue: Map<string, Function | null>
     constructor() {
         this.client = supabaseClient();
         this.cache = cache;
@@ -20,44 +23,56 @@ export class Client {
         func();
     }
 
-    private listenForChange = (key: string, func: Function) => {
-        this.cache.onChange(key, () => this.changeEvent(func), this.id)
+    private listenForChange = (key: string, func: Function, callbackId: string) => {
+        this.cache.onChange(key, () => this.changeEvent(func), callbackId)
     }
 
-    private setQueueFunc = throttle((queryKey: string, func: Function) => {
-        this.queue.set(queryKey, func)
+    private setQueueFunc = throttle( (queryKey: string, func: Function) => {
+        if (this.cache.has(queryKey)) return;
+        this.cache.set(queryKey, null)
+        func().then((data) => {
+            this.cache.set(queryKey, data)
+        })
     }, 1)
+
+
+    private getCacheValue = async (queryKey: string, func: Function) => {
+        const val = this.cache.get(queryKey);
+        if (!val) {
+            this.setQueueFunc(queryKey, func)
+            await timeout(100);
+            return this.getCacheValue(queryKey, func)
+        }
+        return val;
+           
+    }
 
     public fetch = async ({
         queryKey,
         queryFunc,
-        onChange
-  
+        onChange,
+        callbackId = (Math.random() * 1000000000000).toFixed()
         
     }: {
         queryKey: string;
         queryFunc: Function;
         onChange: Function;
+        callbackId: string;
     
         
     }) => {
         this.listenForChange(queryKey, async () => await this.fetch({
             queryKey,
             queryFunc,  
-            onChange
-        }))
-        const cachedValue = this.cache.get(queryKey);
-        if (cachedValue) return cachedValue;
-        this.setQueueFunc(queryKey, queryFunc)
-        await timeout(2)
-        const func = this.queue.get(queryKey);
-   
-            const val = await func();
-            this.cache.set(queryKey, val)
-            return val
+            onChange,
+            callbackId
+        }).then((res) => {
+            if (!onChange) return res;
+            onChange(res)
+        }), callbackId);
 
-        
-       
+        const val = await this.getCacheValue(queryKey, queryFunc);
+        return val;
     }
 
 

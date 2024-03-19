@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { BasicTeamRequest, RequestStatus } from "@/types/request";
-import { TABLE_NAMES } from "@/constants/tables";
+import { TABLE_NAMES } from "@/presentation/constants/tables";
 import { useNotificationStore } from "@/store/notification";
 import TeamPlayer from '@/store/models/team-player';
 import Team from '@/store/models/team'

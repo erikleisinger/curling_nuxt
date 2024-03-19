@@ -3,12 +3,14 @@ export class FetchError extends Error {
     message: string;
     name: string;
     code: string;
-    constructor(error: QueryError) {
+    queryName: string;
+    constructor(error: QueryError, queryName: string = 'Unknown query') {
         super()
         const {message, code} = error;
-        this.message = message;
+        this.message = `${message} (${queryName})`;
         this.name = 'FetchError'
         this.code = code;
+        this.queryName = queryName;
 
     }
 }

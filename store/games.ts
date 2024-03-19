@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import { TABLE_NAMES } from "@/constants/tables";
+import { TABLE_NAMES } from "@/presentation/constants/tables";
 import type Game from "@/types/game";
 import type End from "@/types/end";
 import { useNotificationStore } from "@/store/notification";

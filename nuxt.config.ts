@@ -14,6 +14,26 @@ export default defineNuxtConfig({
             ],
         },
     },
+    components: {
+        dirs: [
+          {
+            path: "presentation/components",
+            global: true,
+          },
+        ],
+      },
+    dir: {
+        layouts: "presentation/layouts",
+        middleware: "presentation/middleware",
+        pages: "presentation/pages",
+        plugins: "presentation/plugins",
+        public: "presentation/public",
+    },
+    imports: {
+        dirs: [
+            'presentation/composables/**'
+        ]
+    },
     meta: {
         title: 'Pebble'
     },
@@ -100,7 +120,7 @@ export default defineNuxtConfig({
         css: {
             preprocessorOptions: {
                 scss: {
-                    additionalData: `@use '@/styles/variables.scss' as *; @use '@/styles/global.scss' as *; @use '@/styles/container.scss' as *; @use '@/styles/zindex.scss' as *; `,
+                    additionalData: `@use '@/presentation/styles/variables.scss' as *; @use '@/presentation/styles/global.scss' as *; @use '@/presentation/styles/container.scss' as *; @use '@/presentation/styles/zindex.scss' as *; `,
                 },
             },
         },
