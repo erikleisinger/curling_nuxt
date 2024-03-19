@@ -232,10 +232,7 @@
 import { useDialogStore } from "@/store/dialog";
 import { VALIDATION_RULES } from "@/presentation/constants/validation";
 import { useUserTeamStore } from "@/store/user-teams";
-import { useQueryClient } from "@tanstack/vue-query";
-import client from '@/service/client'
 import { createTeam, updateTeam } from "@/business/api/mutate/team";
-const queryClient = useQueryClient();
 const MAX_NAME_LENGTH = 25;
 const nameInput = ref(null);
 const nameError = computed(() => nameInput.value?.hasError);

@@ -17,5 +17,5 @@ export const getGameTeams = async (gameId: number) => {
         points_scored
 `
     )
-    .eq("game_id", gameId))
+    .eq("game_id", gameId), 'getGameTeams')
 };

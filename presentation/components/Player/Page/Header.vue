@@ -58,7 +58,6 @@
 </style>
 <script setup>
 import Player from "@/store/models/player";
-import { parseAvatar } from "@/utils/avatar";
 const props = defineProps({
     canEdit: Boolean,
     playerId: String,

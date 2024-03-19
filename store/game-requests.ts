@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/notification";
-import Team from '@/types/team'
 import { useUserTeamStore } from "@/store/user-teams";
 
 export const useGameRequestStore = defineStore("game-requests", {

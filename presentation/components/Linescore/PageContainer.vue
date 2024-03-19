@@ -54,8 +54,6 @@
 </style>
 <script setup>
 import { useDialogStore } from "@/store/dialog";
-import { useUserTeamStore } from "@/store/user-teams";
-import Team from "@/store/models/team";
 
 const { toggleLineScore, toggleGlobalSearch } = useDialogStore();
 

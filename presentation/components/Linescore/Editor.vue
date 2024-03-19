@@ -135,13 +135,9 @@
 <script setup>
 import {
     useMounted,
-    useRefHistory,
-    useVModel,
     useElementSize,
-    useEventListener,
 } from "@vueuse/core";
 import { useDialogStore } from "@/store/dialog";
-import { useUserTeamStore } from "@/store/user-teams";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
 gsap.registerPlugin(Flip);
@@ -168,7 +164,6 @@ const emit = defineEmits([
 
 const { toggleGlobalSearch } = useDialogStore();
 
-const userTeamStore = useUserTeamStore();
 
 const isMounted = useMounted();
 

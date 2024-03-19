@@ -410,7 +410,6 @@ $blob-blur: 32px;
 </style>
 <script setup lang="ts">
 import { useGameRequestStore } from "@/store/game-requests";
-import { useUserTeamStore } from "@/store/user-teams";
 import { useUserStore } from "@/store/user";
 import {useDialogStore} from '@/store/dialog'
 import {
@@ -587,9 +586,11 @@ const save = async () => {
 
     let shouldSendInvitation = false;
 
+    const {isOnTeam} = useTeam();
+
     if (
         !params.away?.id ||
-        !userTeams.value.some(({ id }) => id === params?.away?.id)
+        !isOnTeam(params?.away?.id)
     )
         shouldSendInvitation = true;
 
@@ -735,8 +736,6 @@ const showExtraEnd = () => {
  * Team selection
  */
 
-const userTeamStore = useUserTeamStore();
-const userTeams = computed(() => userTeamStore.userTeams);
 
 const userStore = useUserStore();
 

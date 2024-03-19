@@ -224,12 +224,9 @@
 </style>
 <script setup>
 import { onClickOutside, useSwipe } from "@vueuse/core";
-import { useUserTeamStore } from "@/store/user-teams";
 import { useTeamRequestStore } from "@/store/team-requests";
 import { useSessionStore } from "@/store/session";
 import Rink from "@/store/models/rink";
-import { parseAvatar } from "@/utils/avatar";
-import { useQuery } from "@tanstack/vue-query";
     import Player from "@/store/models/player";
 import Team from "@/store/models/team";
 const props = defineProps({

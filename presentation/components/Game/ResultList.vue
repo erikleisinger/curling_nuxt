@@ -182,11 +182,6 @@
 }
 </style>
 <script setup>
-import { useUserTeamStore } from "@/store/user-teams";
-import { useNotificationStore } from "@/store/notification";
-import { useThrottleFn } from "@vueuse/core";
-import { vElementVisibility } from "@vueuse/components";
-import { isPlaceholder } from "@/utils/team";
 import GameTeam from "@/store/models/game-team";
 import Game from "@/store/models/game";
 import Team from "@/store/models/team";
@@ -201,7 +196,6 @@ const props = defineProps({
     },
 });
 
-const initialized = ref(false);
 
 const totalGames = computed(() => games.value.length);
 
