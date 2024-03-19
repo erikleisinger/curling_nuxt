@@ -15,16 +15,17 @@ export default (
         teams
     }: {
         game: Game,
-        sheet_number: number,
+        sheet_number?: number | null,
         score: EndScores,
         teams: GameTeamInput[]
     }
 ) => {
     return async () => {
         const {rink_id} = game;
+
         const sheet = await createSheet(rink_id, sheet_number);
         const {id: sheet_id} = sheet;
-        console.log('GOT SHEET ID: ', sheet_id)
+
 
         const {hammer_first_end, ...gameToInsert} = game;
 
@@ -45,16 +46,6 @@ export default (
         })), game_id)
 
         return game_id;
-
-        // await createTeamGameJunction(
-        //     { ...gameToCreate, home: params?.home?.id, away: !params?.away?.id ? {
-        //         id: 0,
-        //         name: params?.away?.name
-        //     } : params?.away, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
-        //     shouldSendInvitation
-        // );
-
-
     }
     
 };

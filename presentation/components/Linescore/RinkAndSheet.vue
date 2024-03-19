@@ -75,8 +75,8 @@
                     )"
                     :key="`sheet-${number}`"
                     class="sheet__number"
-                    :class="{ selected: selectedSheet === number }"
-                    @click="selectedSheet = number"
+                    :class="{ selected: selectedSheet?.number === number }"
+                    @click="selectSheet(number)"
                 >
                     <span v-if="!letters">{{ number }}</span>
                     <span v-else>{{ numberToLetter(number) }}</span>
@@ -181,6 +181,16 @@ const selectedSheet = computed({
         return emit("update:sheet", val);
     },
 });
+
+const selectSheet = (number) => {
+    if (selectedSheet.value) {
+        selectedSheet.value.number = number;
+    } else {
+        selectedSheet.value = {
+            number
+        }
+    }
+}
 
 const selectedStartTime = computed({
     get() {

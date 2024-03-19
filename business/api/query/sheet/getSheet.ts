@@ -11,7 +11,7 @@ export default (sheetId: number) => {
 
         return sheet;
     };
-    return async (onChange?: Function) =>
+    return async (onChange?: Function = (val) => val) =>
         await client
             .fetch({
                 queryFunc: () => getSheet(sheetId),

@@ -91,7 +91,6 @@
                 :canEdit="true"
                 :selected="visible"
                 :selections="gameParams"
-                ref="editorContainer"
                 @scroll="scrollTo"
                 v-if="view === views.LINESCORE"
                 style="padding-top: 58px; height: 100%"
@@ -109,7 +108,6 @@
                 <div class="scoreboard--wrap full-height">
                     <div
                         class="scoreboard__container full-height"
-                        ref="linescoreContainer"
                     >
                         <div
                             class="scoreboard__score-container row no-wrap full-height"
@@ -411,38 +409,30 @@ $blob-blur: 32px;
 }
 </style>
 <script setup lang="ts">
-import { useDialogStore } from "@/store/dialog";
-import { useGameStore } from "@/store/games";
 import { useGameRequestStore } from "@/store/game-requests";
 import { useUserTeamStore } from "@/store/user-teams";
 import { useUserStore } from "@/store/user";
+import {useDialogStore} from '@/store/dialog'
 import {
     useElementSize,
     useScroll,
-    useSwipe,
-    useThrottleFn,
     useWindowSize,
     toRefs,
 } from "@vueuse/core";
-import { generateEnds, createSheet } from "@/utils/create-game";
-import { parseAvatar } from "@/utils/avatar";
 import { views } from "@/presentation/constants/linescore";
 import Team from '@/store/models/team';
 import Player from '@/store/models/player'
-import {useQuery, useQueryClient} from '@tanstack/vue-query'
 import Game from '@/store/models/game'
-import GameTeam from '@/store/models/game-team'
-import {timeout} from '@/utils/async'
 import {getFullGame} from '@/business/api/query/game'
 import generateLineScore from '@/business/utils/game/generateLineScore'
 import cache from '@/service/cache'
 import {createOrUpdateGame} from '@/business/api/mutate/game'
 
-const queryClient = useQueryClient();
 
 const dayjs = useDayjs();
 const { getColor } = useColor();
 const $q = useQuasar();
+
 const dialogStore = useDialogStore();
 const { toggleLineScore, toggleGlobalSearch } = dialogStore;
 
@@ -620,11 +610,13 @@ const save = async () => {
         gameToCreate.id = editedGameId;
     }
 
+    console.log(gameParams.value.sheet, sheetCopy)
+
     const {mutate} = useApi();
 
     const {error, result: gameId} = await mutate(createOrUpdateGame({
         game: gameToCreate,
-        sheet: sheetCopy,
+        sheet_number: sheetCopy?.number,
         score: scoreCopy,
         teams: [
             {
@@ -643,48 +635,13 @@ const save = async () => {
         progressNotification: editedGameId ? 'Updating game...' : 'Creating game...',
         successNotification: editedGameId ? 'Game updated!' : 'Game created!'
     })
-    
-    console.log(error, gameId)
+
 
     if (error) {
         saving.value = false;
         console.log("error occured")
         return;
     }
-
-    console.log('game created/updated: ', gameId)
-
-    // toggleLineScore({ open: false });
-    // let sheetId;
-    // if (!!sheetCopy) sheetId = await createSheet(rinkCopy?.id, sheetCopy);
-
-    
-
-
-  
-
-    // const gameId = await createGame(gameToCreate);
-
-    // if (!gameId) return;
-
-    // const ends = generateEnds(
-    //     scoreCopy,
-    //     params.hammerFirstEndTeam,
-    //     params.home?.id,
-    //     params?.away?.id ?? 0,
-    //     gameId
-    // );
-    // await createEnds(ends, !!editedGameId);
-
-    // await createTeamGameJunction(
-    //     { ...gameToCreate, home: params?.home?.id, away: !params?.away?.id ? {
-    //         id: 0,
-    //         name: params?.away?.name
-    //     } : params?.away, home_color: params.homeColor, away_color: params.awayColor, id: gameId },
-    //     shouldSendInvitation
-    // );
-
- 
 
     if (editedGameId) {
         cache.delete(`game-${editedGameId}-info`)
@@ -697,53 +654,6 @@ const save = async () => {
 
     return navigateTo(`/games/view/${gameId}`);
 };
-
-const createTeamGameJunction = async (game, isPending) => {
-    const client = useSupabaseClient();
-    
-    const {
-        id: game_id,
-        home_color,
-        away_color,
-        home,
-        away,
-    } = game;
-
-    await client.from('game_team_junction').delete().eq('game_id', game_id)
-    const { errors } = await client
-        .from("game_team_junction")
-        .upsert([
-            {
-                game_id,
-                team_id: home,
-                color: home_color,
-                pending: false,
-            },
-            {
-                game_id,
-                team_id: away?.id,
-                color: away_color,
-                pending: isPending,
-                placeholder: away?.id ? null : (away?.name ?? 'Unnamed opposition'),
-            },
-        ]);
-};
-
-const gameStore = useGameStore();
-
-const createGame = async (game) => {
-    const gameId = await gameStore.insertGame(game);
-    return gameId;
-};
-
-const createEnds = async (ends, isEdited) => {
-    if (isEdited) {
-        await gameStore.bulkUpdateGameEnds(ends);
-    } else {
-    await gameStore.createGameEnds(ends);
-    }
-};
-
 
 const route = useRoute();
 const editedGameId = Number(route.query.gameId);
@@ -761,14 +671,6 @@ onMounted(async () => {
     
     loading.value = false;
 });
-
-/**
- * Calc height of main content
- */
-
-const nav = ref(null);
-const { height: navHeight } = useElementSize(nav);
-const contentHeight = computed(() => `calc(100% - ${navHeight.value}px)`);
 
 /**
  * scoreboard management
@@ -847,13 +749,7 @@ const colWidth = () => {
     // const numEnds = Object.keys(score.value)?.length;
     // return 100 / numEnds;
 };
-const linescoreContainer = ref(null);
-const editorContainer = ref(null);
-const { height: editorHeight } = useElementSize(editorContainer);
 
-const linescoreHeight = computed(
-    () => `calc(100% - ${editorHeight.value}px - 20x)`
-);
 
 const goSummary = () => {
     view.value = views.DETAILS;
@@ -889,6 +785,7 @@ const setRink = () => {
 }
 
 watch(() => gameParams.value.home, (val) => {
+    if (editedGameId) return;
     setRink();
 })
 
@@ -897,13 +794,14 @@ watch(() => gameParams.value.home, (val) => {
 const initEditedGame = async (attempt = 0, data) => {
     if (attempt > 9) return;
     const {isOnTeam} = useTeam();
-    const {ends, teams} = data;
+    const {ends, teams, game} = data;
     const home = teams.find(({team}) => isOnTeam(team.id))
     const away = teams.find(({team}) => team.id !== home?.team?.id)
   
-    const editedGame = useRepo(Game).withAllRecursive().where('id', editedGameId).first();
+    const {rink, sheet} = useRepo(Game).with('rink').with('sheet').where('id', editedGameId).first()
+    if (!rink) setRink();
 
-    const {end_count} = editedGame;
+    const {end_count, hammer_first_end, start_time } = game;
 
     gameParams.value.home = {
         ...home?.team,
@@ -915,11 +813,11 @@ const initEditedGame = async (attempt = 0, data) => {
     };
     gameParams.value.homeColor = home.color;
     gameParams.value.awayColor = away.color;
-    gameParams.value.rink = editedGame?.rink;
-    gameParams.value.sheet = editedGame.sheet?.number;
-    gameParams.value.hammerFirstEndTeam = editedGame.hammer_first_end;
+    gameParams.value.rink = rink;
+    gameParams.value.sheet = sheet;
+    gameParams.value.hammerFirstEndTeam = hammer_first_end;
 
-    gameParams.value.start_time = dayjs.unix(editedGame.start_time).format('YYYY-MM-DD hh:mm')
+    gameParams.value.start_time = dayjs.unix(start_time).format('YYYY-MM-DD hh:mm')
 
     const editedScore = generateLineScore(ends, end_count, {...home, team_id: home.team?.id}, {...away, team_id: away?.team?.id});
     score.value = editedScore;

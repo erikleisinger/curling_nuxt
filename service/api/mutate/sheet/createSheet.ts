@@ -9,7 +9,10 @@ export const createSheet = async (rink_id: number, sheet_number: number) => {
         { rink_id, number: sheet_number },
         { onConflict: "rink_id, number" }
     )
-    .select("id").single()
+    .select(`
+    id,
+    number
+    `).single()
 
     )
     return sheet;

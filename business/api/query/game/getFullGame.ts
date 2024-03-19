@@ -13,7 +13,12 @@ export const getFullGame = (gameId: number) => {
         const game = await client.fetch({
             queryFunc: () => getGameInfo(gameId),
             queryKey: `game-${gameId}-info`,
-            onChange: () => {}
+            onChange: (data) => {
+                useRepo(Game).save({
+                    ...data,
+                    start_time: dayjs(data.start_time).unix()
+                });
+            }
         })
         
         const {end_count} = game;
