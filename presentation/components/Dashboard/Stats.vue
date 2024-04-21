@@ -17,7 +17,6 @@
                     :style="{ order: expanded === STAT_TYPES.WINS ? 0 : 1 }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.WINS)"
-                    @scroll="scrollUp"
                     :id="`dashboard-stat-${STAT_TYPES.WINS}`"
                     :stats="statsObj"
                 >
@@ -31,7 +30,7 @@
                     }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.HAMMER_EFFICIENCY)"
-                    @scroll="scrollUp"
+
                     :id="`dashboard-stat-${STAT_TYPES.HAMMER_EFFICIENCY}`"
                     :stats="statsObj"
                 >
@@ -46,7 +45,7 @@
                     }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.STEAL_EFFICIENCY)"
-                    @scroll="scrollUp"
+    
                     :id="`dashboard-stat-${STAT_TYPES.STEAL_EFFICIENCY}`"
                     :stats="statsObj"
                 >
@@ -61,7 +60,7 @@
                     }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.FORCE_EFFICIENCY)"
-                    @scroll="scrollUp"
+
                     :id="`dashboard-stat-${STAT_TYPES.FORCE_EFFICIENCY}`"
                     :stats="statsObj"
                 >
@@ -76,7 +75,7 @@
                     }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.STEAL_DEFENSE)"
-                    @scroll="scrollUp"
+           
                     :id="`dashboard-stat-${STAT_TYPES.STEAL_DEFENSE}`"
                     :stats="statsObj"
                 >
@@ -91,7 +90,7 @@
                     }"
                     :filters="filters"
                     @close="closeStat(STAT_TYPES.POINTS_PER_END)"
-                    @scroll="scrollUp"
+               
                     :id="`dashboard-stat-${STAT_TYPES.POINTS_PER_END}`"
                     :stats="statsObj"
                 >
@@ -307,7 +306,6 @@ const mainContent = ref(null);
 
 const startView = (type) => {
     expanded.value = type;
-    scrollUp();
 };
 
 const endView = () => {
@@ -345,12 +343,6 @@ const setSelected = (type) => {
     animateStateChange(startView, type);
 };
 
-const scrollUp = () => {
-    nextTick(() => {
-        if (mainContent.value.scrollTop < tileContainer.value.offsetTop) return;
-        mainContent.value.scrollTop = tileContainer.value.offsetTop;
-    });
-};
 
 onBeforeRouteLeave((to) => {
     const { query } = to;
