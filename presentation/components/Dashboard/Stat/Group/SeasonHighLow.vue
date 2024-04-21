@@ -38,4 +38,6 @@
 
     const average = computed(() => props.stats[props.type].percent)
 
+    const {getColor } = useColor();
+
 </script>

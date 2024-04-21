@@ -108,6 +108,7 @@ $min-height: min(175px, calc(50% - 12px));
     padding: var(--space-sm);
     &:not(.expanded) {
         padding-top: var(--space-md);
+        cursor: pointer;
     }
     background-color: rgba(240, 238, 238, 0.1);
 
@@ -122,7 +123,7 @@ $min-height: min(175px, calc(50% - 12px));
 
    
 
-    cursor: pointer;
+    
     min-height: $min-height;
     border-radius: 4px;
     padding-bottom: var(--space-md);
