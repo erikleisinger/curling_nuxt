@@ -3,6 +3,7 @@ export const useApi = () => {
     const defaultFetchOptions = {
         enabled: ref(true),
         onComplete: () => {},
+        onError: () => {},
         errorMsg: "Error occured.",
     };
     const fetch = (
@@ -10,10 +11,12 @@ export const useApi = () => {
         {
             enabled = ref(true),
             onComplete = () => {},
+            onError = () => {},
             errorMsg = "Error occured.",
         }: {
             enabled: Ref<boolean>;
             onComplete: Function;
+            onError?: Function;
             errorMsg?: string;
         } = defaultFetchOptions
     ) => {
@@ -32,12 +35,13 @@ export const useApi = () => {
                 loading,
             };
         const callFunc = () => {
-           functionToCall
+            functionToCall
                 .value(async (val) => {
                     error.value = null;
                     const value = await val;
                     result.value = value;
-                }).then((data) => {
+                })
+                .then((data) => {
                     error.value = null;
                     result.value = data;
                     loading.value = false;
@@ -45,9 +49,11 @@ export const useApi = () => {
                     onComplete(data);
                 })
                 .catch((e) => {
+                    console.log("CAUGHT ERROR");
                     console.error(e);
                     error.value = errorMsg;
                     loading.value = false;
+                    if (onError) onError(e, result);
                 });
         };
 
@@ -68,7 +74,6 @@ export const useApi = () => {
         errorNotification: null,
     };
 
-
     const mutate = async (
         mutateFunction: Function,
         {
@@ -84,27 +89,25 @@ export const useApi = () => {
         const data = reactive({
             error: false,
             result: null,
-        })
+        });
 
-
-        const {runNotifyFunction} = useNotification();
-
-        
+        const { runNotifyFunction } = useNotification();
 
         await runNotifyFunction({
-            callback: async () => await mutateFunction()
-            .then((res) => {
-                console.log('mutation result: ', res)
-                data.result = res;
-            })
-            .catch((e) => {
-                data.error = e;
-                throw e
-            }),
+            callback: async () =>
+                await mutateFunction()
+                    .then((res) => {
+                        console.log("mutation result: ", res);
+                        data.result = res;
+                    })
+                    .catch((e) => {
+                        data.error = e;
+                        throw e;
+                    }),
             onProgress: progressNotification,
             onSuccess: successNotification,
-            onError: errorNotification
-        })
+            onError: errorNotification,
+        });
 
         return data;
     };

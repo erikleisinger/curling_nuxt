@@ -1,151 +1,151 @@
 <template>
+    <section class="filter__container row justify-center">
+        <DashboardFilters v-model="filters" />
+    </section>
+    <section
+        class="tile__container"
+        :class="{ expanded }"
+        ref="tileContainer"
+        v-if="statsObj"
+        v-memo="[
+            filters.teams.length,
+            filters.opposition,
+            filters.rink,
+            filters.sheet,
+            filters.start,
+            statsObj.id,
+            expanded,
+            mainContent,
+        ]"
+    >
+        <DashboardStatWins
+            @click="setSelected(STAT_TYPES.WINS)"
+            :expanded="expanded === STAT_TYPES.WINS"
+            :style="{ order: expanded === STAT_TYPES.WINS ? 0 : 1 }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.WINS)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.WINS}`"
+            :stats="statsObj"
+        >
+        </DashboardStatWins>
+        <DashboardStatHammerEfficiency
+            @click="setSelected(STAT_TYPES.HAMMER_EFFICIENCY)"
+            :expanded="expanded === STAT_TYPES.HAMMER_EFFICIENCY"
+            :style="{
+                order: expanded === STAT_TYPES.HAMMER_EFFICIENCY ? 0 : 1,
+            }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.HAMMER_EFFICIENCY)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.HAMMER_EFFICIENCY}`"
+            :stats="statsObj"
+        >
+        </DashboardStatHammerEfficiency>
 
-            <section class="filter__container row justify-center">
-                <DashboardFilters v-model="filters" />
-            </section>
-            <section
-                class="tile__container"
-                :class="{ expanded }"
-                ref="tileContainer"
-                v-if="statsObj"
-                 v-memo="[filters.teams.length, filters.opposition, filters.rink, filters.sheet, filters.start, statsObj.id, expanded, mainContent]"
-            >
-           
-                <DashboardStatWins
-                    @click="setSelected(STAT_TYPES.WINS)"
-                    :expanded="expanded === STAT_TYPES.WINS"
-                    :style="{ order: expanded === STAT_TYPES.WINS ? 0 : 1 }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.WINS)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.WINS}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatWins>
-                <DashboardStatHammerEfficiency
-                    @click="setSelected(STAT_TYPES.HAMMER_EFFICIENCY)"
-                    :expanded="expanded === STAT_TYPES.HAMMER_EFFICIENCY"
-                    :style="{
-                        order:
-                            expanded === STAT_TYPES.HAMMER_EFFICIENCY ? 0 : 1,
-                    }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.HAMMER_EFFICIENCY)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.HAMMER_EFFICIENCY}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatHammerEfficiency>
+        <DashboardStatStealEfficiency
+            @click="setSelected(STAT_TYPES.STEAL_EFFICIENCY)"
+            :expanded="expanded === STAT_TYPES.STEAL_EFFICIENCY"
+            :style="{
+                order: expanded === STAT_TYPES.STEAL_EFFICIENCY ? 0 : 1,
+            }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.STEAL_EFFICIENCY)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.STEAL_EFFICIENCY}`"
+            :stats="statsObj"
+        >
+        </DashboardStatStealEfficiency>
 
-                  <DashboardStatStealEfficiency
-                    @click="setSelected(STAT_TYPES.STEAL_EFFICIENCY)"
-                    :expanded="expanded === STAT_TYPES.STEAL_EFFICIENCY"
-                    :style="{
-                        order:
-                            expanded === STAT_TYPES.STEAL_EFFICIENCY ? 0 : 1,
-                    }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.STEAL_EFFICIENCY)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.STEAL_EFFICIENCY}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatStealEfficiency>
+        <DashboardStatForceEfficiency
+            @click="setSelected(STAT_TYPES.FORCE_EFFICIENCY)"
+            :expanded="expanded === STAT_TYPES.FORCE_EFFICIENCY"
+            :style="{
+                order: expanded === STAT_TYPES.FORCE_EFFICIENCY ? 0 : 1,
+            }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.FORCE_EFFICIENCY)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.FORCE_EFFICIENCY}`"
+            :stats="statsObj"
+        >
+        </DashboardStatForceEfficiency>
 
-                   <DashboardStatForceEfficiency
-                    @click="setSelected(STAT_TYPES.FORCE_EFFICIENCY)"
-                    :expanded="expanded === STAT_TYPES.FORCE_EFFICIENCY"
-                    :style="{
-                        order:
-                            expanded === STAT_TYPES.FORCE_EFFICIENCY ? 0 : 1,
-                    }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.FORCE_EFFICIENCY)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.FORCE_EFFICIENCY}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatForceEfficiency>
+        <DashboardStatStealDefense
+            @click="setSelected(STAT_TYPES.STEAL_DEFENSE)"
+            :expanded="expanded === STAT_TYPES.STEAL_DEFENSE"
+            :style="{
+                order: expanded === STAT_TYPES.STEAL_DEFENSE ? 0 : 1,
+            }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.STEAL_DEFENSE)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.STEAL_DEFENSE}`"
+            :stats="statsObj"
+        >
+        </DashboardStatStealDefense>
 
-                      <DashboardStatStealDefense
-                    @click="setSelected(STAT_TYPES.STEAL_DEFENSE)"
-                    :expanded="expanded === STAT_TYPES.STEAL_DEFENSE"
-                    :style="{
-                        order:
-                            expanded === STAT_TYPES.STEAL_DEFENSE ? 0 : 1,
-                    }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.STEAL_DEFENSE)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.STEAL_DEFENSE}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatStealDefense>
-
-                 <DashboardStatPointsPerEnd
-                    @click="setSelected(STAT_TYPES.POINTS_PER_END)"
-                    :expanded="expanded === STAT_TYPES.POINTS_PER_END"
-                    :style="{
-                        order:
-                            expanded === STAT_TYPES.POINTS_PER_END ? 0 : 1,
-                    }"
-                    :filters="filters"
-                    @close="closeStat(STAT_TYPES.POINTS_PER_END)"
-                    @scroll="scrollUp"
-                    :id="`dashboard-stat-${STAT_TYPES.POINTS_PER_END}`"
-                    :stats="statsObj"
-                >
-                </DashboardStatPointsPerEnd>
-                <div
-                    v-if="!!expanded"
-                    class="full-width q-pa-md row justify-center"
-                ></div>
-            </section>
+        <DashboardStatPointsPerEnd
+            @click="setSelected(STAT_TYPES.POINTS_PER_END)"
+            :expanded="expanded === STAT_TYPES.POINTS_PER_END"
+            :style="{
+                order: expanded === STAT_TYPES.POINTS_PER_END ? 0 : 1,
+            }"
+            :filters="filters"
+            @close="closeStat(STAT_TYPES.POINTS_PER_END)"
+            @scroll="scrollUp"
+            :id="`dashboard-stat-${STAT_TYPES.POINTS_PER_END}`"
+            :stats="statsObj"
+        >
+        </DashboardStatPointsPerEnd>
+        <div
+            v-if="!!expanded"
+            class="full-width q-pa-md row justify-center"
+        ></div>
+    </section>
 </template>
 <style lang="scss" scoped>
 .tabs {
     @include tabs($app-mint);
-    
 }
 
-    h1 {
-        @include lg-text;
-        text-align: center;
-        z-index: 1;
-    }
-    h2 {
-        @include md-text;
-        text-align: center;
-        z-index: 1;
-    }
+h1 {
+    @include lg-text;
+    text-align: center;
+    z-index: 1;
+}
+h2 {
+    @include md-text;
+    text-align: center;
+    z-index: 1;
+}
 
-    .text {
-        z-index: 100;
-    }
+.text {
+    z-index: 100;
+}
 
-    .tile__container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        @include xxs {
-            grid-template-columns: repeat(1, 1fr);
-        }
-        column-gap: 2px;
-        row-gap: 2px;
-        padding-bottom: var(--space-lg);
-        flex-wrap: wrap;
-        justify-content: space-around;
-        @include sm {
-            grid-template-columns: repeat(3, 1fr);
-        }
-        &.expanded {
-            grid-template-columns: 1fr;
-        }
+.tile__container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    @include xxs {
+        grid-template-columns: repeat(1, 1fr);
     }
-
-    .filter__container {
-        margin: var(--space-lg) 0px;
+    column-gap: 2px;
+    row-gap: 2px;
+    padding-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    justify-content: space-around;
+    @include sm {
+        grid-template-columns: repeat(3, 1fr);
     }
+    &.expanded {
+        grid-template-columns: 1fr;
+    }
+}
 
+.filter__container {
+    margin: var(--space-lg) 0px;
+}
 </style>
 <style lang="scss">
 .separator {
@@ -155,9 +155,7 @@
 }
 </style>
 <script setup>
-import {
-    STAT_TYPES
-} from "@/presentation/constants/stats";
+import { STAT_TYPES } from "@/presentation/constants/stats";
 import { useQuery } from "@tanstack/vue-query";
 import { useSwipe } from "@vueuse/core";
 import TeamStatsTotal from "@/store/models/team-stats-total";
@@ -166,7 +164,7 @@ import Team from "@/store/models/team";
 import Player from "@/store/models/player";
 import gsap from "gsap";
 import { Flip } from "gsap/Flip";
-import {Stats} from '@/store/models/stats/stats'
+import { Stats } from "@/store/models/stats/stats";
 gsap.registerPlugin(Flip);
 
 const filters = ref({
@@ -271,31 +269,41 @@ const stats = computed(() => {
     ];
 });
 
-const {toTimezone} = useTime();
+const { toTimezone } = useTime();
 
 const statsObj = computed(() => {
     let stats;
     if (filters.value?.teams?.length) {
-        stats =  useRepo(Team)
-            .query()
-            .with("stats")
-            .whereIn("id", filters.value?.teams)
-            .first()?.stats || {}
+        stats =
+            useRepo(Team)
+                .query()
+                .with("stats")
+                .whereIn("id", filters.value?.teams)
+                .first()?.stats || {};
     } else {
- stats = useRepo(Player).withAllRecursive().where("id", userId.value).first()?.teamStats || 0;
+        stats =
+            useRepo(Player).withAllRecursive().where("id", userId.value).first()
+                ?.teamStats || 0;
     }
 
-   return new Stats(stats.filter((stat) => {
+    return new Stats(
+        stats.filter((stat) => {
+            if (filters.value.rink && stat.rink_id !== filters.value.rink)
+                return false;
 
-    if (filters.value.rink && stat.rink_id !== filters.value.rink) return false;   
-    
-    if (filters.value.sheet & stat.sheet_id !== filters.value.sheet) return false;
-    
-  
-    if (filters.value.start && toTimezone(stat.start_time, null, false, true).unix() < filters.value.start) return false;
+            if (filters.value.sheet & (stat.sheet_id !== filters.value.sheet))
+                return false;
 
-    return true;
-   }))   
+            if (
+                filters.value.start &&
+                toTimezone(stat.start_time, null, false, true).unix() <
+                    filters.value.start
+            )
+                return false;
+
+            return true;
+        })
+    );
 });
 
 const tileContainer = ref(null);
@@ -306,6 +314,7 @@ const preventExpand = ref(false);
 const mainContent = ref(null);
 
 const startView = (type) => {
+    console.log("start view");
     expanded.value = type;
     scrollUp();
 };
@@ -385,6 +394,4 @@ const { direction } = useSwipe(tileContainer, {
         }
     },
 });
-
-
 </script>

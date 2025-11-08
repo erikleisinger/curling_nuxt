@@ -1,7 +1,24 @@
 <template>
-    <div class="avatar-outer__container" :class="{ clickable: 'viewable' }" ref="el">
-        <div class="hammer__container--floating" :style="{height: `calc(${hammerSize}px + 4px)`, width: `calc(${hammerSize}px + 4px)`, bottom: `${hammerMargin}px`, right: `${hammerMargin / 2}px`,}" v-if="hammer">
-            <q-icon name="o_hardware" color="white" :style="{fontSize: `${hammerSize}px`}"/>
+    <div
+        class="avatar-outer__container"
+        :class="{ clickable: 'viewable' }"
+        ref="el"
+    >
+        <div
+            class="hammer__container--floating"
+            :style="{
+                height: `calc(${hammerSize}px + 4px)`,
+                width: `calc(${hammerSize}px + 4px)`,
+                bottom: `${hammerMargin}px`,
+                right: `${hammerMargin / 2}px`,
+            }"
+            v-if="hammer"
+        >
+            <q-icon
+                name="o_hardware"
+                color="white"
+                :style="{ fontSize: `${hammerSize}px` }"
+            />
         </div>
         <div
             class="avatar-inner"
@@ -12,7 +29,6 @@
             :style="{ height: teamId === null ? '100%' : 'unset' }"
             ref="innerContainer"
         >
-           
             <div
                 class="ring"
                 :class="{ 'help--highlight': highlight }"
@@ -23,10 +39,9 @@
             <div class="ring animated" v-if="animateRing && color" />
 
             <div class="inner-wrap">
-               
                 <div>
                     <div class="uploaded-avatar__container">
-                        <div v-if="loading">hi</div>
+                        <div v-if="loading"></div>
                         <q-img
                             :src="pendingAvatarUrl || avatarUrl"
                             spinner-color="white"
@@ -34,7 +49,6 @@
                             v-if="pendingAvatarUrl || avatarUrl"
                             @load="loaded = true"
                         ></q-img>
-                       
                     </div>
                 </div>
             </div>
@@ -42,7 +56,6 @@
     </div>
 </template>
 <style lang="scss" scoped>
-
 .card-menu__container {
     width: 225px;
     @include sm {
@@ -59,9 +72,9 @@
         transition: transform 0.2s;
         position: relative;
         padding-top: 16%;
-    .inner-wrap {
-        position: relative;
-    }
+        .inner-wrap {
+            position: relative;
+        }
         @include sm {
             &.viewable {
                 &:hover {
@@ -102,7 +115,7 @@
     }
     .hammer__container--floating {
         position: absolute;
- 
+
         background-color: $app-mint;
         // border-radius: 50%;
         z-index: 1;
@@ -172,10 +185,13 @@
 }
 </style>
 <script setup>
-import { onClickOutside, useElementHover, useImage, useElementSize } from "@vueuse/core";
-import { getTeamAvatar } from "@/business/api/query/team"
-
-
+import {
+    onClickOutside,
+    useElementHover,
+    useImage,
+    useElementSize,
+} from "@vueuse/core";
+import { getTeamAvatar } from "@/business/api/query/team";
 
 import Team from "@/store/models/team";
 const props = defineProps({
@@ -191,7 +207,7 @@ const props = defineProps({
 });
 
 const route = useRoute();
-const el = ref(null)
+const el = ref(null);
 
 const emit = defineEmits(["edit", "invite", "update"]);
 
@@ -199,7 +215,7 @@ const team = computed(
     () => useRepo(Team).where("id", props.teamId).first() ?? {}
 );
 
-const avatarUploading = ref(false)
+const avatarUploading = ref(false);
 
 const pendingAvatarUrl = ref(null);
 
@@ -209,29 +225,18 @@ const setPendingAvatar = (event) => {
     pendingAvatarUrl.value = URL.createObjectURL(file);
 };
 
-const enabled = computed(
-    () => !!team.value?.avatar_url
-);
-
+const enabled = computed(() => !!team.value?.avatar_url);
 
 const $q = useQuasar();
 
 const visible = ref(false);
 
+const avatar_url = computed(() => team.value.avatar_url);
+const { teamId } = toRefs(props);
 
+const { fetch } = useApi(`teamavatar-${props.teamId}`);
 
-
-
-const avatar_url = computed(() => team.value.avatar_url)
-const {teamId} = toRefs(props)
-
-const {fetch} = useApi(`teamavatar-${props.teamId}`)
-
-const {loading, result: avatarUrl}= fetch(getTeamAvatar(props.teamId))
-
-
-
-
+const { loading, result: avatarUrl } = fetch(getTeamAvatar(props.teamId));
 
 const avatar = ref(null);
 const loaded = ref(true);
@@ -245,7 +250,6 @@ watch(hovered, (val) => {
     if ($q.platform.is.mobile) return;
     visible.value = val;
 });
-
 
 const { getColor } = useColor();
 
@@ -262,13 +266,13 @@ const styleObj = computed(() => {
     };
 });
 
-const {width: elSize} = useElementSize(el);
+const { width: elSize } = useElementSize(el);
 
-const MAX_HAMMER_SIZE = 24
+const MAX_HAMMER_SIZE = 24;
 
-const hammerSize = computed(() => Math.min(elSize.value / 2, MAX_HAMMER_SIZE))
+const hammerSize = computed(() => Math.min(elSize.value / 2, MAX_HAMMER_SIZE));
 
-const hammerMargin = computed(() => (hammerSize.value / 2) * -1)
+const hammerMargin = computed(() => (hammerSize.value / 2) * -1);
 </script>
 <script>
 export default {
